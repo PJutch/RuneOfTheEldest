@@ -30,6 +30,9 @@ public:
     void run();
 private:
     std::shared_ptr<sf::RenderWindow> window;
+
+    void handleEvent(sf::Event event);
+    void render();
 };
 
 #endif

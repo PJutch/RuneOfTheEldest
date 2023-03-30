@@ -1,15 +1,26 @@
 #include "Game.hpp"
 
+bool wasKeyPressed(sf::Event event, sf::Keyboard::Key key) noexcept {
+    return event.type == sf::Event::KeyPressed && event.key.code == key;
+}
+
 void Game::run() {
 	while (window->isOpen()) {
         sf::Event event;
         while (window->pollEvent(event))
-            if (event.type == sf::Event::Closed 
-                || event.type == sf::Event::KeyPressed 
-                && event.key.code == sf::Keyboard::Escape)
-                window->close();
+            handleEvent(event);
 
-        window->clear(sf::Color::Black);
-        window->display();
+        render();
     }
+}
+
+void Game::handleEvent(sf::Event event) {
+    if (event.type == sf::Event::Closed 
+     || wasKeyPressed(event, sf::Keyboard::Escape))
+        window->close();
+}
+
+void Game::render() {
+    window->clear(sf::Color::Black);
+    window->display();
 }
