@@ -13,6 +13,9 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 If not, see <https://www.gnu.org/licenses/>. */
 
+#ifndef EXCEPTION_HPP_
+#define EXCEPTION_HPP_
+
 #define BOOST_STACKTRACE_LINK
 #include <boost/stacktrace.hpp>
 using Stacktrace = boost::stacktrace::stacktrace;
@@ -45,3 +48,5 @@ struct std::formatter<Stacktrace> {
         return std::ranges::copy(to_string(stacktrace), ctx.out()).out;
     }
 };
+
+#endif

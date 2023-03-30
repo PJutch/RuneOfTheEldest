@@ -13,6 +13,9 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 If not, see <https://www.gnu.org/licenses/>. */
 
+#ifndef LOG_HPP_
+#define LOG_HPP_
+
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>
@@ -42,3 +45,5 @@ auto logModule() {
     return createLogger(std::move(name), 
         injector.create<std::vector<spdlog::sink_ptr>>());
 }
+
+#endif
