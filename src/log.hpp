@@ -17,16 +17,28 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>
 
+#include <boost/di.hpp>
+
 #include <filesystem>
+#include <ranges>
+
+using ConsoleSink = spdlog::sinks::stdout_color_sink_st;
+using FileSink = spdlog::sinks::basic_file_sink_st;
+
+auto logModule() {
+    return boost::di::make_injector(
+        boost::di::bind<FileSink>.to(std::make_shared<FileSink>("log.txt", true)),
+        boost::di::bind<spdlog::sinks::sink*[]>.to<ConsoleSink, FileSink>()
+    );
+}
 
 [[nodiscard]] auto createLogger(std::string name, 
-                                const std::filesystem::path& file) noexcept {
-    using ConsoleSink = spdlog::sinks::stdout_color_sink_st;
-    using FileSink = spdlog::sinks::basic_file_sink_st;
-
-    std::vector<spdlog::sink_ptr> sinks;
-    sinks.push_back(std::make_shared<ConsoleSink>());
-    sinks.push_back(std::make_shared<FileSink>(file.string(), true));
+        const std::ranges::range auto& sinks) noexcept {
     return std::make_shared<spdlog::logger>(std::move(name), 
-                                            begin(sinks), end(sinks));
+        std::ranges::begin(sinks), std::ranges::end(sinks));
+}
+
+[[nodiscard]] auto createLogger(std::string name, auto& injector) noexcept {
+    return createLogger(std::move(name), 
+        injector.create<std::vector<spdlog::sink_ptr>>());
 }
