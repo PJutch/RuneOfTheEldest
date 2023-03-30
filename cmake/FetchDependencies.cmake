@@ -13,6 +13,9 @@
 # You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 # If not, see <https://www.gnu.org/licenses/>.
 
+add_library(dependencies INTERFACE)
+add_library(test_dependencies INTERFACE)
+
 include(FetchContent)
 
 set(CMAKE_PREFIX_PATH deps/googletest-build/googletest/generated

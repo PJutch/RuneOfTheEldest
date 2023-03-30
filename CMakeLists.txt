@@ -23,13 +23,12 @@ project(TheRuneOfTheEldest VERSION 1.0
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-add_library(dependencies INTERFACE)
-add_library(test_dependencies INTERFACE)
-
 include(cmake/FetchDependencies.cmake)
 
-add_executable(TheRuneOfTheEldest src/main.cpp src/Game.cpp)
-target_link_libraries(TheRuneOfTheEldest dependencies)
+add_subdirectory(src)
+
+add_executable(TheRuneOfTheEldest src/main.cpp)
+target_link_libraries(TheRuneOfTheEldest sources)
 
 enable_testing()
 
