@@ -13,6 +13,7 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 If not, see <https://www.gnu.org/licenses/>. */
 
+#include "Game.hpp"
 #include "log.hpp"
 #include "Exception.hpp"
 
@@ -47,22 +48,10 @@ int main() {
                 );
             })
         );
-        auto window = injector.create<std::shared_ptr<sf::RenderWindow>>();
+        auto game = injector.create<Game>();
 
         logger->info("Loading complete");
-
-        while (window->isOpen()) {
-            sf::Event event;
-            while (window->pollEvent(event))
-                if (event.type == sf::Event::Closed 
-                 || event.type == sf::Event::KeyPressed 
-                 && event.key.code == sf::Keyboard::Escape)
-                    window->close();
-
-            window->clear(sf::Color::Black);
-            window->display();
-        }
-
+        game.run();
         logger->info("Exiting...");
     } catch (const TracableException& e) {
         logger->critical("Error occured: {}\nStacktrace:\n{}", 

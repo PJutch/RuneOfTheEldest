@@ -28,7 +28,7 @@ add_library(test_dependencies INTERFACE)
 
 include(cmake/FetchDependencies.cmake)
 
-add_executable(TheRuneOfTheEldest src/main.cpp)
+add_executable(TheRuneOfTheEldest src/main.cpp src/Game.cpp)
 target_link_libraries(TheRuneOfTheEldest dependencies)
 
 enable_testing()
