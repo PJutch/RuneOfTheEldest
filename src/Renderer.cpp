@@ -13,26 +13,26 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef GAME_HPP_
-#define GAME_HPP_
+#include "Renderer.hpp"
 
-#include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
-#include <SFML/System.hpp>
+Renderer::Renderer(std::shared_ptr<sf::RenderWindow> window) :
+        window_{window}, levelView{{0, 0, 1024, 1024}} {
+    tileTexture(Level::Tile::EMPTY).loadFromFile("resources/floor.png");
+    tileTexture(Level::Tile::WALL).loadFromFile("resources/wall.png");
+    tileTexture(Level::Tile::UNSEEN).loadFromFile("resources/unseen.png");
+}
 
-#include <memory>
+void Renderer::draw(const Level& level) {
+    window().setView(levelView);
+    level.draw(*this);
+    window().setView(window().getDefaultView());
+}
 
-class Game {
-public:
-    Game(std::shared_ptr<sf::RenderWindow> window_) : 
-        window{std::move(window_)} {} 
+void Renderer::draw(Level::Tile tile, sf::Vector2i position) {
+    sf::Sprite tileSprite;
+    tileSprite.setTexture(tileTexture(tile));
+    tileSprite.setPosition(position.x * tileSize.x, 
+                            position.y * tileSize.y);
 
-    void run();
-private:
-    std::shared_ptr<sf::RenderWindow> window;
-
-    void handleEvent(sf::Event event);
-    void draw();
-};
-
-#endif
+    window().draw(tileSprite);
+}

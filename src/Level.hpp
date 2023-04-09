@@ -22,13 +22,18 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <vector>
 
+class Renderer;
+
 class Level{
 public:
     enum class Tile {
         EMPTY,
         WALL,
-        UNSEEN
+        UNSEEN,
+        TOTAL_
     };
+
+    const static int totalTiles = static_cast<int>(Tile::TOTAL_);
 
     // unsafe
     Tile& at(int x, int y) noexcept {
@@ -41,6 +46,8 @@ public:
     }
 
     void generate(sf::Vector2i shape_, sf::IntRect room);
+
+    void draw(Renderer& renderer) const;
 private:
     sf::Vector2i shape;
     std::vector<Tile> tiles;

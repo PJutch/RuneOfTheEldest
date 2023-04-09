@@ -13,26 +13,46 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef GAME_HPP_
-#define GAME_HPP_
+#ifndef RENDERER_HPP_
+#define RENDERER_HPP_
+
+#include "Level.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
 
-#include <memory>
+#include <array>
 
-class Game {
+class Renderer {
 public:
-    Game(std::shared_ptr<sf::RenderWindow> window_) : 
-        window{std::move(window_)} {} 
+    Renderer(std::shared_ptr<sf::RenderWindow> window);
 
-    void run();
+    void draw(const Level& level);
+    void draw(Level::Tile tile, sf::Vector2i position);
 private:
-    std::shared_ptr<sf::RenderWindow> window;
+    std::shared_ptr<sf::RenderWindow> window_;
 
-    void handleEvent(sf::Event event);
-    void draw();
+    sf::View levelView;
+
+    inline const static sf::Vector2i tileSize{16, 16};
+    std::array<sf::Texture, Level::totalTiles> tileTextures;
+
+    sf::RenderWindow& window() noexcept {
+        return *window_;
+    }
+
+    const sf::RenderWindow& window() const noexcept {
+        return *window_;
+    }
+
+    sf::Texture& tileTexture(Level::Tile tile) noexcept {
+        return tileTextures[static_cast<int>(tile)];
+    }
+
+    const sf::Texture& tileTexture(Level::Tile tile) const noexcept {
+        return tileTextures[static_cast<int>(tile)];
+    }
 };
 
 #endif

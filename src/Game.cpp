@@ -10,7 +10,7 @@ void Game::run() {
         while (window->pollEvent(event))
             handleEvent(event);
 
-        render();
+        draw();
     }
 }
 
@@ -20,7 +20,7 @@ void Game::handleEvent(sf::Event event) {
         window->close();
 }
 
-void Game::render() {
+void Game::draw() {
     window->clear(sf::Color::Black);
     window->display();
 }
