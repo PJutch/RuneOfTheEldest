@@ -37,16 +37,17 @@ int main() {
     try {
         logger->info("Loading...");
 
+        auto videoMode = sf::VideoMode::getDesktopMode();
+        auto renderWindow = std::make_shared<sf::RenderWindow>(
+            videoMode, 
+            createSfString("The Rune of the Eldest"), 
+            sf::Style::Fullscreen
+        );
+
         auto injector = boost::di::make_injector(
             std::move(logInjector),
-            boost::di::bind<sf::VideoMode>.to(sf::VideoMode::getDesktopMode()),
-            boost::di::bind<sf::RenderWindow>.to([](const auto& injector) {
-                return std::make_shared<sf::RenderWindow>(
-                    injector.template create<sf::VideoMode>(),
-                    createSfString("The Rune of the Eldest"), 
-                    sf::Style::Fullscreen
-                );
-            })
+            boost::di::bind<sf::VideoMode>.to(videoMode),
+            boost::di::bind<sf::RenderWindow>.to(renderWindow)
         );
         auto game = injector.create<Game>();
 

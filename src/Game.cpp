@@ -1,5 +1,14 @@
 #include "Game.hpp"
 
+Game::Game(std::shared_ptr<sf::RenderWindow> window_, 
+           Level level_, 
+           std::unique_ptr<Renderer> renderer_) : 
+        window{std::move(window_)}, 
+        level{std::move(level_)}, 
+        renderer{std::move(renderer_)} {
+    level.generate({50, 50}, {10, 10, 30, 30});
+} 
+
 bool wasKeyPressed(sf::Event event, sf::Keyboard::Key key) noexcept {
     return event.type == sf::Event::KeyPressed && event.key.code == key;
 }
@@ -22,5 +31,6 @@ void Game::handleEvent(sf::Event event) {
 
 void Game::draw() {
     window->clear(sf::Color::Black);
+    renderer->draw(level);
     window->display();
 }

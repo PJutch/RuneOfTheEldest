@@ -15,11 +15,28 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Renderer.hpp"
 
+#include "Exception.hpp"
+
+class TextureLoadError : public RuntimeError {
+    using RuntimeError::RuntimeError;
+};
+
+template <typename T>
+sf::View createFullscreenView(float height, sf::Vector2<T> screenSize) noexcept {
+    return sf::View{{0, 0, height * screenSize.x / screenSize.y, height}};
+}
+
 Renderer::Renderer(std::shared_ptr<sf::RenderWindow> window) :
-        window_{window}, levelView{{0, 0, 1024, 1024}} {
-    tileTexture(Level::Tile::EMPTY).loadFromFile("resources/floor.png");
-    tileTexture(Level::Tile::WALL).loadFromFile("resources/wall.png");
-    tileTexture(Level::Tile::UNSEEN).loadFromFile("resources/unseen.png");
+        window_{std::move(window)}, 
+        levelView{createFullscreenView(512, window_->getSize())} {
+    if (!tileTexture(Level::Tile::EMPTY).loadFromFile("resources/floor.png"))
+        throw TextureLoadError{"Unable to load floor tile texture"};
+    
+    if (!tileTexture(Level::Tile::WALL).loadFromFile("resources/wall.png"))
+        throw TextureLoadError{"Unable to load wall tile texture"};
+    
+    if (!tileTexture(Level::Tile::UNSEEN).loadFromFile("resources/unseen.png"))
+        throw TextureLoadError{"Unable to load unseen tile texture"};
 }
 
 void Renderer::draw(const Level& level) {

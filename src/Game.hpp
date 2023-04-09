@@ -16,6 +16,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef GAME_HPP_
 #define GAME_HPP_
 
+#include "Level.hpp"
+#include "Renderer.hpp"
+
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
@@ -24,12 +27,15 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 class Game {
 public:
-    Game(std::shared_ptr<sf::RenderWindow> window_) : 
-        window{std::move(window_)} {} 
+    Game(std::shared_ptr<sf::RenderWindow> window, 
+         Level level, 
+         std::unique_ptr<Renderer> renderer);
 
     void run();
 private:
     std::shared_ptr<sf::RenderWindow> window;
+    Level level;
+    std::unique_ptr<Renderer> renderer;
 
     void handleEvent(sf::Event event);
     void draw();

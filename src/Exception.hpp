@@ -49,4 +49,16 @@ struct std::formatter<Stacktrace> {
     }
 };
 
+class RuntimeError : public std::runtime_error, public TracableException {
+public:
+    RuntimeError(const std::string& message, 
+                 Stacktrace currentStacktrace = {}) noexcept : 
+        std::runtime_error{message}, 
+        TracableException{std::move(currentStacktrace)} {}
+    
+    const char* what() const noexcept override {
+        return std::runtime_error::what();
+    }
+};
+
 #endif
