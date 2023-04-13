@@ -28,17 +28,16 @@ If not, see <https://www.gnu.org/licenses/>. */
 class Game {
 public:
     Game(std::shared_ptr<sf::RenderWindow> window, 
-         Level level, 
+         std::shared_ptr<Level> level, 
          std::unique_ptr<Renderer> renderer);
 
     void run();
 private:
     std::shared_ptr<sf::RenderWindow> window;
-    Level level;
+    std::shared_ptr<Level> level;
     std::unique_ptr<Renderer> renderer;
 
     void handleEvent(sf::Event event);
-    void draw();
 };
 
 #endif

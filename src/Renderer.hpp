@@ -26,12 +26,13 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 class Renderer {
 public:
-    Renderer(std::shared_ptr<sf::RenderWindow> window);
+    Renderer(std::shared_ptr<sf::RenderWindow> window, 
+             std::shared_ptr<Level> level);
 
-    void draw(const Level& level);
-    void draw(Level::Tile tile, sf::Vector2i position);
+    void draw();
 private:
     std::shared_ptr<sf::RenderWindow> window_;
+    std::shared_ptr<Level> level_;
 
     sf::View levelView;
 
@@ -46,6 +47,14 @@ private:
         return *window_;
     }
 
+    Level& level() noexcept {
+        return *level_;
+    }
+
+    const Level& level() const noexcept {
+        return *level_;
+    }
+
     sf::Texture& tileTexture(Level::Tile tile) noexcept {
         return tileTextures[static_cast<int>(tile)];
     }
@@ -53,6 +62,9 @@ private:
     const sf::Texture& tileTexture(Level::Tile tile) const noexcept {
         return tileTextures[static_cast<int>(tile)];
     }
+
+    void drawLevel();
+    void draw(Level::Tile tile, sf::Vector2i position);
 };
 
 #endif

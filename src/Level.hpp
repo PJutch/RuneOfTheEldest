@@ -22,8 +22,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <vector>
 
-class Renderer;
-
 class Level{
 public:
     enum class Tile {
@@ -37,19 +35,21 @@ public:
 
     // unsafe
     Tile& at(int x, int y) noexcept {
-        return tiles[x * shape.y + y];
+        return tiles[x * shape().y + y];
     }
 
     // unsafe
     const Tile& at(int x, int y) const noexcept {
-        return tiles[x * shape.y + y];
+        return tiles[x * shape().y + y];
     }
 
     void generate(sf::Vector2i shape_, sf::IntRect room);
 
-    void draw(Renderer& renderer) const;
+    sf::Vector2i shape() const noexcept {
+        return shape_;
+    }
 private:
-    sf::Vector2i shape;
+    sf::Vector2i shape_;
     std::vector<Tile> tiles;
 };
 

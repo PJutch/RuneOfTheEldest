@@ -15,11 +15,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Level.hpp"
 
-#include "Renderer.hpp"
-
-void Level::generate(sf::Vector2i shape_, sf::IntRect room) {
-    shape = shape_;
-    tiles.resize(shape.x * shape.y, Tile::UNSEEN);
+void Level::generate(sf::Vector2i newShape, sf::IntRect room) {
+    shape_ = newShape;
+    tiles.resize(shape().x * shape().y, Tile::UNSEEN);
 
     for (int x = room.left; x < room.left + room.width; ++ x) {
         at(x, room.top) = Tile::WALL;
@@ -34,10 +32,4 @@ void Level::generate(sf::Vector2i shape_, sf::IntRect room) {
     for (int x = room.left + 1; x < room.left + room.width - 1; ++ x)
         for (int y = room.top + 1; y < room.top + room.height - 1; ++ y)
             at(x, y) = Tile::EMPTY;
-}
-
-void Level::draw(Renderer& renderer) const {
-    for (int x = 0; x < shape.x; ++ x)
-        for (int y = 0; y < shape.y; ++ y)
-            renderer.draw(at(x, y), {x, y});
 }

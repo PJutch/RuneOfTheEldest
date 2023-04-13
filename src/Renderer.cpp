@@ -26,8 +26,9 @@ sf::View createFullscreenView(float height, sf::Vector2<T> screenSize) noexcept 
     return sf::View{{0, 0, height * screenSize.x / screenSize.y, height}};
 }
 
-Renderer::Renderer(std::shared_ptr<sf::RenderWindow> window) :
-        window_{std::move(window)}, 
+Renderer::Renderer(std::shared_ptr<sf::RenderWindow> window, 
+                   std::shared_ptr<Level> level) :
+        window_{std::move(window)}, level_{std::move(level)},
         levelView{createFullscreenView(512, window_->getSize())} {
     if (!tileTexture(Level::Tile::EMPTY).loadFromFile("resources/floor.png"))
         throw TextureLoadError{"Unable to load floor tile texture"};
@@ -39,10 +40,11 @@ Renderer::Renderer(std::shared_ptr<sf::RenderWindow> window) :
         throw TextureLoadError{"Unable to load unseen tile texture"};
 }
 
-void Renderer::draw(const Level& level) {
+void Renderer::drawLevel() {
     window().setView(levelView);
-    level.draw(*this);
-    window().setView(window().getDefaultView());
+    for (int x = 0; x < level().shape().x; ++ x)
+        for (int y = 0; y < level().shape().y; ++ y)
+            draw(level().at(x, y), {x, y});
 }
 
 void Renderer::draw(Level::Tile tile, sf::Vector2i position) {
@@ -52,4 +54,10 @@ void Renderer::draw(Level::Tile tile, sf::Vector2i position) {
                             position.y * tileSize.y);
 
     window().draw(tileSprite);
+}
+
+void Renderer::draw() {
+    window().clear(sf::Color::Black);
+    drawLevel();
+    window().display();
 }
