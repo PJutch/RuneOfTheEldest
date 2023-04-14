@@ -18,6 +18,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Level.hpp"
 
+#include "geometry.hpp"
+
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
@@ -28,12 +30,16 @@ class Renderer {
 public:
     Renderer(std::shared_ptr<sf::RenderWindow> window, 
              std::shared_ptr<Level> level);
+    
+    void update(sf::Time elapsedTime);
 
     void draw();
 private:
     std::shared_ptr<sf::RenderWindow> window_;
     std::shared_ptr<Level> level_;
 
+    float cameraSpeed = 100.f;
+    sf::Vector2f cameraPosition_;
     sf::View levelView;
 
     inline const static sf::Vector2i tileSize{16, 16};
@@ -61,6 +67,15 @@ private:
 
     const sf::Texture& tileTexture(Level::Tile tile) const noexcept {
         return tileTextures[static_cast<int>(tile)];
+    }
+
+    sf::Vector2f cameraPosition() const noexcept {
+        return cameraPosition_;
+    }
+
+    void cameraPosition(sf::Vector2f newPosition) noexcept {
+        cameraPosition_ = newPosition;
+        levelView.setCenter(cameraPosition_);
     }
 
     void drawLevel();

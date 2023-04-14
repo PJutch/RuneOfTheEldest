@@ -22,14 +22,23 @@ class TextureLoadError : public RuntimeError {
 };
 
 template <typename T>
-sf::View createFullscreenView(float height, sf::Vector2<T> screenSize) noexcept {
+sf::View createFullscreenView(float height, 
+                              sf::Vector2<T> screenSize) noexcept {
     return sf::View{{0, 0, height * screenSize.x / screenSize.y, height}};
+}
+
+template <typename T>
+sf::View createFullscreenView(sf::Vector2f center, 
+        float height, sf::Vector2<T> screenSize) noexcept {
+    return sf::View{center, {height * screenSize.x / screenSize.y, height}};
 }
 
 Renderer::Renderer(std::shared_ptr<sf::RenderWindow> window, 
                    std::shared_ptr<Level> level) :
         window_{std::move(window)}, level_{std::move(level)},
         levelView{createFullscreenView(512, window_->getSize())} {
+    cameraPosition({0, 0});
+    
     if (!tileTexture(Level::Tile::EMPTY).loadFromFile("resources/floor.png"))
         throw TextureLoadError{"Unable to load floor tile texture"};
     
@@ -60,4 +69,17 @@ void Renderer::draw() {
     window().clear(sf::Color::Black);
     drawLevel();
     window().display();
+}
+
+void Renderer::update(sf::Time elapsedTime) {
+    float moved = cameraSpeed * elapsedTime.asSeconds();
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+        cameraPosition(subY(cameraPosition(), moved)); 
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+        cameraPosition(addY(cameraPosition(), moved)); 
+    
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+        cameraPosition(subX(cameraPosition(), moved)); 
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+        cameraPosition(addX(cameraPosition(), moved)); 
 }

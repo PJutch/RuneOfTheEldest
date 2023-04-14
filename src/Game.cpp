@@ -14,10 +14,14 @@ bool wasKeyPressed(sf::Event event, sf::Keyboard::Key key) noexcept {
 }
 
 void Game::run() {
+    sf::Clock clock;
 	while (window->isOpen()) {
         sf::Event event;
         while (window->pollEvent(event))
             handleEvent(event);
+
+        sf::Time elapsedTime = clock.restart();
+        renderer->update(elapsedTime);
 
         renderer->draw();
     }
