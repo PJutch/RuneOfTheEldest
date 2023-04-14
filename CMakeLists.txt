@@ -30,4 +30,10 @@ add_subdirectory(src)
 add_executable(TheRuneOfTheEldest src/main.cpp)
 target_link_libraries(TheRuneOfTheEldest sources)
 
+enable_testing()
+add_executable(tests tests/placeholder.cpp)
+
 add_subdirectory(tests)
+
+include(GoogleTest)
+gtest_discover_tests(tests)

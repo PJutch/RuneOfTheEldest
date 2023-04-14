@@ -17,6 +17,45 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <gtest/gtest.h>
 
+bool isValid(sf::IntRect rect) noexcept {
+    return rect.width > 0 && rect.height > 0;
+}
+
+testing::AssertionResult hasSingleRoom(Level& level, sf::IntRect room) {
+    sf::IntRect roomFloor{room.left + 1, room.top + 1, 
+                          room.width - 2, room.height - 2};
+    
+    for (int x = 0; x < level.shape().x; ++ x)
+        for (int y = 0; y < level.shape().y; ++ y)
+            if (isValid(roomFloor) && roomFloor.contains(x, y)) {
+                if (level.at(x, y) != Level::Tile::EMPTY)
+                    return testing::AssertionFailure()
+                         << "tile at " << x << ", " << y 
+                         << "should be empty but it is not";
+            } else if (room.contains(x, y)) {
+                if (level.at(x, y) != Level::Tile::WALL)
+                    return testing::AssertionFailure()
+                         << "tile at " << x << ", " << y 
+                         << "should be wall but it is not";
+            } else
+                if (level.at(x, y) != Level::Tile::UNSEEN)
+                    return testing::AssertionFailure()
+                         << "tile at " << x << ", " << y 
+                         << "should be unseen but it is not";
+    
+    return testing::AssertionSuccess();
+}
+
+TEST(LevelTest, generateShape) {
+    sf::Vector2i shape{10, 7};
+    sf::IntRect room{2, 1, 6, 5};
+
+    Level level;
+    level.generate(shape, room);
+
+    EXPECT_EQ(shape, level.shape());
+}
+
 TEST(LevelTest, generateRoom) {
     sf::Vector2i shape{10, 7};
     sf::IntRect room{2, 1, 6, 5};
@@ -25,14 +64,7 @@ TEST(LevelTest, generateRoom) {
     Level level;
     level.generate(shape, room);
 
-    for (int x = 0; x < shape.x; ++ x)
-        for (int y = 0; y < shape.y; ++ y)
-            if (roomFloor.contains(x, y))
-                EXPECT_EQ(level.at(x, y), Level::Tile::EMPTY);
-            else if (room.contains(x, y))
-                EXPECT_EQ(level.at(x, y), Level::Tile::WALL);
-            else
-                EXPECT_EQ(level.at(x, y), Level::Tile::UNSEEN);
+    EXPECT_TRUE(hasSingleRoom(level, room));
 }
 
 TEST(LevelTest, generateRoomNearEdge) {
@@ -43,14 +75,7 @@ TEST(LevelTest, generateRoomNearEdge) {
     Level level;
     level.generate(shape, room);
 
-    for (int x = 0; x < shape.x; ++ x)
-        for (int y = 0; y < shape.y; ++ y)
-            if (roomFloor.contains(x, y))
-                EXPECT_EQ(level.at(x, y), Level::Tile::EMPTY);
-            else if (room.contains(x, y))
-                EXPECT_EQ(level.at(x, y), Level::Tile::WALL);
-            else
-                EXPECT_EQ(level.at(x, y), Level::Tile::UNSEEN);
+    EXPECT_TRUE(hasSingleRoom(level, room));
 }
 
 TEST(LevelTest, generateRoom3x3) {
@@ -61,14 +86,7 @@ TEST(LevelTest, generateRoom3x3) {
     Level level;
     level.generate(shape, room);
 
-    for (int x = 0; x < shape.x; ++ x)
-        for (int y = 0; y < shape.y; ++ y)
-            if (roomFloor.contains(x, y))
-                EXPECT_EQ(level.at(x, y), Level::Tile::EMPTY);
-            else if (room.contains(x, y))
-                EXPECT_EQ(level.at(x, y), Level::Tile::WALL);
-            else
-                EXPECT_EQ(level.at(x, y), Level::Tile::UNSEEN);
+    EXPECT_TRUE(hasSingleRoom(level, room));
 }
 
 TEST(LevelTest, generateRoom2x2) {
@@ -78,12 +96,7 @@ TEST(LevelTest, generateRoom2x2) {
     Level level;
     level.generate(shape, room);
 
-    for (int x = 0; x < shape.x; ++ x)
-        for (int y = 0; y < shape.y; ++ y)
-            if (room.contains(x, y))
-                EXPECT_EQ(level.at(x, y), Level::Tile::WALL);
-            else
-                EXPECT_EQ(level.at(x, y), Level::Tile::UNSEEN);
+    EXPECT_TRUE(hasSingleRoom(level, room));
 }
 
 TEST(LevelTest, generateRoom1x1) {
@@ -93,10 +106,5 @@ TEST(LevelTest, generateRoom1x1) {
     Level level;
     level.generate(shape, room);
 
-    for (int x = 0; x < shape.x; ++ x)
-        for (int y = 0; y < shape.y; ++ y)
-            if (room.contains(x, y))
-                EXPECT_EQ(level.at(x, y), Level::Tile::WALL);
-            else
-                EXPECT_EQ(level.at(x, y), Level::Tile::UNSEEN);
+    EXPECT_TRUE(hasSingleRoom(level, room));
 }
