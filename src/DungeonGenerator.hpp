@@ -13,53 +13,41 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef LEVEL_HPP_
-#define LEVEL_HPP_
+#ifndef DUNGEON_GENERATOR_HPP_
+#define DUNGEON_GENERATOR_HPP_
 
 #include "random.hpp"
 
 #include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
-#include <SFML/System.hpp>
 
-#include <vector>
+#include <queue>
+#include <functional>
 
-class Level{
+class DungeonGenerator {
 public:
-    Level(RandomEngine& randomEngine_) : randomEngine{&randomEngine_} {}
+    DungeonGenerator(std::function<void(sf::IntRect)> generateRoom_,
+        int minSize_, double splitChance_, sf::IntRect startRect,
+        RandomEngine& randomEngine_);
 
-    enum class Tile {
-        EMPTY,
-        WALL,
-        UNSEEN,
-        TOTAL_
-    };
-
-    const static int totalTiles = static_cast<int>(Tile::TOTAL_);
-
-    // unsafe
-    Tile& at(int x, int y) noexcept {
-        return tiles[x * shape().y + y];
-    }
-
-    // unsafe
-    const Tile& at(int x, int y) const noexcept {
-        return tiles[x * shape().y + y];
-    }
-
-    void generate(sf::Vector2i shape_, sf::IntRect room);
-
-    sf::Vector2i shape() const noexcept {
-        return shape_;
-    }
+    void operator() ();
 private:
-    sf::Vector2i shape_;
-    std::vector<Tile> tiles;
+    std::function<void(sf::IntRect)> generateRoom;
+
+    int minSize;
+    double splitChance;
+
+    std::queue<sf::IntRect> areas;
 
     RandomEngine* randomEngine;
 
-    void generateBlank(sf::Vector2i shape);
-    void generateRoom(sf::IntRect room);
+    void processArea(sf::IntRect area);
+
+    bool canSplit(int dimension) const noexcept {
+        return dimension > 2 * minSize;
+    }
+
+    void splitX(sf::IntRect area);
+    void splitY(sf::IntRect area);
 };
 
 #endif
