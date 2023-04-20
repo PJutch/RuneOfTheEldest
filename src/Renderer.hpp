@@ -35,8 +35,8 @@ public:
 
     void draw();
 private:
-    std::shared_ptr<sf::RenderWindow> window_;
-    std::shared_ptr<Level> level_;
+    std::shared_ptr<sf::RenderWindow> window;
+    std::shared_ptr<Level> level;
 
     float cameraSpeed = 100.f;
     sf::Vector2f cameraPosition_;
@@ -44,22 +44,6 @@ private:
 
     inline const static sf::Vector2i tileSize{16, 16};
     std::array<sf::Texture, Level::totalTiles> tileTextures;
-
-    sf::RenderWindow& window() noexcept {
-        return *window_;
-    }
-
-    const sf::RenderWindow& window() const noexcept {
-        return *window_;
-    }
-
-    Level& level() noexcept {
-        return *level_;
-    }
-
-    const Level& level() const noexcept {
-        return *level_;
-    }
 
     sf::Texture& tileTexture(Level::Tile tile) noexcept {
         return tileTextures[static_cast<int>(tile)];

@@ -33,10 +33,10 @@ sf::View createFullscreenView(sf::Vector2f center,
     return sf::View{center, {height * screenSize.x / screenSize.y, height}};
 }
 
-Renderer::Renderer(std::shared_ptr<sf::RenderWindow> window, 
-                   std::shared_ptr<Level> level) :
-        window_{std::move(window)}, level_{std::move(level)},
-        levelView{createFullscreenView(512, window_->getSize())} {
+Renderer::Renderer(std::shared_ptr<sf::RenderWindow> window_, 
+                   std::shared_ptr<Level> level_) :
+        window{std::move(window_)}, level{std::move(level_)},
+        levelView{createFullscreenView(512, window->getSize())} {
     cameraPosition({0, 0});
     
     if (!tileTexture(Level::Tile::EMPTY).loadFromFile("resources/floor.png"))
@@ -50,10 +50,10 @@ Renderer::Renderer(std::shared_ptr<sf::RenderWindow> window,
 }
 
 void Renderer::drawLevel() {
-    window().setView(levelView);
-    for (int x = 0; x < level().shape().x; ++ x)
-        for (int y = 0; y < level().shape().y; ++ y)
-            draw(level().at(x, y), {x, y});
+    window->setView(levelView);
+    for (int x = 0; x < level->shape().x; ++ x)
+        for (int y = 0; y < level->shape().y; ++ y)
+            draw(level->at(x, y), {x, y});
 }
 
 void Renderer::draw(Level::Tile tile, sf::Vector2i position) {
@@ -62,13 +62,13 @@ void Renderer::draw(Level::Tile tile, sf::Vector2i position) {
     tileSprite.setPosition(position.x * tileSize.x, 
                             position.y * tileSize.y);
 
-    window().draw(tileSprite);
+    window->draw(tileSprite);
 }
 
 void Renderer::draw() {
-    window().clear(sf::Color::Black);
+    window->clear(sf::Color::Black);
     drawLevel();
-    window().display();
+    window->display();
 }
 
 void Renderer::update(sf::Time elapsedTime) {
