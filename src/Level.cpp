@@ -16,9 +16,18 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Level.hpp"
 
 void Level::generate(sf::Vector2i newShape, sf::IntRect room) {
-    shape_ = newShape;
-    tiles.resize(shape().x * shape().y, Tile::UNSEEN);
+    generateBlank(newShape);
+    generateRoom(room);
+}
 
+void Level::generateBlank(sf::Vector2i newShape) {
+    shape_ = newShape;
+
+    tiles.clear();
+    tiles.resize(shape().x * shape().y, Tile::UNSEEN);
+}
+
+void Level::generateRoom(sf::IntRect room) {
     for (int x = room.left; x < room.left + room.width; ++ x) {
         at(x, room.top) = Tile::WALL;
         at(x, room.top + room.height - 1) = Tile::WALL;

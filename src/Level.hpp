@@ -51,6 +51,9 @@ public:
 private:
     sf::Vector2i shape_;
     std::vector<Tile> tiles;
+
+    void generateBlank(sf::Vector2i shape);
+    void generateRoom(sf::IntRect room);
 };
 
 #endif
