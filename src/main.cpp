@@ -14,8 +14,10 @@ You should have received a copy of the GNU General Public License along with the
 If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Game.hpp"
+
 #include "log.hpp"
 #include "Exception.hpp"
+#include "random.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
@@ -44,11 +46,14 @@ int main() {
             sf::Style::Fullscreen
         );
 
+        RandomEngine randomEngine{std::random_device{}()};
+
         auto injector = boost::di::make_injector(
             std::move(logInjector),
             boost::di::bind<sf::VideoMode>.to(videoMode),
             boost::di::bind<sf::RenderWindow>.to(renderWindow),
-            boost::di::bind<Level>.in(boost::di::singleton)
+            boost::di::bind<Level>.in(boost::di::singleton),
+            boost::di::bind<RandomEngine>.to(randomEngine)
         );
         auto game = injector.create<Game>();
 

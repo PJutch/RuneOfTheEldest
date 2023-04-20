@@ -15,9 +15,11 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Level.hpp"
 
+#include <queue>
+
 void Level::generate(sf::Vector2i newShape, sf::IntRect room) {
     generateBlank(newShape);
-    generateRoom(room);
+    generateDungeon();
 }
 
 void Level::generateBlank(sf::Vector2i newShape) {
@@ -25,6 +27,42 @@ void Level::generateBlank(sf::Vector2i newShape) {
 
     tiles.clear();
     tiles.resize(shape().x * shape().y, Tile::UNSEEN);
+}
+
+void Level::generateDungeon() {
+    const int minSize = 5;
+
+    std::queue<sf::IntRect> areas;
+    areas.push({0, 0, shape().x, shape().y});
+
+    while (!areas.empty()) {
+        sf::IntRect area = areas.front();
+        areas.pop();
+
+        if (area.width <= 2 * minSize && area.height <= 2 * minSize 
+            || std::uniform_real_distribution{}(*randomEngine) < 0.1)
+            generateRoom(area);
+        else {
+            if (area.width > 2 * minSize && (area.height <= 2 * minSize 
+             || std::uniform_real_distribution{}(*randomEngine) < 0.5)) {
+                int width1 = std::uniform_int_distribution
+                    {minSize, area.width - minSize}(*randomEngine);
+                areas.emplace(area.left, area.top, width1, area.height);
+
+                int left2 = area.left + width1;
+                int width2 = area.width - width1;
+                areas.emplace(left2, area.top, width2, area.height);
+            } else {
+                int height1 = std::uniform_int_distribution
+                    {minSize, area.height - minSize}(*randomEngine);
+                areas.emplace(area.left, area.top, area.width, height1);
+
+                int top2 = area.top + height1;
+                int height2 = area.height - height1;
+                areas.emplace(area.left, top2, area.width, height2);
+            }
+        }
+    }
 }
 
 void Level::generateRoom(sf::IntRect room) {

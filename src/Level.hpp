@@ -16,6 +16,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef LEVEL_HPP_
 #define LEVEL_HPP_
 
+#include "random.hpp"
+
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
@@ -24,6 +26,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 class Level{
 public:
+    Level(RandomEngine& randomEngine_) : randomEngine{&randomEngine_} {}
+
     enum class Tile {
         EMPTY,
         WALL,
@@ -52,7 +56,10 @@ private:
     sf::Vector2i shape_;
     std::vector<Tile> tiles;
 
+    RandomEngine* randomEngine;
+
     void generateBlank(sf::Vector2i shape);
+    void generateDungeon();
     void generateRoom(sf::IntRect room);
 };
 
