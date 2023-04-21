@@ -17,35 +17,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <gtest/gtest.h>
 
-bool isValid(sf::IntRect rect) noexcept {
-    return rect.width > 0 && rect.height > 0;
-}
-
-testing::AssertionResult hasSingleRoom(Level& level, sf::IntRect room) {
-    sf::IntRect roomFloor{room.left + 1, room.top + 1, 
-                          room.width - 2, room.height - 2};
-    
-    for (int x = 0; x < level.shape().x; ++ x)
-        for (int y = 0; y < level.shape().y; ++ y)
-            if (isValid(roomFloor) && roomFloor.contains(x, y)) {
-                if (level.at(x, y) != Level::Tile::EMPTY)
-                    return testing::AssertionFailure()
-                         << "tile at " << x << ", " << y 
-                         << "should be empty but it is not";
-            } else if (room.contains(x, y)) {
-                if (level.at(x, y) != Level::Tile::WALL)
-                    return testing::AssertionFailure()
-                         << "tile at " << x << ", " << y 
-                         << "should be wall but it is not";
-            } else
-                if (level.at(x, y) != Level::Tile::UNSEEN)
-                    return testing::AssertionFailure()
-                         << "tile at " << x << ", " << y 
-                         << "should be unseen but it is not";
-    
-    return testing::AssertionSuccess();
-}
-
 TEST(LevelTest, generateBlankShape) {
     sf::Vector2i shape{10, 7};
 
@@ -63,54 +34,3 @@ TEST(LevelTest, generateBlank) {
         for (int y = 0; y < level.shape().y; ++ y)
             EXPECT_EQ(level.at(x, y), Level::Tile::UNSEEN);
 }
-/*
-TEST(LevelTest, generateRoom) {
-    Level level;
-    level.generateBlank({10, 7});
-
-    sf::IntRect room{2, 1, 6, 5};
-    level.generateRoom(room);
-
-    EXPECT_TRUE(hasSingleRoom(level, room));
-}
-
-TEST(LevelTest, generateRoomNearEdge) {
-    Level level;
-    level.generateBlank({8, 7});
-
-    sf::IntRect room{0, 1, 7, 5};
-    level.generateRoom(room);
-
-    EXPECT_TRUE(hasSingleRoom(level, room));
-}
-
-TEST(LevelTest, generateRoom3x3) {
-    Level level;
-    level.generateBlank({7, 7});
-
-    sf::IntRect room{2, 1, 3, 3};
-    level.generateRoom(room);
-
-    EXPECT_TRUE(hasSingleRoom(level, room));
-}
-
-TEST(LevelTest, generateRoom2x2) {
-    Level level;
-    level.generateBlank({7, 7});
-
-    sf::IntRect room{2, 1, 2, 2};
-    level.generateRoom(room);
-
-    EXPECT_TRUE(hasSingleRoom(level, room));
-}
-
-TEST(LevelTest, generateRoom1x1) {
-    Level level;
-    level.generateBlank({7, 7});
-
-    sf::IntRect room{2, 1, 1, 1};
-    level.generateRoom(room);
-
-    EXPECT_TRUE(hasSingleRoom(level, room));
-}
-*/
