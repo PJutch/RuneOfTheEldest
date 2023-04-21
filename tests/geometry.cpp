@@ -17,56 +17,56 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <gtest/gtest.h>
 
-TEST(geometryTest, addX) {
+TEST(geometry, addX) {
     sf::Vector2i vec{5, 10};
     int dx = 14;
     sf::Vector2i result{19, 10};
     EXPECT_EQ(addX(vec, dx), result);
 }
 
-TEST(geometryTest, subX) {
+TEST(geometry, subX) {
     sf::Vector2i vec{5, 10};
     int dx = 14;
     sf::Vector2i result{-9, 10};
     EXPECT_EQ(subX(vec, dx), result);
 }
 
-TEST(geometryTest, addY) {
+TEST(geometry, addY) {
     sf::Vector2i vec{5, 10};
     int dy = 14;
     sf::Vector2i result{5, 24};
     EXPECT_EQ(addY(vec, dy), result);
 }
 
-TEST(geometryTest, subY) {
+TEST(geometry, subY) {
     sf::Vector2i vec{5, 10};
     int dy = 14;
     sf::Vector2i result{5, -4};
     EXPECT_EQ(subY(vec, dy), result);
 }
 
-TEST(geometryTest, extendTopLeft) {
+TEST(geometry, extendTopLeft) {
     sf::IntRect rect{7, 4, 3, 2};
     sf::Vector2i extension{4, 2};
     sf::IntRect result{3, 2, 7, 4};
     EXPECT_EQ(extendTopLeft(rect, extension), result);
 }
 
-TEST(geometryTest, extendBottomRight) {
+TEST(geometry, extendBottomRight) {
     sf::IntRect rect{7, 4, 3, 2};
     sf::Vector2i extension{4, 2};
     sf::IntRect result{7, 4, 7, 4};
     EXPECT_EQ(extendBottomRight(rect, extension), result);
 }
 
-TEST(geometryTest, shrinkTopLeft) {
+TEST(geometry, shrinkTopLeft) {
     sf::IntRect result{7, 4, 3, 2};
     sf::IntRect rect{3, 2, 7, 4};
     sf::Vector2i shrink{4, 2};
     EXPECT_EQ(shrinkTopLeft(rect, shrink), result);
 }
 
-TEST(geometryTest, shrinkBottomRight) {
+TEST(geometry, shrinkBottomRight) {
     sf::IntRect rect{7, 4, 7, 4};
     sf::IntRect result{7, 4, 3, 2};
     sf::Vector2i shrink{4, 2};

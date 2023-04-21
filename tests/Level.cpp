@@ -19,7 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <array>
 
-TEST(LevelTest, generateBlankShape) {
+TEST(Level, generateBlankShape) {
     sf::Vector2i shape{10, 7};
 
     Level level;
@@ -28,7 +28,7 @@ TEST(LevelTest, generateBlankShape) {
     EXPECT_EQ(level.shape(), shape);
 }
 
-TEST(LevelTest, generateBlank) {
+TEST(Level, generateBlank) {
     Level level;
     level.generateBlank({10, 7});
 
@@ -37,7 +37,7 @@ TEST(LevelTest, generateBlank) {
             EXPECT_EQ(level.at(x, y), Level::Tile::UNSEEN);
 }
 
-TEST(LevelTest, generateWalls) {
+TEST(Level, generateWalls) {
     const int shapeX = 7;
     const int shapeY = 5;
 
@@ -62,7 +62,7 @@ TEST(LevelTest, generateWalls) {
             EXPECT_EQ(level.at(x, y), result[y][x]);
 }
 
-TEST(LevelTest, generateWalls1x1) {
+TEST(Level, generateWalls1x1) {
     const int shapeX = 5;
     const int shapeY = 5;
 
@@ -86,7 +86,7 @@ TEST(LevelTest, generateWalls1x1) {
             EXPECT_EQ(level.at(x, y), result[y][x]);
 }
 
-TEST(LevelTest, generateWallsNearEdge) {
+TEST(Level, generateWallsNearEdge) {
     const int shapeX = 5;
     const int shapeY = 5;
 
@@ -110,7 +110,7 @@ TEST(LevelTest, generateWallsNearEdge) {
             EXPECT_EQ(level.at(x, y), result[y][x]);
 }
 
-TEST(LevelTest, generateWallsOnEdge) {
+TEST(Level, generateWallsOnEdge) {
     const int shapeX = 3;
     const int shapeY = 5;
 
