@@ -51,6 +51,7 @@ public:
     }
 
     void generateBlank(sf::Vector2i shape);
+    void generateWalls();
 private:
     sf::Vector2i shape_;
     std::vector<Tile> tiles;

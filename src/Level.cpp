@@ -21,3 +21,21 @@ void Level::generateBlank(sf::Vector2i newShape) {
     tiles.clear();
     tiles.resize(shape().x * shape().y, Tile::UNSEEN);
 }
+
+void Level::generateWalls() {
+    for (int x = 0; x < shape().x; ++ x)
+        for (int y = 0; y < shape().y; ++ y)
+            if (at(x, y) == Tile::UNSEEN) {
+                bool foundWall = false;
+                for (int dx = -1; dx <= 1 && !foundWall; ++ dx)
+                    for (int dy = -1; dy <= 1 && !foundWall; ++ dy)
+                        if ((dx != 0 || dy != 0) 
+                         && bounds().contains(x + dx, y + dy))
+                            if (at(x + dx, y + dy) == Tile::EMPTY)
+                                foundWall = true;
+                
+                if (foundWall)
+                    at(x, y) = Tile::WALL;
+            }
+                            
+}

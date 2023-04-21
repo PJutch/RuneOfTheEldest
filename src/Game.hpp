@@ -38,8 +38,11 @@ private:
     std::shared_ptr<sf::RenderWindow> window;
     std::shared_ptr<Level> level;
     std::unique_ptr<Renderer> renderer;
+    DungeonGenerator dungeonGenerator;
 
     void handleEvent(sf::Event event);
+
+    void generateLevel();
 };
 
 #endif

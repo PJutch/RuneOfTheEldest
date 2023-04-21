@@ -17,6 +17,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <gtest/gtest.h>
 
+#include <array>
+
 TEST(LevelTest, generateBlankShape) {
     sf::Vector2i shape{10, 7};
 
@@ -33,4 +35,101 @@ TEST(LevelTest, generateBlank) {
     for (int x = 0; x < level.shape().x; ++ x)
         for (int y = 0; y < level.shape().y; ++ y)
             EXPECT_EQ(level.at(x, y), Level::Tile::UNSEEN);
+}
+
+TEST(LevelTest, generateWalls) {
+    const int shapeX = 7;
+    const int shapeY = 5;
+
+    Level level;
+    level.generateBlank({shapeX, shapeY});
+
+    level.at(2, 2) = Level::Tile::EMPTY;
+    level.at(3, 2) = Level::Tile::EMPTY;
+
+    level.generateWalls();
+
+    using enum Level::Tile;
+    std::array<std::array<Level::Tile, shapeX>, shapeY> result;
+    result[0] = {UNSEEN, UNSEEN, UNSEEN, UNSEEN, UNSEEN, UNSEEN, UNSEEN};
+    result[1] = {UNSEEN, WALL,   WALL,   WALL,   WALL,   UNSEEN, UNSEEN};
+    result[2] = {UNSEEN, WALL,   EMPTY,  EMPTY,  WALL,   UNSEEN, UNSEEN};
+    result[3] = {UNSEEN, WALL,   WALL,   WALL,   WALL,   UNSEEN, UNSEEN};
+    result[4] = {UNSEEN, UNSEEN, UNSEEN, UNSEEN, UNSEEN, UNSEEN, UNSEEN};
+
+    for (int x = 0; x < level.shape().x; ++ x)
+        for (int y = 0; y < level.shape().y; ++ y)
+            EXPECT_EQ(level.at(x, y), result[y][x]);
+}
+
+TEST(LevelTest, generateWalls1x1) {
+    const int shapeX = 5;
+    const int shapeY = 5;
+
+    Level level;
+    level.generateBlank({shapeX, shapeY});
+
+    level.at(2, 2) = Level::Tile::EMPTY;
+
+    level.generateWalls();
+
+    using enum Level::Tile;
+    std::array<std::array<Level::Tile, shapeX>, shapeY> result;
+    result[0] = {UNSEEN, UNSEEN, UNSEEN, UNSEEN, UNSEEN};
+    result[1] = {UNSEEN, WALL,   WALL,   WALL,   UNSEEN};
+    result[2] = {UNSEEN, WALL,   EMPTY,  WALL,   UNSEEN};
+    result[3] = {UNSEEN, WALL,   WALL,   WALL,   UNSEEN};
+    result[4] = {UNSEEN, UNSEEN, UNSEEN, UNSEEN, UNSEEN};
+
+    for (int x = 0; x < level.shape().x; ++ x)
+        for (int y = 0; y < level.shape().y; ++ y)
+            EXPECT_EQ(level.at(x, y), result[y][x]);
+}
+
+TEST(LevelTest, generateWallsNearEdge) {
+    const int shapeX = 5;
+    const int shapeY = 5;
+
+    Level level;
+    level.generateBlank({shapeX, shapeY});
+
+    level.at(1, 2) = Level::Tile::EMPTY;
+
+    level.generateWalls();
+
+    using enum Level::Tile;
+    std::array<std::array<Level::Tile, shapeX>, shapeY> result;
+    result[0] = {UNSEEN, UNSEEN, UNSEEN, UNSEEN, UNSEEN};
+    result[1] = {WALL,   WALL,   WALL,   UNSEEN, UNSEEN};
+    result[2] = {WALL,   EMPTY,  WALL,   UNSEEN, UNSEEN};
+    result[3] = {WALL,   WALL,   WALL,   UNSEEN, UNSEEN};
+    result[4] = {UNSEEN, UNSEEN, UNSEEN, UNSEEN, UNSEEN};
+
+    for (int x = 0; x < level.shape().x; ++ x)
+        for (int y = 0; y < level.shape().y; ++ y)
+            EXPECT_EQ(level.at(x, y), result[y][x]);
+}
+
+TEST(LevelTest, generateWallsOnEdge) {
+    const int shapeX = 3;
+    const int shapeY = 5;
+
+    Level level;
+    level.generateBlank({shapeX, shapeY});
+
+    level.at(0, 2) = Level::Tile::EMPTY;
+
+    level.generateWalls();
+
+    using enum Level::Tile;
+    std::array<std::array<Level::Tile, shapeX>, shapeY> result;
+    result[0] = {UNSEEN, UNSEEN, UNSEEN};
+    result[1] = {WALL,   WALL,   UNSEEN};
+    result[2] = {EMPTY,  WALL,   UNSEEN};
+    result[3] = {WALL,   WALL,   UNSEEN};
+    result[4] = {UNSEEN, UNSEEN, UNSEEN};
+
+    for (int x = 0; x < level.shape().x; ++ x)
+        for (int y = 0; y < level.shape().y; ++ y)
+            EXPECT_EQ(level.at(x, y), result[y][x]);
 }
