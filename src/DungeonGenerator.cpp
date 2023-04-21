@@ -13,24 +13,24 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef DUNGEON_GENERATOR_HPP_
-#define DUNGEON_GENERATOR_HPP_
+#include "DungeonGenerator.hpp"
 
-#include "BasicDungeonGenerator.hpp"
+DungeonGenerator::DungeonGenerator(
+    std::weak_ptr<Level> level_, RandomEngine& randomEngine) : 
+        level(std::move(level_)), 
+        generator{[level = level](sf::IntRect area){
+            sf::IntRect room{area.left - 1,  area.top - 1, 
+                             area.width + 1, area.height + 1};
+            level.lock()->generateRoom(room);
+        }, randomEngine} {
+    generator.minSize(5);
+    generator.splitChance(0.9);
+}
 
-#include "Level.hpp"
-
-#include <memory>
-
-class DungeonGenerator {
-public:
-    DungeonGenerator(std::weak_ptr<Level> level_, RandomEngine& randomEngine);
-
-    void operator() ();
-private:
-    std::weak_ptr<Level> level;
-
-    BasicDungeonGenerator generator;
-};
-
-#endif
+void DungeonGenerator::operator() () {
+    sf::IntRect bounds = level.lock()->bounds();
+    sf::IntRect startRect{bounds.left + 1, bounds.top + 1, 
+                          bounds.width - 1, bounds.height - 1};
+    generator.startRect(startRect);
+    generator();
+}
