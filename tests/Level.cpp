@@ -13,8 +13,6 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 If not, see <https://www.gnu.org/licenses/>. */
 
-// OUTDATED!!!
-
 #include "Level.hpp"
 
 #include <gtest/gtest.h>
@@ -48,65 +46,77 @@ testing::AssertionResult hasSingleRoom(Level& level, sf::IntRect room) {
     return testing::AssertionSuccess();
 }
 
-TEST(LevelTest, generateShape) {
+TEST(LevelTest, generateBlankShape) {
     sf::Vector2i shape{10, 7};
-    sf::IntRect room{2, 1, 6, 5};
 
-    Level level;
-    level.generate(shape, room);
+    RandomEngine randomEngine;
+    Level level{randomEngine};
+    level.generateBlank(shape);
 
-    EXPECT_EQ(shape, level.shape());
+    EXPECT_EQ(level.shape(), shape);
+}
+
+TEST(LevelTest, generateBlank) {
+    RandomEngine randomEngine;
+    Level level{randomEngine};
+    level.generateBlank({10, 7});
+
+    for (int x = 0; x < level.shape().x; ++ x)
+        for (int y = 0; y < level.shape().y; ++ y)
+            EXPECT_EQ(level.at(x, y), Level::Tile::UNSEEN);
 }
 
 TEST(LevelTest, generateRoom) {
-    sf::Vector2i shape{10, 7};
-    sf::IntRect room{2, 1, 6, 5};
-    sf::IntRect roomFloor{3, 2, 4, 3};
+    RandomEngine randomEngine;
+    Level level{randomEngine};
+    level.generateBlank({10, 7});
 
-    Level level;
-    level.generate(shape, room);
+    sf::IntRect room{2, 1, 6, 5};
+    level.generateRoom(room);
 
     EXPECT_TRUE(hasSingleRoom(level, room));
 }
 
 TEST(LevelTest, generateRoomNearEdge) {
-    sf::Vector2i shape{8, 7};
-    sf::IntRect room{0, 1, 7, 5};
-    sf::IntRect roomFloor{1, 2, 5, 3};
+    RandomEngine randomEngine;
+    Level level{randomEngine};
+    level.generateBlank({8, 7});
 
-    Level level;
-    level.generate(shape, room);
+    sf::IntRect room{0, 1, 7, 5};
+    level.generateRoom(room);
 
     EXPECT_TRUE(hasSingleRoom(level, room));
 }
 
 TEST(LevelTest, generateRoom3x3) {
-    sf::Vector2i shape{7, 7};
-    sf::IntRect room{2, 1, 3, 3};
-    sf::IntRect roomFloor{3, 2, 1, 1};
+    RandomEngine randomEngine;
+    Level level{randomEngine};
+    level.generateBlank({7, 7});
 
-    Level level;
-    level.generate(shape, room);
+    sf::IntRect room{2, 1, 3, 3};
+    level.generateRoom(room);
 
     EXPECT_TRUE(hasSingleRoom(level, room));
 }
 
 TEST(LevelTest, generateRoom2x2) {
-    sf::Vector2i shape{7, 7};
-    sf::IntRect room{2, 1, 2, 2};
+    RandomEngine randomEngine;
+    Level level{randomEngine};
+    level.generateBlank({7, 7});
 
-    Level level;
-    level.generate(shape, room);
+    sf::IntRect room{2, 1, 2, 2};
+    level.generateRoom(room);
 
     EXPECT_TRUE(hasSingleRoom(level, room));
 }
 
 TEST(LevelTest, generateRoom1x1) {
-    sf::Vector2i shape{7, 7};
-    sf::IntRect room{2, 1, 1, 1};
+    RandomEngine randomEngine;
+    Level level{randomEngine};
+    level.generateBlank({7, 7});
 
-    Level level;
-    level.generate(shape, room);
+    sf::IntRect room{2, 1, 1, 1};
+    level.generateRoom(room);
 
     EXPECT_TRUE(hasSingleRoom(level, room));
 }
