@@ -15,18 +15,18 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "RandomRoomGenerator.hpp"
 
-void RandomRoomGenerator::operator() (sf::IntRect room) {
+void RandomRoomGenerator::operator() (Area area) {
     const int minSize = 5;
 
     int width  = std::uniform_int_distribution
-        {minSize, room.width }(*randomEngine);
+        {minSize, area.width() }(*randomEngine);
     int height = std::uniform_int_distribution
-        {minSize, room.height}(*randomEngine);
+        {minSize, area.height()}(*randomEngine);
     
     int left = std::uniform_int_distribution
-        {room.left, room.left + room.width  -  width}(*randomEngine);
+        {area.left(), area.right()  -  width}(*randomEngine);
     int top  = std::uniform_int_distribution
-        {room.top , room.top  + room.height - height}(*randomEngine);
+        {area.top(),  area.bottom() - height}(*randomEngine);
     
-    generator({left, top, width, height});
+    generator(Area{{left, top, width, height}});
 }

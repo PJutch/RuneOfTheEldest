@@ -22,17 +22,17 @@ BasicDungeonGenerator::BasicDungeonGenerator(
     randomEngine{&randomEngine_} {}
 
 void BasicDungeonGenerator::operator() () {
-    areas.push(startRect_);
+    areas.emplace(startRect_);
     while (!areas.empty()) {
-        sf::IntRect area = areas.front();
+        Area area = std::move(areas.front());
         areas.pop();
 
-        processArea(area);
+        processArea(std::move(area));
     }
 }
 
-void BasicDungeonGenerator::processArea(sf::IntRect area) {
-    if (!canSplit(area.width) && !canSplit(area.height)) {
+void BasicDungeonGenerator::processArea(Area area) {
+    if (!canSplit(area.width()) && !canSplit(area.height())) {
         (*roomGenerator)(area);
         return;
     }
@@ -42,12 +42,12 @@ void BasicDungeonGenerator::processArea(sf::IntRect area) {
         return;
     }
         
-    if (!canSplit(area.width)) {
+    if (!canSplit(area.width())) {
         splitY(area);
         return;
     }
 
-    if (!canSplit(area.height)) {
+    if (!canSplit(area.height())) {
         splitX(area);
         return;
     }
@@ -58,22 +58,20 @@ void BasicDungeonGenerator::processArea(sf::IntRect area) {
         splitY(area);       
 }
 
-void BasicDungeonGenerator::splitX(sf::IntRect area) {
-    int width1 = std::uniform_int_distribution
-        {minSize_, area.width - minSize_}(*randomEngine);
-    areas.emplace(area.left, area.top, width1, area.height);
+void BasicDungeonGenerator::splitX(Area area) {
+    int boundary = std::uniform_int_distribution
+        {area.left() + minSize_, area.right() - minSize_}(*randomEngine);
 
-    int left2 = area.left + width1;
-    int width2 = area.width - width1;
-    areas.emplace(left2, area.top, width2, area.height);
+    auto [area1, area2] = area.splitX(boundary);
+    areas.push(area1);
+    areas.push(area2);
 }
 
-void BasicDungeonGenerator::splitY(sf::IntRect area) {
-    int height1 = std::uniform_int_distribution
-        {minSize_, area.height - minSize_}(*randomEngine);
-    areas.emplace(area.left, area.top, area.width, height1);
+void BasicDungeonGenerator::splitY(Area area) {
+    int boundary = std::uniform_int_distribution
+        {area.top() + minSize_, area.bottom() - minSize_}(*randomEngine);
 
-    int top2 = area.top + height1;
-    int height2 = area.height - height1;
-    areas.emplace(area.left, top2, area.width, height2);
+    auto [area1, area2] = area.splitY(boundary);
+    areas.push(area1);
+    areas.push(area2);
 }

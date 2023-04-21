@@ -17,6 +17,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define BASIC_DUNGEON_GENERATOR_HPP_
 
 #include "RoomGenerator.hpp"
+#include "Area.hpp"
 
 #include "random.hpp"
 
@@ -50,18 +51,18 @@ private:
     double splitChance_;
     sf::IntRect startRect_;
 
-    std::queue<sf::IntRect> areas;
+    std::queue<Area> areas;
 
     RandomEngine* randomEngine;
 
-    void processArea(sf::IntRect area);
+    void processArea(Area area);
 
     bool canSplit(int dimension) const noexcept {
         return dimension > 2 * minSize_;
     }
 
-    void splitX(sf::IntRect area);
-    void splitY(sf::IntRect area);
+    void splitX(Area area);
+    void splitY(Area area);
 };
 
 #endif

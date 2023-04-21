@@ -27,7 +27,7 @@ public:
     BasicRoomGenerator(std::weak_ptr<Level> level_) : 
         level{std::move(level_)} {}
 
-    void operator() (sf::IntRect room) final;
+    void operator() (Area area) final;
 private:
     std::weak_ptr<Level> level;
 };

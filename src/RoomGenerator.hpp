@@ -16,13 +16,15 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef ROOM_GENERATOR_HPP_
 #define ROOM_GENERATOR_HPP_
 
+#include "Area.hpp"
+
 #include <SFML/Graphics.hpp>
 
 class RoomGenerator {
 public:
     virtual ~RoomGenerator() = default;
 
-    virtual void operator() (sf::IntRect room) = 0;
+    virtual void operator() (Area area) = 0;
 };
 
 #endif

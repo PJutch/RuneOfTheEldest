@@ -15,20 +15,20 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "BasicRoomGenerator.hpp"
 
-void BasicRoomGenerator::operator() (sf::IntRect room) {
+void BasicRoomGenerator::operator() (Area area) {
     std::shared_ptr<Level> level_ = level.lock();
 
-    for (int x = room.left - 1; x < room.left + room.width; ++ x) {
-        level_->at(x, room.top - 1) = Level::Tile::WALL;
-        level_->at(x, room.top + room.height - 1) = Level::Tile::WALL;
+    for (int x = area.left() - 1; x < area.right(); ++ x) {
+        level_->at(x, area.top() - 1) = Level::Tile::WALL;
+        level_->at(x, area.bottom() - 1) = Level::Tile::WALL;
     }
 
-    for (int y = room.top - 1; y < room.top + room.height; ++ y) {
-        level_->at(room.left - 1, y) = Level::Tile::WALL;
-        level_->at(room.left + room.width - 1, y) = Level::Tile::WALL;
+    for (int y = area.top() - 1; y < area.bottom(); ++ y) {
+        level_->at(area.left() - 1, y) = Level::Tile::WALL;
+        level_->at(area.right() - 1, y) = Level::Tile::WALL;
     }
 
-    for (int x = room.left; x < room.left + room.width - 1; ++ x)
-        for (int y = room.top; y < room.top + room.height - 1; ++ y)
+    for (int x = area.left(); x < area.right() - 1; ++ x)
+        for (int y = area.top(); y < area.bottom() - 1; ++ y)
             level_->at(x, y) = Level::Tile::EMPTY;
 }

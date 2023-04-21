@@ -31,7 +31,7 @@ public:
                         RandomEngine& randomEngine_) : 
         generator{std::move(level)}, randomEngine{&randomEngine_} {}
 
-    void operator() (sf::IntRect room) final;
+    void operator() (Area room) final;
 private:
     BasicRoomGenerator generator;
     RandomEngine* randomEngine;
