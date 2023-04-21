@@ -14,6 +14,7 @@ You should have received a copy of the GNU General Public License along with the
 If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Game.hpp"
+#include "RandomRoomGenerator.hpp"
 
 #include "log.hpp"
 #include "Exception.hpp"

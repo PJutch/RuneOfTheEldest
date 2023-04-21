@@ -13,16 +13,22 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef ROOM_GENERATOR_HPP_
-#define ROOM_GENERATOR_HPP_
+#include "BasicRoomGenerator.hpp"
 
-#include <SFML/Graphics.hpp>
+void BasicRoomGenerator::operator() (sf::IntRect room) {
+    std::shared_ptr<Level> level_ = level.lock();
 
-class RoomGenerator {
-public:
-    virtual ~RoomGenerator() = default;
+    for (int x = room.left - 1; x < room.left + room.width; ++ x) {
+        level_->at(x, room.top - 1) = Level::Tile::WALL;
+        level_->at(x, room.top + room.height - 1) = Level::Tile::WALL;
+    }
 
-    virtual void operator() (sf::IntRect room) = 0;
-};
+    for (int y = room.top - 1; y < room.top + room.height; ++ y) {
+        level_->at(room.left - 1, y) = Level::Tile::WALL;
+        level_->at(room.left + room.width - 1, y) = Level::Tile::WALL;
+    }
 
-#endif
+    for (int x = room.left; x < room.left + room.width - 1; ++ x)
+        for (int y = room.top; y < room.top + room.height - 1; ++ y)
+            level_->at(x, y) = Level::Tile::EMPTY;
+}

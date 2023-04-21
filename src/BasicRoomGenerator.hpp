@@ -13,16 +13,23 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef ROOM_GENERATOR_HPP_
-#define ROOM_GENERATOR_HPP_
+#ifndef BASIC_ROOM_GENERATOR_HPP_
+#define BASIC_ROOM_GENERATOR_HPP_
 
-#include <SFML/Graphics.hpp>
+#include "RoomGenerator.hpp"
 
-class RoomGenerator {
+#include "Level.hpp"
+
+#include <memory>
+
+class BasicRoomGenerator : public RoomGenerator {
 public:
-    virtual ~RoomGenerator() = default;
+    BasicRoomGenerator(std::weak_ptr<Level> level_) : 
+        level{std::move(level_)} {}
 
-    virtual void operator() (sf::IntRect room) = 0;
+    void operator() (sf::IntRect room) final;
+private:
+    std::weak_ptr<Level> level;
 };
 
 #endif
