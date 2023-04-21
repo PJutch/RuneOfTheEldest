@@ -41,3 +41,19 @@ void Level::generateRoom(sf::IntRect room) {
         for (int y = room.top + 1; y < room.top + room.height - 1; ++ y)
             at(x, y) = Tile::EMPTY;
 }
+
+void Level::generateRandomRoomIn(sf::IntRect area) {
+    const int minSize = 5;
+
+    int width  = std::uniform_int_distribution
+        {minSize, area.width }(*randomEngine);
+    int height = std::uniform_int_distribution
+        {minSize, area.height}(*randomEngine);
+    
+    int left = std::uniform_int_distribution
+        {area.left, area.left + area.width  -  width}(*randomEngine);
+    int top  = std::uniform_int_distribution
+        {area.top , area.top  + area.height - height}(*randomEngine);
+    
+    generateRoom({left, top, width, height});
+}

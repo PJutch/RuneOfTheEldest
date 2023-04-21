@@ -57,6 +57,7 @@ public:
 
     void generateBlank(sf::Vector2i shape);
     void generateRoom(sf::IntRect room);
+    void generateRandomRoomIn(sf::IntRect area);
 private:
     sf::Vector2i shape_;
     std::vector<Tile> tiles;

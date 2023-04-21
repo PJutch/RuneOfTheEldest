@@ -21,7 +21,7 @@ DungeonGenerator::DungeonGenerator(
     std::weak_ptr<Level> level_, RandomEngine& randomEngine) : 
         level(std::move(level_)), 
         generator{[level = level](sf::IntRect area){
-            level.lock()->generateRoom(extendTopLeft(area, {1, 1}));
+            level.lock()->generateRandomRoomIn(extendTopLeft(area, {1, 1}));
         }, randomEngine} {
     generator.minSize(5);
     generator.splitChance(0.9);
