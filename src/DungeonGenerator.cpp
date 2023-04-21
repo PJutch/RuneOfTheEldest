@@ -15,22 +15,19 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "DungeonGenerator.hpp"
 
+#include "geometry.hpp"
+
 DungeonGenerator::DungeonGenerator(
     std::weak_ptr<Level> level_, RandomEngine& randomEngine) : 
         level(std::move(level_)), 
         generator{[level = level](sf::IntRect area){
-            sf::IntRect room{area.left - 1,  area.top - 1, 
-                             area.width + 1, area.height + 1};
-            level.lock()->generateRoom(room);
+            level.lock()->generateRoom(extendTopLeft(area, {1, 1}));
         }, randomEngine} {
     generator.minSize(5);
     generator.splitChance(0.9);
 }
 
 void DungeonGenerator::operator() () {
-    sf::IntRect bounds = level.lock()->bounds();
-    sf::IntRect startRect{bounds.left + 1, bounds.top + 1, 
-                          bounds.width - 1, bounds.height - 1};
-    generator.startRect(startRect);
+    generator.startRect(shrinkTopLeft(level.lock()->bounds(), {1, 1}));
     generator();
 }

@@ -16,6 +16,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef GEOMETRY_HPP_
 #define GEOMETRY_HPP_
 
+#include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 
 template <typename T, typename U>
@@ -41,6 +42,34 @@ sf::Vector2<T> addY(sf::Vector2<T> vec, T deltaY) noexcept {
 template <typename T>
 sf::Vector2<T> subY(sf::Vector2<T> vec, T deltaY) noexcept {
     return {vec.x, vec.y - deltaY};
+}
+
+template <typename T>
+sf::Rect<T> extendTopLeft(sf::Rect<T> rect, 
+                          sf::Vector2<T> extension) noexcept {
+    return {rect.left  - extension.x, rect.top    - extension.y, 
+            rect.width + extension.x, rect.height + extension.y};
+}
+
+template <typename T>
+sf::Rect<T> extendBottomRight(sf::Rect<T> rect, 
+                              sf::Vector2<T> extension) noexcept {
+    return {rect.left, rect.top, 
+            rect.width + extension.x, rect.height + extension.y};
+}
+
+template <typename T>
+sf::Rect<T> shrinkTopLeft(sf::Rect<T> rect, 
+                          sf::Vector2<T> shrink) noexcept {
+    return {rect.left  + shrink.x, rect.top    + shrink.y, 
+            rect.width - shrink.x, rect.height - shrink.y};
+}
+
+template <typename T>
+sf::Rect<T> shrinkBottomRight(sf::Rect<T> rect, 
+                              sf::Vector2<T> shrink) noexcept {
+    return {rect.left, rect.top, 
+            rect.width - shrink.x, rect.height - shrink.y};
 }
 
 #endif

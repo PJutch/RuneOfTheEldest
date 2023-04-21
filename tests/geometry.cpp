@@ -44,3 +44,31 @@ TEST(geometryTest, subY) {
     sf::Vector2i result{5, -4};
     EXPECT_EQ(subY(vec, dy), result);
 }
+
+TEST(geometryTest, extendTopLeft) {
+    sf::IntRect rect{7, 4, 3, 2};
+    sf::Vector2i extension{4, 2};
+    sf::IntRect result{3, 2, 7, 4};
+    EXPECT_EQ(extendTopLeft(rect, extension), result);
+}
+
+TEST(geometryTest, extendBottomRight) {
+    sf::IntRect rect{7, 4, 3, 2};
+    sf::Vector2i extension{4, 2};
+    sf::IntRect result{7, 4, 7, 4};
+    EXPECT_EQ(extendBottomRight(rect, extension), result);
+}
+
+TEST(geometryTest, shrinkTopLeft) {
+    sf::IntRect result{7, 4, 3, 2};
+    sf::IntRect rect{3, 2, 7, 4};
+    sf::Vector2i shrink{4, 2};
+    EXPECT_EQ(shrinkTopLeft(rect, shrink), result);
+}
+
+TEST(geometryTest, shrinkBottomRight) {
+    sf::IntRect rect{7, 4, 7, 4};
+    sf::IntRect result{7, 4, 3, 2};
+    sf::Vector2i shrink{4, 2};
+    EXPECT_EQ(shrinkBottomRight(rect, shrink), result);
+}
