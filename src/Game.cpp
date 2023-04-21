@@ -2,11 +2,13 @@
 
 Game::Game(std::shared_ptr<sf::RenderWindow> window_, 
            std::shared_ptr<Level> level_, 
-           std::unique_ptr<Renderer> renderer_) : 
+           std::unique_ptr<Renderer> renderer_,
+           DungeonGenerator dungeonGenerator) : 
         window{std::move(window_)}, 
         level{std::move(level_)}, 
         renderer{std::move(renderer_)} {
-    level->generate({50, 50}, {10, 10, 30, 30});
+    level->generateBlank({50, 50});
+    dungeonGenerator();
 } 
 
 bool wasKeyPressed(sf::Event event, sf::Keyboard::Key key) noexcept {

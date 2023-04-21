@@ -15,17 +15,14 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "DungeonGenerator.hpp"
 
-DungeonGenerator::DungeonGenerator(
-    std::function<void(sf::IntRect)> generateRoom_,
-    int minSize_, double splitChance_, sf::IntRect startRect,
-    RandomEngine& randomEngine_) :
-        generateRoom{std::move(generateRoom_)}, 
-        minSize{minSize_}, splitChance{splitChance_},
-        randomEngine{&randomEngine_} {
-    areas.push(startRect);
-}
+BasicDungeonGenerator::BasicDungeonGenerator(
+        std::function<void(sf::IntRect)> generateRoom_,
+        RandomEngine& randomEngine_) :
+    generateRoom{std::move(generateRoom_)},
+    randomEngine{&randomEngine_} {}
 
-void DungeonGenerator::operator() () {
+void BasicDungeonGenerator::operator() () {
+    areas.push(startRect_);
     while (!areas.empty()) {
         sf::IntRect area = areas.front();
         areas.pop();
@@ -34,13 +31,13 @@ void DungeonGenerator::operator() () {
     }
 }
 
-void DungeonGenerator::processArea(sf::IntRect area) {
+void BasicDungeonGenerator::processArea(sf::IntRect area) {
     if (!canSplit(area.width) && !canSplit(area.height)) {
         generateRoom(area);
         return;
     }
 
-    if (std::uniform_real_distribution{}(*randomEngine) > splitChance) {
+    if (std::uniform_real_distribution{}(*randomEngine) > splitChance_) {
         generateRoom(area);
         return;
     }
@@ -61,9 +58,9 @@ void DungeonGenerator::processArea(sf::IntRect area) {
         splitY(area);       
 }
 
-void DungeonGenerator::splitX(sf::IntRect area) {
+void BasicDungeonGenerator::splitX(sf::IntRect area) {
     int width1 = std::uniform_int_distribution
-        {minSize, area.width - minSize}(*randomEngine);
+        {minSize_, area.width - minSize_}(*randomEngine);
     areas.emplace(area.left, area.top, width1, area.height);
 
     int left2 = area.left + width1;
@@ -71,9 +68,9 @@ void DungeonGenerator::splitX(sf::IntRect area) {
     areas.emplace(left2, area.top, width2, area.height);
 }
 
-void DungeonGenerator::splitY(sf::IntRect area) {
+void BasicDungeonGenerator::splitY(sf::IntRect area) {
     int height1 = std::uniform_int_distribution
-        {minSize, area.height - minSize}(*randomEngine);
+        {minSize_, area.height - minSize_}(*randomEngine);
     areas.emplace(area.left, area.top, area.width, height1);
 
     int top2 = area.top + height1;

@@ -19,14 +19,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <queue>
 
-void Level::generate(sf::Vector2i newShape, sf::IntRect room) {
-    generateBlank(newShape);
-    
-    DungeonGenerator{[this](sf::IntRect room) {
-        generateRoom(room);
-    }, 5, 0.9, {0, 0, shape().x, shape().y}, *randomEngine}();
-}
-
 void Level::generateBlank(sf::Vector2i newShape) {
     shape_ = newShape;
 

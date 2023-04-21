@@ -18,6 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Level.hpp"
 #include "Renderer.hpp"
+#include "DungeonGenerator.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
@@ -29,7 +30,8 @@ class Game {
 public:
     Game(std::shared_ptr<sf::RenderWindow> window, 
          std::shared_ptr<Level> level, 
-         std::unique_ptr<Renderer> renderer);
+         std::unique_ptr<Renderer> renderer,
+         DungeonGenerator dungeonGenerator);
 
     void run();
 private:

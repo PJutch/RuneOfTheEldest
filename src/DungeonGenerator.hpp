@@ -16,38 +16,31 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef DUNGEON_GENERATOR_HPP_
 #define DUNGEON_GENERATOR_HPP_
 
-#include "random.hpp"
+#include "BasicDungeonGenerator.hpp"
 
-#include <SFML/Graphics.hpp>
+#include "Level.hpp"
 
-#include <queue>
-#include <functional>
+#include <memory>
 
 class DungeonGenerator {
 public:
-    DungeonGenerator(std::function<void(sf::IntRect)> generateRoom_,
-        int minSize_, double splitChance_, sf::IntRect startRect,
-        RandomEngine& randomEngine_);
-
-    void operator() ();
-private:
-    std::function<void(sf::IntRect)> generateRoom;
-
-    int minSize;
-    double splitChance;
-
-    std::queue<sf::IntRect> areas;
-
-    RandomEngine* randomEngine;
-
-    void processArea(sf::IntRect area);
-
-    bool canSplit(int dimension) const noexcept {
-        return dimension > 2 * minSize;
+    DungeonGenerator(std::weak_ptr<Level> level_, RandomEngine& randomEngine) : 
+            level(std::move(level_)), 
+            generator{[level = level](sf::IntRect area){
+                level.lock()->generateRoom(area);
+            }, randomEngine} {
+        generator.minSize(5);
+        generator.splitChance(0.9);
     }
 
-    void splitX(sf::IntRect area);
-    void splitY(sf::IntRect area);
+    void operator() () {
+        generator.startRect(level.lock()->bounds());
+        generator();
+    }
+private:
+    std::weak_ptr<Level> level;
+
+    BasicDungeonGenerator generator;
 };
 
 #endif

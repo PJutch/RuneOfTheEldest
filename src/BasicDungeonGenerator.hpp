@@ -13,55 +13,53 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef LEVEL_HPP_
-#define LEVEL_HPP_
+#ifndef BASIC_DUNGEON_GENERATOR_HPP_
+#define BASIC_DUNGEON_GENERATOR_HPP_
 
 #include "random.hpp"
 
 #include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
-#include <SFML/System.hpp>
 
-#include <vector>
+#include <queue>
+#include <functional>
 
-class Level{
+class BasicDungeonGenerator {
 public:
-    Level(RandomEngine& randomEngine_) : randomEngine{&randomEngine_} {}
+    BasicDungeonGenerator(std::function<void(sf::IntRect)> generateRoom,
+        RandomEngine& randomEngine);
 
-    enum class Tile {
-        EMPTY,
-        WALL,
-        UNSEEN,
-        TOTAL_
-    };
-
-    const static int totalTiles = static_cast<int>(Tile::TOTAL_);
-
-    // unsafe
-    Tile& at(int x, int y) noexcept {
-        return tiles[x * shape().y + y];
+    void minSize(int newMinSize) noexcept {
+        minSize_ = newMinSize;
     }
 
-    // unsafe
-    const Tile& at(int x, int y) const noexcept {
-        return tiles[x * shape().y + y];
+    void splitChance(double newSplitChance) noexcept {
+        splitChance_ = newSplitChance;
     }
 
-    sf::Vector2i shape() const noexcept {
-        return shape_;
+    void startRect(sf::IntRect newStartRect) noexcept {
+        startRect_ = newStartRect;
     }
 
-    sf::IntRect bounds() const noexcept {
-        return {{0, 0}, shape()};
-    }
-
-    void generateBlank(sf::Vector2i shape);
-    void generateRoom(sf::IntRect room);
+    void operator() ();
 private:
-    sf::Vector2i shape_;
-    std::vector<Tile> tiles;
+    std::function<void(sf::IntRect)> generateRoom;
+
+    int minSize_;
+    double splitChance_;
+    sf::IntRect startRect_;
+
+    std::queue<sf::IntRect> areas;
 
     RandomEngine* randomEngine;
+
+    void processArea(sf::IntRect area);
+
+    bool canSplit(int dimension) const noexcept {
+        return dimension > 2 * minSize_;
+    }
+
+    void splitX(sf::IntRect area);
+    void splitY(sf::IntRect area);
 };
 
 #endif
