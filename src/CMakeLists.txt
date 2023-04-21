@@ -16,6 +16,7 @@
 add_library(sources)
 
 target_sources(sources PRIVATE Game.cpp Level.cpp Renderer.cpp)
-target_sources(sources PRIVATE BasicDungeonGenerator.cpp DungeonGenerator.cpp)
+target_sources(sources PRIVATE BasicDungeonGenerator.cpp DungeonGenerator.cpp 
+                               RoomGenerator.cpp)
 
 target_link_libraries(sources PUBLIC dependencies)

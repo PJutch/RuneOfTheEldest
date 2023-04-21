@@ -13,47 +13,44 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef LEVEL_HPP_
-#define LEVEL_HPP_
+#ifndef ROOM_GENERATOR_HPP_
+#define ROOM_GENERATOR_HPP_
+
+#include "Level.hpp"
+
+#include "random.hpp"
 
 #include <SFML/Graphics.hpp>
-#include <SFML/System.hpp>
 
-#include <vector>
+#include <memory>
 
-class Level{
+class RoomGenerator {
 public:
-    enum class Tile {
-        EMPTY,
-        WALL,
-        UNSEEN,
-        TOTAL_
-    };
+    virtual ~RoomGenerator() = default;
 
-    const static int totalTiles = static_cast<int>(Tile::TOTAL_);
+    virtual void operator() (sf::IntRect room) = 0;
+};
 
-    // unsafe
-    Tile& at(int x, int y) noexcept {
-        return tiles[x * shape().y + y];
-    }
+class BasicRoomGenerator : public RoomGenerator {
+public:
+    BasicRoomGenerator(std::weak_ptr<Level> level_) : 
+        level{std::move(level_)} {}
 
-    // unsafe
-    const Tile& at(int x, int y) const noexcept {
-        return tiles[x * shape().y + y];
-    }
-
-    sf::Vector2i shape() const noexcept {
-        return shape_;
-    }
-
-    sf::IntRect bounds() const noexcept {
-        return {{0, 0}, shape()};
-    }
-
-    void generateBlank(sf::Vector2i shape);
+    void operator() (sf::IntRect room) final;
 private:
-    sf::Vector2i shape_;
-    std::vector<Tile> tiles;
+    std::weak_ptr<Level> level;
+};
+
+class RandomRoomGenerator : public RoomGenerator {
+public:
+    RandomRoomGenerator(std::weak_ptr<Level> level, 
+                        RandomEngine& randomEngine_) : 
+        generator{std::move(level)}, randomEngine{&randomEngine_} {}
+
+    void operator() (sf::IntRect room) final;
+private:
+    BasicRoomGenerator generator;
+    RandomEngine* randomEngine;
 };
 
 #endif

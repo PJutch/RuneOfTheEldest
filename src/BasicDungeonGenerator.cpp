@@ -16,9 +16,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "DungeonGenerator.hpp"
 
 BasicDungeonGenerator::BasicDungeonGenerator(
-        std::function<void(sf::IntRect)> generateRoom_,
+        std::unique_ptr<RoomGenerator> roomGenerator_,
         RandomEngine& randomEngine_) :
-    generateRoom{std::move(generateRoom_)},
+    roomGenerator{std::move(roomGenerator_)},
     randomEngine{&randomEngine_} {}
 
 void BasicDungeonGenerator::operator() () {
@@ -33,12 +33,12 @@ void BasicDungeonGenerator::operator() () {
 
 void BasicDungeonGenerator::processArea(sf::IntRect area) {
     if (!canSplit(area.width) && !canSplit(area.height)) {
-        generateRoom(area);
+        (*roomGenerator)(area);
         return;
     }
 
     if (std::uniform_real_distribution{}(*randomEngine) > splitChance_) {
-        generateRoom(area);
+        (*roomGenerator)(area);
         return;
     }
         

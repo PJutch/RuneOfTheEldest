@@ -17,12 +17,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "geometry.hpp"
 
-DungeonGenerator::DungeonGenerator(
+DungeonGenerator::DungeonGenerator(std::unique_ptr<RoomGenerator> roomGenerator,
     std::weak_ptr<Level> level_, RandomEngine& randomEngine) : 
         level(std::move(level_)), 
-        generator{[level = level](sf::IntRect area){
-            level.lock()->generateRandomRoomIn(extendTopLeft(area, {1, 1}));
-        }, randomEngine} {
+        generator{std::move(roomGenerator), randomEngine} {
     generator.minSize(5);
     generator.splitChance(0.9);
 }

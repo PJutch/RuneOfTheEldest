@@ -18,13 +18,15 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "BasicDungeonGenerator.hpp"
 
+#include "RoomGenerator.hpp"
 #include "Level.hpp"
 
 #include <memory>
 
 class DungeonGenerator {
 public:
-    DungeonGenerator(std::weak_ptr<Level> level_, RandomEngine& randomEngine);
+    DungeonGenerator(std::unique_ptr<RoomGenerator> roomGenerator,
+                     std::weak_ptr<Level> level_, RandomEngine& randomEngine);
 
     void operator() ();
 private:

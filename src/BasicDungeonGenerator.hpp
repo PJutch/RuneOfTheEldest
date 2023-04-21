@@ -16,6 +16,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef BASIC_DUNGEON_GENERATOR_HPP_
 #define BASIC_DUNGEON_GENERATOR_HPP_
 
+#include "RoomGenerator.hpp"
+
 #include "random.hpp"
 
 #include <SFML/Graphics.hpp>
@@ -25,7 +27,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 class BasicDungeonGenerator {
 public:
-    BasicDungeonGenerator(std::function<void(sf::IntRect)> generateRoom,
+    BasicDungeonGenerator(std::unique_ptr<RoomGenerator> roomGenerator,
         RandomEngine& randomEngine);
 
     void minSize(int newMinSize) noexcept {
@@ -42,8 +44,8 @@ public:
 
     void operator() ();
 private:
-    std::function<void(sf::IntRect)> generateRoom;
-
+    std::unique_ptr<RoomGenerator> roomGenerator;
+    
     int minSize_;
     double splitChance_;
     sf::IntRect startRect_;

@@ -15,45 +15,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Level.hpp"
 
-#include "DungeonGenerator.hpp"
-
-#include <queue>
-
 void Level::generateBlank(sf::Vector2i newShape) {
     shape_ = newShape;
 
     tiles.clear();
     tiles.resize(shape().x * shape().y, Tile::UNSEEN);
-}
-
-void Level::generateRoom(sf::IntRect room) {
-    for (int x = room.left; x < room.left + room.width; ++ x) {
-        at(x, room.top) = Tile::WALL;
-        at(x, room.top + room.height - 1) = Tile::WALL;
-    }
-
-    for (int y = room.top; y < room.top + room.height; ++ y) {
-        at(room.left, y) = Tile::WALL;
-        at(room.left + room.width - 1, y) = Tile::WALL;
-    }
-
-    for (int x = room.left + 1; x < room.left + room.width - 1; ++ x)
-        for (int y = room.top + 1; y < room.top + room.height - 1; ++ y)
-            at(x, y) = Tile::EMPTY;
-}
-
-void Level::generateRandomRoomIn(sf::IntRect area) {
-    const int minSize = 5;
-
-    int width  = std::uniform_int_distribution
-        {minSize, area.width }(*randomEngine);
-    int height = std::uniform_int_distribution
-        {minSize, area.height}(*randomEngine);
-    
-    int left = std::uniform_int_distribution
-        {area.left, area.left + area.width  -  width}(*randomEngine);
-    int top  = std::uniform_int_distribution
-        {area.top , area.top  + area.height - height}(*randomEngine);
-    
-    generateRoom({left, top, width, height});
 }
