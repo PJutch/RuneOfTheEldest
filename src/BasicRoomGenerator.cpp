@@ -17,17 +17,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 void BasicRoomGenerator::operator() (Area area) {
     std::shared_ptr<Level> level_ = level.lock();
-
-    for (int x = area.left() - 1; x < area.right(); ++ x) {
-        level_->at(x, area.top() - 1) = Level::Tile::WALL;
-        level_->at(x, area.bottom() - 1) = Level::Tile::WALL;
-    }
-
-    for (int y = area.top() - 1; y < area.bottom(); ++ y) {
-        level_->at(area.left() - 1, y) = Level::Tile::WALL;
-        level_->at(area.right() - 1, y) = Level::Tile::WALL;
-    }
-
+    
     for (int x = area.left(); x < area.right() - 1; ++ x)
         for (int y = area.top(); y < area.bottom() - 1; ++ y)
             level_->at(x, y) = Level::Tile::EMPTY;
