@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 # If not, see <https://www.gnu.org/licenses/>.
 
-target_sources(tests PRIVATE Level.cpp geometry.cpp BasicRoomGenerator.cpp)
+target_sources(tests PRIVATE Level.cpp geometry.cpp 
+                             BasicRoomGenerator.cpp Area.cpp)
 target_link_libraries(tests test_dependencies sources)
 target_include_directories(tests PRIVATE ../src)
