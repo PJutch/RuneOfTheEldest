@@ -54,3 +54,75 @@ TEST(Area, splitY) {
     EXPECT_EQ(area2.width(), 5);
     EXPECT_EQ(area2.height(), 2);
 }
+
+TEST(Area, splitXHorizontalPassages) {
+    Area area{{1, 2, 5, 3}};
+    area.addLeftPassage(3);
+    area.addRightPassage(4);
+
+    auto [left, right] = area.splitX(3);
+
+    EXPECT_EQ(left.leftPassages().size(), 1);
+    EXPECT_EQ(left.leftPassages()[0], 3);
+    EXPECT_EQ(right.leftPassages().size(), 0);
+
+    EXPECT_EQ(left.rightPassages().size(), 0);
+    EXPECT_EQ(right.rightPassages().size(), 1);
+    EXPECT_EQ(right.rightPassages()[0], 4);
+}
+
+TEST(Area, splitXVerticalPassages) {
+    Area area{{1, 2, 5, 3}};
+    area.addTopPassage(2);
+    area.addTopPassage(5);
+    area.addBottomPassage(2);
+    area.addBottomPassage(4);
+
+    auto [left, right] = area.splitX(3);
+
+    EXPECT_EQ(left.topPassages().size(), 1);
+    EXPECT_EQ(left.topPassages()[0], 2);
+    EXPECT_EQ(right.topPassages().size(), 1);
+    EXPECT_EQ(right.topPassages()[0], 5);
+
+    EXPECT_EQ(left.bottomPassages().size(), 1);
+    EXPECT_EQ(left.bottomPassages()[0], 2);
+    EXPECT_EQ(right.bottomPassages().size(), 1);
+    EXPECT_EQ(right.bottomPassages()[0], 4);
+}
+
+TEST(Area, splitYHorizontalPassages) {
+    Area area{{1, 2, 5, 3}};
+    area.addLeftPassage(3);
+    area.addLeftPassage(6);
+    area.addRightPassage(4);
+    area.addRightPassage(6);
+
+    auto [top, bottom] = area.splitY(5);
+
+    EXPECT_EQ(top.leftPassages().size(), 1);
+    EXPECT_EQ(top.leftPassages()[0], 3);
+    EXPECT_EQ(bottom.leftPassages().size(), 1);
+    EXPECT_EQ(bottom.leftPassages()[0], 6);
+
+    EXPECT_EQ(top.rightPassages().size(), 1);
+    EXPECT_EQ(top.rightPassages()[0], 4);
+    EXPECT_EQ(bottom.rightPassages().size(), 1);
+    EXPECT_EQ(bottom.rightPassages()[0], 6);
+}
+
+TEST(Area, splitYVerticalPassages) {
+    Area area{{1, 2, 3, 5}};
+    area.addTopPassage(2);
+    area.addBottomPassage(3);
+
+    auto [top, bottom] = area.splitY(5);
+
+    EXPECT_EQ(top.topPassages().size(), 1);
+    EXPECT_EQ(top.topPassages()[0], 2);
+    EXPECT_EQ(bottom.topPassages().size(), 0);
+
+    EXPECT_EQ(top.bottomPassages().size(), 0);
+    EXPECT_EQ(bottom.bottomPassages().size(), 1);
+    EXPECT_EQ(bottom.bottomPassages()[0], 3);
+}

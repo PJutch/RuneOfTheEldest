@@ -20,6 +20,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <SFML/System.hpp>
 
 #include <utility>
+#include <vector>
+#include <span>
 
 class Area {
 public:
@@ -49,17 +51,47 @@ public:
         return area.height;
     }
 
-    std::pair<Area, Area> splitX(int boundary) const noexcept {
-        return {Area{{left(), top(), boundary - left(), area.height}},
-                Area{{boundary, top(), right() - boundary, area.height}}};
+    void addLeftPassage(int x) noexcept {
+        leftPassages_.push_back(x);
     }
 
-    std::pair<Area, Area> splitY(int boundary) const noexcept {
-        return {Area{{left(), top(), area.width, boundary - top()}},
-                Area{{left(), boundary, area.width, bottom() - boundary}}};
+    void addTopPassage(int x) noexcept {
+        topPassages_.push_back(x);
     }
+
+    void addRightPassage(int x) noexcept {
+        rightPassages_.push_back(x);
+    }
+
+    void addBottomPassage(int x) noexcept {
+        bottomPassages_.push_back(x);
+    }
+
+    std::span<const int> leftPassages() const noexcept {
+        return leftPassages_;
+    }
+
+    std::span<const int> topPassages() const noexcept {
+        return topPassages_;
+    }
+
+    std::span<const int> rightPassages() const noexcept {
+        return rightPassages_;
+    }
+
+    std::span<const int> bottomPassages() const noexcept {
+        return bottomPassages_;
+    }
+
+    std::pair<Area, Area> splitX(int boundary) const noexcept;
+    std::pair<Area, Area> splitY(int boundary) const noexcept;
 private:
     sf::IntRect area;
+
+    std::vector<int> leftPassages_;
+    std::vector<int> topPassages_;
+    std::vector<int> rightPassages_;
+    std::vector<int> bottomPassages_;
 };
 
 #endif
