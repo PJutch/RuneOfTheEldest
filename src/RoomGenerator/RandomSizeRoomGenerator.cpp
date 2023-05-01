@@ -15,6 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "RandomSizeRoomGenerator.hpp"
 
+#include "../debug.hpp"
+
 Area RandomSizeRoomGenerator::randomRoomIn(const Area& area) {
     const int minSize = 5;
 
@@ -139,13 +141,15 @@ void RandomSizeRoomGenerator::verticalPassageEnd(Area& room, int x, int y) {
 void RandomSizeRoomGenerator::horizontalPassage(int left, int right, int y) {
     auto level_ = level.lock();
     for (int x = left; x < right; ++ x)
-        level_->at(x, y) = Level::Tile::EMPTY;
+        level_->at(x, y) = (debugTiles ? Level::Tile::PASSAGE
+                                       : Level::Tile::EMPTY);
 }
 
 void RandomSizeRoomGenerator::verticalPassage(int top, int bottom, int x) {
     auto level_ = level.lock();
     for (int y = top; y < bottom; ++ y)
-        level_->at(x, y) = Level::Tile::EMPTY;
+        level_->at(x, y) = (debugTiles ? Level::Tile::PASSAGE
+                                       : Level::Tile::EMPTY);
 }
 
 void RandomSizeRoomGenerator::operator() (Area area) {

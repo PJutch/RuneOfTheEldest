@@ -27,6 +27,9 @@ public:
         EMPTY,
         WALL,
         UNSEEN,
+        ROOM,
+        ROOM_ENTRANCE,
+        PASSAGE,
         TOTAL_
     };
 

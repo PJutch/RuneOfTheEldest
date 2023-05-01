@@ -53,6 +53,13 @@ private:
         return tileTextures[static_cast<int>(tile)];
     }
 
+    void fillTexture(sf::Texture& texture, 
+                     sf::Vector2i size, sf::Color color) const noexcept {
+        sf::Image image;
+        image.create(size.x, size.y, color);
+        texture.loadFromImage(image);
+    }
+
     sf::Vector2f cameraPosition() const noexcept {
         return cameraPosition_;
     }

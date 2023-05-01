@@ -13,23 +13,9 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 If not, see <https://www.gnu.org/licenses/>. */
 
-#include "BasicRoomGenerator.hpp"
+#ifndef DEBUG_HPP_
+#define DEBUG_HPP_
 
-#include "../debug.hpp"
+const bool debugTiles = true;
 
-void BasicRoomGenerator::operator() (Area area) {
-    std::shared_ptr<Level> level_ = level.lock();
-    
-    for (int x = area.left(); x < area.right() - 1; ++ x)
-        for (int y = area.top(); y < area.bottom() - 1; ++ y)
-            level_->at(x, y) = (debugTiles ? Level::Tile::ROOM 
-                                           : Level::Tile::EMPTY);
-    
-    for (int y : area.rightPassages())
-        level_->at(area.right() - 1, y) = (debugTiles 
-            ? Level::Tile::ROOM_ENTRANCE : Level::Tile::EMPTY);
-    
-    for (int x : area.bottomPassages())
-        level_->at(x, area.bottom() - 1) = (debugTiles 
-            ? Level::Tile::ROOM_ENTRANCE : Level::Tile::EMPTY);
-}
+#endif

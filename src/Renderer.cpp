@@ -47,6 +47,13 @@ Renderer::Renderer(std::shared_ptr<sf::RenderWindow> window_,
     
     if (!tileTexture(Level::Tile::UNSEEN).loadFromFile("resources/unseen.png"))
         throw TextureLoadError{"Unable to load unseen tile texture"};
+    
+    fillTexture(tileTexture(Level::Tile::ROOM), tileSize, 
+                sf::Color::Red);
+    fillTexture(tileTexture(Level::Tile::ROOM_ENTRANCE), tileSize, 
+                sf::Color::Magenta);
+    fillTexture(tileTexture(Level::Tile::PASSAGE), tileSize, 
+                sf::Color::Blue);
 }
 
 void Renderer::drawLevel() {
