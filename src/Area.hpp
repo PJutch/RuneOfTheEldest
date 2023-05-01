@@ -51,6 +51,10 @@ public:
         return area.height;
     }
 
+    sf::IntRect bounds() const noexcept {
+        return area;
+    }
+
     void addLeftPassage(int x) noexcept {
         leftPassages_.push_back(x);
     }

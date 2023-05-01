@@ -20,6 +20,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <SFML/System.hpp>
 
 #include <vector>
+#include <span>
 
 class Level{
 public:
@@ -55,9 +56,19 @@ public:
 
     void generateBlank(sf::Vector2i shape);
     void generateWalls();
+
+    void addArea(sf::IntRect area) {
+        areas_.push_back(area);
+    }
+
+    std::span<const sf::IntRect> areas() const noexcept {
+        return areas_;
+    }
 private:
     sf::Vector2i shape_;
     std::vector<Tile> tiles;
+
+    std::vector<sf::IntRect> areas_;
 };
 
 #endif

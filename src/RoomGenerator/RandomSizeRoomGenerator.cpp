@@ -153,6 +153,8 @@ void RandomSizeRoomGenerator::verticalPassage(int top, int bottom, int x) {
 }
 
 void RandomSizeRoomGenerator::operator() (Area area) {
+    level.lock()->addArea(area.bounds());
+
     Area room = randomRoomIn(area);
 
     for (int y : area.leftPassages())

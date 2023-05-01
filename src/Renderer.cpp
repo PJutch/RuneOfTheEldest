@@ -58,18 +58,33 @@ Renderer::Renderer(std::shared_ptr<sf::RenderWindow> window_,
 
 void Renderer::drawLevel() {
     window->setView(levelView);
+
     for (int x = 0; x < level->shape().x; ++ x)
         for (int y = 0; y < level->shape().y; ++ y)
             draw(level->at(x, y), {x, y});
+    
+    for (sf::IntRect area : level->areas())
+        drawInWorldRect(area, sf::Color::Transparent, sf::Color::Green, 1.0);
 }
 
 void Renderer::draw(Level::Tile tile, sf::Vector2i position) {
     sf::Sprite tileSprite;
     tileSprite.setTexture(tileTexture(tile));
-    tileSprite.setPosition(position.x * tileSize.x, 
-                            position.y * tileSize.y);
+    tileSprite.setPosition(toScreen(position));
 
     window->draw(tileSprite);
+}
+
+void Renderer::drawInWorldRect(sf::IntRect rect, 
+        sf::Color fillColor, sf::Color outlineColor, float outlineThickness) {
+    sf::RectangleShape rectShape{toScreen({rect.width, rect.height})};
+    rectShape.setPosition(toScreen({rect.left, rect.top}));
+
+    rectShape.setFillColor(fillColor);
+    rectShape.setOutlineColor(outlineColor);
+    rectShape.setOutlineThickness(outlineThickness);
+
+    window->draw(rectShape);
 }
 
 void Renderer::draw() {

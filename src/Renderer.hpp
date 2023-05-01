@@ -69,8 +69,15 @@ private:
         levelView.setCenter(cameraPosition_);
     }
 
+    sf::Vector2f toScreen(sf::Vector2i worldPoint) const noexcept {
+        return sf::Vector2f(worldPoint.x * tileSize.x, 
+                            worldPoint.y * tileSize.x);
+    }
+
     void drawLevel();
     void draw(Level::Tile tile, sf::Vector2i position);
+    void drawInWorldRect(sf::IntRect rect, 
+        sf::Color fillColor, sf::Color outlineColor, float outlineThickness);
 };
 
 #endif

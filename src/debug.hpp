@@ -17,5 +17,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define DEBUG_HPP_
 
 const bool debugTiles = true;
+const bool renderAreas = true;
 
 #endif
