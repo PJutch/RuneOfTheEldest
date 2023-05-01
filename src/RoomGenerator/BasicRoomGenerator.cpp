@@ -21,4 +21,10 @@ void BasicRoomGenerator::operator() (Area area) {
     for (int x = area.left(); x < area.right() - 1; ++ x)
         for (int y = area.top(); y < area.bottom() - 1; ++ y)
             level_->at(x, y) = Level::Tile::EMPTY;
+    
+    for (int y : area.rightPassages())
+        level_->at(area.right() - 1, y) = Level::Tile::EMPTY;
+    
+    for (int x : area.bottomPassages())
+        level_->at(x, area.bottom() - 1) = Level::Tile::EMPTY;
 }

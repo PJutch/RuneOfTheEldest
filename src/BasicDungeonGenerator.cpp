@@ -61,17 +61,27 @@ void BasicDungeonGenerator::processArea(Area area) {
 void BasicDungeonGenerator::splitX(Area area) {
     int boundary = std::uniform_int_distribution
         {area.left() + minSize_, area.right() - minSize_}(*randomEngine);
+    auto [left, right] = area.splitX(boundary);
 
-    auto [area1, area2] = area.splitX(boundary);
-    areas.push(area1);
-    areas.push(area2);
+    int passageY = std::uniform_int_distribution
+        {area.top(), area.bottom() - 1}(*randomEngine);
+    left.addRightPassage(passageY);
+    right.addLeftPassage(passageY);
+
+    areas.push(std::move(left));
+    areas.push(std::move(right));
 }
 
 void BasicDungeonGenerator::splitY(Area area) {
     int boundary = std::uniform_int_distribution
         {area.top() + minSize_, area.bottom() - minSize_}(*randomEngine);
+    auto [top, bottom] = area.splitY(boundary);
 
-    auto [area1, area2] = area.splitY(boundary);
-    areas.push(area1);
-    areas.push(area2);
+    int passageX = std::uniform_int_distribution
+        {area.left(), area.right() - 1}(*randomEngine);
+    top.addBottomPassage(passageX);
+    bottom.addTopPassage(passageX);
+
+    areas.push(std::move(top));
+    areas.push(std::move(bottom));
 }
