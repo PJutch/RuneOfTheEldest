@@ -76,6 +76,8 @@ private:
 
     void drawLevel();
     void draw(Level::Tile tile, sf::Vector2i position);
+    void drawAreas();
+
     void drawInWorldRect(sf::IntRect rect, 
         sf::Color fillColor, sf::Color outlineColor, float outlineThickness);
 };

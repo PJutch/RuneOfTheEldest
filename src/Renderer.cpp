@@ -17,6 +17,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Exception.hpp"
 
+#include "debug.hpp"
+
 class TextureLoadError : public RuntimeError {
     using RuntimeError::RuntimeError;
 };
@@ -63,8 +65,13 @@ void Renderer::drawLevel() {
         for (int y = 0; y < level->shape().y; ++ y)
             draw(level->at(x, y), {x, y});
     
+    if (renderAreas) drawAreas();
+}
+
+void Renderer::drawAreas() {
     for (sf::IntRect area : level->areas())
-        drawInWorldRect(area, sf::Color::Transparent, sf::Color::Green, 1.0);
+        drawInWorldRect(area, sf::Color::Transparent, 
+                                sf::Color::Green, 1.0);
 }
 
 void Renderer::draw(Level::Tile tile, sf::Vector2i position) {

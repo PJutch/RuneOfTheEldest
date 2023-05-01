@@ -16,7 +16,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef DEBUG_HPP_
 #define DEBUG_HPP_
 
-const bool debugTiles = true;
-const bool renderAreas = true;
+const bool debugTiles = false;
+const bool renderAreas = false;
 
 #endif
