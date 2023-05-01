@@ -34,8 +34,9 @@ sf::String createSfString(std::string_view string) {
 }
 
 int main() {
-    auto logInjector = logModule();
-    auto logger = createLogger("main", logInjector);   
+    auto logModule_ = logModule();
+    auto loggerFactory = logModule_.create<LoggerFactory>();
+    auto logger = loggerFactory.create("main");   
 
     try {
         logger->info("Loading...");
@@ -50,7 +51,8 @@ int main() {
         RandomEngine randomEngine{std::random_device{}()};
 
         auto injector = boost::di::make_injector(
-            std::move(logInjector),
+            std::move(logModule_),
+            boost::di::bind<LoggerFactory>.to(loggerFactory),
             boost::di::bind<sf::VideoMode>.to(videoMode),
             boost::di::bind<sf::RenderWindow>.to(renderWindow),
             boost::di::bind<Level>.in(boost::di::singleton),

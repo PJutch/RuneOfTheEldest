@@ -20,6 +20,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Renderer.hpp"
 #include "DungeonGenerator.hpp"
 
+#include "log.hpp"
+
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
@@ -31,7 +33,8 @@ public:
     Game(std::shared_ptr<sf::RenderWindow> window, 
          std::shared_ptr<Level> level, 
          std::unique_ptr<Renderer> renderer,
-         DungeonGenerator dungeonGenerator);
+         DungeonGenerator dungeonGenerator,
+         LoggerFactory& loggerFactory);
 
     void run();
 private:
@@ -39,6 +42,8 @@ private:
     std::shared_ptr<Level> level;
     std::unique_ptr<Renderer> renderer;
     DungeonGenerator dungeonGenerator;
+
+    std::shared_ptr<spdlog::logger> generationLogger;
 
     void handleEvent(sf::Event event);
 

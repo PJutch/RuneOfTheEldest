@@ -28,22 +28,24 @@ If not, see <https://www.gnu.org/licenses/>. */
 using ConsoleSink = spdlog::sinks::stdout_color_sink_st;
 using FileSink = spdlog::sinks::basic_file_sink_st;
 
-auto logModule() {
+inline auto logModule() {
     return boost::di::make_injector(
         boost::di::bind<FileSink>.to(std::make_shared<FileSink>("log.txt", true)),
         boost::di::bind<spdlog::sinks::sink*[]>.to<ConsoleSink, FileSink>()
     );
 }
 
-[[nodiscard]] auto createLogger(std::string name, 
-        const std::ranges::range auto& sinks) noexcept {
-    return std::make_shared<spdlog::logger>(std::move(name), 
-        std::ranges::begin(sinks), std::ranges::end(sinks));
-}
-
-[[nodiscard]] auto createLogger(std::string name, auto& injector) noexcept {
-    return createLogger(std::move(name), 
-        injector.create<std::vector<spdlog::sink_ptr>>());
-}
+class LoggerFactory {
+public:
+    LoggerFactory(std::vector<spdlog::sink_ptr> sinks_) :
+            sinks{std::move(sinks_)} {}
+    
+    [[nodiscard]] auto create(std::string name) noexcept {
+        return std::make_shared<spdlog::logger>(std::move(name), 
+            std::ranges::begin(sinks), std::ranges::end(sinks));
+    }
+private:
+    std::vector<spdlog::sink_ptr> sinks;
+};
 
 #endif

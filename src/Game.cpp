@@ -3,18 +3,27 @@
 Game::Game(std::shared_ptr<sf::RenderWindow> window_, 
            std::shared_ptr<Level> level_, 
            std::unique_ptr<Renderer> renderer_,
-           DungeonGenerator dungeonGenerator_) : 
+           DungeonGenerator dungeonGenerator_,
+           LoggerFactory& loggerFactory) : 
         window{std::move(window_)}, 
         level{std::move(level_)}, 
         renderer{std::move(renderer_)},
-        dungeonGenerator{std::move(dungeonGenerator_)} {
+        dungeonGenerator{std::move(dungeonGenerator_)},
+        generationLogger{loggerFactory.create("generation")} {
     generateLevel();
 } 
 
 void Game::generateLevel() {
+    generationLogger->info("Started");
     level->generateBlank({50, 50});
+
+    generationLogger->info("Generating dungeon...");
     dungeonGenerator();
+
+    generationLogger->info("Generating walls...");
     level->generateWalls();
+
+    generationLogger->info("Finished");
 }
 
 bool wasKeyPressed(sf::Event event, sf::Keyboard::Key key) noexcept {
