@@ -64,7 +64,7 @@ void BasicDungeonGenerator::splitX(Area area) {
     auto [left, right] = area.splitX(boundary);
 
     int passageY = std::uniform_int_distribution
-        {area.top(), area.bottom() - 1}(*randomEngine);
+        {area.top(), area.bottom() - 2}(*randomEngine);
     left.addRightPassage(passageY);
     right.addLeftPassage(passageY);
 
@@ -78,7 +78,7 @@ void BasicDungeonGenerator::splitY(Area area) {
     auto [top, bottom] = area.splitY(boundary);
 
     int passageX = std::uniform_int_distribution
-        {area.left(), area.right() - 1}(*randomEngine);
+        {area.left(), area.right() - 2}(*randomEngine);
     top.addBottomPassage(passageX);
     bottom.addTopPassage(passageX);
 
