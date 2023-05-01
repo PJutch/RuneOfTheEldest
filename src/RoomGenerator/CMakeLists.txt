@@ -13,12 +13,9 @@
 # You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 # If not, see <https://www.gnu.org/licenses/>.
 
-add_library(sources)
+add_library(RoomGenerator)
 
-target_sources(sources PRIVATE Game.cpp Level.cpp Renderer.cpp Area.cpp)
-target_sources(sources PRIVATE BasicDungeonGenerator.cpp DungeonGenerator.cpp)
+target_sources(RoomGenerator PRIVATE BasicRoomGenerator.cpp 
+                                     RandomSizeRoomGenerator.cpp)
 
-add_subdirectory(RoomGenerator)
-target_link_libraries(sources PRIVATE RoomGenerator)
-
-target_link_libraries(sources PUBLIC dependencies)
+target_link_libraries(RoomGenerator PUBLIC dependencies)

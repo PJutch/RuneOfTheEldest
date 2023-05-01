@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "BasicDungeonGenerator.hpp"
 
-#include "RoomGenerator.hpp"
+#include "RoomGenerator/RoomGenerator.hpp"
 #include "Level.hpp"
 
 #include <memory>

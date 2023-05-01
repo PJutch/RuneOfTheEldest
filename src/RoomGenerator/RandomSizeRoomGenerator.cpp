@@ -13,23 +13,20 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef BASIC_ROOM_GENERATOR_HPP_
-#define BASIC_ROOM_GENERATOR_HPP_
+#include "RandomSizeRoomGenerator.hpp"
 
-#include "RoomGenerator.hpp"
+void RandomSizeRoomGenerator::operator() (Area area) {
+    const int minSize = 5;
 
-#include "Level.hpp"
-
-#include <memory>
-
-class BasicRoomGenerator : public RoomGenerator {
-public:
-    BasicRoomGenerator(std::weak_ptr<Level> level_) : 
-        level{std::move(level_)} {}
-
-    void operator() (Area area) final;
-private:
-    std::weak_ptr<Level> level;
-};
-
-#endif
+    int width  = std::uniform_int_distribution
+        {minSize, area.width() }(*randomEngine);
+    int height = std::uniform_int_distribution
+        {minSize, area.height()}(*randomEngine);
+    
+    int left = std::uniform_int_distribution
+        {area.left(), area.right()  -  width}(*randomEngine);
+    int top  = std::uniform_int_distribution
+        {area.top(),  area.bottom() - height}(*randomEngine);
+    
+    generator(Area{{left, top, width, height}});
+}
