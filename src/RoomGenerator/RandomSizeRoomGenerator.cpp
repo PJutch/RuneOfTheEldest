@@ -38,7 +38,7 @@ void RandomSizeRoomGenerator::leftPassage(const Area& area, Area& room,
         room.addLeftPassage(y);
     } else {
         int turnX = std::uniform_int_distribution
-            {area.left(), room.right() - 1}(*randomEngine);
+            {area.left(), room.right() - 2}(*randomEngine);
         horizontalPassage(area.left(), turnX + 1, y);
         bendedVerticalPassage(room, turnX, y);
     }
@@ -51,7 +51,7 @@ void RandomSizeRoomGenerator::rightPassage(const Area& area, Area& room,
         room.addRightPassage(y);
     } else {
         int turnX = std::uniform_int_distribution
-            {area.left(), room.right() - 1}(*randomEngine);
+            {area.left(), room.right() - 2}(*randomEngine);
         horizontalPassage(turnX, area.right(), y);
         bendedVerticalPassage(room, turnX, y);
     }
@@ -64,7 +64,7 @@ void RandomSizeRoomGenerator::topPassage(const Area& area, Area& room,
         room.addTopPassage(x);
     } else {
         int turnY = std::uniform_int_distribution
-            {area.top(), room.bottom() - 1}(*randomEngine);
+            {area.top(), room.bottom() - 2}(*randomEngine);
         verticalPassage(area.top(), turnY + 1, x);
         bendedVerticalPassage(room, x, turnY);
     }
@@ -77,7 +77,7 @@ void RandomSizeRoomGenerator::bottomPassage(const Area& area, Area& room,
         room.addBottomPassage(x);
     } else {
         int turnY = std::uniform_int_distribution
-            {area.top(), room.bottom() - 1}(*randomEngine);
+            {area.top(), room.bottom() - 2}(*randomEngine);
         verticalPassage(turnY, area.bottom(), x);
         bendedVerticalPassage(room, x, turnY);
     }
@@ -89,7 +89,7 @@ void RandomSizeRoomGenerator::bendedHorizontalPassage(Area& room,
         horizontalPassageEnd(room, x, y);
     else {
         int turnX = std::uniform_int_distribution
-            {room.left(), room.right() - 1}(*randomEngine);
+            {room.left(), room.right() - 2}(*randomEngine);
 
         if (x < room.left())
             horizontalPassage(x, turnX + 1, y);
@@ -105,7 +105,7 @@ void RandomSizeRoomGenerator::bendedVerticalPassage(Area& room, int x, int y) {
         verticalPassageEnd(room, x, y); 
     else {
         int turnY = std::uniform_int_distribution
-            {room.top(), room.bottom() - 1}(*randomEngine);
+            {room.top(), room.bottom() - 2}(*randomEngine);
 
         if (y < room.top())
             verticalPassage(y, turnY + 1, x);
