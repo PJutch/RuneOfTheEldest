@@ -16,6 +16,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef LEVEL_HPP_
 #define LEVEL_HPP_
 
+#include "assert.hpp"
+
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 
@@ -38,11 +40,15 @@ public:
 
     // unsafe
     Tile& at(int x, int y) noexcept {
+        TROTE_ASSERT(0 <= x && x < shape().x);
+        TROTE_ASSERT(0 <= y && y < shape().y);
         return tiles[x * shape().y + y];
     }
 
     // unsafe
     const Tile& at(int x, int y) const noexcept {
+        TROTE_ASSERT(0 <= x && x < shape().x);
+        TROTE_ASSERT(0 <= y && y < shape().y);
         return tiles[x * shape().y + y];
     }
 

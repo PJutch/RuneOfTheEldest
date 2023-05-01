@@ -19,4 +19,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 const bool debugTiles = false;
 const bool renderAreas = false;
 
+const bool enableAssertions = false;
+
 #endif

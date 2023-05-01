@@ -61,4 +61,16 @@ public:
     }
 };
 
+class LogicError : public std::logic_error, public TracableException {
+public:
+    LogicError(const std::string& message, 
+               Stacktrace currentStacktrace = {}) noexcept : 
+        std::logic_error{message}, 
+        TracableException{std::move(currentStacktrace)} {}
+    
+    const char* what() const noexcept override {
+        return std::logic_error::what();
+    }
+};
+
 #endif
