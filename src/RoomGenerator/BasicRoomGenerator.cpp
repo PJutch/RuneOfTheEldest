@@ -16,9 +16,12 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "BasicRoomGenerator.hpp"
 
 #include "../debug.hpp"
+#include "../assert.hpp"
 
 void BasicRoomGenerator::operator() (Area area) {
     std::shared_ptr<Level> level_ = level.lock();
+
+    TROTE_ASSERT(level_->isValidRect(area.bounds()));
     
     for (int x = area.left(); x < area.right() - 1; ++ x)
         for (int y = area.top(); y < area.bottom() - 1; ++ y)

@@ -13,7 +13,9 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 If not, see <https://www.gnu.org/licenses/>. */
 
-#include "DungeonGenerator.hpp"
+#include "BasicDungeonGenerator.hpp"
+
+#include "assert.hpp"
 
 BasicDungeonGenerator::BasicDungeonGenerator(
         std::unique_ptr<RoomGenerator> roomGenerator_,
@@ -32,6 +34,11 @@ void BasicDungeonGenerator::operator() () {
 }
 
 void BasicDungeonGenerator::processArea(Area area) {
+    TROTE_ASSERT(area.left() >= 0);
+    TROTE_ASSERT(area.top() >= 0);
+    TROTE_ASSERT(area.width() >= minSize_);
+    TROTE_ASSERT(area.height() >= minSize_);
+
     if (!canSplit(area.width()) && !canSplit(area.height())) {
         (*roomGenerator)(area);
         return;
@@ -59,6 +66,8 @@ void BasicDungeonGenerator::processArea(Area area) {
 }
 
 void BasicDungeonGenerator::splitX(Area area) {
+    TROTE_ASSERT(canSplit(area.width()));
+
     int boundary = std::uniform_int_distribution
         {area.left() + minSize_, area.right() - minSize_}(*randomEngine);
     auto [left, right] = area.splitX(boundary);
@@ -73,6 +82,8 @@ void BasicDungeonGenerator::splitX(Area area) {
 }
 
 void BasicDungeonGenerator::splitY(Area area) {
+    TROTE_ASSERT(canSplit(area.width()));
+
     int boundary = std::uniform_int_distribution
         {area.top() + minSize_, area.bottom() - minSize_}(*randomEngine);
     auto [top, bottom] = area.splitY(boundary);

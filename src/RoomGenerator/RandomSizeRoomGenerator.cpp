@@ -16,6 +16,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "RandomSizeRoomGenerator.hpp"
 
 #include "../debug.hpp"
+#include "../assert.hpp"
 
 Area RandomSizeRoomGenerator::randomRoomIn(const Area& area) {
     const int minSize = 5;
@@ -35,6 +36,8 @@ Area RandomSizeRoomGenerator::randomRoomIn(const Area& area) {
 
 void RandomSizeRoomGenerator::leftPassage(const Area& area, Area& room, 
                                           int y) {
+    TROTE_ASSERT(area.top() <= y && y < area.bottom());
+
     if (room.top() <= y && y < room.bottom() - 1) {
         horizontalPassage(area.left(), room.left(), y);
         room.addLeftPassage(y);
@@ -48,6 +51,8 @@ void RandomSizeRoomGenerator::leftPassage(const Area& area, Area& room,
 
 void RandomSizeRoomGenerator::rightPassage(const Area& area, Area& room, 
                                            int y) {
+    TROTE_ASSERT(area.top() <= y && y < area.bottom());
+
     if (room.top() <= y && y < room.bottom() - 1) {
         horizontalPassage(room.right(), area.right(), y);
         room.addRightPassage(y);
@@ -61,6 +66,8 @@ void RandomSizeRoomGenerator::rightPassage(const Area& area, Area& room,
 
 void RandomSizeRoomGenerator::topPassage(const Area& area, Area& room, 
                                          int x) {
+    TROTE_ASSERT(area.left() <= x && x < area.right());
+
     if (room.left() <= x && x < room.right() - 1) {
         verticalPassage(area.top(), room.top(), x);
         room.addTopPassage(x);
@@ -73,7 +80,9 @@ void RandomSizeRoomGenerator::topPassage(const Area& area, Area& room,
 }
 
 void RandomSizeRoomGenerator::bottomPassage(const Area& area, Area& room, 
-                                            int x) {                                           
+                                            int x) {
+    TROTE_ASSERT(area.left() <= x && x < area.right());
+                                               
     if (room.left() <= x && x < room.right() - 1) {
         verticalPassage(room.bottom(), area.bottom(), x);
         room.addBottomPassage(x);
@@ -153,7 +162,9 @@ void RandomSizeRoomGenerator::verticalPassage(int top, int bottom, int x) {
 }
 
 void RandomSizeRoomGenerator::operator() (Area area) {
-    level.lock()->addArea(area.bounds());
+    auto level_ = level.lock();
+    level_->addArea(area.bounds());
+    TROTE_ASSERT(level_->isValidRect(area.bounds()));
 
     Area room = randomRoomIn(area);
 

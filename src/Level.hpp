@@ -38,17 +38,27 @@ public:
 
     const static int totalTiles = static_cast<int>(Tile::TOTAL_);
 
+    bool isValidX(int x) const noexcept {
+        return 0 <= x && x < shape().x;
+    }
+
+    bool isValidY(int y) const noexcept {
+        return 0 <= y && y < shape().y;
+    }
+
+    bool isValidRect(sf::IntRect rect) const noexcept;
+
     // unsafe
     Tile& at(int x, int y) noexcept {
-        TROTE_ASSERT(0 <= x && x < shape().x);
-        TROTE_ASSERT(0 <= y && y < shape().y);
+        TROTE_ASSERT(isValidX(x));
+        TROTE_ASSERT(isValidY(y));
         return tiles[x * shape().y + y];
     }
 
     // unsafe
     const Tile& at(int x, int y) const noexcept {
-        TROTE_ASSERT(0 <= x && x < shape().x);
-        TROTE_ASSERT(0 <= y && y < shape().y);
+        TROTE_ASSERT(isValidX(x));
+        TROTE_ASSERT(isValidY(y));
         return tiles[x * shape().y + y];
     }
 
