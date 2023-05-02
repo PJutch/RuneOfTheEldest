@@ -130,10 +130,10 @@ void RandomSizeRoomGenerator::bendedVerticalPassage(Area& room, int x, int y) {
 void RandomSizeRoomGenerator::horizontalPassageEnd(Area& room, int x, int y) {
     if (x < room.left()) {
         horizontalPassage(x, room.left(), y);
-        room.addLeftPassage(x);
+        room.addLeftPassage(y);
     } else {
         horizontalPassage(room.right(), x, y);
-        room.addRightPassage(x);
+        room.addRightPassage(y);
     }
 }
 
