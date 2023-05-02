@@ -19,5 +19,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <random>
 
 using RandomEngine = std::mt19937_64;
+using SeedT = RandomEngine::result_type;
 
 #endif

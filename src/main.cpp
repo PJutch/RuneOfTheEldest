@@ -48,7 +48,9 @@ int main() {
             sf::Style::Fullscreen
         );
 
-        RandomEngine randomEngine{std::random_device{}()};
+        SeedT seed = std::random_device{}();
+        RandomEngine randomEngine{seed};
+        logger->info("Random seed is {}", seed);
 
         auto injector = boost::di::make_injector(
             std::move(logModule_),
