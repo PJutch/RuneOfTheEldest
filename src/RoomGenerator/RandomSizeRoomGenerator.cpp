@@ -148,23 +148,20 @@ void RandomSizeRoomGenerator::verticalPassageEnd(Area& room, int x, int y) {
 }
 
 void RandomSizeRoomGenerator::horizontalPassage(int left, int right, int y) {
-    auto level_ = level.lock();
     for (int x = left; x < right; ++ x)
-        level_->at(x, y) = (debugTiles ? Level::Tile::PASSAGE
-                                       : Level::Tile::EMPTY);
+        level->at(x, y) = (debugTiles ? Level::Tile::PASSAGE
+                                      : Level::Tile::EMPTY);
 }
 
 void RandomSizeRoomGenerator::verticalPassage(int top, int bottom, int x) {
-    auto level_ = level.lock();
     for (int y = top; y < bottom; ++ y)
-        level_->at(x, y) = (debugTiles ? Level::Tile::PASSAGE
-                                       : Level::Tile::EMPTY);
+        level->at(x, y) = (debugTiles ? Level::Tile::PASSAGE
+                                      : Level::Tile::EMPTY);
 }
 
 void RandomSizeRoomGenerator::operator() (Area area) {
-    auto level_ = level.lock();
-    level_->addArea(area.bounds());
-    TROTE_ASSERT(level_->isValidRect(area.bounds()));
+    level->addArea(area.bounds());
+    TROTE_ASSERT(level->isValidRect(area.bounds()));
 
     Area room = randomRoomIn(area);
 

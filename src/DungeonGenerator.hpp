@@ -16,23 +16,51 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef DUNGEON_GENERATOR_HPP_
 #define DUNGEON_GENERATOR_HPP_
 
-#include "BasicDungeonGenerator.hpp"
-
 #include "RoomGenerator/RoomGenerator.hpp"
+#include "Area.hpp"
 #include "Level.hpp"
 
-#include <memory>
+#include "random.hpp"
+
+#include <SFML/Graphics.hpp>
+
+#include <queue>
+#include <functional>
 
 class DungeonGenerator {
 public:
-    DungeonGenerator(std::unique_ptr<RoomGenerator> roomGenerator,
-                     std::weak_ptr<Level> level_, RandomEngine& randomEngine);
+    DungeonGenerator(std::unique_ptr<RoomGenerator> roomGenerator, 
+                     std::shared_ptr<Level> level,
+                     RandomEngine& randomEngine);
+
+    void minSize(int newMinSize) noexcept {
+        minSize_ = newMinSize;
+    }
+
+    void splitChance(double newSplitChance) noexcept {
+        splitChance_ = newSplitChance;
+    }
 
     void operator() ();
 private:
-    std::weak_ptr<Level> level;
+    std::unique_ptr<RoomGenerator> roomGenerator;
+    
+    int minSize_;
+    double splitChance_;
 
-    BasicDungeonGenerator generator;
+    std::queue<Area> areas;
+
+    std::shared_ptr<Level> level;
+    RandomEngine* randomEngine;
+
+    void processArea(Area area);
+
+    bool canSplit(int dimension) const noexcept {
+        return dimension > 2 * minSize_;
+    }
+
+    void splitX(Area area);
+    void splitY(Area area);
 };
 
 #endif

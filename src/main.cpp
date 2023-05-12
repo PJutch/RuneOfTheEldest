@@ -63,6 +63,9 @@ int main() {
         );
         auto game = injector.create<Game>();
 
+        game.dungeonGenerator().splitChance(0.9);
+        game.dungeonGenerator().minSize(5);
+
         logger->info("Loading complete");
         game.run();
         logger->info("Exiting...");

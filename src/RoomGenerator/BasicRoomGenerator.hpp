@@ -24,12 +24,12 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 class BasicRoomGenerator : public RoomGenerator {
 public:
-    BasicRoomGenerator(std::weak_ptr<Level> level_) : 
+    BasicRoomGenerator(std::shared_ptr<Level> level_) : 
         level{std::move(level_)} {}
 
     void operator() (Area area) final;
 private:
-    std::weak_ptr<Level> level;
+    std::shared_ptr<Level> level;
 };
 
 #endif

@@ -15,17 +15,86 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "DungeonGenerator.hpp"
 
+#include "assert.hpp"
 #include "geometry.hpp"
 
-DungeonGenerator::DungeonGenerator(std::unique_ptr<RoomGenerator> roomGenerator,
-    std::weak_ptr<Level> level_, RandomEngine& randomEngine) : 
-        level(std::move(level_)), 
-        generator{std::move(roomGenerator), randomEngine} {
-    generator.minSize(5);
-    generator.splitChance(0.9);
-}
+DungeonGenerator::DungeonGenerator(
+        std::unique_ptr<RoomGenerator> roomGenerator_,
+        std::shared_ptr<Level> level_,
+        RandomEngine& randomEngine_) :
+    roomGenerator{std::move(roomGenerator_)}, level{std::move(level_)},
+    randomEngine{&randomEngine_} {}
 
 void DungeonGenerator::operator() () {
-    generator.startRect(shrinkTopLeft(level.lock()->bounds(), {1, 1}));
-    generator();
+    areas.emplace(shrinkTopLeft(level->bounds(), {1, 1}));
+    while (!areas.empty()) {
+        Area area = std::move(areas.front());
+        areas.pop();
+
+        processArea(std::move(area));
+    }
+}
+
+void DungeonGenerator::processArea(Area area) {
+    TROTE_ASSERT(area.left() >= 0);
+    TROTE_ASSERT(area.top() >= 0);
+    TROTE_ASSERT(area.width() >= minSize_);
+    TROTE_ASSERT(area.height() >= minSize_);
+
+    if (!canSplit(area.width()) && !canSplit(area.height())) {
+        (*roomGenerator)(area);
+        return;
+    }
+
+    if (std::uniform_real_distribution{}(*randomEngine) > splitChance_) {
+        (*roomGenerator)(area);
+        return;
+    }
+        
+    if (!canSplit(area.width())) {
+        splitY(area);
+        return;
+    }
+
+    if (!canSplit(area.height())) {
+        splitX(area);
+        return;
+    }
+
+    if (std::uniform_real_distribution{}(*randomEngine) < 0.5)
+        splitX(area);
+    else
+        splitY(area);       
+}
+
+void DungeonGenerator::splitX(Area area) {
+    TROTE_ASSERT(canSplit(area.width()));
+
+    int boundary = std::uniform_int_distribution
+        {area.left() + minSize_, area.right() - minSize_}(*randomEngine);
+    auto [left, right] = area.splitX(boundary);
+
+    int passageY = std::uniform_int_distribution
+        {area.top(), area.bottom() - 2}(*randomEngine);
+    left.addRightPassage(passageY);
+    right.addLeftPassage(passageY);
+
+    areas.push(std::move(left));
+    areas.push(std::move(right));
+}
+
+void DungeonGenerator::splitY(Area area) {
+    TROTE_ASSERT(canSplit(area.width()));
+
+    int boundary = std::uniform_int_distribution
+        {area.top() + minSize_, area.bottom() - minSize_}(*randomEngine);
+    auto [top, bottom] = area.splitY(boundary);
+
+    int passageX = std::uniform_int_distribution
+        {area.left(), area.right() - 2}(*randomEngine);
+    top.addBottomPassage(passageX);
+    bottom.addTopPassage(passageX);
+
+    areas.push(std::move(top));
+    areas.push(std::move(bottom));
 }

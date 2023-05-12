@@ -27,14 +27,14 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 class RandomSizeRoomGenerator : public RoomGenerator {
 public:
-    RandomSizeRoomGenerator(std::weak_ptr<Level> level_, 
+    RandomSizeRoomGenerator(std::shared_ptr<Level> level_, 
                         RandomEngine& randomEngine_) : 
         level{std::move(level_)}, 
         generator{level}, randomEngine{&randomEngine_} {}
 
     void operator() (Area room) final;
 private:
-    std::weak_ptr<Level> level;
+    std::shared_ptr<Level> level;
     BasicRoomGenerator generator;
     RandomEngine* randomEngine;
 

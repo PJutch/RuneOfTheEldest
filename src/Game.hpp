@@ -36,12 +36,20 @@ public:
          DungeonGenerator dungeonGenerator,
          LoggerFactory& loggerFactory);
 
+    DungeonGenerator& dungeonGenerator() noexcept {
+        return dungeonGenerator_;
+    }
+
+    const DungeonGenerator& dungeonGenerator() const noexcept {
+        return dungeonGenerator_;
+    }
+
     void run();
 private:
     std::shared_ptr<sf::RenderWindow> window;
     std::shared_ptr<Level> level;
     std::unique_ptr<Renderer> renderer;
-    DungeonGenerator dungeonGenerator;
+    DungeonGenerator dungeonGenerator_;
 
     std::shared_ptr<spdlog::logger> generationLogger;
 
