@@ -63,9 +63,9 @@ int main() {
         );
         auto game = injector.create<Game>();
 
-        game.dungeonGenerator().splitChance(0.9);
-        game.dungeonGenerator().minSize(5);
-        // game.dungeonGenerator().roomGenerator().debugTiles();
+        game.world().dungeonGenerator().splitChance(0.9);
+        game.world().dungeonGenerator().minSize(5);
+        // game..world()dungeonGenerator().roomGenerator().debugTiles();
         // game.renderer().renderAreas();
 
         logger->info("Loading complete");

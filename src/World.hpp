@@ -22,10 +22,21 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "log.hpp"
 
 #include <vector>
+#include <memory>
 
 class World {
 public:
-	World() = default;
+	World(DungeonGenerator generator_, LoggerFactory& loggerFactory) :
+		generator{std::move(generator_)},
+		generationLogger{loggerFactory.create("generation")} {}
+
+	DungeonGenerator& dungeonGenerator() noexcept {
+		return generator;
+	}
+
+	const DungeonGenerator& dungeonGenerator() const noexcept {
+		return generator;
+	}
 
 	Level& operator[] (int index) {
 		return levels[index];
@@ -35,9 +46,12 @@ public:
 		return levels[index];
 	}
 
-	void generate(DungeonGenerator& generator, spdlog::logger& logger);
+	void generate();
 private:
 	std::vector<Level> levels;
+
+	DungeonGenerator generator;
+	std::shared_ptr<spdlog::logger> generationLogger;
 };
 
 #endif

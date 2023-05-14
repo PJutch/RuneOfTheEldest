@@ -15,19 +15,19 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "World.hpp"
 
-void World::generate(DungeonGenerator& generator, spdlog::logger& logger) {
-	logger.info("Started");
+void World::generate() {
+	generationLogger->info("Started");
 	levels.resize(10);
 	for (int i = 0; i < levels.size(); ++ i) {
-		logger.info("Generating level {}...", i);
+		generationLogger->info("Generating level {}...", i);
 
 		levels[i].generateBlank({50, 50});
 
-		logger.info("Generating dungeon...");
+		generationLogger->info("Generating dungeon...");
 		generator(levels[i]);
 
-		logger.info("Generating walls...");
+		generationLogger->info("Generating walls...");
 		levels[i].generateWalls();
 	}
-	logger.info("Finished");
+	generationLogger->info("Finished");
 }

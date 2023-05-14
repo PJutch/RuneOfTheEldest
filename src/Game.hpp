@@ -32,16 +32,14 @@ class Game {
 public:
     Game(std::shared_ptr<sf::RenderWindow> window, 
          std::shared_ptr<World> world, 
-         std::unique_ptr<Renderer> renderer,
-         DungeonGenerator dungeonGenerator,
-         LoggerFactory& loggerFactory);
+         std::unique_ptr<Renderer> renderer);
 
-    DungeonGenerator& dungeonGenerator() noexcept {
-        return dungeonGenerator_;
+    World& world() noexcept {
+        return *world_;
     }
 
-    const DungeonGenerator& dungeonGenerator() const noexcept {
-        return dungeonGenerator_;
+    const World& world() const noexcept {
+        return *world_;
     }
 
     Renderer& renderer() noexcept {
@@ -55,11 +53,8 @@ public:
     void run();
 private:
     std::shared_ptr<sf::RenderWindow> window;
-    std::shared_ptr<World> world;
+    std::shared_ptr<World> world_;
     std::unique_ptr<Renderer> renderer_;
-    DungeonGenerator dungeonGenerator_;
-
-    std::shared_ptr<spdlog::logger> generationLogger;
 
     void handleEvent(sf::Event event);
 
