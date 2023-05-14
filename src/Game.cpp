@@ -28,7 +28,9 @@ void Game::run() {
 }
 
 void Game::handleEvent(sf::Event event) {
-    if (event.type == sf::Event::Closed 
-     || wasKeyPressed(event, sf::Keyboard::Escape))
+    if (event.type == sf::Event::Closed
+        || wasKeyPressed(event, sf::Keyboard::Escape))
         window->close();
+    else
+        renderer().handleEvent(event);
 }

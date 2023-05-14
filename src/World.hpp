@@ -46,6 +46,10 @@ public:
 		return levels[index];
 	}
 
+	int size() const noexcept {
+		return levels.size();
+	}
+
 	void generate();
 private:
 	std::vector<Level> levels;

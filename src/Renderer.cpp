@@ -110,3 +110,15 @@ void Renderer::update(sf::Time elapsedTime) {
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
         cameraPosition(addX(cameraPosition(), moved)); 
 }
+
+void Renderer::handleEvent(sf::Event event) {
+    if (event.type == event.KeyPressed) {
+        if (event.key.code == sf::Keyboard::PageUp) {
+            if (currentLevel > 0)
+                -- currentLevel;
+        } else if (event.key.code == sf::Keyboard::PageDown) {
+            if (currentLevel + 1 < world->size())
+                ++ currentLevel;
+        }
+    }
+}

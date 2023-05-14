@@ -34,7 +34,8 @@ public:
     void renderAreas(bool newRenderAreas = true) noexcept {
         renderAreas_ = newRenderAreas;
     }
-    
+
+    void handleEvent(sf::Event event);    
     void update(sf::Time elapsedTime);
 
     void draw();
@@ -43,6 +44,7 @@ private:
 
     float cameraSpeed = 100.f;
     sf::Vector2f cameraPosition_;
+    int currentLevel = 0;
     sf::View levelView;
 
     inline const static sf::Vector2i tileSize{16, 16};
@@ -81,7 +83,7 @@ private:
     }
 
     void drawWorld() {
-        draw((*world)[0]);
+        draw((*world)[currentLevel]);
     }
 
     void draw(Level& level);
