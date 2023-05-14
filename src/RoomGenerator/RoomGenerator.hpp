@@ -17,14 +17,17 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define ROOM_GENERATOR_HPP_
 
 #include "../Area.hpp"
+#include "../Level.hpp"
 
 #include <SFML/Graphics.hpp>
+
+#include <memory>
 
 class RoomGenerator {
 public:
     virtual ~RoomGenerator() = default;
 
-    virtual void operator() (Area area) = 0;
+    virtual void operator() (std::shared_ptr<Level> level, Area area) = 0;
 
     virtual void debugTiles(bool debugTiles_ = true) = 0;
 };

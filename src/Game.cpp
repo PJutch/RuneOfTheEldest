@@ -16,7 +16,7 @@ void Game::generateLevel() {
     level->generateBlank({50, 50});
 
     generationLogger->info("Generating dungeon...");
-    dungeonGenerator()();
+    dungeonGenerator()(level);
 
     generationLogger->info("Generating walls...");
     level->generateWalls();

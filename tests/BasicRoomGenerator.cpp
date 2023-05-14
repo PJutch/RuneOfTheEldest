@@ -47,7 +47,7 @@ TEST(BasicRoomGenerator, generateRoom) {
     level->generateBlank({10, 7});
 
     sf::IntRect room{3, 2, 6, 5};
-    BasicRoomGenerator{level}(Area{room});
+    BasicRoomGenerator{}(level, Area{ room });
 
     EXPECT_TRUE(hasSingleRoom(*level, room));
 }
@@ -57,7 +57,7 @@ TEST(BasicRoomGenerator, generateRoomNearEdge) {
     level->generateBlank({8, 7});
 
     sf::IntRect room{1, 2, 7, 5};
-    BasicRoomGenerator{level}(Area{room});
+    BasicRoomGenerator{}(level, Area{room});
 
     EXPECT_TRUE(hasSingleRoom(*level, room));
 }
@@ -67,7 +67,7 @@ TEST(BasicRoomGenerator, generateRoom3x3) {
     level->generateBlank({7, 7});
 
     sf::IntRect room{3, 2, 3, 3};
-    BasicRoomGenerator{level}(Area{room});
+    BasicRoomGenerator{}(level, Area{room});
 
     EXPECT_TRUE(hasSingleRoom(*level, room));
 }
@@ -77,7 +77,7 @@ TEST(BasicRoomGenerator, generateRoom2x2) {
     level->generateBlank({7, 7});
 
     sf::IntRect room{3, 2, 2, 2};
-    BasicRoomGenerator{level}(Area{room});
+    BasicRoomGenerator{}(level, Area{room});
 
     EXPECT_TRUE(hasSingleRoom(*level, room));
 }
@@ -87,7 +87,7 @@ TEST(BasicRoomGenerator, generateRoom1x1) {
     level->generateBlank({7, 7});
 
     sf::IntRect room{3, 2, 1, 1};
-    BasicRoomGenerator{level}(Area{room});
+    BasicRoomGenerator{}(level, Area{room});
 
     EXPECT_TRUE(hasSingleRoom(*level, room));
 }

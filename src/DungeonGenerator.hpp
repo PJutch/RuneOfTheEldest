@@ -30,7 +30,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 class DungeonGenerator {
 public:
     DungeonGenerator(std::unique_ptr<RoomGenerator> roomGenerator, 
-                     std::shared_ptr<Level> level,
                      RandomEngine& randomEngine);
 
     void minSize(int newMinSize) noexcept {
@@ -49,7 +48,7 @@ public:
         return *roomGenerator_;
     }
 
-    void operator() ();
+    void operator() (std::shared_ptr<Level> level);
 private:
     std::unique_ptr<RoomGenerator> roomGenerator_;
     
@@ -58,10 +57,9 @@ private:
 
     std::queue<Area> areas;
 
-    std::shared_ptr<Level> level;
     RandomEngine* randomEngine;
 
-    void processArea(Area area);
+    void processArea(std::shared_ptr<Level> level, Area area);
 
     bool canSplit(int dimension) const noexcept {
         return dimension > 2 * minSize_;

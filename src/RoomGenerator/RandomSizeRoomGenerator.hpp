@@ -27,12 +27,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 class RandomSizeRoomGenerator : public RoomGenerator {
 public:
-    RandomSizeRoomGenerator(std::shared_ptr<Level> level_, 
-                            RandomEngine& randomEngine_) : 
-        generator{level_}, 
-        level{std::move(level_)},  randomEngine{&randomEngine_} {}
+    RandomSizeRoomGenerator(RandomEngine& randomEngine_) : randomEngine{&randomEngine_} {}
 
-    void operator() (Area room) final;
+    void operator() (std::shared_ptr<Level> level, Area area) final;
 
     void debugTiles(bool newDebugTiles = true) noexcept final {
         debugTiles_ = newDebugTiles;
@@ -43,24 +40,23 @@ private:
 
     BasicRoomGenerator generator;
 
-    std::shared_ptr<Level> level;
     RandomEngine* randomEngine;
 
     Area randomRoomIn(const Area& area);
 
-    void leftPassage(const Area& area, Area& room, int y);
-    void topPassage(const Area& area, Area& room, int y);
-    void rightPassage(const Area& area, Area& room, int y);
-    void bottomPassage(const Area& area, Area& room, int y);
+    void leftPassage(std::shared_ptr<Level> level, const Area& area, Area& room, int y);
+    void topPassage(std::shared_ptr<Level> level, const Area& area, Area& room, int y);
+    void rightPassage(std::shared_ptr<Level> level, const Area& area, Area& room, int y);
+    void bottomPassage(std::shared_ptr<Level> level, const Area& area, Area& room, int y);
 
-    void bendedHorizontalPassage(Area& room, int x, int y);
-    void bendedVerticalPassage(Area& room, int x, int y);
+    void bendedHorizontalPassage(std::shared_ptr<Level> level, Area& room, int x, int y);
+    void bendedVerticalPassage(std::shared_ptr<Level> level, Area& room, int x, int y);
 
-    void horizontalPassageEnd(Area& room, int x, int y);
-    void verticalPassageEnd(Area& room, int x, int y);
+    void horizontalPassageEnd(std::shared_ptr<Level> level, Area& room, int x, int y);
+    void verticalPassageEnd(std::shared_ptr<Level> level, Area& room, int x, int y);
 
-    void horizontalPassage(int left, int right, int y);
-    void verticalPassage(int top, int bottom, int x);
+    void horizontalPassage(std::shared_ptr<Level> level, int left, int right, int y);
+    void verticalPassage(std::shared_ptr<Level> level, int top, int bottom, int x);
 };
 
 #endif

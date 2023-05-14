@@ -20,34 +20,33 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 DungeonGenerator::DungeonGenerator(
         std::unique_ptr<RoomGenerator> newRoomGenerator,
-        std::shared_ptr<Level> level_,
         RandomEngine& randomEngine_) :
-    roomGenerator_{std::move(newRoomGenerator)}, level{std::move(level_)},
+    roomGenerator_{std::move(newRoomGenerator)},
     randomEngine{&randomEngine_} {}
 
-void DungeonGenerator::operator() () {
+void DungeonGenerator::operator()(std::shared_ptr<Level> level) {
     areas.emplace(shrinkTopLeft(level->bounds(), {1, 1}));
     while (!areas.empty()) {
         Area area = std::move(areas.front());
         areas.pop();
 
-        processArea(std::move(area));
+        processArea(level, std::move(area));
     }
 }
 
-void DungeonGenerator::processArea(Area area) {
+void DungeonGenerator::processArea(std::shared_ptr<Level> level, Area area) {
     TROTE_ASSERT(area.left() >= 0);
     TROTE_ASSERT(area.top() >= 0);
     TROTE_ASSERT(area.width() >= minSize_);
     TROTE_ASSERT(area.height() >= minSize_);
 
     if (!canSplit(area.width()) && !canSplit(area.height())) {
-        roomGenerator()(area);
+        roomGenerator()(level, area);
         return;
     }
 
     if (std::uniform_real_distribution{}(*randomEngine) > splitChance_) {
-        roomGenerator()(area);
+        roomGenerator()(level, area);
         return;
     }
         

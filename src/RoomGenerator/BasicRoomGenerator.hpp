@@ -22,20 +22,18 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <memory>
 
+
 class BasicRoomGenerator : public RoomGenerator {
 public:
-    BasicRoomGenerator(std::shared_ptr<Level> level_) : 
-        level{std::move(level_)} {}
+    BasicRoomGenerator() = default;
 
-    void operator() (Area area) final;
+    void operator() (std::shared_ptr<Level> level, Area area) final;
 
     void debugTiles(bool newDebugTiles = true) noexcept final {
         debugTiles_ = newDebugTiles;
     }
 private:
     bool debugTiles_ = false;
-
-    std::shared_ptr<Level> level;
 };
 
 #endif

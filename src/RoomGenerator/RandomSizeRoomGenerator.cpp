@@ -33,148 +33,148 @@ Area RandomSizeRoomGenerator::randomRoomIn(const Area& area) {
     return Area{{left, top, width, height}};
 }
 
-void RandomSizeRoomGenerator::leftPassage(const Area& area, Area& room, 
+void RandomSizeRoomGenerator::leftPassage(std::shared_ptr<Level> level, const Area& area, Area& room,
                                           int y) {
     TROTE_ASSERT(area.top() <= y && y < area.bottom());
 
     if (room.top() <= y && y < room.bottom() - 1) {
-        horizontalPassage(area.left(), room.left(), y);
+        horizontalPassage(level, area.left(), room.left(), y);
         room.addLeftPassage(y);
     } else {
         int turnX = std::uniform_int_distribution
             {area.left(), room.right() - 2}(*randomEngine);
-        horizontalPassage(area.left(), turnX + 1, y);
-        bendedVerticalPassage(room, turnX, y);
+        horizontalPassage(level, area.left(), turnX + 1, y);
+        bendedVerticalPassage(level, room, turnX, y);
     }
 }
 
-void RandomSizeRoomGenerator::rightPassage(const Area& area, Area& room, 
+void RandomSizeRoomGenerator::rightPassage(std::shared_ptr<Level> level, const Area& area, Area& room,
                                            int y) {
     TROTE_ASSERT(area.top() <= y && y < area.bottom());
 
     if (room.top() <= y && y < room.bottom() - 1) {
-        horizontalPassage(room.right(), area.right(), y);
+        horizontalPassage(level, room.right(), area.right(), y);
         room.addRightPassage(y);
     } else {
         int turnX = std::uniform_int_distribution
             {room.left(), area.right() - 2}(*randomEngine);
-        horizontalPassage(turnX, area.right(), y);
-        bendedVerticalPassage(room, turnX, y);
+        horizontalPassage(level, turnX, area.right(), y);
+        bendedVerticalPassage(level, room, turnX, y);
     }
 }
 
-void RandomSizeRoomGenerator::topPassage(const Area& area, Area& room, 
+void RandomSizeRoomGenerator::topPassage(std::shared_ptr<Level> level, const Area& area, Area& room,
                                          int x) {
     TROTE_ASSERT(area.left() <= x && x < area.right());
 
     if (room.left() <= x && x < room.right() - 1) {
-        verticalPassage(area.top(), room.top(), x);
+        verticalPassage(level, area.top(), room.top(), x);
         room.addTopPassage(x);
     } else {
         int turnY = std::uniform_int_distribution
             {area.top(), room.bottom() - 2}(*randomEngine);
-        verticalPassage(area.top(), turnY + 1, x);
-        bendedVerticalPassage(room, x, turnY);
+        verticalPassage(level, area.top(), turnY + 1, x);
+        bendedVerticalPassage(level, room, x, turnY);
     }
 }
 
-void RandomSizeRoomGenerator::bottomPassage(const Area& area, Area& room, 
+void RandomSizeRoomGenerator::bottomPassage(std::shared_ptr<Level> level, const Area& area, Area& room,
                                             int x) {
     TROTE_ASSERT(area.left() <= x && x < area.right());
                                                
     if (room.left() <= x && x < room.right() - 1) {
-        verticalPassage(room.bottom(), area.bottom(), x);
+        verticalPassage(level, room.bottom(), area.bottom(), x);
         room.addBottomPassage(x);
     } else {
         int turnY = std::uniform_int_distribution
             {room.top(), area.bottom() - 2}(*randomEngine);
-        verticalPassage(turnY, area.bottom(), x);
-        bendedVerticalPassage(room, x, turnY);
+        verticalPassage(level, turnY, area.bottom(), x);
+        bendedVerticalPassage(level, room, x, turnY);
     }
 }
 
-void RandomSizeRoomGenerator::bendedHorizontalPassage(Area& room, 
+void RandomSizeRoomGenerator::bendedHorizontalPassage(std::shared_ptr<Level> level, Area& room,
                                                       int x, int y) {
     if (room.top() <= y && y < room.bottom() - 1)
-        horizontalPassageEnd(room, x, y);
+        horizontalPassageEnd(level, room, x, y);
     else {
         int turnX = std::uniform_int_distribution
             {room.left(), room.right() - 2}(*randomEngine);
 
         if (x < room.left())
-            horizontalPassage(x, turnX + 1, y);
+            horizontalPassage(level, x, turnX + 1, y);
         else
-            horizontalPassage(turnX, x, y);
+            horizontalPassage(level, turnX, x, y);
 
-        verticalPassageEnd(room, turnX, y);
+        verticalPassageEnd(level, room, turnX, y);
     }
 }
 
-void RandomSizeRoomGenerator::bendedVerticalPassage(Area& room, int x, int y) {
+void RandomSizeRoomGenerator::bendedVerticalPassage(std::shared_ptr<Level> level, Area& room, int x, int y) {
     if (room.left() <= x && x < room.right() - 1)
-        verticalPassageEnd(room, x, y); 
+        verticalPassageEnd(level, room, x, y);
     else {
         int turnY = std::uniform_int_distribution
             {room.top(), room.bottom() - 2}(*randomEngine);
 
         if (y < room.top())
-            verticalPassage(y, turnY + 1, x);
+            verticalPassage(level, y, turnY + 1, x);
         else
-            verticalPassage(turnY, y, x);
+            verticalPassage(level, turnY, y, x);
 
-        horizontalPassageEnd(room, x, turnY);
+        horizontalPassageEnd(level, room, x, turnY);
     }
 }
 
-void RandomSizeRoomGenerator::horizontalPassageEnd(Area& room, int x, int y) {
+void RandomSizeRoomGenerator::horizontalPassageEnd(std::shared_ptr<Level> level, Area& room, int x, int y) {
     if (x < room.left()) {
-        horizontalPassage(x, room.left(), y);
+        horizontalPassage(level, x, room.left(), y);
         room.addLeftPassage(y);
     } else {
-        horizontalPassage(room.right(), x, y);
+        horizontalPassage(level, room.right(), x, y);
         room.addRightPassage(y);
     }
 }
 
-void RandomSizeRoomGenerator::verticalPassageEnd(Area& room, int x, int y) {
+void RandomSizeRoomGenerator::verticalPassageEnd(std::shared_ptr<Level> level, Area& room, int x, int y) {
     if (y < room.top()) {
-        verticalPassage(y, room.top(), x);
+        verticalPassage(level, y, room.top(), x);
         room.addTopPassage(x);
     } else {
-        verticalPassage(room.bottom(), y, x);
+        verticalPassage(level, room.bottom(), y, x);
         room.addBottomPassage(x);
     }
 }
 
-void RandomSizeRoomGenerator::horizontalPassage(int left, int right, int y) {
+void RandomSizeRoomGenerator::horizontalPassage(std::shared_ptr<Level> level, int left, int right, int y) {
     for (int x = left; x < right; ++ x)
         level->at(x, y) = (debugTiles_ ? Level::Tile::PASSAGE
                                        : Level::Tile::EMPTY);
 }
 
-void RandomSizeRoomGenerator::verticalPassage(int top, int bottom, int x) {
+void RandomSizeRoomGenerator::verticalPassage(std::shared_ptr<Level> level, int top, int bottom, int x) {
     for (int y = top; y < bottom; ++ y)
         level->at(x, y) = (debugTiles_ ? Level::Tile::PASSAGE
                                        : Level::Tile::EMPTY);
 }
 
-void RandomSizeRoomGenerator::operator() (Area area) {
+void RandomSizeRoomGenerator::operator() (std::shared_ptr<Level> level, Area area) {
     level->addArea(area.bounds());
     TROTE_ASSERT(level->isValidRect(area.bounds()));
 
     Area room = randomRoomIn(area);
 
     for (int y : area.leftPassages())
-        leftPassage(area, room, y);
+        leftPassage(level, area, room, y);
 
     for (int y : area.rightPassages())
-        rightPassage(area, room, y);
+        rightPassage(level, area, room, y);
     
     for (int x : area.topPassages())
-        topPassage(area, room, x);
+        topPassage(level, area, room, x);
     
     for (int x : area.bottomPassages())
-        bottomPassage(area, room, x);
+        bottomPassage(level, area, room, x);
 
-    generator(std::move(room));
+    generator(std::move(level), std::move(room));
 }
