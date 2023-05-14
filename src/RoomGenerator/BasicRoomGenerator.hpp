@@ -28,7 +28,13 @@ public:
         level{std::move(level_)} {}
 
     void operator() (Area area) final;
+
+    void debugTiles(bool newDebugTiles = true) noexcept final {
+        debugTiles_ = newDebugTiles;
+    }
 private:
+    bool debugTiles_ = false;
+
     std::shared_ptr<Level> level;
 };
 

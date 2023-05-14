@@ -41,9 +41,17 @@ public:
         splitChance_ = newSplitChance;
     }
 
+    RoomGenerator& roomGenerator() noexcept {
+        return *roomGenerator_;
+    }
+
+    const RoomGenerator& roomGenerator() const noexcept {
+        return *roomGenerator_;
+    }
+
     void operator() ();
 private:
-    std::unique_ptr<RoomGenerator> roomGenerator;
+    std::unique_ptr<RoomGenerator> roomGenerator_;
     
     int minSize_;
     double splitChance_;

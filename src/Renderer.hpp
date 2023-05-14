@@ -30,13 +30,16 @@ class Renderer {
 public:
     Renderer(std::shared_ptr<sf::RenderWindow> window, 
              std::shared_ptr<Level> level);
+
+    void renderAreas(bool newRenderAreas = true) noexcept {
+        renderAreas_ = newRenderAreas;
+    }
     
     void update(sf::Time elapsedTime);
 
     void draw();
 private:
-    std::shared_ptr<sf::RenderWindow> window;
-    std::shared_ptr<Level> level;
+    bool renderAreas_ = false;
 
     float cameraSpeed = 100.f;
     sf::Vector2f cameraPosition_;
@@ -44,6 +47,9 @@ private:
 
     inline const static sf::Vector2i tileSize{16, 16};
     std::array<sf::Texture, Level::totalTiles> tileTextures;
+
+    std::shared_ptr<sf::RenderWindow> window;
+    std::shared_ptr<Level> level;
 
     sf::Texture& tileTexture(Level::Tile tile) noexcept {
         return tileTextures[static_cast<int>(tile)];

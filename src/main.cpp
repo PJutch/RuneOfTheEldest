@@ -65,6 +65,8 @@ int main() {
 
         game.dungeonGenerator().splitChance(0.9);
         game.dungeonGenerator().minSize(5);
+        // game.dungeonGenerator().roomGenerator().debugTiles();
+        // game.renderer().renderAreas();
 
         logger->info("Loading complete");
         game.run();

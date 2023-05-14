@@ -19,10 +19,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "geometry.hpp"
 
 DungeonGenerator::DungeonGenerator(
-        std::unique_ptr<RoomGenerator> roomGenerator_,
+        std::unique_ptr<RoomGenerator> newRoomGenerator,
         std::shared_ptr<Level> level_,
         RandomEngine& randomEngine_) :
-    roomGenerator{std::move(roomGenerator_)}, level{std::move(level_)},
+    roomGenerator_{std::move(newRoomGenerator)}, level{std::move(level_)},
     randomEngine{&randomEngine_} {}
 
 void DungeonGenerator::operator() () {
@@ -42,12 +42,12 @@ void DungeonGenerator::processArea(Area area) {
     TROTE_ASSERT(area.height() >= minSize_);
 
     if (!canSplit(area.width()) && !canSplit(area.height())) {
-        (*roomGenerator)(area);
+        roomGenerator()(area);
         return;
     }
 
     if (std::uniform_real_distribution{}(*randomEngine) > splitChance_) {
-        (*roomGenerator)(area);
+        roomGenerator()(area);
         return;
     }
         

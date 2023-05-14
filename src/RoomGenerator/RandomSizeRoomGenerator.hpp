@@ -28,14 +28,22 @@ If not, see <https://www.gnu.org/licenses/>. */
 class RandomSizeRoomGenerator : public RoomGenerator {
 public:
     RandomSizeRoomGenerator(std::shared_ptr<Level> level_, 
-                        RandomEngine& randomEngine_) : 
-        level{std::move(level_)}, 
-        generator{level}, randomEngine{&randomEngine_} {}
+                            RandomEngine& randomEngine_) : 
+        generator{level_}, 
+        level{std::move(level_)},  randomEngine{&randomEngine_} {}
 
     void operator() (Area room) final;
+
+    void debugTiles(bool newDebugTiles = true) noexcept final {
+        debugTiles_ = newDebugTiles;
+        generator.debugTiles(newDebugTiles);
+    }
 private:
-    std::shared_ptr<Level> level;
+    bool debugTiles_ = false;
+
     BasicRoomGenerator generator;
+
+    std::shared_ptr<Level> level;
     RandomEngine* randomEngine;
 
     Area randomRoomIn(const Area& area);

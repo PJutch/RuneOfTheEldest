@@ -44,11 +44,19 @@ public:
         return dungeonGenerator_;
     }
 
+    Renderer& renderer() noexcept {
+        return *renderer_;
+    }
+
+    const Renderer& renderer() const noexcept {
+        return *renderer_;
+    }
+
     void run();
 private:
     std::shared_ptr<sf::RenderWindow> window;
     std::shared_ptr<Level> level;
-    std::unique_ptr<Renderer> renderer;
+    std::unique_ptr<Renderer> renderer_;
     DungeonGenerator dungeonGenerator_;
 
     std::shared_ptr<spdlog::logger> generationLogger;

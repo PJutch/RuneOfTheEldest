@@ -25,6 +25,8 @@ public:
     virtual ~RoomGenerator() = default;
 
     virtual void operator() (Area area) = 0;
+
+    virtual void debugTiles(bool debugTiles_ = true) = 0;
 };
 
 #endif

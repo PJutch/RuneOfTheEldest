@@ -15,7 +15,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "BasicRoomGenerator.hpp"
 
-#include "../debug.hpp"
 #include "../assert.hpp"
 
 void BasicRoomGenerator::operator() (Area area) {
@@ -23,14 +22,14 @@ void BasicRoomGenerator::operator() (Area area) {
     
     for (int x = area.left(); x < area.right() - 1; ++ x)
         for (int y = area.top(); y < area.bottom() - 1; ++ y)
-            level->at(x, y) = (debugTiles ? Level::Tile::ROOM 
-                                          : Level::Tile::EMPTY);
+            level->at(x, y) = (debugTiles_ ? Level::Tile::ROOM 
+                                           : Level::Tile::EMPTY);
     
     for (int y : area.rightPassages())
-        level->at(area.right() - 1, y) = (debugTiles 
+        level->at(area.right() - 1, y) = (debugTiles_ 
             ? Level::Tile::ROOM_ENTRANCE : Level::Tile::EMPTY);
     
     for (int x : area.bottomPassages())
-        level->at(x, area.bottom() - 1) = (debugTiles 
+        level->at(x, area.bottom() - 1) = (debugTiles_ 
             ? Level::Tile::ROOM_ENTRANCE : Level::Tile::EMPTY);
 }

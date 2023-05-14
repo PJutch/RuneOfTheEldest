@@ -15,7 +15,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "RandomSizeRoomGenerator.hpp"
 
-#include "../debug.hpp"
 #include "../assert.hpp"
 
 Area RandomSizeRoomGenerator::randomRoomIn(const Area& area) {
@@ -149,14 +148,14 @@ void RandomSizeRoomGenerator::verticalPassageEnd(Area& room, int x, int y) {
 
 void RandomSizeRoomGenerator::horizontalPassage(int left, int right, int y) {
     for (int x = left; x < right; ++ x)
-        level->at(x, y) = (debugTiles ? Level::Tile::PASSAGE
-                                      : Level::Tile::EMPTY);
+        level->at(x, y) = (debugTiles_ ? Level::Tile::PASSAGE
+                                       : Level::Tile::EMPTY);
 }
 
 void RandomSizeRoomGenerator::verticalPassage(int top, int bottom, int x) {
     for (int y = top; y < bottom; ++ y)
-        level->at(x, y) = (debugTiles ? Level::Tile::PASSAGE
-                                      : Level::Tile::EMPTY);
+        level->at(x, y) = (debugTiles_ ? Level::Tile::PASSAGE
+                                       : Level::Tile::EMPTY);
 }
 
 void RandomSizeRoomGenerator::operator() (Area area) {

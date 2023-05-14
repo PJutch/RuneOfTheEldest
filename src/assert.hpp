@@ -17,9 +17,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define ASSERT_HPP_
 
 #include "Exception.hpp"
-#include "debug.hpp"
 
 #include <format>
+
+const bool enableAssertions = false;
 
 inline std::string assertion_message(std::string condition, 
                               std::string message = "") noexcept {

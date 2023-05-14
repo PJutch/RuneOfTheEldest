@@ -2,12 +2,12 @@
 
 Game::Game(std::shared_ptr<sf::RenderWindow> window_, 
            std::shared_ptr<Level> level_, 
-           std::unique_ptr<Renderer> renderer_,
+           std::unique_ptr<Renderer> newRenderer,
             DungeonGenerator newDungeonGenerator,
            LoggerFactory& loggerFactory) : 
     window{std::move(window_)}, 
     level{std::move(level_)}, 
-    renderer{std::move(renderer_)},
+    renderer_{std::move(newRenderer)},
     dungeonGenerator_{std::move(newDungeonGenerator)},
     generationLogger{loggerFactory.create("generation")} {} 
 
@@ -38,9 +38,9 @@ void Game::run() {
             handleEvent(event);
 
         sf::Time elapsedTime = clock.restart();
-        renderer->update(elapsedTime);
+        renderer().update(elapsedTime);
 
-        renderer->draw();
+        renderer().draw();
     }
 }
 

@@ -17,8 +17,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Exception.hpp"
 
-#include "debug.hpp"
-
 class TextureLoadError : public RuntimeError {
     using RuntimeError::RuntimeError;
 };
@@ -37,8 +35,8 @@ sf::View createFullscreenView(sf::Vector2f center,
 
 Renderer::Renderer(std::shared_ptr<sf::RenderWindow> window_, 
                    std::shared_ptr<Level> level_) :
-        window{std::move(window_)}, level{std::move(level_)},
-        levelView{createFullscreenView(512, window->getSize())} {
+        levelView{createFullscreenView(512, window_->getSize())},
+        window{std::move(window_)}, level{std::move(level_)} {
     cameraPosition({0, 0});
     
     if (!tileTexture(Level::Tile::EMPTY).loadFromFile("resources/floor.png"))
@@ -65,7 +63,7 @@ void Renderer::drawLevel() {
         for (int y = 0; y < level->shape().y; ++ y)
             draw(level->at(x, y), {x, y});
     
-    if (renderAreas) drawAreas();
+    if (renderAreas_) drawAreas();
 }
 
 void Renderer::drawAreas() {
