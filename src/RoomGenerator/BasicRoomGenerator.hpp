@@ -27,7 +27,7 @@ class BasicRoomGenerator : public RoomGenerator {
 public:
     BasicRoomGenerator() = default;
 
-    void operator() (std::shared_ptr<Level> level, Area area) final;
+    void operator() (Level& level, Area area) final;
 
     void debugTiles(bool newDebugTiles = true) noexcept final {
         debugTiles_ = newDebugTiles;

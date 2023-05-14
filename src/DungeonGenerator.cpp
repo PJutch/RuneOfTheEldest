@@ -24,8 +24,8 @@ DungeonGenerator::DungeonGenerator(
     roomGenerator_{std::move(newRoomGenerator)},
     randomEngine{&randomEngine_} {}
 
-void DungeonGenerator::operator()(std::shared_ptr<Level> level) {
-    areas.emplace(shrinkTopLeft(level->bounds(), {1, 1}));
+void DungeonGenerator::operator()(Level& level) {
+    areas.emplace(shrinkTopLeft(level.bounds(), {1, 1}));
     while (!areas.empty()) {
         Area area = std::move(areas.front());
         areas.pop();
@@ -34,7 +34,7 @@ void DungeonGenerator::operator()(std::shared_ptr<Level> level) {
     }
 }
 
-void DungeonGenerator::processArea(std::shared_ptr<Level> level, Area area) {
+void DungeonGenerator::processArea(Level& level, Area area) {
     TROTE_ASSERT(area.left() >= 0);
     TROTE_ASSERT(area.top() >= 0);
     TROTE_ASSERT(area.width() >= minSize_);

@@ -16,7 +16,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef RENDERER_HPP_
 #define RENDERER_HPP_
 
-#include "Level.hpp"
+#include "World.hpp"
 
 #include "geometry.hpp"
 
@@ -29,7 +29,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 class Renderer {
 public:
     Renderer(std::shared_ptr<sf::RenderWindow> window, 
-             std::shared_ptr<Level> level);
+             std::shared_ptr<World> world);
 
     void renderAreas(bool newRenderAreas = true) noexcept {
         renderAreas_ = newRenderAreas;
@@ -49,7 +49,7 @@ private:
     std::array<sf::Texture, Level::totalTiles> tileTextures;
 
     std::shared_ptr<sf::RenderWindow> window;
-    std::shared_ptr<Level> level;
+    std::shared_ptr<World> world;
 
     sf::Texture& tileTexture(Level::Tile tile) noexcept {
         return tileTextures[static_cast<int>(tile)];
@@ -80,9 +80,13 @@ private:
                             worldPoint.y * tileSize.x);
     }
 
-    void drawLevel();
+    void drawWorld() {
+        draw((*world)[0]);
+    }
+
+    void draw(Level& level);
     void draw(Level::Tile tile, sf::Vector2i position);
-    void drawAreas();
+    void drawAreas(Level& level);
 
     void drawInWorldRect(sf::IntRect rect, 
         sf::Color fillColor, sf::Color outlineColor, float outlineThickness);

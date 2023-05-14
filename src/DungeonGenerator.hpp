@@ -48,7 +48,7 @@ public:
         return *roomGenerator_;
     }
 
-    void operator() (std::shared_ptr<Level> level);
+    void operator() (Level& level);
 private:
     std::unique_ptr<RoomGenerator> roomGenerator_;
     
@@ -59,7 +59,7 @@ private:
 
     RandomEngine* randomEngine;
 
-    void processArea(std::shared_ptr<Level> level, Area area);
+    void processArea(Level& level, Area area);
 
     bool canSplit(int dimension) const noexcept {
         return dimension > 2 * minSize_;

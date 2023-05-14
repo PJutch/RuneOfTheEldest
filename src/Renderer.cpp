@@ -34,9 +34,9 @@ sf::View createFullscreenView(sf::Vector2f center,
 }
 
 Renderer::Renderer(std::shared_ptr<sf::RenderWindow> window_, 
-                   std::shared_ptr<Level> level_) :
+                   std::shared_ptr<World> world_) :
         levelView{createFullscreenView(512, window_->getSize())},
-        window{std::move(window_)}, level{std::move(level_)} {
+        window{std::move(window_)}, world{std::move(world_)} {
     cameraPosition({0, 0});
     
     if (!tileTexture(Level::Tile::EMPTY).loadFromFile("resources/floor.png"))
@@ -56,18 +56,18 @@ Renderer::Renderer(std::shared_ptr<sf::RenderWindow> window_,
                 sf::Color::Blue);
 }
 
-void Renderer::drawLevel() {
+void Renderer::draw(Level& level) {
     window->setView(levelView);
 
-    for (int x = 0; x < level->shape().x; ++ x)
-        for (int y = 0; y < level->shape().y; ++ y)
-            draw(level->at(x, y), {x, y});
+    for (int x = 0; x < level.shape().x; ++ x)
+        for (int y = 0; y < level.shape().y; ++ y)
+            draw(level.at(x, y), {x, y});
     
-    if (renderAreas_) drawAreas();
+    if (renderAreas_) drawAreas(level);
 }
 
-void Renderer::drawAreas() {
-    for (sf::IntRect area : level->areas())
+void Renderer::drawAreas(Level& level) {
+    for (sf::IntRect area : level.areas())
         drawInWorldRect(area, sf::Color::Transparent, 
                                 sf::Color::Green, 1.0);
 }
@@ -94,7 +94,7 @@ void Renderer::drawInWorldRect(sf::IntRect rect,
 
 void Renderer::draw() {
     window->clear(sf::Color::Black);
-    drawLevel();
+    drawWorld();
     window->display();
 }
 

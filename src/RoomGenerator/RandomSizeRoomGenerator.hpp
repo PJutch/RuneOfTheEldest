@@ -29,7 +29,7 @@ class RandomSizeRoomGenerator : public RoomGenerator {
 public:
     RandomSizeRoomGenerator(RandomEngine& randomEngine_) : randomEngine{&randomEngine_} {}
 
-    void operator() (std::shared_ptr<Level> level, Area area) final;
+    void operator() (Level& level, Area area) final;
 
     void debugTiles(bool newDebugTiles = true) noexcept final {
         debugTiles_ = newDebugTiles;
@@ -44,19 +44,19 @@ private:
 
     Area randomRoomIn(const Area& area);
 
-    void leftPassage(std::shared_ptr<Level> level, const Area& area, Area& room, int y);
-    void topPassage(std::shared_ptr<Level> level, const Area& area, Area& room, int y);
-    void rightPassage(std::shared_ptr<Level> level, const Area& area, Area& room, int y);
-    void bottomPassage(std::shared_ptr<Level> level, const Area& area, Area& room, int y);
+    void leftPassage(Level& level, const Area& area, Area& room, int y);
+    void topPassage(Level& level, const Area& area, Area& room, int y);
+    void rightPassage(Level& level, const Area& area, Area& room, int y);
+    void bottomPassage(Level& level, const Area& area, Area& room, int y);
 
-    void bendedHorizontalPassage(std::shared_ptr<Level> level, Area& room, int x, int y);
-    void bendedVerticalPassage(std::shared_ptr<Level> level, Area& room, int x, int y);
+    void bendedHorizontalPassage(Level& level, Area& room, int x, int y);
+    void bendedVerticalPassage(Level& level, Area& room, int x, int y);
 
-    void horizontalPassageEnd(std::shared_ptr<Level> level, Area& room, int x, int y);
-    void verticalPassageEnd(std::shared_ptr<Level> level, Area& room, int x, int y);
+    void horizontalPassageEnd(Level& level, Area& room, int x, int y);
+    void verticalPassageEnd(Level& level, Area& room, int x, int y);
 
-    void horizontalPassage(std::shared_ptr<Level> level, int left, int right, int y);
-    void verticalPassage(std::shared_ptr<Level> level, int top, int bottom, int x);
+    void horizontalPassage(Level& level, int left, int right, int y);
+    void verticalPassage(Level& level, int top, int bottom, int x);
 };
 
 #endif

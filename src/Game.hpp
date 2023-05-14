@@ -31,7 +31,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 class Game {
 public:
     Game(std::shared_ptr<sf::RenderWindow> window, 
-         std::shared_ptr<Level> level, 
+         std::shared_ptr<World> world, 
          std::unique_ptr<Renderer> renderer,
          DungeonGenerator dungeonGenerator,
          LoggerFactory& loggerFactory);
@@ -55,7 +55,7 @@ public:
     void run();
 private:
     std::shared_ptr<sf::RenderWindow> window;
-    std::shared_ptr<Level> level;
+    std::shared_ptr<World> world;
     std::unique_ptr<Renderer> renderer_;
     DungeonGenerator dungeonGenerator_;
 

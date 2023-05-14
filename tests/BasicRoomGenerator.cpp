@@ -43,51 +43,51 @@ testing::AssertionResult hasSingleRoom(Level& level, sf::IntRect area) {
 }
 
 TEST(BasicRoomGenerator, generateRoom) {
-    auto level = std::make_shared<Level>();
-    level->generateBlank({10, 7});
+    Level level;
+    level.generateBlank({10, 7});
 
     sf::IntRect room{3, 2, 6, 5};
     BasicRoomGenerator{}(level, Area{ room });
 
-    EXPECT_TRUE(hasSingleRoom(*level, room));
+    EXPECT_TRUE(hasSingleRoom(level, room));
 }
 
 TEST(BasicRoomGenerator, generateRoomNearEdge) {
-    auto level = std::make_shared<Level>();
-    level->generateBlank({8, 7});
+    Level level;
+    level.generateBlank({8, 7});
 
     sf::IntRect room{1, 2, 7, 5};
     BasicRoomGenerator{}(level, Area{room});
 
-    EXPECT_TRUE(hasSingleRoom(*level, room));
+    EXPECT_TRUE(hasSingleRoom(level, room));
 }
 
 TEST(BasicRoomGenerator, generateRoom3x3) {
-    auto level = std::make_shared<Level>();
-    level->generateBlank({7, 7});
+    Level level;
+    level.generateBlank({7, 7});
 
     sf::IntRect room{3, 2, 3, 3};
     BasicRoomGenerator{}(level, Area{room});
 
-    EXPECT_TRUE(hasSingleRoom(*level, room));
+    EXPECT_TRUE(hasSingleRoom(level, room));
 }
 
 TEST(BasicRoomGenerator, generateRoom2x2) {
-    auto level = std::make_shared<Level>();
-    level->generateBlank({7, 7});
+    Level level;
+    level.generateBlank({7, 7});
 
     sf::IntRect room{3, 2, 2, 2};
     BasicRoomGenerator{}(level, Area{room});
 
-    EXPECT_TRUE(hasSingleRoom(*level, room));
+    EXPECT_TRUE(hasSingleRoom(level, room));
 }
 
 TEST(BasicRoomGenerator, generateRoom1x1) {
-    auto level = std::make_shared<Level>();
-    level->generateBlank({7, 7});
+    Level level;
+    level.generateBlank({7, 7});
 
     sf::IntRect room{3, 2, 1, 1};
     BasicRoomGenerator{}(level, Area{room});
 
-    EXPECT_TRUE(hasSingleRoom(*level, room));
+    EXPECT_TRUE(hasSingleRoom(level, room));
 }

@@ -17,19 +17,19 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "../assert.hpp"
 
-void BasicRoomGenerator::operator() (std::shared_ptr<Level> level, Area area) {
-    TROTE_ASSERT(level->isValidRect(area.bounds()));
+void BasicRoomGenerator::operator() (Level& level, Area area) {
+    TROTE_ASSERT(level.isValidRect(area.bounds()));
     
     for (int x = area.left(); x < area.right() - 1; ++ x)
         for (int y = area.top(); y < area.bottom() - 1; ++ y)
-            level->at(x, y) = (debugTiles_ ? Level::Tile::ROOM 
+            level.at(x, y) = (debugTiles_ ? Level::Tile::ROOM 
                                            : Level::Tile::EMPTY);
     
     for (int y : area.rightPassages())
-        level->at(area.right() - 1, y) = (debugTiles_ 
+        level.at(area.right() - 1, y) = (debugTiles_ 
             ? Level::Tile::ROOM_ENTRANCE : Level::Tile::EMPTY);
     
     for (int x : area.bottomPassages())
-        level->at(x, area.bottom() - 1) = (debugTiles_ 
+        level.at(x, area.bottom() - 1) = (debugTiles_ 
             ? Level::Tile::ROOM_ENTRANCE : Level::Tile::EMPTY);
 }
