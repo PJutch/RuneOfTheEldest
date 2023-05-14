@@ -21,10 +21,11 @@ if(    NOT TARGET sfml-system
     set(SFML_STATIC_LIBRARIES TRUE)
     FetchContent_Declare(
         SFML
+        URL ${CMAKE_CURRENT_LIST_DIR}/../deps/SFML-2.6.x.zip
         # GIT_REPOSITORY https://github.com/SFML/SFML
         # GIT_TAG origin/2.6.x
         DOWNLOAD_EXTRACT_TIMESTAMP true
-        FIND_PACKAGE_ARGS COMPONENTS system window graphics audio main
+        # FIND_PACKAGE_ARGS COMPONENTS system window graphics audio main
     )
     FetchContent_MakeAvailable(SFML)
 

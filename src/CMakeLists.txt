@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 # If not, see <https://www.gnu.org/licenses/>.
 
-add_library(sources)
+add_library(sources STATIC)
 
 target_sources(sources PRIVATE Game.cpp Level.cpp Renderer.cpp 
                                Area.cpp DungeonGenerator.cpp)
