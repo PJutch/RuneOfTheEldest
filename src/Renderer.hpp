@@ -19,17 +19,20 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "World.hpp"
 
 #include "geometry.hpp"
+#include "log.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
 
 #include <array>
+#include <string_view>
+#include <filesystem>
 
 class Renderer {
 public:
     Renderer(std::shared_ptr<sf::RenderWindow> window, 
-             std::shared_ptr<World> world);
+             std::shared_ptr<World> world, LoggerFactory& loggerFactory);
 
     void renderAreas(bool newRenderAreas = true) noexcept {
         renderAreas_ = newRenderAreas;
@@ -53,6 +56,8 @@ private:
     std::shared_ptr<sf::RenderWindow> window;
     std::shared_ptr<World> world;
 
+    std::shared_ptr<spdlog::logger> assetLogger;
+
     sf::Texture& tileTexture(Level::Tile tile) noexcept {
         return tileTextures[static_cast<int>(tile)];
     }
@@ -67,6 +72,9 @@ private:
         image.create(size.x, size.y, color);
         texture.loadFromImage(image);
     }
+
+    void loadTexture(sf::Texture& texture, std::string_view name, 
+                     const std::filesystem::path& file) const;
 
     sf::Vector2f cameraPosition() const noexcept {
         return cameraPosition_;

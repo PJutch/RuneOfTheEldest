@@ -34,26 +34,26 @@ sf::View createFullscreenView(sf::Vector2f center,
 }
 
 Renderer::Renderer(std::shared_ptr<sf::RenderWindow> window_, 
-                   std::shared_ptr<World> world_) :
+                   std::shared_ptr<World> world_, LoggerFactory& loggerFactory) :
         levelView{createFullscreenView(512, window_->getSize())},
-        window{std::move(window_)}, world{std::move(world_)} {
+        window{ std::move(window_) }, world{ std::move(world_) }, 
+        assetLogger{ loggerFactory.create("assets") }  {
     cameraPosition({0, 0});
     
-    if (!tileTexture(Level::Tile::EMPTY).loadFromFile("resources/floor.png"))
-        throw TextureLoadError{"Unable to load floor tile texture"};
+    loadTexture(tileTexture(Level::Tile::EMPTY ), "floor tile" , "resources/floor.png" );
+    loadTexture(tileTexture(Level::Tile::WALL  ), "wall tile"  , "resources/wall.png"  );
+    loadTexture(tileTexture(Level::Tile::UNSEEN), "unseen tile", "resources/unseen.png");
     
-    if (!tileTexture(Level::Tile::WALL).loadFromFile("resources/wall.png"))
-        throw TextureLoadError{"Unable to load wall tile texture"};
-    
-    if (!tileTexture(Level::Tile::UNSEEN).loadFromFile("resources/unseen.png"))
-        throw TextureLoadError{"Unable to load unseen tile texture"};
-    
-    fillTexture(tileTexture(Level::Tile::ROOM), tileSize, 
-                sf::Color::Red);
-    fillTexture(tileTexture(Level::Tile::ROOM_ENTRANCE), tileSize, 
-                sf::Color::Magenta);
-    fillTexture(tileTexture(Level::Tile::PASSAGE), tileSize, 
-                sf::Color::Blue);
+    assetLogger->info("Creating debug tile textures...");
+    fillTexture(tileTexture(Level::Tile::ROOM         ), tileSize, sf::Color::Red    );
+    fillTexture(tileTexture(Level::Tile::ROOM_ENTRANCE), tileSize, sf::Color::Magenta);
+    fillTexture(tileTexture(Level::Tile::PASSAGE      ), tileSize, sf::Color::Blue   );
+}
+
+void Renderer::loadTexture(sf::Texture& texture, std::string_view name, const std::filesystem::path& path) const {
+    assetLogger->info("Loading {} texture...", name);
+    if (!texture.loadFromFile(path.generic_string()))
+        throw TextureLoadError{ std::format("Unable to load {} texture", name) };
 }
 
 void Renderer::draw(Level& level) {
