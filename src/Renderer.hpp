@@ -42,7 +42,7 @@ public:
 private:
     bool renderAreas_ = false;
 
-    float cameraSpeed = 100.f;
+    float cameraSpeed = 300.f;
     sf::Vector2f cameraPosition_;
     int currentLevel = 0;
     sf::View levelView;
