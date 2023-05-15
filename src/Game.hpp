@@ -32,6 +32,7 @@ class Game {
 public:
     Game(std::shared_ptr<World> world, 
          std::shared_ptr<sf::RenderWindow> window,
+         std::shared_ptr<Camera> camera,
          std::unique_ptr<Renderer> renderer);
 
     World& world() noexcept {
@@ -55,6 +56,7 @@ private:
     std::shared_ptr<World> world_;
 
     std::shared_ptr<sf::RenderWindow> window;
+    std::shared_ptr<Camera> camera;
     std::unique_ptr<Renderer> renderer_;
 
     void handleEvent(sf::Event event);

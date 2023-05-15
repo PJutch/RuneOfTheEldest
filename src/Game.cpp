@@ -2,9 +2,11 @@
 
 Game::Game(std::shared_ptr<World> newWorld,
            std::shared_ptr<sf::RenderWindow> window_,
+           std::shared_ptr<Camera> camera_,
            std::unique_ptr<Renderer> newRenderer) :
     world_{std::move(newWorld)},
-    window{ std::move(window_) },
+    window{std::move(window_)},
+    camera{std::move(camera_)},
     renderer_{std::move(newRenderer)} {} 
 
 bool wasKeyPressed(sf::Event event, sf::Keyboard::Key key) noexcept {
@@ -21,7 +23,7 @@ void Game::run() {
             handleEvent(event);
 
         sf::Time elapsedTime = clock.restart();
-        renderer().update(elapsedTime);
+        camera->update(elapsedTime);
 
         renderer().draw();
     }
@@ -32,5 +34,5 @@ void Game::handleEvent(sf::Event event) {
         || wasKeyPressed(event, sf::Keyboard::Escape))
         window->close();
     else
-        renderer().handleEvent(event);
+        camera->handleEvent(event);
 }

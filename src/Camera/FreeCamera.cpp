@@ -1,0 +1,51 @@
+/* This file is part of the Rune of the Eldest.
+The Rune of the Eldest - Roguelike about the mage seeking for ancient knowledges
+Copyright (C) 2023  PJutch
+
+The Rune of the Eldest is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free Software Foundation,
+either version 3 of the License, or (at your option) any later version.
+
+The Rune of the Eldest is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
+If not, see <https://www.gnu.org/licenses/>. */
+
+#include "FreeCamera.hpp"
+
+#include "../geometry.hpp"
+#include "../View.hpp"
+
+FreeCamera::FreeCamera(std::shared_ptr<World> world_, std::shared_ptr<sf::RenderWindow> window) :
+    world{ std::move(world_) }, 
+    view_{ createFullscreenView(512, window->getSize()) } {}
+
+void FreeCamera::update(sf::Time elapsedTime) {
+    const float cameraSpeed = 300.f;
+
+    float moved = cameraSpeed * elapsedTime.asSeconds();
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+        view_.setCenter(subY(view_.getCenter(), moved));
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+        view_.setCenter(addY(view_.getCenter(), moved));
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+        view_.setCenter(subX(view_.getCenter(), moved));
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+        view_.setCenter(addX(view_.getCenter(), moved));
+}
+
+void FreeCamera::handleEvent(sf::Event event) {
+    if (event.type == event.KeyPressed) {
+        if (event.key.code == sf::Keyboard::PageUp) {
+            if (level_ > 0)
+                -- level_;
+        }
+        else if (event.key.code == sf::Keyboard::PageDown) {
+            if (level_ + 1 < world->size())
+                ++ level_;
+        }
+    }
+}

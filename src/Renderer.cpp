@@ -21,27 +21,14 @@ class TextureLoadError : public RuntimeError {
     using RuntimeError::RuntimeError;
 };
 
-template <typename T>
-sf::View createFullscreenView(float height, 
-                              sf::Vector2<T> screenSize) noexcept {
-    return sf::View{{0, 0, height * screenSize.x / screenSize.y, height}};
-}
-
-template <typename T>
-sf::View createFullscreenView(sf::Vector2f center, 
-        float height, sf::Vector2<T> screenSize) noexcept {
-    return sf::View{center, {height * screenSize.x / screenSize.y, height}};
-}
-
-Renderer::Renderer(std::shared_ptr<sf::RenderWindow> window_, 
+Renderer::Renderer(std::shared_ptr<Camera> camera,
+                   std::shared_ptr<sf::RenderWindow> window_,
                    std::shared_ptr<World> world_, std::shared_ptr<Player> player_, 
                    LoggerFactory& loggerFactory) :
-        levelView{createFullscreenView(512, window_->getSize())},
+        camera{std::move(camera)},
         world{ std::move(world_) }, player{ std::move(player_) },
         window{ std::move(window_) }, 
         assetLogger{ loggerFactory.create("assets") }  {
-    cameraPosition({0, 0});
-    
     loadTexture(tileTexture(Level::Tile::EMPTY ), "floor tile" , "resources/floor.png" );
     loadTexture(tileTexture(Level::Tile::WALL  ), "wall tile"  , "resources/wall.png"  );
     loadTexture(tileTexture(Level::Tile::UNSEEN), "unseen tile", "resources/unseen.png");
@@ -61,7 +48,7 @@ void Renderer::loadTexture(sf::Texture& texture, std::string_view name, const st
 }
 
 void Renderer::draw(Level& level) {
-    window->setView(levelView);
+    window->setView(camera->view());
 
     for (int x = 0; x < level.shape().x; ++ x)
         for (int y = 0; y < level.shape().y; ++ y)
@@ -77,10 +64,10 @@ void Renderer::drawAreas(Level& level) {
 }
 
 void Renderer::drawPlayer() {
-    if (currentLevel != player->level()) 
+    if (camera->level() != player->level()) 
         return;
 
-    window->setView(levelView);
+    window->setView(camera->view());
 
     sf::Sprite playerSprite;
     playerSprite.setTexture(playerTexture);
@@ -116,27 +103,3 @@ void Renderer::draw() {
     window->display();
 }
 
-void Renderer::update(sf::Time elapsedTime) {
-    float moved = cameraSpeed * elapsedTime.asSeconds();
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-        cameraPosition(subY(cameraPosition(), moved)); 
-    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-        cameraPosition(addY(cameraPosition(), moved)); 
-    
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-        cameraPosition(subX(cameraPosition(), moved)); 
-    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-        cameraPosition(addX(cameraPosition(), moved)); 
-}
-
-void Renderer::handleEvent(sf::Event event) {
-    if (event.type == event.KeyPressed) {
-        if (event.key.code == sf::Keyboard::PageUp) {
-            if (currentLevel > 0)
-                -- currentLevel;
-        } else if (event.key.code == sf::Keyboard::PageDown) {
-            if (currentLevel + 1 < world->size())
-                ++ currentLevel;
-        }
-    }
-}

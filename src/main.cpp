@@ -15,6 +15,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Game.hpp"
 #include "RoomGenerator/RandomSizeRoomGenerator.hpp"
+#include "Camera/FreeCamera.hpp"
 
 #include "log.hpp"
 #include "Exception.hpp"
@@ -59,7 +60,8 @@ int main() {
             boost::di::bind<sf::RenderWindow>.to(renderWindow),
             boost::di::bind<Level>.in(boost::di::singleton),
             boost::di::bind<RandomEngine>.to(randomEngine),
-            boost::di::bind<RoomGenerator>.to<RandomSizeRoomGenerator>()
+            boost::di::bind<RoomGenerator>.to<RandomSizeRoomGenerator>(),
+            boost::di::bind<Camera>.to<FreeCamera>()
         );
         auto game = injector.create<Game>();
 

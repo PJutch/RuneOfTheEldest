@@ -16,6 +16,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef RENDERER_HPP_
 #define RENDERER_HPP_
 
+#include "Camera/Camera.hpp"
+
 #include "World.hpp"
 #include "Player.hpp"
 
@@ -32,7 +34,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 class Renderer {
 public:
-    Renderer(std::shared_ptr<sf::RenderWindow> window, 
+    Renderer(std::shared_ptr<Camera> camera,
+             std::shared_ptr<sf::RenderWindow> window, 
              std::shared_ptr<World> world_, std::shared_ptr<Player> player_, 
              LoggerFactory& loggerFactory);
 
@@ -40,17 +43,11 @@ public:
         renderAreas_ = newRenderAreas;
     }
 
-    void handleEvent(sf::Event event);    
-    void update(sf::Time elapsedTime);
-
     void draw();
 private:
     bool renderAreas_ = false;
 
-    float cameraSpeed = 300.f;
-    sf::Vector2f cameraPosition_;
-    int currentLevel = 0;
-    sf::View levelView;
+    std::shared_ptr<Camera> camera;
 
     inline const static sf::Vector2i tileSize{16, 16};
     std::array<sf::Texture, Level::totalTiles> tileTextures;
@@ -82,22 +79,13 @@ private:
     void loadTexture(sf::Texture& texture, std::string_view name, 
                      const std::filesystem::path& file) const;
 
-    sf::Vector2f cameraPosition() const noexcept {
-        return cameraPosition_;
-    }
-
-    void cameraPosition(sf::Vector2f newPosition) noexcept {
-        cameraPosition_ = newPosition;
-        levelView.setCenter(cameraPosition_);
-    }
-
     sf::Vector2f toScreen(sf::Vector2i worldPoint) const noexcept {
         return sf::Vector2f(worldPoint.x * tileSize.x, 
                             worldPoint.y * tileSize.x);
     }
 
     void drawWorld() {
-        draw((*world)[currentLevel]);
+        draw((*world)[camera->level()]);
     }
 
     void drawPlayer();
