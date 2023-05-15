@@ -17,6 +17,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define RENDERER_HPP_
 
 #include "World.hpp"
+#include "Player.hpp"
 
 #include "geometry.hpp"
 #include "log.hpp"
@@ -32,7 +33,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 class Renderer {
 public:
     Renderer(std::shared_ptr<sf::RenderWindow> window, 
-             std::shared_ptr<World> world, LoggerFactory& loggerFactory);
+             std::shared_ptr<World> world_, std::shared_ptr<Player> player_, 
+             LoggerFactory& loggerFactory);
 
     void renderAreas(bool newRenderAreas = true) noexcept {
         renderAreas_ = newRenderAreas;
@@ -53,8 +55,12 @@ private:
     inline const static sf::Vector2i tileSize{16, 16};
     std::array<sf::Texture, Level::totalTiles> tileTextures;
 
-    std::shared_ptr<sf::RenderWindow> window;
+    sf::Texture playerTexture;
+
     std::shared_ptr<World> world;
+    std::shared_ptr<Player> player;
+
+    std::shared_ptr<sf::RenderWindow> window;
 
     std::shared_ptr<spdlog::logger> assetLogger;
 
@@ -94,6 +100,7 @@ private:
         draw((*world)[currentLevel]);
     }
 
+    void drawPlayer();
     void draw(Level& level);
     void draw(Level::Tile tile, sf::Vector2i position);
     void drawAreas(Level& level);

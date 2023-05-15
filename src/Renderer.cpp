@@ -34,15 +34,19 @@ sf::View createFullscreenView(sf::Vector2f center,
 }
 
 Renderer::Renderer(std::shared_ptr<sf::RenderWindow> window_, 
-                   std::shared_ptr<World> world_, LoggerFactory& loggerFactory) :
+                   std::shared_ptr<World> world_, std::shared_ptr<Player> player_, 
+                   LoggerFactory& loggerFactory) :
         levelView{createFullscreenView(512, window_->getSize())},
-        window{ std::move(window_) }, world{ std::move(world_) }, 
+        world{ std::move(world_) }, player{ std::move(player_) },
+        window{ std::move(window_) }, 
         assetLogger{ loggerFactory.create("assets") }  {
     cameraPosition({0, 0});
     
     loadTexture(tileTexture(Level::Tile::EMPTY ), "floor tile" , "resources/floor.png" );
     loadTexture(tileTexture(Level::Tile::WALL  ), "wall tile"  , "resources/wall.png"  );
     loadTexture(tileTexture(Level::Tile::UNSEEN), "unseen tile", "resources/unseen.png");
+
+    loadTexture(playerTexture, "player", "resources/player.png");
     
     assetLogger->info("Creating debug tile textures...");
     fillTexture(tileTexture(Level::Tile::ROOM         ), tileSize, sf::Color::Red    );
@@ -72,6 +76,19 @@ void Renderer::drawAreas(Level& level) {
                                 sf::Color::Green, 1.0);
 }
 
+void Renderer::drawPlayer() {
+    if (currentLevel != player->level()) 
+        return;
+
+    window->setView(levelView);
+
+    sf::Sprite playerSprite;
+    playerSprite.setTexture(playerTexture);
+    playerSprite.setPosition(toScreen(player->position()));
+
+    window->draw(playerSprite);
+}
+
 void Renderer::draw(Level::Tile tile, sf::Vector2i position) {
     sf::Sprite tileSprite;
     tileSprite.setTexture(tileTexture(tile));
@@ -95,6 +112,7 @@ void Renderer::drawInWorldRect(sf::IntRect rect,
 void Renderer::draw() {
     window->clear(sf::Color::Black);
     drawWorld();
+    drawPlayer();
     window->display();
 }
 

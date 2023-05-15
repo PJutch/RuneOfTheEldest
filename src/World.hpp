@@ -18,17 +18,20 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "DungeonGenerator.hpp"
 #include "Level.hpp"
+#include "Player.hpp"
 
 #include "log.hpp"
+#include "random.hpp"
 
 #include <vector>
 #include <memory>
 
 class World {
 public:
-	World(DungeonGenerator generator_, LoggerFactory& loggerFactory) :
-		generator{std::move(generator_)},
-		generationLogger{loggerFactory.create("generation")} {}
+	World(DungeonGenerator generator_,
+		  std::shared_ptr<Player> player_,
+		  RandomEngine& randomEngine_,
+		  LoggerFactory& loggerFactory);
 
 	DungeonGenerator& dungeonGenerator() noexcept {
 		return generator;
@@ -53,9 +56,12 @@ public:
 	void generate();
 private:
 	std::vector<Level> levels;
+	std::shared_ptr<Player> player;
 
 	DungeonGenerator generator;
 	std::shared_ptr<spdlog::logger> generationLogger;
+
+	RandomEngine* randomEngine;
 };
 
 #endif

@@ -1,10 +1,10 @@
 #include "Game.hpp"
 
-Game::Game(std::shared_ptr<sf::RenderWindow> window_, 
-           std::shared_ptr<World> newWorld,
-           std::unique_ptr<Renderer> newRenderer) : 
-    window{std::move(window_)}, 
+Game::Game(std::shared_ptr<World> newWorld,
+           std::shared_ptr<sf::RenderWindow> window_,
+           std::unique_ptr<Renderer> newRenderer) :
     world_{std::move(newWorld)},
+    window{ std::move(window_) },
     renderer_{std::move(newRenderer)} {} 
 
 bool wasKeyPressed(sf::Event event, sf::Keyboard::Key key) noexcept {

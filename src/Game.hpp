@@ -30,8 +30,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 class Game {
 public:
-    Game(std::shared_ptr<sf::RenderWindow> window, 
-         std::shared_ptr<World> world, 
+    Game(std::shared_ptr<World> world, 
+         std::shared_ptr<sf::RenderWindow> window,
          std::unique_ptr<Renderer> renderer);
 
     World& world() noexcept {
@@ -52,8 +52,9 @@ public:
 
     void run();
 private:
-    std::shared_ptr<sf::RenderWindow> window;
     std::shared_ptr<World> world_;
+
+    std::shared_ptr<sf::RenderWindow> window;
     std::unique_ptr<Renderer> renderer_;
 
     void handleEvent(sf::Event event);

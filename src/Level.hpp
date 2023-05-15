@@ -17,6 +17,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define LEVEL_HPP_
 
 #include "assert.hpp"
+#include "random.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
@@ -80,6 +81,8 @@ public:
     std::span<const sf::IntRect> areas() const noexcept {
         return areas_;
     }
+
+    sf::Vector2i randomEmptyPosition(RandomEngine& engine) const;
 private:
     sf::Vector2i shape_;
     std::vector<Tile> tiles;

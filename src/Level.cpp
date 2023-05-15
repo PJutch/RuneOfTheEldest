@@ -46,3 +46,12 @@ void Level::generateWalls() {
             }
                             
 }
+
+sf::Vector2i Level::randomEmptyPosition(RandomEngine& engine) const {
+    sf::Vector2i position;
+    do {
+        position.x = std::uniform_int_distribution{ 0, shape().x - 1 }(engine);
+        position.y = std::uniform_int_distribution{ 0, shape().y - 1 }(engine);
+    } while (at(position.x, position.y) != Tile::EMPTY);
+    return position;
+}
