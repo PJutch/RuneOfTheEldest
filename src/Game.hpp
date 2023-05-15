@@ -60,8 +60,6 @@ private:
     std::unique_ptr<Renderer> renderer_;
 
     void handleEvent(sf::Event event);
-
-    void generateLevel();
 };
 
 #endif
