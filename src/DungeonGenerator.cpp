@@ -35,10 +35,11 @@ void DungeonGenerator::operator()(Level& level) {
 }
 
 void DungeonGenerator::processArea(Level& level, Area area) {
-    TROTE_ASSERT(area.left() >= 0);
-    TROTE_ASSERT(area.top() >= 0);
+    TROTE_ASSERT(level.isValidRect(area.bounds()));
     TROTE_ASSERT(area.width() >= minSize_);
     TROTE_ASSERT(area.height() >= minSize_);
+
+    level.addArea(area.bounds());
 
     if (!canSplit(area.width()) && !canSplit(area.height())) {
         roomGenerator()(level, area);
