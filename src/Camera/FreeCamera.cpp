@@ -15,26 +15,22 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "FreeCamera.hpp"
 
-#include "../geometry.hpp"
-#include "../View.hpp"
-
-FreeCamera::FreeCamera(std::shared_ptr<World> world_, std::shared_ptr<sf::RenderWindow> window) :
-    world{ std::move(world_) }, 
-    view_{ createFullscreenView(512, window->getSize()) } {}
+FreeCamera::FreeCamera(std::shared_ptr<World> world_) :
+    world{ std::move(world_) } {}
 
 void FreeCamera::update(sf::Time elapsedTime) {
     const float cameraSpeed = 300.f;
 
     float moved = cameraSpeed * elapsedTime.asSeconds();
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-        view_.setCenter(subY(view_.getCenter(), moved));
+        position_.y -= moved;
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-        view_.setCenter(addY(view_.getCenter(), moved));
+        position_.y += moved;
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-        view_.setCenter(subX(view_.getCenter(), moved));
+        position_.x -= moved;
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-        view_.setCenter(addX(view_.getCenter(), moved));
+        position_.x += moved;
 }
 
 void FreeCamera::handleEvent(sf::Event event) {
@@ -42,8 +38,7 @@ void FreeCamera::handleEvent(sf::Event event) {
         if (event.key.code == sf::Keyboard::PageUp) {
             if (level_ > 0)
                 -- level_;
-        }
-        else if (event.key.code == sf::Keyboard::PageDown) {
+        } else if (event.key.code == sf::Keyboard::PageDown) {
             if (level_ + 1 < world->size())
                 ++ level_;
         }

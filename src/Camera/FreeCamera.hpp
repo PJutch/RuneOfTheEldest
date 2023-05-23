@@ -24,11 +24,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 class FreeCamera : public Camera {
 public:
-    FreeCamera(std::shared_ptr<World> world_, 
-               std::shared_ptr<sf::RenderWindow> window);
+    FreeCamera(std::shared_ptr<World> world_);
 
-    sf::View view() const final {
-        return view_;
+    sf::Vector2f position() const final {
+        return position_;
     }
 
     int level() const final {
@@ -38,7 +37,7 @@ public:
     void update(sf::Time elapsedTime) final;
     void handleEvent(sf::Event event) final;
 private:
-    sf::View view_;
+    sf::Vector2f position_;
     int level_ = 0;
 
     std::shared_ptr<World> world;

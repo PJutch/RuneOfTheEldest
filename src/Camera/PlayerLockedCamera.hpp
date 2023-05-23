@@ -20,31 +20,22 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "../Player.hpp"
 
-#include "../View.hpp"
-
 #include <memory>
 
 class PlayerLockedCamera : public Camera {
 public:
-    PlayerLockedCamera(std::shared_ptr<Player> player_,
-            std::shared_ptr<sf::RenderWindow> window) :
-        view_{ createFullscreenView(512, window->getSize()) },
+    PlayerLockedCamera(std::shared_ptr<Player> player_) :
         player{ std::move(player_) } {}
 
-    sf::View view() const final {
-        return view_;
+    sf::Vector2f position() const final {
+        auto [x, y] = player->position() * 16;
+        return sf::Vector2f(x, y);
     }
 
     int level() const final {
         return player->level();
     }
-
-    void update(sf::Time elapsedTime) final {
-        view_.setCenter(player->position().x * 16, player->position().y * 16);
-    }
 private:
-    sf::View view_;
-
     std::shared_ptr<Player> player;
 };
 

@@ -16,7 +16,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef CAMERA_HPP_
 #define CAMERA_HPP_
 
-#include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
 
@@ -24,7 +23,7 @@ class Camera {
 public:
     virtual ~Camera() = default;
 
-    virtual sf::View view() const = 0;
+    virtual sf::Vector2f position() const = 0;
     virtual int level() const = 0;
 
     virtual void handleEvent(sf::Event event) {}

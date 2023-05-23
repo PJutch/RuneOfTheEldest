@@ -15,6 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Renderer.hpp"
 
+#include "View.hpp"
+
 #include "Exception.hpp"
 
 class TextureLoadError : public RuntimeError {
@@ -48,8 +50,6 @@ void Renderer::loadTexture(sf::Texture& texture, std::string_view name, const st
 }
 
 void Renderer::draw(Level& level) {
-    window->setView(camera->view());
-
     for (int x = 0; x < level.shape().x; ++ x)
         for (int y = 0; y < level.shape().y; ++ y)
             draw(level.at(x, y), {x, y});
@@ -66,8 +66,6 @@ void Renderer::drawAreas(Level& level) {
 void Renderer::drawPlayer() {
     if (camera->level() != player->level()) 
         return;
-
-    window->setView(camera->view());
 
     sf::Sprite playerSprite;
     playerSprite.setTexture(playerTexture);
@@ -98,8 +96,11 @@ void Renderer::drawInWorldRect(sf::IntRect rect,
 
 void Renderer::draw() {
     window->clear(sf::Color::Black);
+
+    window->setView(createFullscreenView(camera->position(), 512, window->getSize()));
     drawWorld();
     drawPlayer();
+
     window->display();
 }
 
