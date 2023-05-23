@@ -62,7 +62,7 @@ int main() {
             boost::di::bind<Level>.in(boost::di::singleton),
             boost::di::bind<RandomEngine>.to(randomEngine),
             boost::di::bind<RoomGenerator>.to<RandomSizeRoomGenerator>(),
-            boost::di::bind<Camera>.to<PlayerLockedCamera>()
+            boost::di::bind<Camera>.to<FreeCamera>()
         );
         auto game = injector.create<Game>();
 

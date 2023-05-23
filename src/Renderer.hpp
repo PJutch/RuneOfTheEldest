@@ -18,6 +18,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Camera/Camera.hpp"
 
+#include "View.hpp"
+
 #include "World.hpp"
 #include "Player.hpp"
 
@@ -79,9 +81,21 @@ private:
     void loadTexture(sf::Texture& texture, std::string_view name, 
                      const std::filesystem::path& file) const;
 
-    sf::Vector2f toScreen(sf::Vector2i worldPoint) const noexcept {
-        return sf::Vector2f(worldPoint.x * tileSize.x, 
-                            worldPoint.y * tileSize.x);
+    sf::Vector2f toScreen(sf::Vector2i worldVector) const noexcept {
+        return toScreen(worldVector.x, worldVector.y);
+    }
+
+    sf::Vector2f toScreen(sf::Vector2f worldVector) const noexcept {
+        return toScreen(worldVector.x, worldVector.y);
+    }
+
+    sf::Vector2f toScreen(float worldX, float worldY) const noexcept {
+        return { worldX * tileSize.x, worldY * tileSize.y };
+    }
+
+    void worldScreenView() noexcept {
+        auto cameraPos = toScreen(camera->position());
+        window->setView(createFullscreenView(cameraPos, 512, window->getSize()));
     }
 
     void drawWorld() {

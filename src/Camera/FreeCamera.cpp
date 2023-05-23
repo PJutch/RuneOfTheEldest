@@ -19,7 +19,7 @@ FreeCamera::FreeCamera(std::shared_ptr<World> world_) :
     world{ std::move(world_) } {}
 
 void FreeCamera::update(sf::Time elapsedTime) {
-    const float cameraSpeed = 300.f;
+    const float cameraSpeed = 40.f;
 
     float moved = cameraSpeed * elapsedTime.asSeconds();
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))

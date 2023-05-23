@@ -28,7 +28,7 @@ public:
         player{ std::move(player_) } {}
 
     sf::Vector2f position() const final {
-        auto [x, y] = player->position() * 16;
+        auto [x, y] = player->position();
         return sf::Vector2f(x, y);
     }
 

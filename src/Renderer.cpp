@@ -15,8 +15,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Renderer.hpp"
 
-#include "View.hpp"
-
 #include "Exception.hpp"
 
 class TextureLoadError : public RuntimeError {
@@ -84,8 +82,8 @@ void Renderer::draw(Level::Tile tile, sf::Vector2i position) {
 
 void Renderer::drawInWorldRect(sf::IntRect rect, 
         sf::Color fillColor, sf::Color outlineColor, float outlineThickness) {
-    sf::RectangleShape rectShape{toScreen({rect.width, rect.height})};
-    rectShape.setPosition(toScreen({rect.left, rect.top}));
+    sf::RectangleShape rectShape{toScreen(rect.width, rect.height)};
+    rectShape.setPosition(toScreen(rect.left, rect.top));
 
     rectShape.setFillColor(fillColor);
     rectShape.setOutlineColor(outlineColor);
@@ -97,10 +95,9 @@ void Renderer::drawInWorldRect(sf::IntRect rect,
 void Renderer::draw() {
     window->clear(sf::Color::Black);
 
-    window->setView(createFullscreenView(camera->position(), 512, window->getSize()));
+    worldScreenView();
     drawWorld();
     drawPlayer();
 
     window->display();
 }
-
