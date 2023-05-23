@@ -49,6 +49,7 @@ int main() {
             createSfString("The Rune of the Eldest"), 
             sf::Style::Fullscreen
         );
+        renderWindow->setVerticalSyncEnabled(true);
 
         SeedT seed = std::random_device{}();
         RandomEngine randomEngine{seed};
