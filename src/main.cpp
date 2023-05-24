@@ -17,6 +17,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "RoomGenerator/RandomSizeRoomGenerator.hpp"
 #include "Camera/FreeCamera.hpp"
 #include "Camera/PlayerLockedCamera.hpp"
+#include "Camera/SwitchableCamera.hpp"
 
 #include "log.hpp"
 #include "Exception.hpp"
@@ -63,7 +64,8 @@ int main() {
             boost::di::bind<Level>.in(boost::di::singleton),
             boost::di::bind<RandomEngine>.to(randomEngine),
             boost::di::bind<RoomGenerator>.to<RandomSizeRoomGenerator>(),
-            boost::di::bind<Camera>.to<FreeCamera>()
+            boost::di::bind<Camera*[]>.to<PlayerLockedCamera, FreeCamera>(),
+            boost::di::bind<Camera>.to<SwitchableCamera>()
         );
         auto game = injector.create<Game>();
 

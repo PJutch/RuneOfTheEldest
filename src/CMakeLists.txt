@@ -16,7 +16,7 @@
 add_library(sources STATIC)
 
 target_sources(sources PRIVATE Game.cpp Level.cpp Renderer.cpp 
-                               Area.cpp DungeonGenerator.cpp "World.cpp" "Camera/FreeCamera.cpp")
+                               Area.cpp DungeonGenerator.cpp World.cpp Camera/FreeCamera.cpp Camera/SwitchableCamera.hpp)
 
 add_subdirectory(RoomGenerator)
 target_link_libraries(sources PRIVATE RoomGenerator)
