@@ -39,6 +39,10 @@ public:
 
     const static int totalTiles = static_cast<int>(Tile::TOTAL_);
 
+    static bool isPassable(Tile tile) {
+        return tile != Tile::WALL && tile != Tile::UNSEEN;
+    }
+
     bool isValidX(int x) const noexcept {
         return 0 <= x && x < shape().x;
     }

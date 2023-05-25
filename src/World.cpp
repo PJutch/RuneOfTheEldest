@@ -15,33 +15,17 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "World.hpp"
 
-World::World(DungeonGenerator generator_,
-	         std::shared_ptr<Player> player_,
-	         RandomEngine& randomEngine_,
-	         LoggerFactory& loggerFactory) :
-	player{std::move(player_)},
-	generator{ std::move(generator_) },
-	generationLogger{ loggerFactory.create("generation") },
-	randomEngine{ &randomEngine_ } {}
-
-void World::generate() {
-	generationLogger->info("Started");
-	levels.resize(10);
+void World::generate(std::shared_ptr<spdlog::logger> logger) {
+    levels.resize(10);
 	for (int i = 0; i < levels.size(); ++ i) {
-		generationLogger->info("Generating level {}...", i);
+		logger->info("Generating level {}...", i);
 
 		levels[i].generateBlank({50, 50});
 
-		generationLogger->info("Generating dungeon...");
+		logger->info("Generating dungeon...");
 		generator(levels[i]);
 
-		generationLogger->info("Generating walls...");
+		logger->info("Generating walls...");
 		levels[i].generateWalls();
 	}
-
-	generationLogger->info("Placing player...");
-	player->level(0);
-	player->position((*this)[player->level()].randomEmptyPosition(*randomEngine));
-
-	generationLogger->info("Finished");
 }

@@ -13,47 +13,14 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef WORLD_HPP_
-#define WORLD_HPP_
+#include "Player.hpp"
 
-#include "DungeonGenerator.hpp"
-#include "Level.hpp"
-
-#include "log.hpp"
-#include "random.hpp"
-
-#include <vector>
-#include <memory>
-
-class World {
-public:
-	World(DungeonGenerator generator_) : 
-		generator{ std::move(generator_) } {}
-
-	DungeonGenerator& dungeonGenerator() noexcept {
-		return generator;
-	}
-
-	const DungeonGenerator& dungeonGenerator() const noexcept {
-		return generator;
-	}
-
-	Level& operator[] (int index) {
-		return levels[index];
-	}
-
-	const Level& operator[] (int index) const {
-		return levels[index];
-	}
-
-	int size() const noexcept {
-		return levels.size();
-	}
-
-	void generate(std::shared_ptr<spdlog::logger> logger);
-private:
-	std::vector<Level> levels;
-	DungeonGenerator generator;
-};
-
-#endif
+void Player::handleEvent(sf::Event event) {
+	if (event.type == sf::Event::KeyPressed)
+		switch (event.key.code) {
+		case sf::Keyboard::W: tryMove({  0, -1 }); break;
+		case sf::Keyboard::S: tryMove({  0,  1 }); break;
+		case sf::Keyboard::A: tryMove({ -1,  0 }); break;
+		case sf::Keyboard::D: tryMove({  1,  0 }); break;
+		}
+}

@@ -20,6 +20,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Renderer.hpp"
 #include "DungeonGenerator.hpp"
 
+#include "random.hpp"
 #include "log.hpp"
 
 #include <SFML/Graphics.hpp>
@@ -34,7 +35,9 @@ public:
          std::shared_ptr<Player> player,
          std::shared_ptr<sf::RenderWindow> window,
          std::shared_ptr<Camera> camera,
-         std::unique_ptr<Renderer> renderer);
+         std::unique_ptr<Renderer> renderer,
+         RandomEngine& randomEngine,
+         LoggerFactory& loggerFactory);
 
     World& world() noexcept {
         return *world_;
@@ -61,6 +64,10 @@ private:
     std::shared_ptr<Camera> camera;
     std::unique_ptr<Renderer> renderer_;
 
+    RandomEngine* randomEngine;
+    std::shared_ptr<spdlog::logger> generationLogger;
+
+    void generate();
     void handleEvent(sf::Event event);
 };
 
