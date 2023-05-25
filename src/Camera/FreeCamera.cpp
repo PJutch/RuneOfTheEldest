@@ -15,6 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "FreeCamera.hpp"
 
+#include "../Event.hpp"
+
 FreeCamera::FreeCamera(std::shared_ptr<World> world_) :
     world{ std::move(world_) } {}
 
@@ -34,13 +36,11 @@ void FreeCamera::update(sf::Time elapsedTime) {
 }
 
 void FreeCamera::handleEvent(sf::Event event) {
-    if (event.type == event.KeyPressed) {
-        if (event.key.code == sf::Keyboard::PageUp) {
-            if (level_ > 0)
-                -- level_;
-        } else if (event.key.code == sf::Keyboard::PageDown) {
-            if (level_ + 1 < world->size())
-                ++ level_;
-        }
+    if (wasKeyPressed(event, sf::Keyboard::PageUp)) {
+        if (level_ > 0)
+            --level_;
+    } else if (wasKeyPressed(event, sf::Keyboard::PageDown)) {
+        if (level_ + 1 < world->size())
+            ++ level_;
     }
 }

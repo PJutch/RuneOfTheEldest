@@ -1,4 +1,21 @@
+/* This file is part of the Rune of the Eldest.
+The Rune of the Eldest - Roguelike about the mage seeking for ancient knowledges
+Copyright (C) 2023  PJutch
+
+The Rune of the Eldest is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free Software Foundation,
+either version 3 of the License, or (at your option) any later version.
+
+The Rune of the Eldest is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
+If not, see <https://www.gnu.org/licenses/>. */
+
 #include "Game.hpp"
+
+#include "Event.hpp"
 
 Game::Game(std::shared_ptr<World> newWorld,
            std::shared_ptr<sf::RenderWindow> window_,
@@ -8,10 +25,6 @@ Game::Game(std::shared_ptr<World> newWorld,
     window{std::move(window_)},
     camera{std::move(camera_)},
     renderer_{std::move(newRenderer)} {} 
-
-bool wasKeyPressed(sf::Event event, sf::Keyboard::Key key) noexcept {
-    return event.type == sf::Event::KeyPressed && event.key.code == key;
-}
 
 void Game::run() {
     world().generate();
@@ -30,8 +43,8 @@ void Game::run() {
 }
 
 void Game::handleEvent(sf::Event event) {
-    if (event.type == sf::Event::Closed
-        || wasKeyPressed(event, sf::Keyboard::Escape))
+    if (event.type == sf::Event::Closed 
+     || wasKeyPressed(event, sf::Keyboard::Escape))
         window->close();
     else
         camera->handleEvent(event);

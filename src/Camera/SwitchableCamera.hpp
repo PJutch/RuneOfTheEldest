@@ -18,6 +18,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Camera.hpp"
 
+#include "../Event.hpp"
+
 #include <vector>
 #include <memory>
 
@@ -39,7 +41,7 @@ public:
     }
 
     void handleEvent(sf::Event event) final {
-        if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::V)
+        if (wasKeyPressed(event, sf::Keyboard::V))
             nextCamera();
         else
             currentCamera().handleEvent(event);
