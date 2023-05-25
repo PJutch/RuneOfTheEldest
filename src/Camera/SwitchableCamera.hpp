@@ -34,6 +34,10 @@ public:
         return currentCamera().level();
     }
 
+    void reset(sf::Vector2f newPosition, int newLevel) final {
+        currentCamera().reset(newPosition, newLevel);
+    }
+
     void handleEvent(sf::Event event) final {
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::V)
             nextCamera();
@@ -57,8 +61,13 @@ protected:
     }
 
     void nextCamera() noexcept {
+        sf::Vector2f oldPosition = currentCamera().position();
+        int oldLevel = currentCamera().level();
+
         ++currentCameraIndex;
         currentCameraIndex %= std::ssize(cameras);
+
+        currentCamera().reset(oldPosition, oldLevel);
     }
 };
 

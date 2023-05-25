@@ -26,6 +26,8 @@ public:
     virtual sf::Vector2f position() const = 0;
     virtual int level() const = 0;
 
+    virtual void reset(sf::Vector2f position, int level) = 0;
+
     virtual void handleEvent(sf::Event event) {}
     virtual void update(sf::Time elapsedTime) {}
 };

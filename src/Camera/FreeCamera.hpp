@@ -34,6 +34,11 @@ public:
         return level_;
     }
 
+    void reset(sf::Vector2f newPosition, int newLevel) final {
+        position_ = newPosition;
+        level_ = newLevel;
+    }
+
     void update(sf::Time elapsedTime) final;
     void handleEvent(sf::Event event) final;
 private:

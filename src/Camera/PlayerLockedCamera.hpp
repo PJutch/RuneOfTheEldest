@@ -35,6 +35,8 @@ public:
     int level() const final {
         return player->level();
     }
+
+    void reset(sf::Vector2f, int) final {}
 private:
     std::shared_ptr<Player> player;
 };
