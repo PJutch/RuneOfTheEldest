@@ -13,15 +13,8 @@
 # You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 # If not, see <https://www.gnu.org/licenses/>.
 
-add_library(sources STATIC)
+add_library(Camera STATIC)
 
-target_sources(sources PRIVATE Game.cpp Level.cpp Renderer.cpp 
-                               Area.cpp DungeonGenerator.cpp World.cpp)
+target_sources(Camera PRIVATE FreeCamera.cpp SwitchableCamera.cpp)
 
-add_subdirectory(RoomGenerator)
-target_link_libraries(sources PRIVATE RoomGenerator)
-
-add_subdirectory(Camera)
-target_link_libraries(sources PRIVATE Camera)
-
-target_link_libraries(sources PUBLIC dependencies)
+target_link_libraries(Camera PUBLIC dependencies)
