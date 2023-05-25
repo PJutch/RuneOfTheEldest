@@ -67,7 +67,7 @@ void Game::generate() {
 
     generationLogger->info("Placing player...");
     player->level(0);
-    player->position((*world_)[player->level()].randomEmptyPosition(*randomEngine));
+    player->position((*world_)[player->level()].randomPosition(*randomEngine, &isPassable));
 
     generationLogger->info("Finished");
 }

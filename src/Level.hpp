@@ -82,7 +82,28 @@ public:
         return areas_;
     }
 
-    sf::Vector2i randomEmptyPosition(RandomEngine& engine) const;
+    sf::Vector2i randomPosition(RandomEngine& engine) const {
+        return { std::uniform_int_distribution{ 0, shape().x - 1 }(engine),
+                 std::uniform_int_distribution{ 0, shape().y - 1 }(engine) };
+    }
+
+    template <typename Pred> 
+        requires std::convertible_to<std::invoke_result_t<Pred, sf::Vector2i, const Level&>, bool>
+    sf::Vector2i randomPosition(RandomEngine& engine, Pred&& pred) const {
+        sf::Vector2i pos;
+        do {
+            pos = randomPosition(engine);
+        } while (!std::invoke(pred, pos, *this));
+        return pos;
+    }
+
+    template <typename Pred>
+        requires std::convertible_to<std::invoke_result_t<Pred, Tile>, bool>
+    sf::Vector2i randomPosition(RandomEngine& engine, Pred&& pred) const {
+        return randomPosition(engine, [&pred](sf::Vector2i pos, const Level& level) {
+            return std::invoke(pred, level.at(pos));
+        });
+    }
 private:
     sf::Vector2i shape_;
     std::vector<Tile> tiles;
