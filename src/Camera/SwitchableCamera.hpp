@@ -40,6 +40,10 @@ public:
         currentCamera().reset(newPosition, newLevel);
     }
 
+    bool shouldStealControl() const final {
+        return currentCamera().shouldStealControl();
+    }
+
     void handleEvent(sf::Event event) final;
 
     void update(sf::Time elapsedTime) final {

@@ -52,5 +52,7 @@ void Game::handleEvent(sf::Event event) {
     }
        
     camera->handleEvent(event);
-    player->handleEvent(event);
+
+    if (!camera->shouldStealControl())
+        player->handleEvent(event);
 }

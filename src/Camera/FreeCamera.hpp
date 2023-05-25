@@ -26,17 +26,21 @@ class FreeCamera : public Camera {
 public:
     FreeCamera(std::shared_ptr<World> world_);
 
-    sf::Vector2f position() const final {
+    sf::Vector2f position() const noexcept final {
         return position_;
     }
 
-    int level() const final {
+    int level() const noexcept final {
         return level_;
     }
 
-    void reset(sf::Vector2f newPosition, int newLevel) final {
+    void reset(sf::Vector2f newPosition, int newLevel) noexcept final {
         position_ = newPosition;
         level_ = newLevel;
+    }
+
+    bool shouldStealControl() const noexcept final { 
+        return true;
     }
 
     void update(sf::Time elapsedTime) final;

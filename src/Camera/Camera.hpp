@@ -28,6 +28,10 @@ public:
 
     virtual void reset(sf::Vector2f position, int level) = 0;
 
+    virtual bool shouldStealControl() const {
+        return false; 
+    }
+
     virtual void handleEvent(sf::Event event) {}
     virtual void update(sf::Time elapsedTime) {}
 };
