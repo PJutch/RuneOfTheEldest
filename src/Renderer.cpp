@@ -29,16 +29,16 @@ Renderer::Renderer(std::shared_ptr<Camera> camera,
         world{ std::move(world_) }, player{ std::move(player_) },
         window{ std::move(window_) }, 
         assetLogger{ loggerFactory.create("assets") }  {
-    loadTexture(tileTexture(Level::Tile::EMPTY ), "floor tile" , "resources/floor.png" );
-    loadTexture(tileTexture(Level::Tile::WALL  ), "wall tile"  , "resources/wall.png"  );
-    loadTexture(tileTexture(Level::Tile::UNSEEN), "unseen tile", "resources/unseen.png");
+    loadTexture(tileTexture(Tile::EMPTY ), "floor tile" , "resources/floor.png" );
+    loadTexture(tileTexture(Tile::WALL  ), "wall tile"  , "resources/wall.png"  );
+    loadTexture(tileTexture(Tile::UNSEEN), "unseen tile", "resources/unseen.png");
 
     loadTexture(playerTexture, "player", "resources/player.png");
     
     assetLogger->info("Creating debug tile textures...");
-    fillTexture(tileTexture(Level::Tile::ROOM         ), tileSize, sf::Color::Red    );
-    fillTexture(tileTexture(Level::Tile::ROOM_ENTRANCE), tileSize, sf::Color::Magenta);
-    fillTexture(tileTexture(Level::Tile::PASSAGE      ), tileSize, sf::Color::Blue   );
+    fillTexture(tileTexture(Tile::ROOM         ), tileSize, sf::Color::Red    );
+    fillTexture(tileTexture(Tile::ROOM_ENTRANCE), tileSize, sf::Color::Magenta);
+    fillTexture(tileTexture(Tile::PASSAGE      ), tileSize, sf::Color::Blue   );
 }
 
 void Renderer::loadTexture(sf::Texture& texture, std::string_view name, const std::filesystem::path& path) const {
@@ -72,7 +72,7 @@ void Renderer::drawPlayer() {
     window->draw(playerSprite);
 }
 
-void Renderer::draw(Level::Tile tile, sf::Vector2i position) {
+void Renderer::draw(Tile tile, sf::Vector2i position) {
     sf::Sprite tileSprite;
     tileSprite.setTexture(tileTexture(tile));
     tileSprite.setPosition(toScreen(position));

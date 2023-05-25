@@ -16,6 +16,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef LEVEL_HPP_
 #define LEVEL_HPP_
 
+#include "Tile.hpp"
+
 #include "assert.hpp"
 #include "random.hpp"
 
@@ -27,22 +29,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 class Level{
 public:
-    enum class Tile {
-        EMPTY,
-        WALL,
-        UNSEEN,
-        ROOM,
-        ROOM_ENTRANCE,
-        PASSAGE,
-        TOTAL_
-    };
-
-    const static int totalTiles = static_cast<int>(Tile::TOTAL_);
-
-    static bool isPassable(Tile tile) {
-        return tile != Tile::WALL && tile != Tile::UNSEEN;
-    }
-
     bool isValidX(int x) const noexcept {
         return 0 <= x && x < shape().x;
     }

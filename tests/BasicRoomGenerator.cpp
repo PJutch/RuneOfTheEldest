@@ -29,12 +29,12 @@ testing::AssertionResult hasSingleRoom(Level& level, sf::IntRect area) {
     for (int x = 0; x < level.shape().x; ++ x)
         for (int y = 0; y < level.shape().y; ++ y)
             if (room.contains(x, y)) {
-                if (level.at(x, y) != Level::Tile::EMPTY)
+                if (level.at(x, y) != Tile::EMPTY)
                     return testing::AssertionFailure()
                          << "tile at " << x << ", " << y 
                          << " should be empty but it is not";
             } else
-                if (level.at(x, y) != Level::Tile::UNSEEN)
+                if (level.at(x, y) != Tile::UNSEEN)
                     return testing::AssertionFailure()
                          << "tile at " << x << ", " << y 
                          << " should be unseen but it is not";

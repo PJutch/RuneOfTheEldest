@@ -34,7 +34,7 @@ TEST(Level, generateBlank) {
 
     for (int x = 0; x < level.shape().x; ++ x)
         for (int y = 0; y < level.shape().y; ++ y)
-            EXPECT_EQ(level.at(x, y), Level::Tile::UNSEEN);
+            EXPECT_EQ(level.at(x, y), Tile::UNSEEN);
 }
 
 TEST(Level, generateWalls) {
@@ -44,13 +44,13 @@ TEST(Level, generateWalls) {
     Level level;
     level.generateBlank({shapeX, shapeY});
 
-    level.at(2, 2) = Level::Tile::EMPTY;
-    level.at(3, 2) = Level::Tile::EMPTY;
+    level.at(2, 2) = Tile::EMPTY;
+    level.at(3, 2) = Tile::EMPTY;
 
     level.generateWalls();
 
-    using enum Level::Tile;
-    std::array<std::array<Level::Tile, shapeX>, shapeY> result;
+    using enum Tile;
+    std::array<std::array<Tile, shapeX>, shapeY> result;
     result[0] = {UNSEEN, UNSEEN, UNSEEN, UNSEEN, UNSEEN, UNSEEN, UNSEEN};
     result[1] = {UNSEEN, WALL,   WALL,   WALL,   WALL,   UNSEEN, UNSEEN};
     result[2] = {UNSEEN, WALL,   EMPTY,  EMPTY,  WALL,   UNSEEN, UNSEEN};
@@ -69,12 +69,12 @@ TEST(Level, generateWalls1x1) {
     Level level;
     level.generateBlank({shapeX, shapeY});
 
-    level.at(2, 2) = Level::Tile::EMPTY;
+    level.at(2, 2) = Tile::EMPTY;
 
     level.generateWalls();
 
-    using enum Level::Tile;
-    std::array<std::array<Level::Tile, shapeX>, shapeY> result;
+    using enum Tile;
+    std::array<std::array<Tile, shapeX>, shapeY> result;
     result[0] = {UNSEEN, UNSEEN, UNSEEN, UNSEEN, UNSEEN};
     result[1] = {UNSEEN, WALL,   WALL,   WALL,   UNSEEN};
     result[2] = {UNSEEN, WALL,   EMPTY,  WALL,   UNSEEN};
@@ -93,12 +93,12 @@ TEST(Level, generateWallsNearEdge) {
     Level level;
     level.generateBlank({shapeX, shapeY});
 
-    level.at(1, 2) = Level::Tile::EMPTY;
+    level.at(1, 2) = Tile::EMPTY;
 
     level.generateWalls();
 
-    using enum Level::Tile;
-    std::array<std::array<Level::Tile, shapeX>, shapeY> result;
+    using enum Tile;
+    std::array<std::array<Tile, shapeX>, shapeY> result;
     result[0] = {UNSEEN, UNSEEN, UNSEEN, UNSEEN, UNSEEN};
     result[1] = {WALL,   WALL,   WALL,   UNSEEN, UNSEEN};
     result[2] = {WALL,   EMPTY,  WALL,   UNSEEN, UNSEEN};
@@ -117,12 +117,12 @@ TEST(Level, generateWallsOnEdge) {
     Level level;
     level.generateBlank({shapeX, shapeY});
 
-    level.at(0, 2) = Level::Tile::EMPTY;
+    level.at(0, 2) = Tile::EMPTY;
 
     level.generateWalls();
 
-    using enum Level::Tile;
-    std::array<std::array<Level::Tile, shapeX>, shapeY> result;
+    using enum Tile;
+    std::array<std::array<Tile, shapeX>, shapeY> result;
     result[0] = {UNSEEN, UNSEEN, UNSEEN};
     result[1] = {WALL,   WALL,   UNSEEN};
     result[2] = {EMPTY,  WALL,   UNSEEN};

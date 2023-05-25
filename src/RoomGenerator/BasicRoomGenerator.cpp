@@ -22,14 +22,14 @@ void BasicRoomGenerator::operator() (Level& level, Area area) {
     
     for (int x = area.left(); x < area.right() - 1; ++ x)
         for (int y = area.top(); y < area.bottom() - 1; ++ y)
-            level.at(x, y) = (debugTiles_ ? Level::Tile::ROOM 
-                                           : Level::Tile::EMPTY);
+            level.at(x, y) = (debugTiles_ ? Tile::ROOM 
+                                          : Tile::EMPTY);
     
     for (int y : area.rightPassages())
         level.at(area.right() - 1, y) = (debugTiles_ 
-            ? Level::Tile::ROOM_ENTRANCE : Level::Tile::EMPTY);
+            ? Tile::ROOM_ENTRANCE : Tile::EMPTY);
     
     for (int x : area.bottomPassages())
         level.at(x, area.bottom() - 1) = (debugTiles_ 
-            ? Level::Tile::ROOM_ENTRANCE : Level::Tile::EMPTY);
+            ? Tile::ROOM_ENTRANCE : Tile::EMPTY);
 }

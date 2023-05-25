@@ -52,7 +52,7 @@ private:
     std::shared_ptr<Camera> camera;
 
     inline const static sf::Vector2i tileSize{16, 16};
-    std::array<sf::Texture, Level::totalTiles> tileTextures;
+    std::array<sf::Texture, totalTiles> tileTextures;
 
     sf::Texture playerTexture;
 
@@ -63,11 +63,11 @@ private:
 
     std::shared_ptr<spdlog::logger> assetLogger;
 
-    sf::Texture& tileTexture(Level::Tile tile) noexcept {
+    sf::Texture& tileTexture(Tile tile) noexcept {
         return tileTextures[static_cast<int>(tile)];
     }
 
-    const sf::Texture& tileTexture(Level::Tile tile) const noexcept {
+    const sf::Texture& tileTexture(Tile tile) const noexcept {
         return tileTextures[static_cast<int>(tile)];
     }
 
@@ -104,7 +104,7 @@ private:
 
     void drawPlayer();
     void draw(Level& level);
-    void draw(Level::Tile tile, sf::Vector2i position);
+    void draw(Tile tile, sf::Vector2i position);
     void drawAreas(Level& level);
 
     void drawInWorldRect(sf::IntRect rect, 

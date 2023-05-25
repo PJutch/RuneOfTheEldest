@@ -50,14 +50,13 @@ private:
 	std::shared_ptr<World> world;
 
 	void tryMoveTo(sf::Vector2i newPosition) {
-		if (Level::isPassable((*world)[level_].at(newPosition.x, newPosition.y)))
+		if (isPassable((*world)[level_].at(newPosition.x, newPosition.y)))
 			position(newPosition);
 	}
 
 	void tryMove(sf::Vector2i offset) {
 		tryMoveTo(position() + offset);
 	}
-
 };
 
 #endif
