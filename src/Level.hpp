@@ -53,6 +53,16 @@ public:
         return tiles[x * shape().y + y];
     }
 
+    // unsafe
+    Tile& at(sf::Vector2i position) noexcept {
+        return at(position.x, position.y);
+    }
+
+    // unsafe
+    const Tile& at(sf::Vector2i position) const noexcept {
+        return at(position.x, position.y);
+    }
+
     sf::Vector2i shape() const noexcept {
         return shape_;
     }

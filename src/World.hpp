@@ -38,12 +38,44 @@ public:
 		return generator;
 	}
 
-	Level& operator[] (int index) {
-		return levels[index];
+	// unsafe
+	Level& operator[] (int level) {
+		return levels[level];
 	}
 
-	const Level& operator[] (int index) const {
-		return levels[index];
+	// unsafe
+	const Level& operator[] (int level) const {
+		return levels[level];
+	}
+
+	// unsafe
+	Tile& at(int x, int y, int level) noexcept {
+		return (*this)[level].at(x, y);
+	}
+
+	// unsafe
+	const Tile& at(int x, int y, int level) const noexcept {
+		return (*this)[level].at(x, y);
+	}
+
+	// unsafe
+	Tile& at(sf::Vector2i position, int level) noexcept {
+		return at(position.x, position.y, level);
+	}
+
+	// unsafe
+	const Tile& at(sf::Vector2i position, int level) const noexcept {
+		return at(position.x, position.y, level);
+	}
+
+	// unsafe
+	Tile& at(sf::Vector3i position) noexcept {
+		return at(position.x, position.y, position.z);
+	}
+
+	// unsafe
+	const Tile& at(sf::Vector3i position) const noexcept {
+		return at(position.x, position.y, position.z);
 	}
 
 	int size() const noexcept {
