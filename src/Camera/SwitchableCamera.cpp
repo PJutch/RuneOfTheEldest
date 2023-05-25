@@ -13,11 +13,21 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef EVENT_HPP_
-#define EVENT_HPP_
+#include "SwitchableCamera.hpp"
 
-inline bool wasKeyPressed(sf::Event event, sf::Keyboard::Key key) noexcept {
-    return event.type == sf::Event::KeyPressed && event.key.code == key;
+void SwitchableCamera::handleEvent(sf::Event event) {
+    if (wasKeyPressed(event, sf::Keyboard::V))
+        nextCamera();
+    else
+        currentCamera().handleEvent(event);
 }
 
-#endif
+void SwitchableCamera::nextCamera() noexcept {
+    sf::Vector2f oldPosition = currentCamera().position();
+    int oldLevel = currentCamera().level();
+
+    ++currentCameraIndex;
+    currentCameraIndex %= std::ssize(cameras);
+
+    currentCamera().reset(oldPosition, oldLevel);
+}

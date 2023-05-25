@@ -40,12 +40,7 @@ public:
         currentCamera().reset(newPosition, newLevel);
     }
 
-    void handleEvent(sf::Event event) final {
-        if (wasKeyPressed(event, sf::Keyboard::V))
-            nextCamera();
-        else
-            currentCamera().handleEvent(event);
-    }
+    void handleEvent(sf::Event event) final;
 
     void update(sf::Time elapsedTime) final {
         currentCamera().update(elapsedTime);
@@ -62,15 +57,7 @@ protected:
         return *cameras[currentCameraIndex];
     }
 
-    void nextCamera() noexcept {
-        sf::Vector2f oldPosition = currentCamera().position();
-        int oldLevel = currentCamera().level();
-
-        ++currentCameraIndex;
-        currentCameraIndex %= std::ssize(cameras);
-
-        currentCamera().reset(oldPosition, oldLevel);
-    }
+    void nextCamera() noexcept;
 };
 
 #endif
