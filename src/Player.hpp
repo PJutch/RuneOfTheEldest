@@ -16,6 +16,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef PLAYER_HPP_
 #define PLAYER_HPP_
 
+#include "Event.hpp"
+
 #include <SFML/System.hpp>
 
 class Player {
@@ -36,6 +38,16 @@ public:
 
 	void level(int newLevel) noexcept {
 		level_ = newLevel;
+	}
+
+	void handleEvent(sf::Event event) {
+		if (event.type == sf::Event::KeyPressed)
+			switch (event.key.code) {
+			case sf::Keyboard::W: -- position_.y; break;
+			case sf::Keyboard::S: ++ position_.y; break;
+			case sf::Keyboard::A: -- position_.x; break;
+			case sf::Keyboard::D: ++ position_.x; break;
+			}
 	}
 private:
 	sf::Vector2i position_;

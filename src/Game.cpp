@@ -18,10 +18,12 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Event.hpp"
 
 Game::Game(std::shared_ptr<World> newWorld,
+           std::shared_ptr<Player> player_,
            std::shared_ptr<sf::RenderWindow> window_,
            std::shared_ptr<Camera> camera_,
            std::unique_ptr<Renderer> newRenderer) :
     world_{std::move(newWorld)},
+    player{std::move(player_)},
     window{std::move(window_)},
     camera{std::move(camera_)},
     renderer_{std::move(newRenderer)} {} 
@@ -43,9 +45,12 @@ void Game::run() {
 }
 
 void Game::handleEvent(sf::Event event) {
-    if (event.type == sf::Event::Closed 
-     || wasKeyPressed(event, sf::Keyboard::Escape))
+    if (event.type == sf::Event::Closed
+     || wasKeyPressed(event, sf::Keyboard::Escape)) {
         window->close();
-    else
-        camera->handleEvent(event);
+        return;
+    }
+       
+    camera->handleEvent(event);
+    player->handleEvent(event);
 }

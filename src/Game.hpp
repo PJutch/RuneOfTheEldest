@@ -31,6 +31,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 class Game {
 public:
     Game(std::shared_ptr<World> world, 
+         std::shared_ptr<Player> player,
          std::shared_ptr<sf::RenderWindow> window,
          std::shared_ptr<Camera> camera,
          std::unique_ptr<Renderer> renderer);
@@ -54,6 +55,7 @@ public:
     void run();
 private:
     std::shared_ptr<World> world_;
+    std::shared_ptr<Player> player;
 
     std::shared_ptr<sf::RenderWindow> window;
     std::shared_ptr<Camera> camera;
