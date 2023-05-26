@@ -36,10 +36,10 @@ void FreeCamera::update(sf::Time elapsedTime) {
 }
 
 void FreeCamera::handleEvent(sf::Event event) {
-    if (wasKeyPressed(event, sf::Keyboard::PageUp)) {
+    if (wasKeyPressed(event, sf::Keyboard::Comma) && event.key.shift) {
         if (level_ > 0)
             --level_;
-    } else if (wasKeyPressed(event, sf::Keyboard::PageDown)) {
+    } else if (wasKeyPressed(event, sf::Keyboard::Period) && event.key.shift) {
         if (level_ + 1 < world->size())
             ++ level_;
     }
