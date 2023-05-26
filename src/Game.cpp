@@ -69,5 +69,8 @@ void Game::generate() {
     player->level(0);
     player->position((*world_)[player->level()].randomPosition(*randomEngine, &isPassable));
 
+    world_->at(0, 0, 0) = Tile::UP_STAIRS;
+    world_->at(1, 0, 0) = Tile::DOWN_STAIRS;
+
     generationLogger->info("Finished");
 }

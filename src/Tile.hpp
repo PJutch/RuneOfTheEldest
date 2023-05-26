@@ -23,6 +23,8 @@ enum class Tile {
     ROOM,
     ROOM_ENTRANCE,
     PASSAGE,
+    DOWN_STAIRS,
+    UP_STAIRS,
     TOTAL_
 };
 

@@ -33,6 +33,9 @@ Renderer::Renderer(std::shared_ptr<Camera> camera,
     loadTexture(tileTexture(Tile::WALL  ), "wall tile"  , "resources/wall.png"  );
     loadTexture(tileTexture(Tile::UNSEEN), "unseen tile", "resources/unseen.png");
 
+    loadTexture(tileTexture(Tile::UP_STAIRS  ), "up stairs tile"  , "resources/up_stairs.png"  );
+    loadTexture(tileTexture(Tile::DOWN_STAIRS), "down stairs tile", "resources/down_stairs.png");
+
     loadTexture(playerTexture, "player", "resources/player.png");
     
     assetLogger->info("Creating debug tile textures...");
