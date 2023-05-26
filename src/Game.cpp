@@ -63,7 +63,7 @@ void Game::handleEvent(sf::Event event) {
 
 void Game::generate() {
     generationLogger->info("Started");
-    world_->generate(generationLogger, *randomEngine);
+    world_->generate(generationLogger);
 
     generationLogger->info("Placing player...");
     player->level(0);

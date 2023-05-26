@@ -34,4 +34,11 @@ inline bool isPassable(Tile tile) {
     return tile != Tile::WALL && tile != Tile::UNSEEN;
 }
 
+inline bool isEmpty(Tile tile) {
+    return tile == Tile::EMPTY 
+        || tile == Tile::ROOM 
+        || tile == Tile::ROOM_ENTRANCE 
+        || tile == Tile::PASSAGE;
+}
+
 #endif

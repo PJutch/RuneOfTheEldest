@@ -27,8 +27,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 class World {
 public:
-	World(DungeonGenerator generator_) : 
-		generator{ std::move(generator_) } {}
+	World(DungeonGenerator generator_, RandomEngine& randomEngine_) : 
+		generator{ std::move(generator_) },
+		randomEngine{ &randomEngine_ } {}
 
 	DungeonGenerator& dungeonGenerator() noexcept {
 		return generator;
@@ -82,13 +83,14 @@ public:
 		return levels.size();
 	}
 
-	void generate(std::shared_ptr<spdlog::logger> logger, RandomEngine& randomEgine);
+	void generate(std::shared_ptr<spdlog::logger> logger);
 private:
 	std::vector<Level> levels;
 	DungeonGenerator generator;
+	RandomEngine* randomEngine;
 
 	void addStairs(sf::Vector3i pos1, sf::Vector3i pos2);
-	void generateUpStairs(int fromLevel, std::shared_ptr<spdlog::logger> logger, RandomEngine& randomEgine);
+	void generateUpStairs(int fromLevel, std::shared_ptr<spdlog::logger> logger);
 };
 
 #endif

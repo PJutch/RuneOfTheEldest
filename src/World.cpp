@@ -15,7 +15,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "World.hpp"
 
-void World::generate(std::shared_ptr<spdlog::logger> logger, RandomEngine& randomEgine) {
+void World::generate(std::shared_ptr<spdlog::logger> logger) {
     levels.resize(10);
 	for (int i = 0; i < levels.size(); ++ i) {
 		logger->info("Generating level {}...", i);
@@ -30,7 +30,7 @@ void World::generate(std::shared_ptr<spdlog::logger> logger, RandomEngine& rando
 
 		if (i != 0) {
 			logger->info("Generating stairs...");
-			generateUpStairs(i, logger, randomEgine);
+			generateUpStairs(i, logger);
 		}
 	}
 }
@@ -45,19 +45,15 @@ void World::addStairs(sf::Vector3i pos1, sf::Vector3i pos2) {
 	(*this)[pos2.z].addUpStairs({ pos2.x, pos2.y }, pos1);
 }
 
-void World::generateUpStairs(int fromLevel, std::shared_ptr<spdlog::logger> logger, RandomEngine& randomEgine) {
+void World::generateUpStairs(int fromLevel, std::shared_ptr<spdlog::logger> logger) {
 	if (fromLevel <= 0)
 		return;
 
 	logger->info("Generating stairs...");
 	for (int i = 0; i < 3; ++i) {
-		sf::Vector2i upPos = (*this)[fromLevel - 1].randomPosition(randomEgine, [](Tile tile) {
-			return tile == Tile::EMPTY;
-		});
+		sf::Vector2i upPos = (*this)[fromLevel - 1].randomPosition(*randomEngine, &isEmpty);
 
-		sf::Vector2i downPos = (*this)[fromLevel].randomPosition(randomEgine, [](Tile tile) {
-			return tile == Tile::EMPTY;
-		});
+		sf::Vector2i downPos = (*this)[fromLevel].randomPosition(*randomEngine, &isEmpty);
 
 		addStairs({ upPos.x, upPos.y, fromLevel - 1 }, { downPos.x, downPos.y, fromLevel });
 	}
