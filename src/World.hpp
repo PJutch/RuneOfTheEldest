@@ -82,10 +82,13 @@ public:
 		return levels.size();
 	}
 
-	void generate(std::shared_ptr<spdlog::logger> logger);
+	void generate(std::shared_ptr<spdlog::logger> logger, RandomEngine& randomEgine);
 private:
 	std::vector<Level> levels;
 	DungeonGenerator generator;
+
+	void addStairs(sf::Vector3i pos1, sf::Vector3i pos2);
+	void generateUpStairs(int fromLevel, std::shared_ptr<spdlog::logger> logger, RandomEngine& randomEgine);
 };
 
 #endif
