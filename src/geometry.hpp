@@ -44,6 +44,52 @@ sf::Vector2<T> subY(sf::Vector2<T> vec, T deltaY) noexcept {
     return {vec.x, vec.y - deltaY};
 }
 
+namespace detail {
+    template <std::size_t index, typename T>
+    struct vector2_member_st;
+
+    template <typename T>
+    struct vector2_member_st<0, T>  {
+        inline static constexpr T sf::Vector2<T>::* value = &sf::Vector2<T>::x;
+    };
+
+    template <typename T>
+    struct vector2_member_st<1, T> {
+        inline static constexpr T sf::Vector2<T>::* value = &sf::Vector2<T>::y;
+    };
+
+    template <std::size_t index, typename T>
+    inline static constexpr T sf::Vector2<T>::* vector2_member = vector2_member_st<index, T>::value;
+}
+
+namespace sf {
+    template <std::size_t index, typename T>
+    constexpr T& get(Vector2<T>& vec) noexcept {
+        return vec.*detail::vector2_member<index, T>;
+    }
+
+    template <std::size_t index, typename T>
+    T&& get(Vector2<T>&& vec) noexcept {
+        return std::move(vec.*detail::vector2_member<index, T>);
+    }
+
+    template <std::size_t index, typename T>
+    constexpr const T& get(const Vector2<T>& vec) noexcept  {
+        return vec.*detail::vector2_member<index, T>;
+    }
+}
+
+namespace std {
+    template <typename T>
+    struct tuple_size<sf::Vector2<T>>
+        : std::integral_constant<std::size_t, 2> { };
+
+    template<std::size_t index, class T>
+    struct tuple_element<index, sf::Vector2<T>> {
+        using type = T;
+    };
+}
+
 template <typename T>
 sf::Rect<T> extendTopLeft(sf::Rect<T> rect, 
                           sf::Vector2<T> extension) noexcept {

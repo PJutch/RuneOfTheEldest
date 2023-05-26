@@ -20,11 +20,15 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "assert.hpp"
 #include "random.hpp"
+#include "geometry.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 
+#include <boost/container_hash/hash.hpp>
+
 #include <vector>
+#include <unordered_map>
 #include <span>
 
 class Level{
@@ -107,6 +111,8 @@ public:
 private:
     sf::Vector2i shape_;
     std::vector<Tile> tiles;
+
+    std::unordered_map<sf::Vector2i, sf::Vector2i, boost::hash<sf::Vector2i>> stairs;
 
     std::vector<sf::IntRect> areas_;
 };
