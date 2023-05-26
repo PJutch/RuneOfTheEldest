@@ -34,6 +34,15 @@ public:
 		position_ = newPosition;
 	}
 
+	void position(int x, int y) noexcept {
+		position({ x, y });
+	}
+
+	void position(sf::Vector3i newPosition) noexcept {
+		position(newPosition.x, newPosition.y);
+		level(newPosition.z);
+	}
+
 	int level() const noexcept {
 		return level_;
 	}
@@ -56,6 +65,16 @@ private:
 
 	void tryMove(sf::Vector2i offset) {
 		tryMoveTo(position() + offset);
+	}
+
+	void tryAscentStairs() {
+		if (std::optional<sf::Vector3i> newPos = (*world)[level()].upStairs(position()))
+			position(*newPos);
+	}
+
+	void tryDescentStairs() {
+		if (std::optional<sf::Vector3i> newPos = (*world)[level()].downStairs(position()))
+			position(*newPos);
 	}
 };
 

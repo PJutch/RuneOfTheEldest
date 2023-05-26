@@ -30,6 +30,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <vector>
 #include <unordered_map>
 #include <span>
+#include <optional>
 
 class Level{
 public:
@@ -87,13 +88,29 @@ public:
     }
 
     void addUpStairs(sf::Vector2i from, sf::Vector3i to) {
-        upStairs.insert_or_assign(from, to);
+        upStairs_.insert_or_assign(from, to);
         at(from) = Tile::UP_STAIRS;
     }
 
     void addDownStairs(sf::Vector2i from, sf::Vector3i to) {
-        downStairs.insert_or_assign(from, to);
+        downStairs_.insert_or_assign(from, to);
         at(from) = Tile::DOWN_STAIRS;
+    }
+
+    std::optional<sf::Vector3i> upStairs(sf::Vector2i position) {
+        auto iter = upStairs_.find(position);
+        if (iter == upStairs_.end())
+            return std::nullopt;
+
+        return iter->second;
+    }
+
+    std::optional<sf::Vector3i> downStairs(sf::Vector2i position) {
+        auto iter = downStairs_.find(position);
+        if (iter == downStairs_.end())
+            return std::nullopt;
+
+        return iter->second;
     }
 
     sf::Vector2i randomPosition(RandomEngine& engine) const {
@@ -122,8 +139,8 @@ private:
     sf::Vector2i shape_;
     std::vector<Tile> tiles;
 
-    std::unordered_map<sf::Vector2i, sf::Vector3i, boost::hash<sf::Vector2i>> upStairs;
-    std::unordered_map<sf::Vector2i, sf::Vector3i, boost::hash<sf::Vector2i>> downStairs;
+    std::unordered_map<sf::Vector2i, sf::Vector3i, boost::hash<sf::Vector2i>> upStairs_;
+    std::unordered_map<sf::Vector2i, sf::Vector3i, boost::hash<sf::Vector2i>> downStairs_;
 
     std::vector<sf::IntRect> areas_;
 };

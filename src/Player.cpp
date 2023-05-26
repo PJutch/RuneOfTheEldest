@@ -22,5 +22,13 @@ void Player::handleEvent(sf::Event event) {
 		case sf::Keyboard::S: tryMove({  0,  1 }); break;
 		case sf::Keyboard::A: tryMove({ -1,  0 }); break;
 		case sf::Keyboard::D: tryMove({  1,  0 }); break;
+		case sf::Keyboard::Comma:
+			if (event.key.shift)
+				tryAscentStairs();
+			break;
+		case sf::Keyboard::Period:
+			if (event.key.shift)
+				tryDescentStairs();
+			break;
 		}
 }
