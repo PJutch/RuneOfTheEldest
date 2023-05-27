@@ -16,7 +16,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef RANDOM_HPP_
 #define RANDOM_HPP_
 
-/// @file typedefs to use for random number generation
+/// @file random.hpp typedefs to use for random number generation
 
 #include <random>
 

@@ -59,7 +59,7 @@ inline void assert_impl(bool condition, std::string condition_str,
 /// @brief Assertion macro
 /// @warning Always runs condition even in release build
 /// @param condition Condition to check
-/// @param message Pass message as \_\_VA_ARGS\_\_
+/// @param ... User provided message
 /// @throws AssertionFailed if condition evaluates to false
 #define TROTE_ASSERT(condition, ...) assert_impl(condition, #condition, __VA_ARGS__)
 

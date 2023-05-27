@@ -61,7 +61,7 @@ public:
 	}
 
 	/// notifies about events
-	/// @detail moves on WSAD
+	/// @details moves on WSAD
 	///      \n try to ascent/descent stairs by <>
 	void handleEvent(sf::Event event);
 private:

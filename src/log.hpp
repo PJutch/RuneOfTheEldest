@@ -16,7 +16,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef LOG_HPP_
 #define LOG_HPP_
 
-/// @file utilities for creating loggers with di
+/// @file log.hpp Utilities for creating loggers with di
 
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -27,7 +27,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <filesystem>
 #include <ranges>
 
+/// Short typedef for stdout sink (single threaded one)
 using ConsoleSink = spdlog::sinks::stdout_color_sink_st;
+
+/// Short typedef for file sink (single threaded one)
 using FileSink = spdlog::sinks::basic_file_sink_st;
 
 /// boost::di module providing log sinks

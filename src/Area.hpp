@@ -27,64 +27,81 @@ If not, see <https://www.gnu.org/licenses/>. */
 /// @details Contains rect and passage lists for each side
 class Area {
 public:
+    /// @brief Creates area
+    /// @param area_ area bounding rect
     explicit Area(sf::IntRect area_) : area{area_} {}
 
+    /// Left side of the area (min x)
     int left() const noexcept {
         return area.left;
     }
 
+    /// Top side of the area (min y)
     int top() const noexcept {
         return area.top;
     }
 
+    /// Right side of the area (max x)
     int right() const noexcept {
         return area.left + area.width;
     }
 
+    /// Bottom side of the area (max y)
     int bottom() const noexcept {
         return area.top + area.height;
     }
 
+    /// Width of the area (x size)
     int width() const noexcept {
         return area.width;
     }
 
+    /// Width of the area (y size)
     int height() const noexcept {
         return area.height;
     }
 
+    /// Area bounding rect
     sf::IntRect bounds() const noexcept {
         return area;
     }
 
-    void addLeftPassage(int x) noexcept {
-        leftPassages_.push_back(x);
+    /// Add passage on the left side of the area at (left(), y)
+    void addLeftPassage(int y) noexcept {
+        leftPassages_.push_back(y);
     }
 
+    /// Add passage on the top side of the area at (x, top())
     void addTopPassage(int x) noexcept {
         topPassages_.push_back(x);
     }
 
-    void addRightPassage(int x) noexcept {
-        rightPassages_.push_back(x);
+    /// Add passage on the right side of the area at (right(), y)
+    void addRightPassage(int y) noexcept {
+        rightPassages_.push_back(y);
     }
 
+    /// Add passage on the bottom side of the area at (x, bottom())
     void addBottomPassage(int x) noexcept {
         bottomPassages_.push_back(x);
     }
 
+    /// All passage on the left side of the area at (left(), *)
     std::span<const int> leftPassages() const noexcept {
         return leftPassages_;
     }
 
+    /// All passage on the top side of the area at (*, top())
     std::span<const int> topPassages() const noexcept {
         return topPassages_;
     }
 
+    /// All passage on the right side of the area at (right(), *)
     std::span<const int> rightPassages() const noexcept {
         return rightPassages_;
     }
 
+    /// All passage on the bottom side of the area at (*, bottom())
     std::span<const int> bottomPassages() const noexcept {
         return bottomPassages_;
     }

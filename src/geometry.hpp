@@ -181,6 +181,7 @@ namespace std {
 }
 
 /// Moves top left angle keeping bottom right angle in place
+/// @param rect initial rect
 /// @param extension offset to move angle
 /// If positive, rectangle is extended
 /// @returns result as new rect
@@ -192,6 +193,7 @@ sf::Rect<T> extendTopLeft(sf::Rect<T> rect,
 }
 
 /// Moves bottom right angle keeping top left angle in place
+/// @param rect initial rect
 /// @param extension offset to move angle
 /// If positive, rectangle is extended
 /// @returns result as new rect
@@ -203,7 +205,8 @@ sf::Rect<T> extendBottomRight(sf::Rect<T> rect,
 }
 
 /// Moves bottom right angle keeping top left angle in place
-/// @param extension offset to move angle
+/// @param rect initial rect
+/// @param shrink offset to move angle
 /// If positive, rectangle is shrinked
 /// @returns result as new rect
 template <typename T>
@@ -214,7 +217,8 @@ sf::Rect<T> shrinkTopLeft(sf::Rect<T> rect,
 }
 
 /// Moves bottom right angle keeping top left angle in place
-/// @param extension offset to move angle
+/// @param rect initial rect
+/// @param shrink offset to move angle
 /// If positive, rectangle is shrinked
 /// @returns result as new rect
 template <typename T>

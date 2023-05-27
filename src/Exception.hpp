@@ -20,6 +20,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #define BOOST_STACKTRACE_LINK
 #include <boost/stacktrace.hpp>
+
+/// short typedef for stacktrace
 using Stacktrace = boost::stacktrace::stacktrace;
 
 #include <format>
@@ -29,12 +31,12 @@ using Stacktrace = boost::stacktrace::stacktrace;
 /// Base class for exceptions with stacktrace support
 class TracableException {
 public:   
-    // Location of the error
+    /// Location of the error
     const Stacktrace& stacktrace() const noexcept {
         return stacktrace_;
     }
 
-    // Error description
+    /// Error description
     virtual const char* what() const noexcept = 0;
 protected:
     TracableException(Stacktrace currentStacktrace) noexcept : 

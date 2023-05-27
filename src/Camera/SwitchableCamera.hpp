@@ -58,7 +58,7 @@ public:
     void update(sf::Time elapsedTime) final {
         currentCamera().update(elapsedTime);
     }
-protected:
+private:
     std::vector<std::unique_ptr<Camera>> cameras;
     int currentCameraIndex = 0;
 
