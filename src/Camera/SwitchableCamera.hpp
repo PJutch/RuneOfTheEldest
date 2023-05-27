@@ -23,29 +23,38 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <vector>
 #include <memory>
 
+/// Cyclically switching camera
 class SwitchableCamera : public Camera {
 public:
     SwitchableCamera(std::vector<std::unique_ptr<Camera>> cameras_) : 
         cameras{ std::move(cameras_) } {}
 
+    /// Uses current camera position
     sf::Vector2f position() const final {
         return currentCamera().position();
     }
 
+    /// Uses current camera level
     int level() const final {
         return currentCamera().level();
     }
 
+    /// Resets current camera
     void reset(sf::Vector2f newPosition, int newLevel) final {
         currentCamera().reset(newPosition, newLevel);
     }
 
+    /// Steal control if current camera does
     bool shouldStealControl() const final {
         return currentCamera().shouldStealControl();
     }
 
+    /// @brief Switches camera on V
+    /// @details If current camera is last switches to first camera.
+    ///       \n New camera is reset.
     void handleEvent(sf::Event event) final;
 
+    /// Updates current camera
     void update(sf::Time elapsedTime) final {
         currentCamera().update(elapsedTime);
     }

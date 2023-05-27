@@ -22,6 +22,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <memory>
 
+/// Camera controlled by player
 class FreeCamera : public Camera {
 public:
     FreeCamera(std::shared_ptr<World> world_);
@@ -34,16 +35,21 @@ public:
         return level_;
     }
 
+    /// Moves to new point
     void reset(sf::Vector2f newPosition, int newLevel) noexcept final {
         position_ = newPosition;
         level_ = newLevel;
     }
 
+    /// Prevents player charcater moving together with camera
     bool shouldStealControl() const noexcept final { 
         return true;
     }
 
+    /// Smoothly moves by WSAD
     void update(sf::Time elapsedTime) final;
+
+    /// Changes floor by <>
     void handleEvent(sf::Event event) final;
 private:
     sf::Vector2f position_;

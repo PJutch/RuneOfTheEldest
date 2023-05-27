@@ -19,20 +19,29 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
 
+/// Interface for cameras. Determines point of view
 class Camera {
 public:
     virtual ~Camera() = default;
 
+    /// position of the camera
     virtual sf::Vector2f position() const = 0;
+
+    /// level of the camera
     virtual int level() const = 0;
 
+    /// Moves camera to new point. Called on switching camera
     virtual void reset(sf::Vector2f position, int level) = 0;
 
+    /// If true player controls are blocked
     virtual bool shouldStealControl() const {
         return false; 
     }
 
+    /// Notifies camera about sfml event
     virtual void handleEvent(sf::Event event) {}
+
+    /// Updates camera every frame
     virtual void update(sf::Time elapsedTime) {}
 };
 

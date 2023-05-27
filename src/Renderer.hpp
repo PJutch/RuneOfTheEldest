@@ -34,17 +34,21 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <string_view>
 #include <filesystem>
 
+/// Renders game world
 class Renderer {
 public:
+    /// Creates renderer and loads textures
     Renderer(std::shared_ptr<Camera> camera,
              std::shared_ptr<sf::RenderWindow> window, 
              std::shared_ptr<World> world_, std::shared_ptr<Player> player_, 
              LoggerFactory& loggerFactory);
 
+    /// If true bsp areas created by dungeon generation are rendered
     void renderAreas(bool newRenderAreas = true) noexcept {
         renderAreas_ = newRenderAreas;
     }
 
+    /// Renders game world
     void draw();
 private:
     bool renderAreas_ = false;

@@ -22,20 +22,24 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <memory>
 
+/// Camera always centered on player
 class PlayerLockedCamera : public Camera {
 public:
     PlayerLockedCamera(std::shared_ptr<Player> player_) :
         player{ std::move(player_) } {}
 
+    /// Uses player position
     sf::Vector2f position() const final {
         auto [x, y] = player->position();
         return sf::Vector2f(x, y);
     }
 
+    /// Uses player level
     int level() const final {
         return player->level();
     }
 
+    /// Ignores reset
     void reset(sf::Vector2f, int) final {}
 private:
     std::shared_ptr<Player> player;
