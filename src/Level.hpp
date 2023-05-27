@@ -84,24 +84,6 @@ public:
         return areas_;
     }
 
-    void addUpStairs(sf::Vector2i from, sf::Vector3i to) {
-        upStairs_.insert_or_assign(from, to);
-        at(from) = Tile::UP_STAIRS;
-    }
-
-    void addDownStairs(sf::Vector2i from, sf::Vector3i to) {
-        downStairs_.insert_or_assign(from, to);
-        at(from) = Tile::DOWN_STAIRS;
-    }
-
-    std::optional<sf::Vector3i> upStairs(sf::Vector2i position) {
-        return getOptional(upStairs_, position);
-    }
-
-    std::optional<sf::Vector3i> downStairs(sf::Vector2i position) {
-        return getOptional(downStairs_, position);
-    }
-
     sf::Vector2i randomPosition(RandomEngine& engine) const {
         return { std::uniform_int_distribution{ 0, shape().x - 1 }(engine),
                  std::uniform_int_distribution{ 0, shape().y - 1 }(engine) };
@@ -127,9 +109,6 @@ public:
 private:
     sf::Vector2i shape_;
     std::vector<Tile> tiles;
-
-    UnorderedMap<sf::Vector2i, sf::Vector3i> upStairs_;
-    UnorderedMap<sf::Vector2i, sf::Vector3i> downStairs_;
 
     std::vector<sf::IntRect> areas_;
 };

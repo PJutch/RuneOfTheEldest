@@ -21,6 +21,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "log.hpp"
 #include "random.hpp"
+#include "Map.hpp"
 
 #include <vector>
 #include <memory>
@@ -83,9 +84,20 @@ public:
 		return levels.size();
 	}
 
+	std::optional<sf::Vector3i> upStairs(sf::Vector3i position) {
+		return getOptional(upStairs_, position);
+	}
+
+	std::optional<sf::Vector3i> downStairs(sf::Vector3i position) {
+		return getOptional(downStairs_, position);
+	}
+
 	void generate(std::shared_ptr<spdlog::logger> logger);
 private:
 	std::vector<Level> levels;
+	UnorderedMap<sf::Vector3i, sf::Vector3i> upStairs_;
+	UnorderedMap<sf::Vector3i, sf::Vector3i> downStairs_;
+
 	DungeonGenerator generator;
 	RandomEngine* randomEngine;
 

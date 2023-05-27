@@ -41,8 +41,11 @@ void World::addStairs(sf::Vector3i pos1, sf::Vector3i pos2) {
 		return;
 	}
 
-	(*this)[pos1.z].addDownStairs({ pos1.x, pos1.y }, pos2);
-	(*this)[pos2.z].addUpStairs({ pos2.x, pos2.y }, pos1);
+	downStairs_.insert_or_assign(pos1, pos2);
+	at(pos1) = Tile::DOWN_STAIRS;
+
+	upStairs_.insert_or_assign(pos2, pos1);
+	at(pos2) = Tile::UP_STAIRS;
 }
 
 void World::generateUpStairs(int fromLevel, std::shared_ptr<spdlog::logger> logger) {

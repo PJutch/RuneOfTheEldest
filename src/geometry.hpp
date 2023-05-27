@@ -44,6 +44,16 @@ sf::Vector2<T> subY(sf::Vector2<T> vec, T deltaY) noexcept {
     return {vec.x, vec.y - deltaY};
 }
 
+template <typename T>
+sf::Vector3<T> make3D(sf::Vector2<T> xy, T z) noexcept {
+    return { xy.x, xy.y, z };
+}
+
+template <typename T>
+sf::Vector2<T> getXY(sf::Vector3<T> vec) noexcept {
+    return { vec.x, vec.y };
+}
+
 namespace detail {
     template <std::size_t index, typename T>
     struct vector2_member_st;
@@ -60,6 +70,27 @@ namespace detail {
 
     template <std::size_t index, typename T>
     inline static constexpr T sf::Vector2<T>::* vector2_member = vector2_member_st<index, T>::value;
+
+    template <std::size_t index, typename T>
+    struct vector3_member_st;
+
+    template <typename T>
+    struct vector3_member_st<0, T> {
+        inline static constexpr T sf::Vector3<T>::* value = &sf::Vector3<T>::x;
+    };
+
+    template <typename T>
+    struct vector3_member_st<1, T> {
+        inline static constexpr T sf::Vector3<T>::* value = &sf::Vector3<T>::y;
+    };
+
+    template <typename T>
+    struct vector3_member_st<2, T> {
+        inline static constexpr T sf::Vector3<T>::* value = &sf::Vector3<T>::z;
+    };
+
+    template <std::size_t index, typename T>
+    inline static constexpr T sf::Vector3<T>::* vector3_member = vector3_member_st<index, T>::value;
 }
 
 namespace sf {
@@ -77,6 +108,21 @@ namespace sf {
     constexpr const T& get(const Vector2<T>& vec) noexcept  {
         return vec.*detail::vector2_member<index, T>;
     }
+
+    template <std::size_t index, typename T>
+    constexpr T& get(Vector3<T>& vec) noexcept {
+        return vec.*detail::vector3_member<index, T>;
+    }
+
+    template <std::size_t index, typename T>
+    T&& get(Vector3<T>&& vec) noexcept {
+        return std::move(vec.*detail::vector3_member<index, T>);
+    }
+
+    template <std::size_t index, typename T>
+    constexpr const T& get(const Vector3<T>& vec) noexcept {
+        return vec.*detail::vector3_member<index, T>;
+    }
 }
 
 namespace std {
@@ -86,6 +132,15 @@ namespace std {
 
     template<std::size_t index, class T>
     struct tuple_element<index, sf::Vector2<T>> {
+        using type = T;
+    };
+
+    template <typename T>
+    struct tuple_size<sf::Vector3<T>>
+        : std::integral_constant<std::size_t, 3> { };
+
+    template<std::size_t index, class T>
+    struct tuple_element<index, sf::Vector3<T>> {
         using type = T;
     };
 }

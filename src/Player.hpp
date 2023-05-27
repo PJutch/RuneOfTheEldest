@@ -16,8 +16,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef PLAYER_HPP_
 #define PLAYER_HPP_
 
-#include "Event.hpp"
 #include "World.hpp"
+
+#include "Event.hpp"
+#include "geometry.hpp"
 
 #include <SFML/System.hpp>
 
@@ -39,7 +41,7 @@ public:
 	}
 
 	void position(sf::Vector3i newPosition) noexcept {
-		position(newPosition.x, newPosition.y);
+		position(getXY(newPosition));
 		level(newPosition.z);
 	}
 
@@ -68,12 +70,12 @@ private:
 	}
 
 	void tryAscentStairs() {
-		if (std::optional<sf::Vector3i> newPos = (*world)[level()].upStairs(position()))
+		if (std::optional<sf::Vector3i> newPos = world->upStairs(make3D(position(), level())))
 			position(*newPos);
 	}
 
 	void tryDescentStairs() {
-		if (std::optional<sf::Vector3i> newPos = (*world)[level()].downStairs(position()))
+		if (std::optional<sf::Vector3i> newPos = world->downStairs(make3D(position(), level())))
 			position(*newPos);
 	}
 };
