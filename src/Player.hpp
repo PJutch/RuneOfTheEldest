@@ -23,36 +23,46 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <SFML/System.hpp>
 
+/// Player character
 class Player {
 public:
 	Player(std::shared_ptr<World> world_) : 
 		world{ std::move(world_) } {}
 
+	/// Position on the level
 	sf::Vector2i position() const noexcept {
 		return position_;
 	}
 
+	/// Sets position
 	void position(sf::Vector2i newPosition) noexcept {
 		position_ = newPosition;
 	}
 
+	/// Sets position to (x, y)
 	void position(int x, int y) noexcept {
 		position({ x, y });
 	}
 
+	/// Sets position to (x, y) and level to z
 	void position(sf::Vector3i newPosition) noexcept {
 		position(getXY(newPosition));
 		level(newPosition.z);
 	}
 
+	/// Level index
 	int level() const noexcept {
 		return level_;
 	}
 
+	/// Sets level
 	void level(int newLevel) noexcept {
 		level_ = newLevel;
 	}
 
+	/// notifies about events
+	/// @detail moves on WSAD
+	///      \n try to ascent/descent stairs by <>
 	void handleEvent(sf::Event event);
 private:
 	sf::Vector2i position_;

@@ -26,6 +26,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <vector>
 #include <memory>
 
+/// Dungeon consisting of multiple levels
 class World {
 public:
 	World(DungeonGenerator generator_, RandomEngine& randomEngine_) : 
@@ -40,58 +41,77 @@ public:
 		return generator;
 	}
 
-	// unsafe
+	/// @brief Access to individual level
+	/// @warning Check level index by yourself
+	///       \n You may use size
 	Level& operator[] (int level) {
 		return levels[level];
 	}
 
-	// unsafe
+	/// @brief Access to individual level
+	/// @warning Check level index by yourself
+	///       \n You may use size
 	const Level& operator[] (int level) const {
 		return levels[level];
 	}
 
-	// unsafe
+	/// @brief Access to individual tile on level level at (x, y)
+	/// @warning Check all indices by yourself
 	Tile& at(int x, int y, int level) noexcept {
 		return (*this)[level].at(x, y);
 	}
 
-	// unsafe
+	/// @brief Access to individual tile on level level at (x, y)
+	/// @warning Check all indices by yourself
 	const Tile& at(int x, int y, int level) const noexcept {
 		return (*this)[level].at(x, y);
 	}
 
-	// unsafe
+	/// @brief Access to individual tile on level level at (x, y)
+	/// @warning Check all indices by yourself
 	Tile& at(sf::Vector2i position, int level) noexcept {
 		return at(position.x, position.y, level);
 	}
 
-	// unsafe
+	/// @brief Access to individual tile on level level at (x, y)
+	/// @warning Check all indices by yourself
 	const Tile& at(sf::Vector2i position, int level) const noexcept {
 		return at(position.x, position.y, level);
 	}
 
-	// unsafe
+	/// @brief Access to individual tile on level z at (x, y)
+	/// @warning Check all indices by yourself
 	Tile& at(sf::Vector3i position) noexcept {
 		return at(position.x, position.y, position.z);
 	}
 
-	// unsafe
+	/// @brief Access to individual tile on level z at (x, y)
+	/// @warning Check all indices by yourself
 	const Tile& at(sf::Vector3i position) const noexcept {
 		return at(position.x, position.y, position.z);
 	}
 
+	/// Level count
 	int size() const noexcept {
 		return levels.size();
 	}
 
+	/// Returns at(position) destination if it's Tile::UP_STAIRS
 	std::optional<sf::Vector3i> upStairs(sf::Vector3i position) {
 		return getOptional(upStairs_, position);
 	}
 
+	/// Returns at(position) destination if it's Tile::DOWN_STAIRS
 	std::optional<sf::Vector3i> downStairs(sf::Vector3i position) {
 		return getOptional(downStairs_, position);
 	}
 
+	/// @brief Generates dungeon
+	/// @details for each level 
+	/// calls generateBlank, applies DungeonGenerator, 
+	/// calls generateWalls and generateStairs
+	/// 
+	/// @param logger logger to log messages
 	void generate(std::shared_ptr<spdlog::logger> logger);
 private:
 	std::vector<Level> levels;

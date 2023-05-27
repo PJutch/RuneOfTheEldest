@@ -16,24 +16,32 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef TILE_HPP_
 #define TILE_HPP_
 
+/// @file Tile.hpp Tile enum and its "methods"
+
+/// Tile types
 enum class Tile {
-    EMPTY,
-    WALL,
-    UNSEEN,
-    ROOM,
-    ROOM_ENTRANCE,
-    PASSAGE,
-    DOWN_STAIRS,
-    UP_STAIRS,
-    TOTAL_
+    EMPTY,         ///< Empty floor tile
+    WALL,          ///< Impassable wall
+    UNSEEN,        ///< Not accessable for player tile
+    ROOM,          ///< Debug only @see BasicRoomGenerator::debugTiles
+    ROOM_ENTRANCE, ///< Debug only @see BasicRoomGenerator::debugTiles
+    PASSAGE,       ///< Debug only @see RandomSizeRoomGenerator::debugTiles
+    DOWN_STAIRS,   ///< Stairs leading to next level
+    UP_STAIRS,     ///< Stairs leading to previous level
+    TOTAL_         ///< Internal use only. Should always be last
 };
 
+/// Total amount of tiles
 const static int totalTiles = static_cast<int>(Tile::TOTAL_);
 
+/// @brief Tests if Tile is passable (!= Tile::WALL)
+/// @details Tile::UNSEEN is also impassable for placing player and debug dungeon generation 
 inline bool isPassable(Tile tile) {
     return tile != Tile::WALL && tile != Tile::UNSEEN;
 }
 
+/// @brief Tests if Tile is empty (Tile::EMPTY)
+/// @details Debug tiles for marking generation cause are also empty
 inline bool isEmpty(Tile tile) {
     return tile == Tile::EMPTY 
         || tile == Tile::ROOM 
