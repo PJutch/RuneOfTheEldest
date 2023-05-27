@@ -21,16 +21,13 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "assert.hpp"
 #include "random.hpp"
 #include "geometry.hpp"
+#include "Map.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 
-#include <boost/container_hash/hash.hpp>
-
 #include <vector>
-#include <unordered_map>
 #include <span>
-#include <optional>
 
 class Level{
 public:
@@ -98,19 +95,11 @@ public:
     }
 
     std::optional<sf::Vector3i> upStairs(sf::Vector2i position) {
-        auto iter = upStairs_.find(position);
-        if (iter == upStairs_.end())
-            return std::nullopt;
-
-        return iter->second;
+        return getOptional(upStairs_, position);
     }
 
     std::optional<sf::Vector3i> downStairs(sf::Vector2i position) {
-        auto iter = downStairs_.find(position);
-        if (iter == downStairs_.end())
-            return std::nullopt;
-
-        return iter->second;
+        return getOptional(downStairs_, position);
     }
 
     sf::Vector2i randomPosition(RandomEngine& engine) const {
@@ -139,8 +128,8 @@ private:
     sf::Vector2i shape_;
     std::vector<Tile> tiles;
 
-    std::unordered_map<sf::Vector2i, sf::Vector3i, boost::hash<sf::Vector2i>> upStairs_;
-    std::unordered_map<sf::Vector2i, sf::Vector3i, boost::hash<sf::Vector2i>> downStairs_;
+    UnorderedMap<sf::Vector2i, sf::Vector3i> upStairs_;
+    UnorderedMap<sf::Vector2i, sf::Vector3i> downStairs_;
 
     std::vector<sf::IntRect> areas_;
 };
