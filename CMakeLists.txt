@@ -31,3 +31,5 @@ add_executable(TheRuneOfTheEldest src/main.cpp)
 target_link_libraries(TheRuneOfTheEldest sources)
 
 add_subdirectory(tests)
+
+add_custom_target(doc COMMAND doxygen doc/doxyfile WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
