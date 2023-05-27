@@ -16,8 +16,11 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef EVENT_HPP_
 #define EVENT_HPP_
 
+/// @file event.hpp Utilities for sf::Event
+
 #include <SFML/Window.hpp>
 
+/// Checks if event is KeyPressed event for key key
 inline bool wasKeyPressed(sf::Event event, sf::Keyboard::Key key) noexcept {
     return event.type == sf::Event::KeyPressed && event.key.code == key;
 }

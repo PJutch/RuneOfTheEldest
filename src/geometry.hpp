@@ -16,39 +16,54 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef GEOMETRY_HPP_
 #define GEOMETRY_HPP_
 
+/// @file geometry.hpp Geometry related utilities
+
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 
+/// Cast sf::Vector2<U> to sf::Vector2<T> using static_cast
 template <typename T, typename U>
 sf::Vector2<T> geometry_cast(sf::Vector2<U> vec) noexcept {
     return {static_cast<T>(vec.x), static_cast<T>(vec.y)};
 }
 
+/// Add deltaX to vec.x
+/// @returns result as new vector
 template <typename T>
 sf::Vector2<T> addX(sf::Vector2<T> vec, T deltaX) noexcept {
     return {vec.x + deltaX, vec.y};
 }
 
+/// Substract deltaX from vec.x
+/// @returns result as new vector
 template <typename T>
 sf::Vector2<T> subX(sf::Vector2<T> vec, T deltaX) noexcept {
     return {vec.x - deltaX, vec.y};
 }
 
+/// Add deltaY to vec.y
+/// @returns result as new vector
 template <typename T>
 sf::Vector2<T> addY(sf::Vector2<T> vec, T deltaY) noexcept {
     return {vec.x, vec.y + deltaY};
 }
 
+/// Substract deltaY from vec.y
+/// @returns result as new vector
 template <typename T>
 sf::Vector2<T> subY(sf::Vector2<T> vec, T deltaY) noexcept {
     return {vec.x, vec.y - deltaY};
 }
 
+/// Add z component to 2D vector
+/// @returns result as new 3D vector
 template <typename T>
 sf::Vector3<T> make3D(sf::Vector2<T> xy, T z) noexcept {
     return { xy.x, xy.y, z };
 }
 
+/// Add x and y components from 3D vector
+/// @returns result as new 2D vector
 template <typename T>
 sf::Vector2<T> getXY(sf::Vector3<T> vec) noexcept {
     return { vec.x, vec.y };
@@ -94,31 +109,43 @@ namespace detail {
 }
 
 namespace sf {
+    /// @brief Tuplelike get for sf::Vector2<T>
+    /// x is 0, y is 1
     template <std::size_t index, typename T>
     constexpr T& get(Vector2<T>& vec) noexcept {
         return vec.*detail::vector2_member<index, T>;
     }
 
+    /// @brief Tuplelike get for sf::Vector2<T>
+    /// x is 0, y is 1
     template <std::size_t index, typename T>
     T&& get(Vector2<T>&& vec) noexcept {
         return std::move(vec.*detail::vector2_member<index, T>);
     }
 
+    /// @brief Tuplelike get for sf::Vector2<T>
+    /// x is 0, y is 1
     template <std::size_t index, typename T>
     constexpr const T& get(const Vector2<T>& vec) noexcept  {
         return vec.*detail::vector2_member<index, T>;
     }
 
+    /// @brief Tuplelike get for sf::Vector3<T>
+    /// x is 0, y is 1, z is 2
     template <std::size_t index, typename T>
     constexpr T& get(Vector3<T>& vec) noexcept {
         return vec.*detail::vector3_member<index, T>;
     }
 
+    /// @brief Tuplelike get for sf::Vector3<T>
+    /// x is 0, y is 1, z is 2
     template <std::size_t index, typename T>
     T&& get(Vector3<T>&& vec) noexcept {
         return std::move(vec.*detail::vector3_member<index, T>);
     }
 
+    /// @brief Tuplelike get for sf::Vector3<T>
+    /// x is 0, y is 1, z is 2
     template <std::size_t index, typename T>
     constexpr const T& get(const Vector3<T>& vec) noexcept {
         return vec.*detail::vector3_member<index, T>;
@@ -126,25 +153,37 @@ namespace sf {
 }
 
 namespace std {
+    /// @brief std::tuple_size for sf::Vector2<T>
+    /// @returns always 2
     template <typename T>
     struct tuple_size<sf::Vector2<T>>
         : std::integral_constant<std::size_t, 2> { };
 
+    /// @brief std::tuple_element for sf::Vector2<T>
+    /// @returns always T
     template<std::size_t index, class T>
     struct tuple_element<index, sf::Vector2<T>> {
         using type = T;
     };
 
+    /// @brief std::tuple_size for sf::Vector3<T>
+    /// @returns always 3
     template <typename T>
     struct tuple_size<sf::Vector3<T>>
         : std::integral_constant<std::size_t, 3> { };
 
+    /// @brief std::tuple_element for sf::Vector3<T>
+    /// @returns always T
     template<std::size_t index, class T>
     struct tuple_element<index, sf::Vector3<T>> {
         using type = T;
     };
 }
 
+/// Moves top left angle keeping bottom right angle in place
+/// @param extension offset to move angle
+/// If positive, rectangle is extended
+/// @returns result as new rect
 template <typename T>
 sf::Rect<T> extendTopLeft(sf::Rect<T> rect, 
                           sf::Vector2<T> extension) noexcept {
@@ -152,6 +191,10 @@ sf::Rect<T> extendTopLeft(sf::Rect<T> rect,
             rect.width + extension.x, rect.height + extension.y};
 }
 
+/// Moves bottom right angle keeping top left angle in place
+/// @param extension offset to move angle
+/// If positive, rectangle is extended
+/// @returns result as new rect
 template <typename T>
 sf::Rect<T> extendBottomRight(sf::Rect<T> rect, 
                               sf::Vector2<T> extension) noexcept {
@@ -159,6 +202,10 @@ sf::Rect<T> extendBottomRight(sf::Rect<T> rect,
             rect.width + extension.x, rect.height + extension.y};
 }
 
+/// Moves bottom right angle keeping top left angle in place
+/// @param extension offset to move angle
+/// If positive, rectangle is shrinked
+/// @returns result as new rect
 template <typename T>
 sf::Rect<T> shrinkTopLeft(sf::Rect<T> rect, 
                           sf::Vector2<T> shrink) noexcept {
@@ -166,6 +213,10 @@ sf::Rect<T> shrinkTopLeft(sf::Rect<T> rect,
             rect.width - shrink.x, rect.height - shrink.y};
 }
 
+/// Moves bottom right angle keeping top left angle in place
+/// @param extension offset to move angle
+/// If positive, rectangle is shrinked
+/// @returns result as new rect
 template <typename T>
 sf::Rect<T> shrinkBottomRight(sf::Rect<T> rect, 
                               sf::Vector2<T> shrink) noexcept {

@@ -16,6 +16,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef EXCEPTION_HPP_
 #define EXCEPTION_HPP_
 
+/// @file Exception.hpp Tracable exception classes and utilities
+
 #define BOOST_STACKTRACE_LINK
 #include <boost/stacktrace.hpp>
 using Stacktrace = boost::stacktrace::stacktrace;
@@ -24,12 +26,15 @@ using Stacktrace = boost::stacktrace::stacktrace;
 #include <exception>
 #include <stdexcept>
 
+/// Base class for exceptions with stacktrace support
 class TracableException {
 public:   
+    // Location of the error
     const Stacktrace& stacktrace() const noexcept {
         return stacktrace_;
     }
 
+    // Error description
     virtual const char* what() const noexcept = 0;
 protected:
     TracableException(Stacktrace currentStacktrace) noexcept : 
@@ -38,6 +43,7 @@ private:
     Stacktrace stacktrace_;
 };
 
+/// std::format support of boost::stacktrace::to_string
 template <>
 struct std::formatter<Stacktrace> {
     constexpr auto parse(std::format_parse_context& ctx) {
@@ -49,6 +55,7 @@ struct std::formatter<Stacktrace> {
     }
 };
 
+/// Tracable std::runtime_error
 class RuntimeError : public std::runtime_error, public TracableException {
 public:
     RuntimeError(const std::string& message, 
@@ -56,11 +63,13 @@ public:
         std::runtime_error{message}, 
         TracableException{std::move(currentStacktrace)} {}
     
+    /// Uses std::runtime_error::what as TracableException::what
     const char* what() const noexcept override {
         return std::runtime_error::what();
     }
 };
 
+/// Tracable std::logic_error
 class LogicError : public std::logic_error, public TracableException {
 public:
     LogicError(const std::string& message, 
@@ -68,6 +77,7 @@ public:
         std::logic_error{message}, 
         TracableException{std::move(currentStacktrace)} {}
     
+    /// Uses std::logic_error::what as TracableException::what
     const char* what() const noexcept override {
         return std::logic_error::what();
     }

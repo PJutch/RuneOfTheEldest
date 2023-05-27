@@ -16,6 +16,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef LOG_HPP_
 #define LOG_HPP_
 
+/// @file utilities for creating loggers with di
+
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>
@@ -28,6 +30,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 using ConsoleSink = spdlog::sinks::stdout_color_sink_st;
 using FileSink = spdlog::sinks::basic_file_sink_st;
 
+/// boost::di module providing log sinks
 inline auto logModule() {
     return boost::di::make_injector(
         boost::di::bind<FileSink>.to(std::make_shared<FileSink>("log.txt", true)),
@@ -35,11 +38,15 @@ inline auto logModule() {
     );
 }
 
+/// factory for creating loggers
 class LoggerFactory {
 public:
     LoggerFactory(std::vector<spdlog::sink_ptr> sinks_) :
             sinks{std::move(sinks_)} {}
     
+    /// Creates new logger
+    /// Sinks are passed by di
+    /// @param name Name of the logger
     [[nodiscard]] auto create(std::string name) noexcept {
         return std::make_shared<spdlog::logger>(std::move(name), 
             std::ranges::begin(sinks), std::ranges::end(sinks));

@@ -16,9 +16,14 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef RANDOM_HPP_
 #define RANDOM_HPP_
 
+/// @file typedefs to use for random number generation
+
 #include <random>
 
+/// default random engine
 using RandomEngine = std::mt19937_64;
+
+/// default seed type
 using SeedT = RandomEngine::result_type;
 
 #endif

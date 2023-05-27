@@ -29,6 +29,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <memory>
 
+/// Integrates all subsystems
 class Game {
 public:
     Game(std::shared_ptr<World> world, 
@@ -55,6 +56,7 @@ public:
         return *renderer_;
     }
 
+    /// Generates world and runs game loop until exit
     void run();
 private:
     std::shared_ptr<World> world_;

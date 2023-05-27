@@ -16,12 +16,19 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef ASSERT_HPP_
 #define ASSERT_HPP_
 
+/// @file assert.hpp Assertion based on tracable exceptions
+
 #include "Exception.hpp"
 
 #include <format>
 
+/// If true assertions are enabled
 const bool enableAssertions = false;
 
+/// @brief Generates message for assertion failed
+/// @param condition Stringified condition
+/// @param message   User provided message
+/// @returns Formatted message
 inline std::string assertion_message(std::string condition, 
                               std::string message = "") noexcept {
     if (message.empty())
@@ -30,12 +37,18 @@ inline std::string assertion_message(std::string condition,
         return std::format("Assertion failed: {} ({})", message, condition);
 }
 
+/// Exception thrown if assertion failed
 class AssertionFailed : public LogicError {
 public:
     AssertionFailed(std::string condition, std::string message = "") :
         LogicError{assertion_message(condition, message)} {}
 };
 
+/// @brief Assertion implementation
+/// @param condition Evaluated condition
+/// @param condition_str Stringified condition
+/// @param message   User provided message
+/// @throws AssertionFailed if condition is false
 inline void assert_impl(bool condition, std::string condition_str, 
             std::string message = "") {
     if (enableAssertions)
@@ -43,6 +56,11 @@ inline void assert_impl(bool condition, std::string condition_str,
             throw AssertionFailed(condition_str, message);
 }
 
+/// @brief Assertion macro
+/// @warning Always runs condition even in release build
+/// @param condition Condition to check
+/// @param message Pass message as \_\_VA_ARGS\_\_
+/// @throws AssertionFailed if condition evaluates to false
 #define TROTE_ASSERT(condition, ...) assert_impl(condition, #condition, __VA_ARGS__)
 
 #endif
