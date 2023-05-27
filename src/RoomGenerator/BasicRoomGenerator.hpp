@@ -22,13 +22,18 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <memory>
 
-
+/// @brief Generates room in the area
+/// @details Room occupies all area except right and bottom sides
+///       \n Generates Tile::EMPTY for passages in right and bottom sides
 class BasicRoomGenerator : public RoomGenerator {
 public:
     BasicRoomGenerator() = default;
 
     void operator() (Level& level, Area area) final;
 
+    /// @brief If true generates special colored tiles instead of Tile::EMPTY
+    /// @details Generates Tile::ROOM in main room
+    ///       \n Generates Tile::ROOM_ENTRANCE for passage entrance
     void debugTiles(bool newDebugTiles = true) noexcept final {
         debugTiles_ = newDebugTiles;
     }

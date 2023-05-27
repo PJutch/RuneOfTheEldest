@@ -27,15 +27,18 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <queue>
 #include <functional>
 
+/// Generates level using bsp
 class DungeonGenerator {
 public:
     DungeonGenerator(std::unique_ptr<RoomGenerator> roomGenerator, 
                      RandomEngine& randomEngine);
 
+    /// Minimum size of the room
     void minSize(int newMinSize) noexcept {
         minSize_ = newMinSize;
     }
 
+    /// Chance of splitting room
     void splitChance(double newSplitChance) noexcept {
         splitChance_ = newSplitChance;
     }

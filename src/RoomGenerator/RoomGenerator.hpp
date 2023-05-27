@@ -23,12 +23,15 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <memory>
 
+/// Interface for room generators
 class RoomGenerator {
 public:
     virtual ~RoomGenerator() = default;
 
+    ///  Generates room in the area
     virtual void operator() (Level& level, Area area) = 0;
 
+    /// If true generates special colored tiles instead of Tile::EMPTY
     virtual void debugTiles(bool debugTiles_ = true) = 0;
 };
 
