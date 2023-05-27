@@ -18,53 +18,7 @@ add_library(test_dependencies INTERFACE)
 
 include(FetchContent)
 
-set(CMAKE_PREFIX_PATH deps/googletest-build/googletest/generated
-                      deps/sfml-build)
-
-if(NOT TARGET GTest::gtest_main)
-    FetchContent_Declare(
-        googletest
-        # URL https://github.com/google/googletest/archive/refs/tags/v1.13.0.zip
-        URL ${CMAKE_CURRENT_LIST_DIR}/../deps/googletest-1.13.0.zip
-        # GIT_REPOSITORY https://github.com/google/googletest
-        # GIT_TAG origin/v1.13.x
-        DOWNLOAD_EXTRACT_TIMESTAMP true
-        # FIND_PACKAGE_ARGS NAMES GTest
-    )
-    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-    FetchContent_MakeAvailable(googletest)
-
-    if(NOT TARGET GTest::gtest_main)
-        message(FATAL_ERROR "Failed FetchContent: googletest")
-    endif()
-endif()
-
-target_link_libraries(test_dependencies INTERFACE GTest::gtest_main)
-
-if(NOT TARGET spdlog)
-    FetchContent_Declare(
-        spdlog
-        URL https://github.com/gabime/spdlog/archive/refs/tags/v1.11.0.zip
-        DOWNLOAD_EXTRACT_TIMESTAMP true
-    )   
-    set(SPDLOG_USE_STD_FORMAT ON CACHE BOOL "" FORCE)
-    set(SPDLOG_BUILD_SHARED OFF CACHE BOOL "" FORCE)
-    set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-    FetchContent_MakeAvailable(spdlog)
-
-    if(NOT TARGET spdlog)
-        message(FATAL_ERROR "Failed FetchContent: spdlog")
-    endif()
-endif()
-
-target_link_libraries(dependencies INTERFACE spdlog)
-
-if(NOT TARGET Boost)
-    include(cmake/FetchBoost.cmake)
-endif()
-target_link_libraries(dependencies INTERFACE Boost)
-
-if(NOT TARGET SFML)
-    include(cmake/FetchSFML.cmake)
-endif()
-target_link_libraries(dependencies INTERFACE SFML)
+include(cmake/FetchGoogleTest.cmake)
+include(cmake/FetchSpdlog.cmake)
+include(cmake/FetchBoost.cmake)
+include(cmake/FetchSFML.cmake)

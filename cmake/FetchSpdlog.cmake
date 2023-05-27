@@ -13,23 +13,11 @@
 # You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 # If not, see <https://www.gnu.org/licenses/>.
 
-if(NOT TARGET SFML)
-    if(    NOT TARGET sfml-system 
-        OR NOT TARGET sfml-window 
-        OR NOT TARGET sfml-graphics 
-        OR NOT TARGET sfml-audio 
-        OR NOT TARGET sfml-main)
-
-        set(SFML_STATIC_LIBRARIES TRUE)
-        include(cmake/Utility.cmake)
-        fetchGit(SFML SFML.zip https://github.com/SFML/SFML origin/2.6.x)
-    endif()
-
-    addDependency(SFML sfml-system)
-    addDependency(SFML sfml-window)
-    addDependency(SFML sfml-graphics)
-    addDependency(SFML sfml-audio)
-    addDependency(SFML sfml-main)
+if(NOT TARGET spdlog)
+    set(SPDLOG_USE_STD_FORMAT ON  CACHE BOOL "" FORCE)
+    set(SPDLOG_BUILD_SHARED   OFF CACHE BOOL "" FORCE)
+    set(BUILD_SHARED_LIBS     OFF CACHE BOOL "" FORCE)
+    fetchUrl(spdlog spdlog.zip https://github.com/gabime/spdlog/archive/refs/tags/v1.11.0.zip)
 endif()
 
-addDependency(dependencies SFML)
+addDependency(dependencies spdlog)

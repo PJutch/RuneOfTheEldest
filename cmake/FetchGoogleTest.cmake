@@ -13,23 +13,11 @@
 # You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 # If not, see <https://www.gnu.org/licenses/>.
 
-if(NOT TARGET SFML)
-    if(    NOT TARGET sfml-system 
-        OR NOT TARGET sfml-window 
-        OR NOT TARGET sfml-graphics 
-        OR NOT TARGET sfml-audio 
-        OR NOT TARGET sfml-main)
+if(NOT TARGET GTest::gtest_main)
+    include(cmake/Utility.cmake)
 
-        set(SFML_STATIC_LIBRARIES TRUE)
-        include(cmake/Utility.cmake)
-        fetchGit(SFML SFML.zip https://github.com/SFML/SFML origin/2.6.x)
-    endif()
-
-    addDependency(SFML sfml-system)
-    addDependency(SFML sfml-window)
-    addDependency(SFML sfml-graphics)
-    addDependency(SFML sfml-audio)
-    addDependency(SFML sfml-main)
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    fetchGit(googletest googletest.zip https://github.com/google/googletest origin/v1.13.x)
 endif()
 
-addDependency(dependencies SFML)
+addDependency(dependencies GTest::gtest_main)
