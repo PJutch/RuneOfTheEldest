@@ -21,16 +21,16 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Exception.hpp"
 
 #include <format>
+#include <string_view>
 
 /// If true assertions are enabled
-const bool enableAssertions = false;
+const bool enableAssertions = true;
 
 /// @brief Generates message for assertion failed
 /// @param condition Stringified condition
 /// @param message   User provided message
 /// @returns Formatted message
-inline std::string assertion_message(std::string condition, 
-                              std::string message = "") noexcept {
+inline std::string assertion_message(std::string_view condition, std::string_view message = "") {
     if (message.empty())
         return std::format("Assertion failed: {}", condition);
     else
@@ -40,8 +40,8 @@ inline std::string assertion_message(std::string condition,
 /// Exception thrown if assertion failed
 class AssertionFailed : public LogicError {
 public:
-    AssertionFailed(std::string condition, std::string message = "") :
-        LogicError{assertion_message(condition, message)} {}
+    AssertionFailed(std::string_view condition, std::string_view message = "", Stacktrace stacktace_ = {}) :
+        LogicError{assertion_message(condition, message), std::move(stacktace_)} {}
 };
 
 /// @brief Assertion implementation
@@ -49,11 +49,10 @@ public:
 /// @param condition_str Stringified condition
 /// @param message   User provided message
 /// @throws AssertionFailed if condition is false
-inline void assert_impl(bool condition, std::string condition_str, 
-            std::string message = "") {
+inline void assert_impl(bool condition, std::string_view condition_str, std::string_view message = "", Stacktrace stacktace = {}) {
     if (enableAssertions)
         if (!condition) 
-            throw AssertionFailed(condition_str, message);
+            throw AssertionFailed(condition_str, message, std::move(stacktace));
 }
 
 /// @brief Assertion macro
