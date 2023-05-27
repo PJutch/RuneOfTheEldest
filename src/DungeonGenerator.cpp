@@ -84,7 +84,7 @@ void DungeonGenerator::splitX(Area area) {
 }
 
 void DungeonGenerator::splitY(Area area) {
-    TROTE_ASSERT(canSplit(area.width()));
+    TROTE_ASSERT(canSplit(area.height()));
 
     int boundary = std::uniform_int_distribution
         {area.top() + minSize_, area.bottom() - minSize_}(*randomEngine);
