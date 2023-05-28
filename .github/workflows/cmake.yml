@@ -20,6 +20,14 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
+    - name: Install build system
+      run: |
+        sudo apt-get update
+        sudo apt-get install cmake pkg-config
+      
+    - name: Install gcc
+      run: sudo apt-get install gcc-13
+    
     - name: Install OpenGL
       run: |
         sudo apt-get update
