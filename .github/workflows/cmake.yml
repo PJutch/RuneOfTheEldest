@@ -37,8 +37,8 @@ jobs:
     - name: Install Vorbis
       run: |
         sudo apt-get install libvorbis-dev
-        sudo apt-get -y install libvorbisenc
-        sudo apt-get -y install libvorbisfile
+        sudo apt-get -y install libvorbisenc2
+        sudo apt-get -y install libvorbisfile3
     
     # - uses: openrndr/setup-opengl@v1.1
 
