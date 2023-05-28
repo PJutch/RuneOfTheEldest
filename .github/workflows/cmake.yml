@@ -51,8 +51,8 @@ jobs:
     - name: Install Flac
       run: sudo apt-get install libflac-dev
       
-    - name: Install X11
-      run: sudo apt-get install xorg openbox
+    - name: Install XCursor
+      run: sudo apt install libxcursor-dev
     
     # - uses: openrndr/setup-opengl@v1.1
 
