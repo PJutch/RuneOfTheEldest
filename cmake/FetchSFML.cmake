@@ -29,7 +29,10 @@ if(NOT TARGET SFML)
     addDependency(SFML sfml-window)
     addDependency(SFML sfml-graphics)
     addDependency(SFML sfml-audio)
-    addDependency(SFML sfml-main)
+
+    if(WIN32)
+        addDependency(SFML sfml-main)
+    endif()
 endif()
 
 addDependency(dependencies SFML)
