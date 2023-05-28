@@ -30,7 +30,7 @@ jobs:
     
     - name: Install UDev
       run: |
-        sudo apt-get install -y udev
+        sudo apt-get install -y libudev-dev
     
     # - uses: openrndr/setup-opengl@v1.1
 
