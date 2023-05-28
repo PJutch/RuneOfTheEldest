@@ -39,6 +39,9 @@ jobs:
         sudo apt-get install libvorbis-dev
         sudo apt-get -y install libvorbisenc2
         sudo apt-get -y install libvorbisfile3
+        
+    - name: Install Flac
+      run: sudo apt-get install libflac-dev
     
     # - uses: openrndr/setup-opengl@v1.1
 
