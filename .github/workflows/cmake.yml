@@ -26,7 +26,7 @@ jobs:
         sudo apt-get install cmake pkg-config
       
     - name: Install libc++
-      run: sudo apt-get upgrade libc++-dev
+      run: sudo apt-get upgrade libc++-dev=13.1.0
     
     - name: Install OpenGL
       run: |
