@@ -15,10 +15,19 @@ jobs:
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
     # You can convert this to a matrix build if you need cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
+    
+    - name: Install OpenGL
+      run: |
+        sudo apt-get update
+        sudo apt-get install cmake pkg-config
+        sudo apt-get install mesa-utils libglu1-mesa-dev freeglut3-dev mesa-common-dev
+        sudo apt-get install libglew-dev libglfw3-dev libglm-dev
+        sudo apt-get install libao-dev libmpg123-dev
+    
     # - uses: openrndr/setup-opengl@v1.1
 
     - name: Configure CMake
