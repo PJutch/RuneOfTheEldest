@@ -23,9 +23,10 @@ This project is dependent on following libraries and their dependencies:
 Also you will need [Doxygen](https://github.com/doxygen/doxygen) to generate documentation
 
 ## Platforms
-This project is tested on Windows 10.
-It should work on other platforms including older versions of Windows, Linux and MacOS 
-but it isn't tested.
+This project is fully tested on Windows 10.
+Also it automatically tested on Ubuntu.
+It should work on other platforms including other versions of Windows and Linux, MacOS and more
+but it isn't tested there.
 
 ## Build
 This project is build with CMake.
