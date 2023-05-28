@@ -5,3 +5,4 @@ log.txt
 out
 .vs
 doc/output
+CMakeSettings.json
