@@ -33,6 +33,12 @@ jobs:
         
     - name: Install OpenAL
       run: sudo apt-get install libopenal-dev
+      
+    - name: Install Vorbis
+      run: |
+        sudo apt-get install libvorbis-dev
+        sudo apt-get -y install libvorbisenc
+        sudo apt-get -y install libvorbisfile
     
     # - uses: openrndr/setup-opengl@v1.1
 
