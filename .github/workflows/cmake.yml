@@ -29,8 +29,10 @@ jobs:
         sudo apt-get install libao-dev libmpg123-dev
     
     - name: Install UDev
-      run: |
-        sudo apt-get install -y libudev-dev
+      run: sudo apt-get install -y libudev-dev
+        
+    - name: Install OpenAL
+      run: sudo apt-get install libopenal-dev
     
     # - uses: openrndr/setup-opengl@v1.1
 
