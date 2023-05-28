@@ -28,6 +28,10 @@ jobs:
         sudo apt-get install libglew-dev libglfw3-dev libglm-dev
         sudo apt-get install libao-dev libmpg123-dev
     
+    - name: Install UDev
+      run: |
+        sudo apt-get install -y udev
+    
     # - uses: openrndr/setup-opengl@v1.1
 
     - name: Configure CMake
