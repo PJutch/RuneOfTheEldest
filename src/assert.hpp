@@ -60,6 +60,6 @@ inline void assert_impl(bool condition, std::string_view condition_str, std::str
 /// @param condition Condition to check
 /// @param ... User provided message
 /// @throws AssertionFailed if condition evaluates to false
-#define TROTE_ASSERT(condition, ...) assert_impl(condition, #condition, __VA_ARGS__)
+#define TROTE_ASSERT(condition, ...) assert_impl(condition, #condition __VA_OPT__(,) __VA_ARGS__)
 
 #endif
