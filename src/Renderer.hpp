@@ -17,8 +17,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define RENDERER_HPP_
 
 #include "Camera/Camera.hpp"
-
 #include "View.hpp"
+#include "AssetManager.hpp"
 
 #include "World.hpp"
 #include "Player.hpp"
@@ -40,8 +40,8 @@ public:
     /// Creates renderer and loads textures
     Renderer(std::shared_ptr<Camera> camera,
              std::shared_ptr<sf::RenderWindow> window, 
-             std::shared_ptr<World> world_, std::shared_ptr<Player> player_, 
-             LoggerFactory& loggerFactory);
+             std::shared_ptr<World> world_, std::shared_ptr<Player> player,
+             std::unique_ptr<AssetManager> assets);
 
     /// If true bsp areas created by dungeon generation are rendered
     void renderAreas(bool newRenderAreas = true) noexcept {
@@ -54,36 +54,12 @@ private:
     bool renderAreas_ = false;
 
     std::shared_ptr<Camera> camera;
-
-    inline const static sf::Vector2i tileSize{16, 16};
-    std::array<sf::Texture, totalTiles> tileTextures;
-
-    sf::Texture playerTexture;
+    std::unique_ptr<AssetManager> assets;
 
     std::shared_ptr<World> world;
     std::shared_ptr<Player> player;
 
     std::shared_ptr<sf::RenderWindow> window;
-
-    std::shared_ptr<spdlog::logger> assetLogger;
-
-    sf::Texture& tileTexture(Tile tile) noexcept {
-        return tileTextures[static_cast<int>(tile)];
-    }
-
-    const sf::Texture& tileTexture(Tile tile) const noexcept {
-        return tileTextures[static_cast<int>(tile)];
-    }
-
-    void fillTexture(sf::Texture& texture, 
-                     sf::Vector2i size, sf::Color color) const noexcept {
-        sf::Image image;
-        image.create(size.x, size.y, color);
-        texture.loadFromImage(image);
-    }
-
-    void loadTexture(sf::Texture& texture, std::string_view name, 
-                     const std::filesystem::path& file) const;
 
     sf::Vector2f toScreen(sf::Vector2i worldVector) const noexcept {
         return toScreen(worldVector.x, worldVector.y);
@@ -94,7 +70,8 @@ private:
     }
 
     sf::Vector2f toScreen(float worldX, float worldY) const noexcept {
-        return { worldX * tileSize.x, worldY * tileSize.y };
+        auto [tileX, tileY] = assets->tileSize();
+        return { worldX * tileX, worldY * tileY };
     }
 
     void worldScreenView() noexcept {

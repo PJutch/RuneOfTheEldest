@@ -15,40 +15,13 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Renderer.hpp"
 
-#include "Exception.hpp"
-
-class TextureLoadError : public RuntimeError {
-    using RuntimeError::RuntimeError;
-};
-
 Renderer::Renderer(std::shared_ptr<Camera> camera,
                    std::shared_ptr<sf::RenderWindow> window_,
                    std::shared_ptr<World> world_, std::shared_ptr<Player> player_, 
-                   LoggerFactory& loggerFactory) :
-        camera{std::move(camera)},
-        world{ std::move(world_) }, player{ std::move(player_) },
-        window{ std::move(window_) }, 
-        assetLogger{ loggerFactory.create("assets") }  {
-    loadTexture(tileTexture(Tile::EMPTY ), "floor tile" , "resources/floor.png" );
-    loadTexture(tileTexture(Tile::WALL  ), "wall tile"  , "resources/wall.png"  );
-    loadTexture(tileTexture(Tile::UNSEEN), "unseen tile", "resources/unseen.png");
-
-    loadTexture(tileTexture(Tile::UP_STAIRS  ), "up stairs tile"  , "resources/up_stairs.png"  );
-    loadTexture(tileTexture(Tile::DOWN_STAIRS), "down stairs tile", "resources/down_stairs.png");
-
-    loadTexture(playerTexture, "player", "resources/player.png");
-    
-    assetLogger->info("Creating debug tile textures...");
-    fillTexture(tileTexture(Tile::ROOM         ), tileSize, sf::Color::Red    );
-    fillTexture(tileTexture(Tile::ROOM_ENTRANCE), tileSize, sf::Color::Magenta);
-    fillTexture(tileTexture(Tile::PASSAGE      ), tileSize, sf::Color::Blue   );
-}
-
-void Renderer::loadTexture(sf::Texture& texture, std::string_view name, const std::filesystem::path& path) const {
-    assetLogger->info("Loading {} texture...", name);
-    if (!texture.loadFromFile(path.generic_string()))
-        throw TextureLoadError{ std::format("Unable to load {} texture", name) };
-}
+                   std::unique_ptr<AssetManager> assets_) :
+    camera{ std::move(camera) }, assets{ std::move(assets_) },
+    world{ std::move(world_) }, player{ std::move(player_) },
+    window{ std::move(window_) } {}
 
 void Renderer::draw(Level& level) {
     for (int x = 0; x < level.shape().x; ++ x)
@@ -69,7 +42,7 @@ void Renderer::drawPlayer() {
         return;
 
     sf::Sprite playerSprite;
-    playerSprite.setTexture(playerTexture);
+    playerSprite.setTexture(assets->playerTexture());
     playerSprite.setPosition(toScreen(player->position()));
 
     window->draw(playerSprite);
@@ -77,7 +50,7 @@ void Renderer::drawPlayer() {
 
 void Renderer::draw(Tile tile, sf::Vector2i position) {
     sf::Sprite tileSprite;
-    tileSprite.setTexture(tileTexture(tile));
+    tileSprite.setTexture(assets->tileTexture(tile));
     tileSprite.setPosition(toScreen(position));
 
     window->draw(tileSprite);
