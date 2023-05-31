@@ -17,22 +17,21 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 void Dungeon::generate(std::shared_ptr<spdlog::logger> logger) {
 	levels.resize(10);
-	for (int i = 0; i < levels.size(); ++i) {
-		logger->info("Generating level {}...", i);
+	for (Level& level : levels)
+		level.generateBlank({ 50, 50 });
 
-		levels[i].generateBlank({ 50, 50 });
+	logger->info("Generating dungeon...");
+	for (Level& level : levels)
+		generator(level);
+		
 
-		logger->info("Generating dungeon...");
-		generator(levels[i]);
+	logger->info("Generating walls...");
+	for (Level& level : levels)
+		level.generateWalls();
 
-		logger->info("Generating walls...");
-		levels[i].generateWalls();
-
-		if (i != 0) {
-			logger->info("Generating stairs...");
-			generateUpStairs(i, logger);
-		}
-	}
+	logger->info("Generating stairs...");
+	for (int i = 1; i < size(); ++ i)
+		generateUpStairs(i, logger);
 }
 
 void Dungeon::addStairs(sf::Vector3i pos1, sf::Vector3i pos2) {
@@ -52,7 +51,6 @@ void Dungeon::generateUpStairs(int fromLevel, std::shared_ptr<spdlog::logger> lo
 	if (fromLevel <= 0)
 		return;
 
-	logger->info("Generating stairs...");
 	for (int i = 0; i < 3; ++i) {
 		sf::Vector2i upPos = (*this)[fromLevel - 1].randomPosition(*randomEngine, &isEmpty);
 

@@ -26,7 +26,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <vector>
 #include <memory>
 
-/// Dungeon consisting of multiple levels
+/// Dungeon consisting of multiple levels and stairs between them
 class Dungeon {
 public:
 	Dungeon(DungeonGenerator generator_, RandomEngine& randomEngine_) :
@@ -107,10 +107,7 @@ public:
 	}
 
 	/// @brief Generates dungeon
-	/// @details for each level 
-	/// calls generateBlank, applies DungeonGenerator, 
-	/// calls generateWalls and generateStairs
-	/// 
+	/// @details Generates dungeon with DungeonGenerator, then generate walls and stairs
 	/// @param logger logger to log messages
 	void generate(std::shared_ptr<spdlog::logger> logger);
 private:

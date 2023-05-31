@@ -13,35 +13,26 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef WORLD_HPP_
-#define WORLD_HPP_
+#include "World.hpp"
 
-#include "Dungeon.hpp"
-#include "Player.hpp"
+World::World(std::shared_ptr<Dungeon> dungeon_,
+	         std::shared_ptr<Player> player_,
+	         RandomEngine& randomEngine_,
+	         LoggerFactory& loggerFactory) :
+	dungeon{ std::move(dungeon_) },
+	player{ std::move(player_) },
+	generationLogger{ loggerFactory.create("generation") },
+	randomEngine{ &randomEngine_ } {}
 
-/// Dungeons and all objects in it
-class World {
-public:
-	World(std::shared_ptr<Dungeon> dungeon_, std::shared_ptr<Player> player_,
-		  RandomEngine& randomEngine_, LoggerFactory& loggerFactory);
+/// @brief Generates dungeon and places player
+/// @param logger logger to log messages
+void World::generate() {
+	generationLogger->info("Started");
+	dungeon->generate(generationLogger);
 
-	DungeonGenerator& dungeonGenerator() noexcept {
-		return dungeon->dungeonGenerator();
-	}
+	generationLogger->info("Placing player...");
+	player->level(0);
+	player->position((*dungeon)[player->level()].randomPosition(*randomEngine, &isPassable));
 
-	const DungeonGenerator& dungeonGenerator() const noexcept {
-		return dungeon->dungeonGenerator();
-	}
-
-	/// @brief Generates dungeon and places player
-	/// @param logger logger to log messages
-	void generate();
-private:
-	std::shared_ptr<Dungeon> dungeon;
-	std::shared_ptr<Player> player;
-
-	std::shared_ptr<spdlog::logger> generationLogger;
-	RandomEngine* randomEngine;
-};
-
-#endif
+	generationLogger->info("Finished");
+}
