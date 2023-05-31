@@ -13,14 +13,14 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#include "World.hpp"
+#include "Dungeon.hpp"
 
-void World::generate(std::shared_ptr<spdlog::logger> logger) {
-    levels.resize(10);
-	for (int i = 0; i < levels.size(); ++ i) {
+void Dungeon::generate(std::shared_ptr<spdlog::logger> logger) {
+	levels.resize(10);
+	for (int i = 0; i < levels.size(); ++i) {
 		logger->info("Generating level {}...", i);
 
-		levels[i].generateBlank({50, 50});
+		levels[i].generateBlank({ 50, 50 });
 
 		logger->info("Generating dungeon...");
 		generator(levels[i]);
@@ -35,7 +35,7 @@ void World::generate(std::shared_ptr<spdlog::logger> logger) {
 	}
 }
 
-void World::addStairs(sf::Vector3i pos1, sf::Vector3i pos2) {
+void Dungeon::addStairs(sf::Vector3i pos1, sf::Vector3i pos2) {
 	if (pos1.z > pos2.z) {
 		addStairs(pos2, pos1);
 		return;
@@ -48,7 +48,7 @@ void World::addStairs(sf::Vector3i pos1, sf::Vector3i pos2) {
 	at(pos2) = Tile::UP_STAIRS;
 }
 
-void World::generateUpStairs(int fromLevel, std::shared_ptr<spdlog::logger> logger) {
+void Dungeon::generateUpStairs(int fromLevel, std::shared_ptr<spdlog::logger> logger) {
 	if (fromLevel <= 0)
 		return;
 

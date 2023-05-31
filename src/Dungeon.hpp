@@ -13,87 +13,97 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef WORLD_HPP_
-#define WORLD_HPP_
+#ifndef DUNGEON_HPP_
+#define DUNGEON_HPP_
 
-#include "Dungeon.hpp"
+#include "DungeonGenerator.hpp"
+#include "Level.hpp"
 
-/// Dungeons and all objects in it
-class World {
+#include "log.hpp"
+#include "random.hpp"
+#include "Map.hpp"
+
+#include <vector>
+#include <memory>
+
+/// Dungeon consisting of multiple levels
+class Dungeon {
 public:
-	World(std::unique_ptr<Dungeon> dungeon_) : dungeon{ std::move(dungeon_) } {}
+	Dungeon(DungeonGenerator generator_, RandomEngine& randomEngine_) :
+		generator{ std::move(generator_) },
+		randomEngine{ &randomEngine_ } {}
 
 	DungeonGenerator& dungeonGenerator() noexcept {
-		return dungeon->dungeonGenerator();
+		return generator;
 	}
 
 	const DungeonGenerator& dungeonGenerator() const noexcept {
-		return dungeon->dungeonGenerator();
+		return generator;
 	}
 
 	/// @brief Access to individual level
 	/// @warning Check level index by yourself
 	///       \n You may use size
 	Level& operator[] (int level) {
-		return (*dungeon)[level];
+		return levels[level];
 	}
 
 	/// @brief Access to individual level
 	/// @warning Check level index by yourself
 	///       \n You may use size
 	const Level& operator[] (int level) const {
-		return (*dungeon)[level];
+		return levels[level];
 	}
 
 	/// @brief Access to individual tile on level level at (x, y)
 	/// @warning Check all indices by yourself
 	Tile& at(int x, int y, int level) noexcept {
-		return dungeon->at(x, y, level);
+		return (*this)[level].at(x, y);
 	}
 
 	/// @brief Access to individual tile on level level at (x, y)
 	/// @warning Check all indices by yourself
 	const Tile& at(int x, int y, int level) const noexcept {
-		return dungeon->at(x, y, level);
+		return (*this)[level].at(x, y);
 	}
 
 	/// @brief Access to individual tile on level level at (x, y)
 	/// @warning Check all indices by yourself
 	Tile& at(sf::Vector2i position, int level) noexcept {
-		return dungeon->at(position, level);
+		return at(position.x, position.y, level);
 	}
 
 	/// @brief Access to individual tile on level level at (x, y)
 	/// @warning Check all indices by yourself
 	const Tile& at(sf::Vector2i position, int level) const noexcept {
-		return dungeon->at(position, level);
+		return at(position.x, position.y, level);
 	}
 
 	/// @brief Access to individual tile on level z at (x, y)
 	/// @warning Check all indices by yourself
 	Tile& at(sf::Vector3i position) noexcept {
-		return dungeon->at(position);
+		return at(position.x, position.y, position.z);
 	}
 
 	/// @brief Access to individual tile on level z at (x, y)
 	/// @warning Check all indices by yourself
 	const Tile& at(sf::Vector3i position) const noexcept {
-		return dungeon->at(position);
+		return at(position.x, position.y, position.z);
 	}
 
 	/// Level count
 	int size() const noexcept {
-		return dungeon->size();
+		return levels.size();
 	}
 
 	/// Returns at(position) destination if it's Tile::UP_STAIRS
 	std::optional<sf::Vector3i> upStairs(sf::Vector3i position) {
-		return dungeon->upStairs(position);
+		return getOptional(upStairs_, position);
 	}
 
 	/// Returns at(position) destination if it's Tile::DOWN_STAIRS
 	std::optional<sf::Vector3i> downStairs(sf::Vector3i position) {
-		return dungeon->downStairs(position);
+		return getOptional(downStairs_, position);
 	}
 
 	/// @brief Generates dungeon
@@ -102,11 +112,17 @@ public:
 	/// calls generateWalls and generateStairs
 	/// 
 	/// @param logger logger to log messages
-	void generate(std::shared_ptr<spdlog::logger> logger) {
-		dungeon->generate(std::move(logger));
-	}
+	void generate(std::shared_ptr<spdlog::logger> logger);
 private:
-	std::unique_ptr<Dungeon> dungeon;
+	std::vector<Level> levels;
+	UnorderedMap<sf::Vector3i, sf::Vector3i> upStairs_;
+	UnorderedMap<sf::Vector3i, sf::Vector3i> downStairs_;
+
+	DungeonGenerator generator;
+	RandomEngine* randomEngine;
+
+	void addStairs(sf::Vector3i pos1, sf::Vector3i pos2);
+	void generateUpStairs(int fromLevel, std::shared_ptr<spdlog::logger> logger);
 };
 
 #endif
