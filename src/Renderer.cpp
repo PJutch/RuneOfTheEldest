@@ -17,10 +17,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 Renderer::Renderer(std::shared_ptr<Camera> camera,
                    std::shared_ptr<sf::RenderWindow> window_,
-                   std::shared_ptr<World> world_, std::shared_ptr<Player> player_, 
+                   std::shared_ptr<Dungeon> dungeon_, std::shared_ptr<Player> player_,
                    std::unique_ptr<AssetManager> assets_) :
     camera{ std::move(camera) }, assets{ std::move(assets_) },
-    world{ std::move(world_) }, player{ std::move(player_) },
+    dungeon{ std::move(dungeon_) }, player{ std::move(player_) },
     window{ std::move(window_) } {}
 
 void Renderer::draw(Level& level) {
@@ -72,7 +72,7 @@ void Renderer::draw() {
     window->clear(sf::Color::Black);
 
     worldScreenView();
-    drawWorld();
+    drawDungeon();
     drawPlayer();
 
     window->display();

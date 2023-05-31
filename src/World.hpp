@@ -21,7 +21,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 /// Dungeons and all objects in it
 class World {
 public:
-	World(std::unique_ptr<Dungeon> dungeon_) : dungeon{ std::move(dungeon_) } {}
+	World(std::shared_ptr<Dungeon> dungeon_) : dungeon{ std::move(dungeon_) } {}
 
 	DungeonGenerator& dungeonGenerator() noexcept {
 		return dungeon->dungeonGenerator();
@@ -29,71 +29,6 @@ public:
 
 	const DungeonGenerator& dungeonGenerator() const noexcept {
 		return dungeon->dungeonGenerator();
-	}
-
-	/// @brief Access to individual level
-	/// @warning Check level index by yourself
-	///       \n You may use size
-	Level& operator[] (int level) {
-		return (*dungeon)[level];
-	}
-
-	/// @brief Access to individual level
-	/// @warning Check level index by yourself
-	///       \n You may use size
-	const Level& operator[] (int level) const {
-		return (*dungeon)[level];
-	}
-
-	/// @brief Access to individual tile on level level at (x, y)
-	/// @warning Check all indices by yourself
-	Tile& at(int x, int y, int level) noexcept {
-		return dungeon->at(x, y, level);
-	}
-
-	/// @brief Access to individual tile on level level at (x, y)
-	/// @warning Check all indices by yourself
-	const Tile& at(int x, int y, int level) const noexcept {
-		return dungeon->at(x, y, level);
-	}
-
-	/// @brief Access to individual tile on level level at (x, y)
-	/// @warning Check all indices by yourself
-	Tile& at(sf::Vector2i position, int level) noexcept {
-		return dungeon->at(position, level);
-	}
-
-	/// @brief Access to individual tile on level level at (x, y)
-	/// @warning Check all indices by yourself
-	const Tile& at(sf::Vector2i position, int level) const noexcept {
-		return dungeon->at(position, level);
-	}
-
-	/// @brief Access to individual tile on level z at (x, y)
-	/// @warning Check all indices by yourself
-	Tile& at(sf::Vector3i position) noexcept {
-		return dungeon->at(position);
-	}
-
-	/// @brief Access to individual tile on level z at (x, y)
-	/// @warning Check all indices by yourself
-	const Tile& at(sf::Vector3i position) const noexcept {
-		return dungeon->at(position);
-	}
-
-	/// Level count
-	int size() const noexcept {
-		return dungeon->size();
-	}
-
-	/// Returns at(position) destination if it's Tile::UP_STAIRS
-	std::optional<sf::Vector3i> upStairs(sf::Vector3i position) {
-		return dungeon->upStairs(position);
-	}
-
-	/// Returns at(position) destination if it's Tile::DOWN_STAIRS
-	std::optional<sf::Vector3i> downStairs(sf::Vector3i position) {
-		return dungeon->downStairs(position);
 	}
 
 	/// @brief Generates dungeon
@@ -106,7 +41,7 @@ public:
 		dungeon->generate(std::move(logger));
 	}
 private:
-	std::unique_ptr<Dungeon> dungeon;
+	std::shared_ptr<Dungeon> dungeon;
 };
 
 #endif

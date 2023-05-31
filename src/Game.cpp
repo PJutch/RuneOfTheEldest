@@ -18,6 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Event.hpp"
 
 Game::Game(std::shared_ptr<World> newWorld,
+           std::shared_ptr<Dungeon> dungeon_,
            std::shared_ptr<Player> player_,
            std::shared_ptr<sf::RenderWindow> window_,
            std::shared_ptr<Camera> camera_,
@@ -25,6 +26,7 @@ Game::Game(std::shared_ptr<World> newWorld,
            RandomEngine& randomEngine_,
            LoggerFactory& loggerFactory) :
     world_{std::move(newWorld)},
+    dungeon{std::move(dungeon_)},
     player{std::move(player_)},
     window{std::move(window_)},
     camera{std::move(camera_)},
@@ -67,7 +69,7 @@ void Game::generate() {
 
     generationLogger->info("Placing player...");
     player->level(0);
-    player->position((*world_)[player->level()].randomPosition(*randomEngine, &isPassable));
+    player->position((*dungeon)[player->level()].randomPosition(*randomEngine, &isPassable));
 
     generationLogger->info("Finished");
 }

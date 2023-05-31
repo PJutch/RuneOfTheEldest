@@ -17,8 +17,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "../Event.hpp"
 
-FreeCamera::FreeCamera(std::shared_ptr<World> world_) :
-    world{ std::move(world_) } {}
+FreeCamera::FreeCamera(std::shared_ptr<Dungeon> dungeon_) :
+    dungeon{ std::move(dungeon_) } {}
 
 void FreeCamera::update(sf::Time elapsedTime) {
     const float cameraSpeed = 40.f;
@@ -40,7 +40,7 @@ void FreeCamera::handleEvent(sf::Event event) {
         if (level_ > 0)
             --level_;
     } else if (wasKeyPressed(event, sf::Keyboard::Period) && event.key.shift) {
-        if (level_ + 1 < world->size())
+        if (level_ + 1 < dungeon->size())
             ++ level_;
     }
 }
