@@ -18,7 +18,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Event.hpp"
 
 Game::Game(std::shared_ptr<World> newWorld,
-           std::shared_ptr<Dungeon> dungeon_,
            std::shared_ptr<Player> player_,
            std::shared_ptr<sf::RenderWindow> window_,
            std::shared_ptr<Camera> camera_,
@@ -26,16 +25,13 @@ Game::Game(std::shared_ptr<World> newWorld,
            RandomEngine& randomEngine_,
            LoggerFactory& loggerFactory) :
     world_{std::move(newWorld)},
-    dungeon{std::move(dungeon_)},
-    player{std::move(player_)},
+    player{ std::move(player_) },
     window{std::move(window_)},
     camera{std::move(camera_)},
-    renderer_{std::move(newRenderer)},
-    generationLogger{ loggerFactory.create("generation") },
-    randomEngine{ &randomEngine_ } {}
+    renderer_{std::move(newRenderer)} {}
 
 void Game::run() {
-    generate();
+    world_->generate();
 
     sf::Clock clock;
 	while (window->isOpen()) {
@@ -61,15 +57,4 @@ void Game::handleEvent(sf::Event event) {
 
     if (!camera->shouldStealControl())
         player->handleEvent(event);
-}
-
-void Game::generate() {
-    generationLogger->info("Started");
-    world_->generate(generationLogger);
-
-    generationLogger->info("Placing player...");
-    player->level(0);
-    player->position((*dungeon)[player->level()].randomPosition(*randomEngine, &isPassable));
-
-    generationLogger->info("Finished");
 }

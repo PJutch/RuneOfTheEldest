@@ -17,11 +17,19 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define WORLD_HPP_
 
 #include "Dungeon.hpp"
+#include "Player.hpp"
 
 /// Dungeons and all objects in it
 class World {
 public:
-	World(std::shared_ptr<Dungeon> dungeon_) : dungeon{ std::move(dungeon_) } {}
+	World(std::shared_ptr<Dungeon> dungeon_, 
+		  std::shared_ptr<Player> player_, 
+		  RandomEngine& randomEngine_,
+		  LoggerFactory& loggerFactory) :
+		dungeon{ std::move(dungeon_) }, 
+		player{std::move(player_)},
+		generationLogger{ loggerFactory.create("generation") },
+		randomEngine{ &randomEngine_ } {}
 
 	DungeonGenerator& dungeonGenerator() noexcept {
 		return dungeon->dungeonGenerator();
@@ -37,11 +45,22 @@ public:
 	/// calls generateWalls and generateStairs
 	/// 
 	/// @param logger logger to log messages
-	void generate(std::shared_ptr<spdlog::logger> logger) {
-		dungeon->generate(std::move(logger));
+	void generate() {
+		generationLogger->info("Started");
+		dungeon->generate(generationLogger);
+
+		generationLogger->info("Placing player...");
+		player->level(0);
+		player->position((*dungeon)[player->level()].randomPosition(*randomEngine, &isPassable));
+
+		generationLogger->info("Finished");
 	}
 private:
 	std::shared_ptr<Dungeon> dungeon;
+	std::shared_ptr<Player> player;
+
+	std::shared_ptr<spdlog::logger> generationLogger;
+	RandomEngine* randomEngine;
 };
 
 #endif
