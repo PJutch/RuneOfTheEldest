@@ -40,7 +40,7 @@ public:
     /// Creates renderer and loads textures
     Renderer(std::shared_ptr<Camera> camera,
              std::shared_ptr<sf::RenderWindow> window, 
-             std::shared_ptr<Dungeon> dungeon_, std::shared_ptr<Player> player,
+             std::shared_ptr<World> world_, std::shared_ptr<Player> player,
              std::unique_ptr<AssetManager> assets);
 
     /// If true bsp areas created by dungeon generation are rendered
@@ -56,7 +56,7 @@ private:
     std::shared_ptr<Camera> camera;
     std::unique_ptr<AssetManager> assets;
 
-    std::shared_ptr<Dungeon> dungeon;
+    std::shared_ptr<World> world;
     std::shared_ptr<Player> player;
 
     std::shared_ptr<sf::RenderWindow> window;
@@ -79,7 +79,7 @@ private:
         window->setView(createFullscreenView(cameraPos, 512, window->getSize()));
     }
 
-    void drawDungeon();
+    void drawWorld();
     void drawPlayer();
     void draw(Level& level);
     void draw(Tile tile, sf::Vector2i position);

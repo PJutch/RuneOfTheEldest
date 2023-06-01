@@ -15,19 +15,22 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Renderer.hpp"
 
+#include "Goblin.hpp"
+
 Renderer::Renderer(std::shared_ptr<Camera> camera,
                    std::shared_ptr<sf::RenderWindow> window_,
-                   std::shared_ptr<Dungeon> dungeon_, std::shared_ptr<Player> player_,
+                   std::shared_ptr<World> world_, std::shared_ptr<Player> player_,
                    std::unique_ptr<AssetManager> assets_) :
     camera{ std::move(camera) }, assets{ std::move(assets_) },
-    dungeon{ std::move(dungeon_) }, player{ std::move(player_) },
+    world{ std::move(world_) }, player{ std::move(player_) },
     window{ std::move(window_) } {}
 
-void Renderer::drawDungeon() {
-    draw((*dungeon)[camera->level()]);
+void Renderer::drawWorld() {
+    draw(world->dungeon()[camera->level()]);
 
-    for (sf::Vector3i goblinPos : dungeon->goblins())
-        drawGoblin(goblinPos);
+    for (std::shared_ptr<Actor> actor : world->actors())
+        if (dynamic_cast<Goblin*>(actor.get()))
+            drawGoblin(actor->position3());
 }
 
 void Renderer::draw(Level& level) {
@@ -90,7 +93,7 @@ void Renderer::draw() {
     window->clear(sf::Color::Black);
 
     worldScreenView();
-    drawDungeon();
+    drawWorld();
     drawPlayer();
 
     window->display();

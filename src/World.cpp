@@ -15,26 +15,47 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "World.hpp"
 
-World::World(std::shared_ptr<Dungeon> dungeon_,
-	         std::shared_ptr<Player> player_,
+#include "Goblin.hpp"
+
+World::World(std::shared_ptr<Dungeon> newDungeon_,
+	         std::shared_ptr<Player> newPlayer,
 	         RandomEngine& randomEngine_,
 	         LoggerFactory& loggerFactory) :
-		dungeon{ std::move(dungeon_) },
-		player{ std::move(player_) },
+		dungeon_{ std::move(newDungeon_) },
+	    player_{ std::move(newPlayer) },
 		generationLogger{ loggerFactory.create("generation") },
 		randomEngine{ &randomEngine_ } {
-	actors.push(player);
+	actors_.push_back(player_);
+	push_actor();
 }
 
 /// @brief Generates dungeon and places player
 /// @param logger logger to log messages
 void World::generate() {
+	player_->world(shared_from_this());
+
 	generationLogger->info("Started");
-	dungeon->generate(generationLogger);
+	dungeon().generate(generationLogger);
+
 
 	generationLogger->info("Placing player...");
-	player->level(0);
-	player->position((*dungeon)[player->level()].randomPosition(*randomEngine, &isPassable));
+	player_->level(0);
+	player_->position(dungeon()[player_->level()].randomPosition(*randomEngine, &isPassableTile));
+
+	generationLogger->info("Spawning goblins...");
+	for (int i = 0; i < dungeon().size(); ++i)
+		spawnGoblins(i);
 
 	generationLogger->info("Finished");
+}
+
+void World::spawnGoblins(int levelIndex) {
+	for (int i = 0; i < std::uniform_int_distribution{ 5, 20 }(*randomEngine); ++i) {
+		sf::Vector2i position = dungeon()[levelIndex].randomPosition(*randomEngine, [this, levelIndex](sf::Vector2i pos, const Level& level) {
+			return isPassable(make3D(pos, levelIndex));
+			});
+
+		actors_.push_back(make_shared<Goblin>(make3D(position, levelIndex), shared_from_this(), *randomEngine));
+		push_actor();
+	}
 }

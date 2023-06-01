@@ -15,6 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Player.hpp"
 
+#include "World.hpp"
+
 void Player::handleEvent(sf::Event event) {
 	if (state != State::WAITING_INPUT)
 		return;
@@ -48,9 +50,19 @@ bool Player::act() {
 }
 
 void Player::tryMoveTo(sf::Vector3i newPosition) {
-	if (dungeon->isPassable(newPosition)) {
+	if (world_->isPassable(newPosition)) {
 		position(newPosition);
 		state = State::ENDED_TURN;
 		delayNextTurn(1);
 	}
+}
+
+void Player::tryAscentStairs() {
+	if (std::optional<sf::Vector3i> newPos = world_->dungeon().upStairs(make3D(position(), level())))
+		tryMoveTo(*newPos);
+}
+
+void Player::tryDescentStairs() {
+	if (std::optional<sf::Vector3i> newPos = world_->dungeon().downStairs(make3D(position(), level())))
+		tryMoveTo(*newPos);
 }

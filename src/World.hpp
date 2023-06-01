@@ -23,17 +23,30 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <queue>
 
 /// Dungeons and all objects in it
-class World {
+class World : public std::enable_shared_from_this<World> {
 public:
-	World(std::shared_ptr<Dungeon> dungeon_, std::shared_ptr<Player> player_,
-		  RandomEngine& randomEngine_, LoggerFactory& loggerFactory);
+	World(std::shared_ptr<Dungeon> dungeon, std::shared_ptr<Player> player, RandomEngine& randomEngine, LoggerFactory& loggerFactory);
 
 	DungeonGenerator& dungeonGenerator() noexcept {
-		return dungeon->dungeonGenerator();
+		return dungeon().dungeonGenerator();
 	}
 
 	const DungeonGenerator& dungeonGenerator() const noexcept {
-		return dungeon->dungeonGenerator();
+		return dungeon().dungeonGenerator();
+	}
+
+	Dungeon& dungeon() noexcept {
+		return *dungeon_;
+	}
+
+	const Dungeon& dungeon() const noexcept {
+		return *dungeon_;
+	}
+
+	void player(std::shared_ptr<Player> newPlayer) {
+		player_ = std::move(newPlayer);
+		actors_.push_back(player_);
+		push_actor();
 	}
 
 	/// @brief Generates dungeon and places player
@@ -41,25 +54,42 @@ public:
 	void generate();
 
 	void update() {
-		while (!actors.empty() && actors.top()->act()) {
-			auto top = std::move(actors.top());
-			actors.pop();
-			actors.push(std::move(top));
+		while (!actors_.empty() && actors_.front()->act()) {
+			push_actor();
+			pop_actor();
 		}
 	}
-private:
-	std::shared_ptr<Dungeon> dungeon;
-	std::shared_ptr<Player> player;
 
-	struct EarlierNextTurn {
-		bool operator() (std::shared_ptr<Actor> lhs, std::shared_ptr<Actor> rhs) noexcept {
-			return lhs->nextTurn() < rhs->nextTurn();
-		}
-	};
-	std::priority_queue<std::shared_ptr<Actor>, std::vector<std::shared_ptr<Actor>>, EarlierNextTurn> actors;
+	bool isPassable(sf::Vector3i position) {
+		return isPassableTile(dungeon().at(position)) 
+			&& std::ranges::find(actors_, position, &Actor::position3) == actors_.end();
+	}
+
+	std::span<const std::shared_ptr<Actor>> actors() const {
+		return actors_;
+	}
+private:
+	std::shared_ptr<Dungeon> dungeon_;
+	std::shared_ptr<Player> player_;
+
+	std::vector<std::shared_ptr<Actor>> actors_;
+
+	void push_actor() {
+		std::ranges::push_heap(actors_, std::greater<>{}, [](std::shared_ptr<Actor>& actor) {
+			return actor->nextTurn();
+		});
+	}
+
+	void pop_actor() {
+		std::ranges::pop_heap(actors_, std::greater<>{}, [](std::shared_ptr<Actor>& actor) {
+			return actor->nextTurn();
+		});
+	}
 
 	std::shared_ptr<spdlog::logger> generationLogger;
 	RandomEngine* randomEngine;
+
+	void spawnGoblins(int level);
 };
 
 #endif

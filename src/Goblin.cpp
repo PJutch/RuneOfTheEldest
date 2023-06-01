@@ -13,37 +13,23 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef ACTOR_HPP_
-#define ACTOR_HPP_
+#include "Goblin.hpp"
 
-#include <SFML/System.hpp>
+#include "World.hpp"
 
-/// Abstract base for object that performs some actions in its turn
-class Actor {
-public:
-	virtual ~Actor() = default;
-	
-	/// @brief Perform action in its turn
-	/// @details Called in this actor turn.
-	/// Can perform action and advance next turn or wait for user input
-	/// @returns true if should pass turn to other actor, false if should wait
-	virtual bool act() = 0;
+bool Goblin::act() {
+	std::array<sf::Vector2i, 4> offsets{ sf::Vector2i{1, 0}, sf::Vector2i{-1, 0}, sf::Vector2i{0, 1}, sf::Vector2i{0, -1} };
+	int offsetIndex = std::uniform_int_distribution<int>{ 0, std::ssize(offsets) - 1 }(*randomEngine);
+	sf::Vector2i offset = offsets[offsetIndex];
+	tryMove(offset);
 
-	virtual sf::Vector3i position3() const = 0;
+	delayNextTurn(1);
+	return true;
+}
 
-	/// Gets time when actor's next turn begins
-	int nextTurn() const noexcept {
-		return nextTurn_;
+void Goblin::tryMoveTo(sf::Vector3i newPosition) {
+	if (world->isPassable(newPosition)) {
+		position_ = newPosition;
+		delayNextTurn(1);
 	}
-protected:
-	Actor() = default;
-
-	/// Add delay units to time before next turn
-	void delayNextTurn(int delay) noexcept {
-		nextTurn_ += delay;
-	}
-private:
-	int nextTurn_ = 0;
-};
-
-#endif
+}

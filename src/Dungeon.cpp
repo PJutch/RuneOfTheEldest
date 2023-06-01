@@ -36,10 +36,6 @@ void Dungeon::generate(std::shared_ptr<spdlog::logger> logger) {
 	logger->info("Generating stairs...");
 	for (int i = 1; i < size(); ++ i)
 		generateUpStairs(i);
-
-	logger->info("Spawning goblins...");
-	for (int i = 0; i < size(); ++i)
-		spawnGoblins(i);
 }
 
 void Dungeon::addStairs(sf::Vector3i pos1, sf::Vector3i pos2) {
@@ -62,15 +58,5 @@ void Dungeon::generateUpStairs(int fromLevel) {
 		sf::Vector2i downPos = (*this)[fromLevel].randomPosition(*randomEngine, &isEmpty);
 
 		addStairs({ upPos.x, upPos.y, fromLevel - 1 }, { downPos.x, downPos.y, fromLevel });
-	}
-}
-
-void Dungeon::spawnGoblins(int levelIndex) {
-	for (int i = 0; i < std::uniform_int_distribution{ 5, 20 }(*randomEngine); ++i) {
-		sf::Vector2i position = (*this)[levelIndex].randomPosition(*randomEngine, [this, levelIndex](sf::Vector2i pos, const Level& level) {
-			return isPassable(make3D(pos, levelIndex));
-		});
-
-		goblins_.emplace_back(make3D(position, levelIndex));
 	}
 }

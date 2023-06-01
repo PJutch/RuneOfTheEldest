@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Actor.hpp"
 
-#include "Dungeon.hpp"
+class World;
 
 #include "Event.hpp"
 #include "geometry.hpp"
@@ -26,11 +26,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <SFML/System.hpp>
 
 /// Player character
-class Player : public Actor {
+class Player : public Actor, public std::enable_shared_from_this<Player> {
 public:
-	Player(std::shared_ptr<Dungeon> dungeon_) :
-		dungeon{ std::move(dungeon_) } {}
-
 	/// Position on the level
 	sf::Vector2i position() const noexcept {
 		return position_;
@@ -52,6 +49,10 @@ public:
 		level(newPosition.z);
 	}
 
+	sf::Vector3i position3() const noexcept final {
+		return make3D(position(), level());
+	}
+
 	/// Level index
 	int level() const noexcept {
 		return level_;
@@ -60,6 +61,10 @@ public:
 	/// Sets level
 	void level(int newLevel) noexcept {
 		level_ = newLevel;
+	}
+
+	void world(std::shared_ptr<World> newWorld) {
+		world_ = std::move(newWorld);
 	}
 
 	bool act() final;
@@ -79,7 +84,7 @@ private:
 	sf::Vector2i position_;
 	int level_;
 
-	std::shared_ptr<Dungeon> dungeon;
+	std::shared_ptr<World> world_;
 
 	void tryMoveTo(sf::Vector3i newPosition);
 
@@ -91,15 +96,8 @@ private:
 		tryMoveTo(position() + offset);
 	}
 
-	void tryAscentStairs() {
-		if (std::optional<sf::Vector3i> newPos = dungeon->upStairs(make3D(position(), level())))
-			tryMoveTo(*newPos);
-	}
-
-	void tryDescentStairs() {
-		if (std::optional<sf::Vector3i> newPos = dungeon->downStairs(make3D(position(), level())))
-			tryMoveTo(*newPos);
-	}
+	void tryAscentStairs();
+	void tryDescentStairs();
 };
 
 #endif
