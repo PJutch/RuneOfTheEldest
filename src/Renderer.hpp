@@ -79,14 +79,12 @@ private:
         window->setView(createFullscreenView(cameraPos, 512, window->getSize()));
     }
 
-    void drawDungeon() {
-        draw((*dungeon)[camera->level()]);
-    }
-
+    void drawDungeon();
     void drawPlayer();
     void draw(Level& level);
     void draw(Tile tile, sf::Vector2i position);
     void drawAreas(Level& level);
+    void drawGoblin(sf::Vector3i position);
 
     void drawInWorldRect(sf::IntRect rect, 
         sf::Color fillColor, sf::Color outlineColor, float outlineThickness);

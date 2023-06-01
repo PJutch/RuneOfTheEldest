@@ -23,6 +23,13 @@ Renderer::Renderer(std::shared_ptr<Camera> camera,
     dungeon{ std::move(dungeon_) }, player{ std::move(player_) },
     window{ std::move(window_) } {}
 
+void Renderer::drawDungeon() {
+    draw((*dungeon)[camera->level()]);
+
+    for (sf::Vector3i goblinPos : dungeon->goblins())
+        drawGoblin(goblinPos);
+}
+
 void Renderer::draw(Level& level) {
     for (int x = 0; x < level.shape().x; ++ x)
         for (int y = 0; y < level.shape().y; ++ y)
@@ -66,6 +73,17 @@ void Renderer::drawInWorldRect(sf::IntRect rect,
     rectShape.setOutlineThickness(outlineThickness);
 
     window->draw(rectShape);
+}
+
+void Renderer::drawGoblin(sf::Vector3i position) {
+    if (camera->level() != position.z)
+        return;
+
+    sf::Sprite goblinSprite;
+    goblinSprite.setTexture(assets->goblinTexture());
+    goblinSprite.setPosition(toScreen(getXY(position)));
+
+    window->draw(goblinSprite);
 }
 
 void Renderer::draw() {
