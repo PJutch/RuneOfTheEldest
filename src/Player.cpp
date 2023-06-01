@@ -17,6 +17,15 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "World.hpp"
 
+void Player::spawn(std::shared_ptr<spdlog::logger> logger) {
+	logger->info("Spawning player...");
+	world->addActor(shared_from_this());
+
+	position_.z = 0;
+	sf::Vector2i playerPos = world->dungeon()[position().z].randomPosition(*randomEngine, &isPassableTile);
+	position(make3D(playerPos, position().z));
+}
+
 void Player::handleEvent(sf::Event event) {
 	if (state != State::WAITING_INPUT)
 		return;
@@ -50,7 +59,7 @@ bool Player::act() {
 }
 
 void Player::tryMoveTo(sf::Vector3i newPosition) {
-	if (world_->isPassable(newPosition)) {
+	if (world->isPassable(newPosition)) {
 		position(newPosition);
 		state = State::ENDED_TURN;
 		delayNextTurn(1);
@@ -58,11 +67,11 @@ void Player::tryMoveTo(sf::Vector3i newPosition) {
 }
 
 void Player::tryAscentStairs() {
-	if (std::optional<sf::Vector3i> newPos = world_->dungeon().upStairs(position()))
+	if (std::optional<sf::Vector3i> newPos = world->dungeon().upStairs(position()))
 		tryMoveTo(*newPos);
 }
 
 void Player::tryDescentStairs() {
-	if (std::optional<sf::Vector3i> newPos = world_->dungeon().downStairs(position()))
+	if (std::optional<sf::Vector3i> newPos = world->dungeon().downStairs(position()))
 		tryMoveTo(*newPos);
 }

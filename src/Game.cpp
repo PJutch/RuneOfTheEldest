@@ -28,10 +28,12 @@ Game::Game(std::shared_ptr<World> newWorld,
     player{ std::move(player_) },
     window{std::move(window_)},
     camera{std::move(camera_)},
-    renderer_{std::move(newRenderer)} {}
+    renderer_{std::move(newRenderer)},
+    randomEngine{ &randomEngine_ }, 
+    generationLogger{ loggerFactory.create("generation") } {}
 
 void Game::run() {
-    world().generate();
+    generate();
 
     sf::Clock clock;
 	while (window->isOpen()) {
@@ -59,4 +61,11 @@ void Game::handleEvent(sf::Event event) {
 
     if (!camera->shouldStealControl())
         player->handleEvent(event);
+}
+
+void Game::generate() {
+    generationLogger->info("Started");
+    world().generate(generationLogger);
+    player->spawn(generationLogger);
+    generationLogger->info("Finished");
 }

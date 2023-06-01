@@ -66,7 +66,11 @@ private:
     std::shared_ptr<Camera> camera;
     std::unique_ptr<Renderer> renderer_;
 
+    RandomEngine* randomEngine;
+    std::shared_ptr<spdlog::logger> generationLogger;
+
     void handleEvent(sf::Event event);
+    void generate();
 };
 
 #endif

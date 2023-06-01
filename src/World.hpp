@@ -17,7 +17,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define WORLD_HPP_
 
 #include "Dungeon.hpp"
-#include "Player.hpp"
 #include "Actor.hpp"
 
 #include <queue>
@@ -25,7 +24,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 /// Dungeons and all objects in it
 class World : public std::enable_shared_from_this<World> {
 public:
-	World(std::shared_ptr<Dungeon> dungeon, std::shared_ptr<Player> player, RandomEngine& randomEngine, LoggerFactory& loggerFactory);
+	World(std::shared_ptr<Dungeon> dungeon, RandomEngine& randomEngine, LoggerFactory& loggerFactory);
 
 	DungeonGenerator& dungeonGenerator() noexcept {
 		return dungeon().dungeonGenerator();
@@ -43,20 +42,19 @@ public:
 		return *dungeon_;
 	}
 
-	void player(std::shared_ptr<Player> newPlayer) {
-		player_ = std::move(newPlayer);
-		actors_.push_back(player_);
-		push_actor();
+	void addActor(std::shared_ptr<Actor> actor) {
+		actors_.push_back(std::move(actor));
+		pushActor();
 	}
 
 	/// @brief Generates dungeon and places player
 	/// @param logger logger to log messages
-	void generate();
+	void generate(std::shared_ptr<spdlog::logger> logger);
 
 	void update() {
 		while (!actors_.empty() && actors_.front()->act()) {
-			push_actor();
-			pop_actor();
+			pushActor();
+			popActor();
 		}
 	}
 
@@ -70,23 +68,20 @@ public:
 	}
 private:
 	std::shared_ptr<Dungeon> dungeon_;
-	std::shared_ptr<Player> player_;
-
 	std::vector<std::shared_ptr<Actor>> actors_;
 
-	void push_actor() {
+	void pushActor() {
 		std::ranges::push_heap(actors_, std::greater<>{}, [](std::shared_ptr<Actor>& actor) {
 			return actor->nextTurn();
 		});
 	}
 
-	void pop_actor() {
+	void popActor() {
 		std::ranges::pop_heap(actors_, std::greater<>{}, [](std::shared_ptr<Actor>& actor) {
 			return actor->nextTurn();
 		});
 	}
 
-	std::shared_ptr<spdlog::logger> generationLogger;
 	RandomEngine* randomEngine;
 
 	void spawnGoblins(int level);

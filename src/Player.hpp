@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Actor.hpp"
 
-class World;
+#include "World.hpp"
 
 #include "Event.hpp"
 #include "geometry.hpp"
@@ -28,6 +28,11 @@ class World;
 /// Player character
 class Player : public Actor, public std::enable_shared_from_this<Player> {
 public:
+	Player(std::shared_ptr<World> world_, RandomEngine& randomEngine_) : 
+		world(std::move(world_)), randomEngine{&randomEngine_ } {}
+
+	void spawn(std::shared_ptr<spdlog::logger> logger);
+
 	/// Returns position as (x, y, level)
 	sf::Vector3i position() const noexcept final {
 		return position_;
@@ -36,10 +41,6 @@ public:
 	/// Sets position to (x, y) and level to z
 	void position(sf::Vector3i newPosition) noexcept {
 		position_ = newPosition;
-	}
-
-	void world(std::shared_ptr<World> newWorld) {
-		world_ = std::move(newWorld);
 	}
 
 	/// waits for player input
@@ -56,10 +57,11 @@ private:
 		ENDED_TURN
 	};
 	State state = State::WAITING_TURN;
-
+	
 	sf::Vector3i position_;
 
-	std::shared_ptr<World> world_;
+	std::shared_ptr<World> world;
+	RandomEngine* randomEngine;
 
 	void tryMoveTo(sf::Vector3i newPosition);
 
