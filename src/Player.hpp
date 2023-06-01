@@ -31,7 +31,7 @@ public:
 	Player(std::shared_ptr<World> world_, RandomEngine& randomEngine_) : 
 		world(std::move(world_)), randomEngine{&randomEngine_ } {}
 
-	void spawn(std::shared_ptr<spdlog::logger> logger);
+	void spawn();
 
 	/// Returns position as (x, y, level)
 	sf::Vector3i position() const noexcept final {

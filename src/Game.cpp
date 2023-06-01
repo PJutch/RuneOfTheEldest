@@ -15,6 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Game.hpp"
 
+#include "Goblin.hpp"
+
 #include "Event.hpp"
 
 Game::Game(std::shared_ptr<World> newWorld,
@@ -65,7 +67,13 @@ void Game::handleEvent(sf::Event event) {
 
 void Game::generate() {
     generationLogger->info("Started");
-    world().generate(generationLogger);
-    player->spawn(generationLogger);
+    world().dungeon().generate(generationLogger);
+
+    generationLogger->info("Spawning goblins...");
+    Goblin::spawnAll(world_, *randomEngine);
+
+    generationLogger->info("Spawning player...");
+    player->spawn();
+
     generationLogger->info("Finished");
 }

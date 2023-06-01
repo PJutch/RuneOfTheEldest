@@ -24,7 +24,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 /// Dungeons and all objects in it
 class World : public std::enable_shared_from_this<World> {
 public:
-	World(std::shared_ptr<Dungeon> dungeon, RandomEngine& randomEngine, LoggerFactory& loggerFactory);
+	World(std::shared_ptr<Dungeon> newDungeon) :
+		dungeon_{ std::move(newDungeon) } {}
 
 	DungeonGenerator& dungeonGenerator() noexcept {
 		return dungeon().dungeonGenerator();
@@ -81,8 +82,6 @@ private:
 			return actor->nextTurn();
 		});
 	}
-
-	RandomEngine* randomEngine;
 
 	void spawnGoblins(int level);
 };

@@ -17,8 +17,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "World.hpp"
 
-void Player::spawn(std::shared_ptr<spdlog::logger> logger) {
-	logger->info("Spawning player...");
+void Player::spawn() {
 	world->addActor(shared_from_this());
 
 	position_.z = 0;
