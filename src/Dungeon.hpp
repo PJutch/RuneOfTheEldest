@@ -106,6 +106,10 @@ public:
 		return getOptional(downStairs_, position);
 	}
 
+	std::span<const sf::Vector3i> goblins() const noexcept {
+		return goblins_;
+	}
+
 	/// @brief Generates dungeon
 	/// @details Generates dungeon with DungeonGenerator, then generate walls and stairs
 	/// @param logger logger to log messages
@@ -115,11 +119,15 @@ private:
 	UnorderedMap<sf::Vector3i, sf::Vector3i> upStairs_;
 	UnorderedMap<sf::Vector3i, sf::Vector3i> downStairs_;
 
+	std::vector<sf::Vector3i> goblins_;
+
 	DungeonGenerator generator;
 	RandomEngine* randomEngine;
 
 	void addStairs(sf::Vector3i pos1, sf::Vector3i pos2);
-	void generateUpStairs(int fromLevel, std::shared_ptr<spdlog::logger> logger);
+	void generateUpStairs(int fromLevel);
+
+	void spawnGoblins(int level);
 };
 
 #endif

@@ -15,6 +15,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Dungeon.hpp"
 
+#include "geometry.hpp"
+
+#include <algorithm>
+
 void Dungeon::generate(std::shared_ptr<spdlog::logger> logger) {
 	levels.resize(10);
 	for (Level& level : levels)
@@ -31,7 +35,11 @@ void Dungeon::generate(std::shared_ptr<spdlog::logger> logger) {
 
 	logger->info("Generating stairs...");
 	for (int i = 1; i < size(); ++ i)
-		generateUpStairs(i, logger);
+		generateUpStairs(i);
+
+	logger->info("Spawning goblins...");
+	for (int i = 0; i < size(); ++i)
+		spawnGoblins(i);
 }
 
 void Dungeon::addStairs(sf::Vector3i pos1, sf::Vector3i pos2) {
@@ -47,15 +55,22 @@ void Dungeon::addStairs(sf::Vector3i pos1, sf::Vector3i pos2) {
 	at(pos2) = Tile::UP_STAIRS;
 }
 
-void Dungeon::generateUpStairs(int fromLevel, std::shared_ptr<spdlog::logger> logger) {
-	if (fromLevel <= 0)
-		return;
-
+void Dungeon::generateUpStairs(int fromLevel) {
 	for (int i = 0; i < 3; ++i) {
 		sf::Vector2i upPos = (*this)[fromLevel - 1].randomPosition(*randomEngine, &isEmpty);
 
 		sf::Vector2i downPos = (*this)[fromLevel].randomPosition(*randomEngine, &isEmpty);
 
 		addStairs({ upPos.x, upPos.y, fromLevel - 1 }, { downPos.x, downPos.y, fromLevel });
+	}
+}
+
+void Dungeon::spawnGoblins(int levelIndex) {
+	for (int i = 0; i < std::uniform_int_distribution{ 5, 20 }(*randomEngine); ++i) {
+		sf::Vector2i position = (*this)[levelIndex].randomPosition(*randomEngine, [this, levelIndex](sf::Vector2i pos, const Level& level) {
+			return isPassable(level.at(pos)) && std::ranges::find(goblins_, make3D(pos, levelIndex)) == goblins_.end();
+		});
+
+		goblins_.emplace_back(make3D(position, levelIndex));
 	}
 }
