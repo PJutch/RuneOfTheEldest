@@ -16,6 +16,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Player.hpp"
 
 void Player::handleEvent(sf::Event event) {
+	if (state != State::WAITING_INPUT)
+		return;
+
 	if (event.type == sf::Event::KeyPressed)
 		switch (event.key.code) {
 		case sf::Keyboard::W: tryMove({  0, -1 }); break;
@@ -31,4 +34,23 @@ void Player::handleEvent(sf::Event event) {
 				tryDescentStairs();
 			break;
 		}
+}
+
+bool Player::act() {
+	if (state == State::ENDED_TURN) {
+		state = State::WAITING_TURN;
+		return true;
+	}
+
+	if (state == State::WAITING_TURN)
+		state = State::WAITING_INPUT;
+	return false;
+}
+
+void Player::tryMoveTo(sf::Vector3i newPosition) {
+	if (dungeon->isPassable(newPosition)) {
+		position(newPosition);
+		state = State::ENDED_TURN;
+		delayNextTurn(1);
+	}
 }

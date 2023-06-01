@@ -18,6 +18,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Dungeon.hpp"
 #include "Player.hpp"
+#include "Actor.hpp"
+
+#include <queue>
 
 /// Dungeons and all objects in it
 class World {
@@ -36,9 +39,24 @@ public:
 	/// @brief Generates dungeon and places player
 	/// @param logger logger to log messages
 	void generate();
+
+	void update() {
+		while (!actors.empty() && actors.top()->act()) {
+			auto top = std::move(actors.top());
+			actors.pop();
+			actors.push(std::move(top));
+		}
+	}
 private:
 	std::shared_ptr<Dungeon> dungeon;
 	std::shared_ptr<Player> player;
+
+	struct EarlierNextTurn {
+		bool operator() (std::shared_ptr<Actor> lhs, std::shared_ptr<Actor> rhs) noexcept {
+			return lhs->nextTurn() < rhs->nextTurn();
+		}
+	};
+	std::priority_queue<std::shared_ptr<Actor>, std::vector<std::shared_ptr<Actor>>, EarlierNextTurn> actors;
 
 	std::shared_ptr<spdlog::logger> generationLogger;
 	RandomEngine* randomEngine;

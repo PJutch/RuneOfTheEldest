@@ -13,28 +13,33 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#include "World.hpp"
+#ifndef ACTOR_HPP_
+#define ACTOR_HPP_
 
-World::World(std::shared_ptr<Dungeon> dungeon_,
-	         std::shared_ptr<Player> player_,
-	         RandomEngine& randomEngine_,
-	         LoggerFactory& loggerFactory) :
-		dungeon{ std::move(dungeon_) },
-		player{ std::move(player_) },
-		generationLogger{ loggerFactory.create("generation") },
-		randomEngine{ &randomEngine_ } {
-	actors.push(player);
-}
+/// Abstract base for object that performs some actions in its turn
+class Actor {
+public:
+	virtual ~Actor() = default;
+	
+	/// @brief Perform action in its turn
+	/// @details Called in this actor turn.
+	/// Can perform action and advance next turn or wait for user input
+	/// @returns true if should pass turn to other actor, false if should wait
+	virtual bool act() = 0;
 
-/// @brief Generates dungeon and places player
-/// @param logger logger to log messages
-void World::generate() {
-	generationLogger->info("Started");
-	dungeon->generate(generationLogger);
+	/// Gets time when actor's next turn begins
+	int nextTurn() const noexcept {
+		return nextTurn_;
+	}
+protected:
+	Actor() = default;
 
-	generationLogger->info("Placing player...");
-	player->level(0);
-	player->position((*dungeon)[player->level()].randomPosition(*randomEngine, &isPassable));
+	/// Add delay units to time before next turn
+	void delayNextTurn(int delay) noexcept {
+		nextTurn_ += delay;
+	}
+private:
+	int nextTurn_ = 0;
+};
 
-	generationLogger->info("Finished");
-}
+#endif

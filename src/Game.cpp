@@ -31,13 +31,15 @@ Game::Game(std::shared_ptr<World> newWorld,
     renderer_{std::move(newRenderer)} {}
 
 void Game::run() {
-    world_->generate();
+    world().generate();
 
     sf::Clock clock;
 	while (window->isOpen()) {
         sf::Event event;
         while (window->pollEvent(event))
             handleEvent(event);
+
+        world().update();
 
         sf::Time elapsedTime = clock.restart();
         camera->update(elapsedTime);

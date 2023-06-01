@@ -16,6 +16,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef PLAYER_HPP_
 #define PLAYER_HPP_
 
+#include "Actor.hpp"
+
 #include "Dungeon.hpp"
 
 #include "Event.hpp"
@@ -24,7 +26,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <SFML/System.hpp>
 
 /// Player character
-class Player {
+class Player : public Actor {
 public:
 	Player(std::shared_ptr<Dungeon> dungeon_) :
 		dungeon{ std::move(dungeon_) } {}
@@ -60,20 +62,26 @@ public:
 		level_ = newLevel;
 	}
 
+	bool act() final;
+
 	/// notifies about events
 	/// @details moves on WSAD
 	///      \n try to ascent/descent stairs by <>
 	void handleEvent(sf::Event event);
 private:
+	enum class State {
+		WAITING_TURN,
+		WAITING_INPUT,
+		ENDED_TURN
+	};
+	State state = State::WAITING_TURN;
+
 	sf::Vector2i position_;
 	int level_;
 
 	std::shared_ptr<Dungeon> dungeon;
 
-	void tryMoveTo(sf::Vector3i newPosition) {
-		if (dungeon->isPassable(newPosition))
-			position(newPosition);
-	}
+	void tryMoveTo(sf::Vector3i newPosition);
 
 	void tryMoveTo(sf::Vector2i newPosition) {
 		tryMoveTo(make3D(newPosition, level()));
