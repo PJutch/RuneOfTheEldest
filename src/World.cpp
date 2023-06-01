@@ -28,19 +28,7 @@ void World::generate(std::shared_ptr<spdlog::logger> logger) {
 	dungeon().generate(logger);
 
 	logger->info("Spawning goblins...");
-	for (int i = 0; i < dungeon().size(); ++i)
-		spawnGoblins(i);
+	Goblin::spawnAll(shared_from_this(), *randomEngine);
 
 	logger->info("Finished");
-}
-
-void World::spawnGoblins(int levelIndex) {
-	for (int i = 0; i < std::uniform_int_distribution{ 5, 20 }(*randomEngine); ++i) {
-		sf::Vector2i position = dungeon()[levelIndex].randomPosition(*randomEngine, [this, levelIndex](sf::Vector2i pos, const Level& level) {
-			return isPassable(make3D(pos, levelIndex));
-			});
-
-		actors_.push_back(make_shared<Goblin>(make3D(position, levelIndex), shared_from_this(), *randomEngine));
-		pushActor();
-	}
 }

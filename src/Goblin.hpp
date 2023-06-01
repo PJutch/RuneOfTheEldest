@@ -41,6 +41,9 @@ public:
 
 	/// Randomly moves goblin
 	bool act() final;
+
+	static void spawnSingle(int level, std::shared_ptr<World> world, RandomEngine& randomEngine);
+	static void spawnAll(std::shared_ptr<World> world, RandomEngine& randomEngine);
 private:
 	sf::Vector3i position_;
 

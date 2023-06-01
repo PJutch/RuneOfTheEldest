@@ -33,3 +33,17 @@ void Goblin::tryMoveTo(sf::Vector3i newPosition) {
 		delayNextTurn(1);
 	}
 }
+
+void Goblin::spawnSingle(int level, std::shared_ptr<World> world, RandomEngine& randomEngine) {
+	sf::Vector2i position = world->dungeon()[level].randomPosition(randomEngine, [world, level](sf::Vector2i pos, const Level&) {
+		return world->isPassable(make3D(pos, level));
+		});
+
+	world->addActor(std::make_shared<Goblin>(make3D(position, level), world, randomEngine));
+}
+
+void Goblin::spawnAll(std::shared_ptr<World> world, RandomEngine& randomEngine) {
+	for (int level = 0; level < world->dungeon().size(); ++level)
+		for (int i = 0; i < std::uniform_int_distribution{ 5, 20 }(randomEngine); ++i)
+			spawnSingle(level, world, randomEngine);
+}
