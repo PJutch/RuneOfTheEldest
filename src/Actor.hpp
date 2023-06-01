@@ -16,12 +16,17 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef ACTOR_HPP_
 #define ACTOR_HPP_
 
+class Renderer;
+
 #include <SFML/System.hpp>
 
 /// Abstract base for object that performs some actions in its turn
 class Actor {
 public:
 	virtual ~Actor() = default;
+
+	/// Actor position in world
+	virtual sf::Vector3i position() const = 0;
 	
 	/// @brief Perform action in its turn
 	/// @details Called in this actor turn.
@@ -29,12 +34,13 @@ public:
 	/// @returns true if should pass turn to other actor, false if should wait
 	virtual bool act() = 0;
 
-	virtual sf::Vector3i position() const = 0;
-
 	/// Gets time when actor's next turn begins
 	int nextTurn() const noexcept {
 		return nextTurn_;
 	}
+
+	/// Draw an actor using a renderer. Basically a visitor pattern
+	virtual void draw(Renderer& renderer) const = 0;
 protected:
 	Actor() = default;
 

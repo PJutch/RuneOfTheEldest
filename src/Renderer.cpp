@@ -15,25 +15,25 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Renderer.hpp"
 
+#include "Player.hpp"
 #include "Goblin.hpp"
 
 Renderer::Renderer(std::shared_ptr<Camera> camera,
                    std::shared_ptr<sf::RenderWindow> window_,
-                   std::shared_ptr<World> world_, std::shared_ptr<Player> player_,
+                   std::shared_ptr<World> world_,
                    std::unique_ptr<AssetManager> assets_) :
     camera{ std::move(camera) }, assets{ std::move(assets_) },
-    world{ std::move(world_) }, player{ std::move(player_) },
+    world{ std::move(world_) },
     window{ std::move(window_) } {}
 
 void Renderer::drawWorld() {
     draw(world->dungeon()[camera->level()]);
 
     for (std::shared_ptr<Actor> actor : world->actors())
-        if (dynamic_cast<Goblin*>(actor.get()))
-            drawGoblin(actor->position());
+        actor->draw(*this);
 }
 
-void Renderer::draw(Level& level) {
+void Renderer::draw(const Level& level) {
     for (int x = 0; x < level.shape().x; ++ x)
         for (int y = 0; y < level.shape().y; ++ y)
             draw(level.at(x, y), {x, y});
@@ -41,21 +41,10 @@ void Renderer::draw(Level& level) {
     if (renderAreas_) drawAreas(level);
 }
 
-void Renderer::drawAreas(Level& level) {
+void Renderer::drawAreas(const Level& level) {
     for (sf::IntRect area : level.areas())
         drawInWorldRect(area, sf::Color::Transparent, 
                                 sf::Color::Green, 1.0);
-}
-
-void Renderer::drawPlayer() {
-    if (camera->level() != player->position().z) 
-        return;
-
-    sf::Sprite playerSprite;
-    playerSprite.setTexture(assets->playerTexture());
-    playerSprite.setPosition(toScreen(getXY(player->position())));
-
-    window->draw(playerSprite);
 }
 
 void Renderer::draw(Tile tile, sf::Vector2i position) {
@@ -78,15 +67,23 @@ void Renderer::drawInWorldRect(sf::IntRect rect,
     window->draw(rectShape);
 }
 
-void Renderer::drawGoblin(sf::Vector3i position) {
+void Renderer::draw(const Player& player) {
+    drawActor(player.position(), assets->playerTexture());
+}
+
+void Renderer::draw(const Goblin& goblin) {
+    drawActor(goblin.position(), assets->goblinTexture());
+}
+
+void Renderer::drawActor(sf::Vector3i position, const sf::Texture& texture) {
     if (camera->level() != position.z)
         return;
 
-    sf::Sprite goblinSprite;
-    goblinSprite.setTexture(assets->goblinTexture());
-    goblinSprite.setPosition(toScreen(getXY(position)));
+    sf::Sprite sprite;
+    sprite.setTexture(texture);
+    sprite.setPosition(toScreen(getXY(position)));
 
-    window->draw(goblinSprite);
+    window->draw(sprite);
 }
 
 void Renderer::draw() {
@@ -94,7 +91,6 @@ void Renderer::draw() {
 
     worldScreenView();
     drawWorld();
-    drawPlayer();
 
     window->display();
 }

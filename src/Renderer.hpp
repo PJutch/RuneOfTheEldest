@@ -21,7 +21,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "AssetManager.hpp"
 
 #include "World.hpp"
-#include "Player.hpp"
+
+class Player;
+class Goblin;
 
 #include "geometry.hpp"
 #include "log.hpp"
@@ -40,7 +42,7 @@ public:
     /// Creates renderer and loads textures
     Renderer(std::shared_ptr<Camera> camera,
              std::shared_ptr<sf::RenderWindow> window, 
-             std::shared_ptr<World> world_, std::shared_ptr<Player> player,
+             std::shared_ptr<World> world_,
              std::unique_ptr<AssetManager> assets);
 
     /// If true bsp areas created by dungeon generation are rendered
@@ -50,6 +52,12 @@ public:
 
     /// Renders game world
     void draw();
+
+    /// Renders player
+    void draw(const Player& player);
+
+    /// Renders goblin
+    void draw(const Goblin& goblin);
 private:
     bool renderAreas_ = false;
 
@@ -57,7 +65,6 @@ private:
     std::unique_ptr<AssetManager> assets;
 
     std::shared_ptr<World> world;
-    std::shared_ptr<Player> player;
 
     std::shared_ptr<sf::RenderWindow> window;
 
@@ -80,11 +87,11 @@ private:
     }
 
     void drawWorld();
-    void drawPlayer();
-    void draw(Level& level);
+    void draw(const Level& level);
     void draw(Tile tile, sf::Vector2i position);
-    void drawAreas(Level& level);
-    void drawGoblin(sf::Vector3i position);
+    void drawAreas(const Level& level);
+
+    void drawActor(sf::Vector3i position, const sf::Texture& texture);
 
     void drawInWorldRect(sf::IntRect rect, 
         sf::Color fillColor, sf::Color outlineColor, float outlineThickness);

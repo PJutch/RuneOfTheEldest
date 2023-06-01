@@ -18,6 +18,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Actor.hpp"
 
+class World;
+
+#include "Renderer.hpp"
+
 #include "random.hpp"
 #include "geometry.hpp"
 
@@ -25,8 +29,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <array>
 #include <memory>
-
-class World;
 
 /// Goblin enemy
 class Goblin : public Actor {
@@ -44,6 +46,10 @@ public:
 
 	static void spawnSingle(int level, std::shared_ptr<World> world, RandomEngine& randomEngine);
 	static void spawnAll(std::shared_ptr<World> world, RandomEngine& randomEngine);
+
+	void draw(Renderer& renderer) const final {
+		renderer.draw(*this);
+	}
 private:
 	sf::Vector3i position_;
 

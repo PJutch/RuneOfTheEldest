@@ -15,6 +15,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Game.hpp"
 
+#include "Player.hpp"
 #include "Goblin.hpp"
 
 #include "Event.hpp"

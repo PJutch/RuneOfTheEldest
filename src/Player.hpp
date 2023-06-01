@@ -20,6 +20,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "World.hpp"
 
+#include "Renderer.hpp"
+
 #include "Event.hpp"
 #include "geometry.hpp"
 
@@ -50,6 +52,10 @@ public:
 	/// @details moves on WSAD
 	///      \n try to ascent/descent stairs by <>
 	void handleEvent(sf::Event event);
+
+	void draw(Renderer& renderer) const final {
+		renderer.draw(*this);
+	}
 private:
 	enum class State {
 		WAITING_TURN,
