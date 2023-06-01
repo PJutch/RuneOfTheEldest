@@ -30,6 +30,8 @@ AssetManager::AssetManager(LoggerFactory& loggerFactory) : logger{ loggerFactory
 
     loadTexture(playerTexture_, "player", "resources/player.png");
 
+    loadTexture(goblinTexture_, "goblin", "resources/goblin.png");
+
     logger->info("Creating debug tile textures...");
     fillTexture(tileTextureMut(Tile::ROOM         ), tileSize(), sf::Color::Red    );
     fillTexture(tileTextureMut(Tile::ROOM_ENTRANCE), tileSize(), sf::Color::Magenta);

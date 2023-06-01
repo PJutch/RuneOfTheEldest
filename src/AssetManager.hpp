@@ -45,6 +45,11 @@ public:
 		return playerTexture_;
 	}
 
+	/// Gets goblin texture
+	const sf::Texture& goblinTexture() const noexcept {
+		return goblinTexture_;
+	}
+
 	/// Gets size of single tile
 	sf::Vector2i tileSize() const noexcept {
 		return tileSize_;
@@ -54,6 +59,8 @@ private:
 	std::array<sf::Texture, totalTiles> tileTextures;
 
 	sf::Texture playerTexture_;
+
+	sf::Texture goblinTexture_;
 
 	std::shared_ptr<spdlog::logger> logger;
 
