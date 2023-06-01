@@ -70,9 +70,13 @@ private:
 
 	std::shared_ptr<Dungeon> dungeon;
 
-	void tryMoveTo(sf::Vector2i newPosition) {
-		if (isPassable(dungeon->at(newPosition, level())))
+	void tryMoveTo(sf::Vector3i newPosition) {
+		if (dungeon->isPassable(newPosition))
 			position(newPosition);
+	}
+
+	void tryMoveTo(sf::Vector2i newPosition) {
+		tryMoveTo(make3D(newPosition, level()));
 	}
 
 	void tryMove(sf::Vector2i offset) {
@@ -81,12 +85,12 @@ private:
 
 	void tryAscentStairs() {
 		if (std::optional<sf::Vector3i> newPos = dungeon->upStairs(make3D(position(), level())))
-			position(*newPos);
+			tryMoveTo(*newPos);
 	}
 
 	void tryDescentStairs() {
 		if (std::optional<sf::Vector3i> newPos = dungeon->downStairs(make3D(position(), level())))
-			position(*newPos);
+			tryMoveTo(*newPos);
 	}
 };
 

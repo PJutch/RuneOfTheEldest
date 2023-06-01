@@ -18,6 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "DungeonGenerator.hpp"
 #include "Level.hpp"
+#include "Tile.hpp"
 
 #include "log.hpp"
 #include "random.hpp"
@@ -108,6 +109,10 @@ public:
 
 	std::span<const sf::Vector3i> goblins() const noexcept {
 		return goblins_;
+	}
+
+	bool isPassable(sf::Vector3i position) const noexcept {
+		return isPassableTile(at(position)) && std::ranges::find(goblins_, position) == goblins_.end();
 	}
 
 	/// @brief Generates dungeon

@@ -40,6 +40,11 @@ inline bool isPassable(Tile tile) {
     return tile != Tile::WALL && tile != Tile::UNSEEN;
 }
 
+/// same as isPassable
+inline bool isPassableTile(Tile tile) {
+    return isPassable(tile);
+}
+
 /// @brief Tests if Tile is empty (Tile::EMPTY)
 /// @details Debug tiles for marking generation cause are also empty
 inline bool isEmpty(Tile tile) {

@@ -68,7 +68,7 @@ void Dungeon::generateUpStairs(int fromLevel) {
 void Dungeon::spawnGoblins(int levelIndex) {
 	for (int i = 0; i < std::uniform_int_distribution{ 5, 20 }(*randomEngine); ++i) {
 		sf::Vector2i position = (*this)[levelIndex].randomPosition(*randomEngine, [this, levelIndex](sf::Vector2i pos, const Level& level) {
-			return isPassable(level.at(pos)) && std::ranges::find(goblins_, make3D(pos, levelIndex)) == goblins_.end();
+			return isPassable(make3D(pos, levelIndex));
 		});
 
 		goblins_.emplace_back(make3D(position, levelIndex));
