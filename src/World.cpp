@@ -39,8 +39,9 @@ void World::generate() {
 
 
 	generationLogger->info("Placing player...");
-	player_->level(0);
-	player_->position(dungeon()[player_->level()].randomPosition(*randomEngine, &isPassableTile));
+	int playerLevel = 0;
+	sf::Vector2i playerPos = dungeon()[playerLevel].randomPosition(*randomEngine, &isPassableTile);
+	player_->position(make3D(playerPos, playerLevel));
 
 	generationLogger->info("Spawning goblins...");
 	for (int i = 0; i < dungeon().size(); ++i)

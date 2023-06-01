@@ -29,7 +29,7 @@ public:
 	/// @returns true if should pass turn to other actor, false if should wait
 	virtual bool act() = 0;
 
-	virtual sf::Vector3i position3() const = 0;
+	virtual sf::Vector3i position() const = 0;
 
 	/// Gets time when actor's next turn begins
 	int nextTurn() const noexcept {

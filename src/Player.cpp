@@ -58,11 +58,11 @@ void Player::tryMoveTo(sf::Vector3i newPosition) {
 }
 
 void Player::tryAscentStairs() {
-	if (std::optional<sf::Vector3i> newPos = world_->dungeon().upStairs(make3D(position(), level())))
+	if (std::optional<sf::Vector3i> newPos = world_->dungeon().upStairs(position()))
 		tryMoveTo(*newPos);
 }
 
 void Player::tryDescentStairs() {
-	if (std::optional<sf::Vector3i> newPos = world_->dungeon().downStairs(make3D(position(), level())))
+	if (std::optional<sf::Vector3i> newPos = world_->dungeon().downStairs(position()))
 		tryMoveTo(*newPos);
 }

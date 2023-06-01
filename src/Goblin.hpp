@@ -35,14 +35,11 @@ public:
 		position_{ newPosition }, world {std::move(world_)}, randomEngine{ &randomEngine_ } {}
 
 	/// Position in world
-	sf::Vector3i position() const noexcept {
+	sf::Vector3i position() const noexcept final {
 		return position_;
 	}
 
-	sf::Vector3i position3() const noexcept {
-		return position_;
-	}
-
+	/// Randomly moves goblin
 	bool act() final;
 private:
 	sf::Vector3i position_;

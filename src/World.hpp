@@ -62,7 +62,7 @@ public:
 
 	bool isPassable(sf::Vector3i position) {
 		return isPassableTile(dungeon().at(position)) 
-			&& std::ranges::find(actors_, position, &Actor::position3) == actors_.end();
+			&& std::ranges::find(actors_, position, &Actor::position) == actors_.end();
 	}
 
 	std::span<const std::shared_ptr<Actor>> actors() const {

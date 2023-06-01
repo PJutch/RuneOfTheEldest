@@ -30,13 +30,13 @@ public:
 
     /// Uses player position
     sf::Vector2f position() const final {
-        auto [x, y] = player->position();
+        auto [x, y, z] = player->position();
         return sf::Vector2f(x, y);
     }
 
     /// Uses player level
     int level() const final {
-        return player->level();
+        return player->position().z;
     }
 
     /// Ignores reset

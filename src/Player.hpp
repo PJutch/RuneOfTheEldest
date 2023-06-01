@@ -28,45 +28,21 @@ class World;
 /// Player character
 class Player : public Actor, public std::enable_shared_from_this<Player> {
 public:
-	/// Position on the level
-	sf::Vector2i position() const noexcept {
+	/// Returns position as (x, y, level)
+	sf::Vector3i position() const noexcept final {
 		return position_;
-	}
-
-	/// Sets position
-	void position(sf::Vector2i newPosition) noexcept {
-		position_ = newPosition;
-	}
-
-	/// Sets position to (x, y)
-	void position(int x, int y) noexcept {
-		position({ x, y });
 	}
 
 	/// Sets position to (x, y) and level to z
 	void position(sf::Vector3i newPosition) noexcept {
-		position(getXY(newPosition));
-		level(newPosition.z);
-	}
-
-	sf::Vector3i position3() const noexcept final {
-		return make3D(position(), level());
-	}
-
-	/// Level index
-	int level() const noexcept {
-		return level_;
-	}
-
-	/// Sets level
-	void level(int newLevel) noexcept {
-		level_ = newLevel;
+		position_ = newPosition;
 	}
 
 	void world(std::shared_ptr<World> newWorld) {
 		world_ = std::move(newWorld);
 	}
 
+	/// waits for player input
 	bool act() final;
 
 	/// notifies about events
@@ -81,19 +57,18 @@ private:
 	};
 	State state = State::WAITING_TURN;
 
-	sf::Vector2i position_;
-	int level_;
+	sf::Vector3i position_;
 
 	std::shared_ptr<World> world_;
 
 	void tryMoveTo(sf::Vector3i newPosition);
 
 	void tryMoveTo(sf::Vector2i newPosition) {
-		tryMoveTo(make3D(newPosition, level()));
+		tryMoveTo(make3D(newPosition, position().z));
 	}
 
 	void tryMove(sf::Vector2i offset) {
-		tryMoveTo(position() + offset);
+		tryMoveTo(getXY(position()) + offset);
 	}
 
 	void tryAscentStairs();

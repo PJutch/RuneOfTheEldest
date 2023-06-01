@@ -30,7 +30,7 @@ void Renderer::drawWorld() {
 
     for (std::shared_ptr<Actor> actor : world->actors())
         if (dynamic_cast<Goblin*>(actor.get()))
-            drawGoblin(actor->position3());
+            drawGoblin(actor->position());
 }
 
 void Renderer::draw(Level& level) {
@@ -48,12 +48,12 @@ void Renderer::drawAreas(Level& level) {
 }
 
 void Renderer::drawPlayer() {
-    if (camera->level() != player->level()) 
+    if (camera->level() != player->position().z) 
         return;
 
     sf::Sprite playerSprite;
     playerSprite.setTexture(assets->playerTexture());
-    playerSprite.setPosition(toScreen(player->position()));
+    playerSprite.setPosition(toScreen(getXY(player->position())));
 
     window->draw(playerSprite);
 }
