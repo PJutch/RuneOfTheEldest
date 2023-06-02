@@ -81,6 +81,11 @@ private:
 
 	void tryAscentStairs();
 	void tryDescentStairs();
+
+	void endTurn() noexcept {
+		state = State::ENDED_TURN;
+		delayNextTurn(1);
+	}
 };
 
 #endif

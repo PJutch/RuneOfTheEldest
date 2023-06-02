@@ -17,6 +17,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "World.hpp"
 
+#include <iostream>
+
 void Player::spawn() {
 	world->addActor(shared_from_this());
 
@@ -31,10 +33,15 @@ void Player::handleEvent(sf::Event event) {
 
 	if (event.type == sf::Event::KeyPressed)
 		switch (event.key.code) {
-		case sf::Keyboard::W: tryMove({  0, -1 }); break;
-		case sf::Keyboard::S: tryMove({  0,  1 }); break;
-		case sf::Keyboard::A: tryMove({ -1,  0 }); break;
-		case sf::Keyboard::D: tryMove({  1,  0 }); break;
+		case sf::Keyboard::Numpad7: tryMove({ -1, -1 }); break;
+		case sf::Keyboard::Numpad8: tryMove({ 0, -1 }); break;
+		case sf::Keyboard::Numpad9: tryMove({ 1, -1 }); break;
+		case sf::Keyboard::Numpad4: tryMove({ -1,  0 }); break;
+		case sf::Keyboard::Numpad5: endTurn(); break;
+		case sf::Keyboard::Numpad6: tryMove({ 1,  0 }); break;
+		case sf::Keyboard::Numpad1: tryMove({ -1,  1 }); break;
+		case sf::Keyboard::Numpad2: tryMove({ 0,  1 }); break;
+		case sf::Keyboard::Numpad3: tryMove({ 1,  1 }); break;
 		case sf::Keyboard::Comma:
 			if (event.key.shift)
 				tryAscentStairs();
@@ -60,8 +67,7 @@ bool Player::act() {
 void Player::tryMoveTo(sf::Vector3i newPosition) {
 	if (world->isPassable(newPosition)) {
 		position(newPosition);
-		state = State::ENDED_TURN;
-		delayNextTurn(1);
+		endTurn();
 	}
 }
 
