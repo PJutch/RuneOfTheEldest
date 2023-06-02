@@ -18,7 +18,16 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "World.hpp"
 
 bool Goblin::act() {
-	std::array<sf::Vector2i, 4> offsets{ sf::Vector2i{1, 0}, sf::Vector2i{-1, 0}, sf::Vector2i{0, 1}, sf::Vector2i{0, -1} };
+	std::array<sf::Vector2i, 8> offsets{ 
+		sf::Vector2i{ 1, -1},
+		sf::Vector2i{ 1,  0}, 
+		sf::Vector2i{ 1,  1}, 
+	    sf::Vector2i{ 0,  1},
+		sf::Vector2i{ 0, -1},
+		sf::Vector2i{-1, -1},
+		sf::Vector2i{-1,  0}, 
+		sf::Vector2i{-1,  1},
+	};
 	int offsetIndex = std::uniform_int_distribution<int>{ 0, std::ssize(offsets) - 1 }(*randomEngine);
 	sf::Vector2i offset = offsets[offsetIndex];
 	tryMove(offset);
