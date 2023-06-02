@@ -16,7 +16,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef PLAYER_HPP_
 #define PLAYER_HPP_
 
-#include "Actor.hpp"
+#include "AliveActor.hpp"
 
 #include "World.hpp"
 
@@ -28,22 +28,12 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <SFML/System.hpp>
 
 /// Player character
-class Player : public Actor, public std::enable_shared_from_this<Player> {
+class Player : public AliveActor, public std::enable_shared_from_this<Player> {
 public:
 	Player(std::shared_ptr<World> world_, RandomEngine& randomEngine_) : 
-		world(std::move(world_)), randomEngine{&randomEngine_ } {}
+		AliveActor{ 10, {0, 0, 0}, std::move(world_) }, randomEngine{ &randomEngine_ } {}
 
 	void spawn();
-
-	/// Returns position as (x, y, level)
-	sf::Vector3i position() const noexcept final {
-		return position_;
-	}
-
-	/// Sets position to (x, y) and level to z
-	void position(sf::Vector3i newPosition) noexcept {
-		position_ = newPosition;
-	}
 
 	/// waits for player input
 	bool act() final;
@@ -63,26 +53,13 @@ private:
 		ENDED_TURN
 	};
 	State state = State::WAITING_TURN;
-	
-	sf::Vector3i position_;
 
-	std::shared_ptr<World> world;
 	RandomEngine* randomEngine;
-
-	void tryMoveTo(sf::Vector3i newPosition);
-
-	void tryMoveTo(sf::Vector2i newPosition) {
-		tryMoveTo(make3D(newPosition, position().z));
-	}
-
-	void tryMove(sf::Vector2i offset) {
-		tryMoveTo(getXY(position()) + offset);
-	}
 
 	void tryAscentStairs();
 	void tryDescentStairs();
 
-	void endTurn() noexcept {
+	void endTurn() noexcept final {
 		state = State::ENDED_TURN;
 		delayNextTurn(1);
 	}

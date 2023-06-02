@@ -20,11 +20,11 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <iostream>
 
 void Player::spawn() {
-	world->addActor(shared_from_this());
+	world().addActor(shared_from_this());
 
-	position_.z = 0;
-	sf::Vector2i playerPos = world->dungeon()[position().z].randomPosition(*randomEngine, &isPassableTile);
-	position(make3D(playerPos, position().z));
+	int level = 0;
+	sf::Vector2i playerPos = world().dungeon()[level].randomPosition(*randomEngine, &isPassableTile);
+	position(make3D(playerPos, level));
 }
 
 void Player::handleEvent(sf::Event event) {
@@ -64,19 +64,12 @@ bool Player::act() {
 	return false;
 }
 
-void Player::tryMoveTo(sf::Vector3i newPosition) {
-	if (world->isPassable(newPosition)) {
-		position(newPosition);
-		endTurn();
-	}
-}
-
 void Player::tryAscentStairs() {
-	if (std::optional<sf::Vector3i> newPos = world->dungeon().upStairs(position()))
+	if (std::optional<sf::Vector3i> newPos = world().dungeon().upStairs(position()))
 		tryMoveTo(*newPos);
 }
 
 void Player::tryDescentStairs() {
-	if (std::optional<sf::Vector3i> newPos = world->dungeon().downStairs(position()))
+	if (std::optional<sf::Vector3i> newPos = world().dungeon().downStairs(position()))
 		tryMoveTo(*newPos);
 }

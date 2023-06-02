@@ -34,22 +34,18 @@ public:
 	/// @returns true if should pass turn to other actor, false if should wait
 	virtual bool act() = 0;
 
-	/// Gets time when actor's next turn begins
-	int nextTurn() const noexcept {
-		return nextTurn_;
-	}
+	/// @brief Gets time when actor's next turn begins
+	/// @warning Returned time should change only in Actor's turn
+	virtual int nextTurn() const = 0;
+	
+	/// Checks if Actor should be removed
+	virtual bool isAlive() const = 0;
+
+	/// Damages Actor by given HPs
+	virtual void beDamaged(int damage) = 0;
 
 	/// Draw an actor using a renderer. Basically a visitor pattern
 	virtual void draw(Renderer& renderer) const = 0;
-protected:
-	Actor() = default;
-
-	/// Add delay units to time before next turn
-	void delayNextTurn(int delay) noexcept {
-		nextTurn_ += delay;
-	}
-private:
-	int nextTurn_ = 0;
 };
 
 #endif

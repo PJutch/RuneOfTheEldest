@@ -22,16 +22,7 @@ bool Goblin::act() {
 	int offsetIndex = std::uniform_int_distribution<int>{ 0, std::ssize(offsets) - 1 }(*randomEngine);
 	sf::Vector2i offset = offsets[offsetIndex];
 	tryMove(offset);
-
-	delayNextTurn(1);
 	return true;
-}
-
-void Goblin::tryMoveTo(sf::Vector3i newPosition) {
-	if (world->isPassable(newPosition)) {
-		position_ = newPosition;
-		delayNextTurn(1);
-	}
 }
 
 void Goblin::spawnSingle(int level, std::shared_ptr<World> world, RandomEngine& randomEngine) {

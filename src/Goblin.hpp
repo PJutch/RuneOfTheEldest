@@ -16,9 +16,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef GOBLIN_HPP_
 #define GOBLIN_HPP_
 
-#include "Actor.hpp"
-
-class World;
+#include "AliveActor.hpp"
 
 #include "Renderer.hpp"
 
@@ -31,15 +29,10 @@ class World;
 #include <memory>
 
 /// Goblin enemy
-class Goblin : public Actor {
+class Goblin : public AliveActor {
 public:
 	Goblin(sf::Vector3i newPosition, std::shared_ptr<World> world_, RandomEngine& randomEngine_) :
-		position_{ newPosition }, world {std::move(world_)}, randomEngine{ &randomEngine_ } {}
-
-	/// Position in world
-	sf::Vector3i position() const noexcept final {
-		return position_;
-	}
+		AliveActor{ 3, newPosition, std::move(world_) }, randomEngine{ &randomEngine_ } {}
 
 	/// Randomly moves goblin
 	bool act() final;
@@ -50,25 +43,12 @@ public:
 	void draw(Renderer& renderer) const final {
 		renderer.draw(*this);
 	}
+
+	void endTurn() noexcept final {
+		delayNextTurn(1);
+	}
 private:
-	sf::Vector3i position_;
-
-	std::shared_ptr<World> world;
 	RandomEngine* randomEngine;
-
-	void tryMoveTo(sf::Vector3i newPosition);
-
-	void tryMoveTo(sf::Vector2i newPosition) {
-		tryMoveTo(make3D(newPosition, position_.z));
-	}
-
-	void tryMove(sf::Vector2i offset) {
-		tryMoveTo(getXY(position()) + offset);
-	}
-
-	void tryMove(sf::Vector3i offset) {
-		tryMoveTo(position() + offset);
-	}
 };
 
 #endif

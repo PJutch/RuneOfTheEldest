@@ -54,8 +54,12 @@ public:
 
 	void update() {
 		while (!actors_.empty() && actors_.front()->act()) {
-			pushActor();
 			popActor();
+
+			if (actors_.back()->isAlive())
+				pushActor();
+			else
+				actors_.pop_back();
 		}
 	}
 
