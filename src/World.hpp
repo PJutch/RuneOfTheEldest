@@ -48,6 +48,19 @@ public:
 		pushActor();
 	}
 
+	std::span<const std::shared_ptr<Actor>> actors() const {
+		return actors_;
+	}
+
+	/// @brief Gets Actor at given position if it exist
+	/// @warning May return nullptr
+	std::shared_ptr<Actor> actorAt(sf::Vector3i position) {
+		auto iter = std::ranges::find(actors_, position, &Actor::position);
+		if (iter == actors_.end())
+			return nullptr;
+		return *iter;
+	}
+
 	/// @brief Generates dungeon and places player
 	/// @param logger logger to log messages
 	void generate(std::shared_ptr<spdlog::logger> logger);
@@ -63,13 +76,9 @@ public:
 		}
 	}
 
-	bool isPassable(sf::Vector3i position) {
-		return isPassableTile(dungeon().at(position)) 
-			&& std::ranges::find(actors_, position, &Actor::position) == actors_.end();
-	}
-
-	std::span<const std::shared_ptr<Actor>> actors() const {
-		return actors_;
+	/// Tile isPassable and have no Actors on it
+	bool isFree(sf::Vector3i position) {
+		return isPassable(dungeon().at(position)) && !actorAt(position);
 	}
 private:
 	std::shared_ptr<Dungeon> dungeon_;

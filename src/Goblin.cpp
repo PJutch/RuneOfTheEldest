@@ -36,8 +36,8 @@ bool Goblin::act() {
 
 void Goblin::spawnSingle(int level, std::shared_ptr<World> world, RandomEngine& randomEngine) {
 	sf::Vector2i position = world->dungeon()[level].randomPosition(randomEngine, [world, level](sf::Vector2i pos, const Level&) {
-		return world->isPassable(make3D(pos, level));
-		});
+		return world->isFree(make3D(pos, level));
+	});
 
 	world->addActor(std::make_shared<Goblin>(make3D(position, level), world, randomEngine));
 }

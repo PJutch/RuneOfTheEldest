@@ -56,7 +56,10 @@ protected:
 		nextTurn_ += delay;
 	}
 
-	/// callled once at the end of the turn
+	/// Attacks other Actor
+	virtual void attack(Actor& actor) = 0;
+
+	/// Callled once at the end of the turn
 	virtual void endTurn() = 0;
 
 	/// Sets position in world
@@ -66,8 +69,11 @@ protected:
 
 	/// changes position if newPosition isn't occupied
 	void tryMoveTo(sf::Vector3i newPosition) {
-		if (world().isPassable(newPosition)) {
-			position(newPosition);
+		if (isPassable(world().dungeon().at(newPosition))) {
+			if (auto other = world().actorAt(newPosition))
+				attack(*other);
+			else
+				position(newPosition);
 			endTurn();
 		}
 	}

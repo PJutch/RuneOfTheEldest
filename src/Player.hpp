@@ -59,6 +59,10 @@ private:
 	void tryAscentStairs();
 	void tryDescentStairs();
 
+	void attack(Actor& actor) final {
+		actor.beDamaged(1);
+	}
+
 	void endTurn() noexcept final {
 		state = State::ENDED_TURN;
 		delayNextTurn(1);

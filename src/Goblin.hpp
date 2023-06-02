@@ -44,6 +44,10 @@ public:
 		renderer.draw(*this);
 	}
 
+	void attack(Actor& actor) final {
+		actor.beDamaged(1);
+	}
+
 	void endTurn() noexcept final {
 		delayNextTurn(1);
 	}
