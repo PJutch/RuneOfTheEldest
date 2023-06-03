@@ -20,6 +20,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <iostream>
 
 void Player::spawn() {
+	nextTurn(0);
+	hp(maxHp());
+
 	world().addActor(shared_from_this());
 
 	int level = 0;

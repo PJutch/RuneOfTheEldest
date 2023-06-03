@@ -51,10 +51,6 @@ public:
 private:
 	RandomEngine* randomEngine;
 
-	void endTurn() noexcept final {
-		delayNextTurn(1);
-	}
-
 	void attack(Actor& actor) final {
 		actor.beDamaged(1);
 	}

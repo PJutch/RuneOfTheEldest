@@ -62,6 +62,15 @@ void Game::handleEvent(sf::Event event) {
         window->close();
         return;
     }
+
+    if (!player->isAlive()) {
+        if (event.type == sf::Event::KeyPressed
+         || event.type == sf::Event::MouseButtonPressed) {
+            camera->reset();
+            generate();
+            return;
+        }
+    }
        
     camera->handleEvent(event);
 
@@ -71,6 +80,9 @@ void Game::handleEvent(sf::Event event) {
 
 void Game::generate() {
     generationLogger->info("Started");
+
+    world().clearActors();
+
     world().dungeon().generate(generationLogger);
 
     generationLogger->info("Spawning goblins...");

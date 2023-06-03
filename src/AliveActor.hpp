@@ -61,6 +61,11 @@ protected:
 		return *world_;
 	}
 
+	/// Sets next turn time
+	void nextTurn(int newNextTurn) noexcept {
+		nextTurn_ = newNextTurn;
+	}
+
 	/// Add delay units to time before next turn
 	void delayNextTurn(int delay) noexcept {
 		nextTurn_ += delay;
@@ -69,8 +74,8 @@ protected:
 	/// Attacks other Actor
 	virtual void attack(Actor& actor) = 0;
 
-	/// Callled once at the end of the turn
-	virtual void endTurn() = 0;
+	/// Callled after successful move
+	virtual void moveSucceed() {}
 
 	/// Sets position in world
 	void position(sf::Vector3i newPosition) noexcept {
@@ -82,9 +87,10 @@ protected:
 		if (isPassable(world().dungeon().at(newPosition))) {
 			if (auto other = world().actorAt(newPosition))
 				attack(*other);
-			else
+			else {
 				position(newPosition);
-			endTurn();
+				moveSucceed();
+			}
 		}
 	}
 
@@ -96,6 +102,10 @@ protected:
 	/// changes position if position + offset isn't occupied
 	void tryMove(sf::Vector2i offset) {
 		tryMoveTo(getXY(position()) + offset);
+	}
+
+	void hp(int newHp) noexcept {
+		hp_ = newHp;
 	}
 private:
 	int nextTurn_ = 0;

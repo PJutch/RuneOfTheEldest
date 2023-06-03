@@ -39,8 +39,11 @@ public:
         return player->position().z;
     }
 
-    /// Ignores reset
-    void reset(sf::Vector2f, int) final {}
+    /// Can't move
+    void moveTo(sf::Vector2f, int) final {}
+
+    /// Ignore reset
+    void reset() final {}
 private:
     std::shared_ptr<Player> player;
 };

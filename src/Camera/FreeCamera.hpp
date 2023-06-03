@@ -27,6 +27,12 @@ class FreeCamera : public Camera {
 public:
     FreeCamera(std::shared_ptr<Dungeon> dungeon_);
 
+    /// Moves to default position
+    void reset() final {
+        position_ = { 0, 0 };
+        level_ = 0;
+    }
+
     sf::Vector2f position() const noexcept final {
         return position_;
     }
@@ -36,7 +42,7 @@ public:
     }
 
     /// Moves to new point
-    void reset(sf::Vector2f newPosition, int newLevel) noexcept final {
+    void moveTo(sf::Vector2f newPosition, int newLevel) noexcept final {
         position_ = newPosition;
         level_ = newLevel;
     }
@@ -53,7 +59,7 @@ public:
     void handleEvent(sf::Event event) final;
 private:
     sf::Vector2f position_;
-    int level_ = 0;
+    int level_;
 
     std::shared_ptr<Dungeon> dungeon;
 };

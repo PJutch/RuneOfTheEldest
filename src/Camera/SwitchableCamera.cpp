@@ -29,5 +29,5 @@ void SwitchableCamera::nextCamera() noexcept {
     ++currentCameraIndex;
     currentCameraIndex %= std::ssize(cameras);
 
-    currentCamera().reset(oldPosition, oldLevel);
+    currentCamera().moveTo(oldPosition, oldLevel);
 }

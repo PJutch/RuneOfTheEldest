@@ -48,6 +48,10 @@ public:
 		pushActor();
 	}
 
+	void clearActors() {
+		actors_.clear();
+	}
+
 	std::span<const std::shared_ptr<Actor>> actors() const {
 		return actors_;
 	}

@@ -18,7 +18,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "../Event.hpp"
 
 FreeCamera::FreeCamera(std::shared_ptr<Dungeon> dungeon_) :
-    dungeon{ std::move(dungeon_) } {}
+        dungeon{ std::move(dungeon_) } {
+    reset();
+}
 
 void FreeCamera::update(sf::Time elapsedTime) {
     const float cameraSpeed = 40.f;

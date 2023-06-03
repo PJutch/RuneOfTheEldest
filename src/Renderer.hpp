@@ -110,6 +110,8 @@ private:
     void drawInWorldRect(sf::IntRect rect, sf::Color color) {
         drawInWorldRect(rect, color, sf::Color::Transparent, 0.0f);
     }
+
+    void drawText(sf::Vector2f position, const std::string& text, sf::Color color, int characterSize);
 };
 
 #endif

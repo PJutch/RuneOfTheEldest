@@ -119,20 +119,29 @@ void Renderer::draw() {
 
 void Renderer::drawDeathScreen() {
     window->clear(sf::Color::Black);
-    window->setView(window->getDefaultView());
+    window->setView(createFullscreenView(1024.f, window->getSize()));
 
+    auto [screenX, screenY] = window->getView().getSize();
+    
+    sf::Vector2f youDiedPos(screenX / 2, screenY / 2 - 150.f);
+    drawText(youDiedPos, "You died", sf::Color::Red, 300);
+
+    sf::Vector2f continuePos(screenX / 2, screenY / 2 + 100.f);
+    drawText(continuePos, "Press any key to continue", sf::Color::Red, 50);
+    
+    window->display();
+}
+
+void Renderer::drawText(sf::Vector2f position, const std::string& string, sf::Color color, int characterSize) {
     sf::Text text;
-    text.setString("You died");
+    text.setString(string);
     text.setFont(assets->font());
-    text.setColor(sf::Color::Red);
-    text.setCharacterSize(200);
+    text.setColor(color);
+    text.setCharacterSize(characterSize);
 
     sf::FloatRect textBounds = text.getLocalBounds();
     text.setOrigin(textBounds.width / 2, textBounds.height / 2);
-
-    auto [screenX, screenY] = window->getSize();
-    text.setPosition(screenX / 2, screenY / 2);
+    text.setPosition(position);
 
     window->draw(text);
-    window->display();
 }

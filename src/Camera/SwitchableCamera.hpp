@@ -39,9 +39,16 @@ public:
         return currentCamera().level();
     }
 
-    /// Resets current camera
-    void reset(sf::Vector2f newPosition, int newLevel) final {
-        currentCamera().reset(newPosition, newLevel);
+    /// Moves current camera
+    void moveTo(sf::Vector2f newPosition, int newLevel) final {
+        currentCamera().moveTo(newPosition, newLevel);
+    }
+
+    /// Resets all cameras and selects 1st
+    void reset() final {
+        for (auto& camera : cameras)
+            camera->reset();
+        currentCameraIndex = 0;
     }
 
     /// Steal control if current camera does

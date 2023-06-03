@@ -24,14 +24,17 @@ class Camera {
 public:
     virtual ~Camera() = default;
 
-    /// position of the camera
+    /// Position of the Camera
     virtual sf::Vector2f position() const = 0;
 
-    /// level of the camera
+    /// Level of the Camera
     virtual int level() const = 0;
 
-    /// Moves camera to new point. Called on switching camera
-    virtual void reset(sf::Vector2f position, int level) = 0;
+    /// Moves Camera to new point. Called on switching Camera
+    virtual void moveTo(sf::Vector2f position, int level) = 0;
+
+    /// Resets Camera state
+    virtual void reset() = 0;
 
     /// If true player controls are blocked
     virtual bool shouldStealControl() const {
