@@ -45,7 +45,7 @@ public:
 	virtual bool shouldInterruptOnDelete() const = 0;
 
 	/// Damages Actor by given HPs
-	virtual void beDamaged(int damage) = 0;
+	virtual void beDamaged(double damage) = 0;
 
 	/// Draw an actor using a renderer. Basically a visitor pattern
 	virtual void draw(Renderer& renderer) const = 0;

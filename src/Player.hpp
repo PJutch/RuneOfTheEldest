@@ -31,7 +31,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 class Player : public AliveActor, public std::enable_shared_from_this<Player> {
 public:
 	Player(std::shared_ptr<World> world_, RandomEngine& randomEngine_) : 
-		AliveActor{ 1, std::move(world_) }, randomEngine{ &randomEngine_ } {}
+		AliveActor{ 10, 0.1, std::move(world_) }, randomEngine{ &randomEngine_ } {}
 
 	void spawn();
 
@@ -66,7 +66,7 @@ private:
 
 	void endTurn() noexcept {
 		state = State::ENDED_TURN;
-		delayNextTurn(1);
+		wait(1);
 	}
 
 	void attack(Actor& actor) final {

@@ -92,7 +92,7 @@ private:
     void drawWorld();
     void draw(const Level& level);
     void drawAreas(const Level& level);
-    void drawHpBar(sf::Vector3i position, int hp, int maxHp);
+    void drawHpBar(sf::Vector3i position, double hp, double maxHp);
 
     void drawSprite(sf::Vector3i position, const sf::Texture& texture);
     void drawSprite(sf::Vector2i position, const sf::Texture& texture);

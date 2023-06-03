@@ -91,7 +91,7 @@ void Renderer::drawSprite(sf::Vector2i position, const sf::Texture& texture) {
     window->draw(sprite);
 }
 
-void Renderer::drawHpBar(sf::Vector3i position, int hp, int maxHp) {
+void Renderer::drawHpBar(sf::Vector3i position, double hp, double maxHp) {
     if (camera->level() != position.z)
         return;
 

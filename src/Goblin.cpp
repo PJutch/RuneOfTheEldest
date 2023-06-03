@@ -31,7 +31,7 @@ bool Goblin::act() {
 	int offsetIndex = std::uniform_int_distribution<int>{ 0, std::ssize(offsets) - 1 }(*randomEngine);
 	sf::Vector2i offset = offsets[offsetIndex];
 	tryMove(offset);
-	delayNextTurn(1);
+	wait(1);
 	return true;
 }
 

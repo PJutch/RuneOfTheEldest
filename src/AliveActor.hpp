@@ -13,8 +13,8 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef ENTITY_HPP_
-#define ENTITY_HPP_
+#ifndef ALIVE_ACTOR_HPP_
+#define ALIVE_ACTOR_HPP_
 
 #include "Actor.hpp"
 
@@ -35,23 +35,24 @@ public:
 		return hp() > 0;
 	}
 
-	void beDamaged(int damage) final {
+	void beDamaged(double damage) final {
 		hp_ -= damage;
 	}
 
 	/// Gets Actor HP
-	int hp() const noexcept {
+	double hp() const noexcept {
 		return hp_;
 	}
 
 	/// Gets max possible HP
-	int maxHp() const noexcept {
+	double maxHp() const noexcept {
 		return maxHp_;
 	}
 protected:
-	AliveActor(int newMaxHp, sf::Vector3i newPosition, std::shared_ptr<World> newWorld) : 
-		position_{ newPosition }, hp_{ newMaxHp }, maxHp_{ newMaxHp }, world_{ std::move(newWorld) } {}
-	AliveActor(int newMaxHp, std::shared_ptr<World> newWorld) : AliveActor{ newMaxHp, {0, 0, 0}, std::move(newWorld) } {}
+	AliveActor(double newMaxHp, double regen_, sf::Vector3i newPosition, std::shared_ptr<World> newWorld) : 
+		position_{ newPosition }, hp_{ newMaxHp }, maxHp_{ newMaxHp }, regen{ regen_ }, world_ {std::move(newWorld)} {}
+	AliveActor(double newMaxHp, double regen_, std::shared_ptr<World> newWorld) : 
+		AliveActor{ newMaxHp, regen_, {0, 0, 0}, std::move(newWorld) } {}
 
 	World& world() noexcept {
 		return *world_;
@@ -66,9 +67,12 @@ protected:
 		nextTurn_ = newNextTurn;
 	}
 
-	/// Add delay units to time before next turn
-	void delayNextTurn(int delay) noexcept {
-		nextTurn_ += delay;
+	/// Dealys next Actor turn and applies over time effects
+	void wait(int time) noexcept {
+		nextTurn_ += time;
+
+		hp_ += regen * time;
+		hp(std::min(hp(), maxHp()));
 	}
 
 	/// Attacks other Actor
@@ -104,15 +108,16 @@ protected:
 		tryMoveTo(getXY(position()) + offset);
 	}
 
-	void hp(int newHp) noexcept {
+	void hp(double newHp) noexcept {
 		hp_ = newHp;
 	}
 private:
 	int nextTurn_ = 0;
 	sf::Vector3i position_;
 
-	int hp_;
-	int maxHp_;
+	double hp_;
+	double maxHp_;
+	double regen;
 
 	std::shared_ptr<World> world_;
 };
