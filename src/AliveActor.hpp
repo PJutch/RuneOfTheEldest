@@ -36,12 +36,22 @@ public:
 	}
 
 	void beDamaged(int damage) final {
-		hp(hp() - damage);
+		hp_ -= damage;
+	}
+
+	/// Gets Actor HP
+	int hp() const noexcept {
+		return hp_;
+	}
+
+	/// Gets max possible HP
+	int maxHp() const noexcept {
+		return maxHp_;
 	}
 protected:
-	AliveActor(int newHp, sf::Vector3i newPosition, std::shared_ptr<World> newWorld) : 
-		hp_{ newHp }, position_{ newPosition }, world_{ std::move(newWorld) } {}
-	AliveActor(std::shared_ptr<World> newWorld) : AliveActor{ 1, {0, 0, 0}, std::move(newWorld) } {}
+	AliveActor(int newMaxHp, sf::Vector3i newPosition, std::shared_ptr<World> newWorld) : 
+		position_{ newPosition }, hp_{ newMaxHp }, maxHp_{ newMaxHp }, world_{ std::move(newWorld) } {}
+	AliveActor(int newMaxHp, std::shared_ptr<World> newWorld) : AliveActor{ newMaxHp, {0, 0, 0}, std::move(newWorld) } {}
 
 	World& world() noexcept {
 		return *world_;
@@ -87,20 +97,12 @@ protected:
 	void tryMove(sf::Vector2i offset) {
 		tryMoveTo(getXY(position()) + offset);
 	}
-
-	/// Gets Actor HP
-	int hp() const noexcept {
-		return hp_;
-	}
-
-	/// Sets Actor HP
-	void hp(int newHp) noexcept {
-		hp_ = newHp;
-	}
 private:
 	int nextTurn_ = 0;
-	int hp_;
 	sf::Vector3i position_;
+
+	int hp_;
+	int maxHp_;
 
 	std::shared_ptr<World> world_;
 };

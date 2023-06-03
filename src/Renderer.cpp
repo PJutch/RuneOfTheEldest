@@ -69,10 +69,12 @@ void Renderer::drawInWorldRect(sf::IntRect rect,
 
 void Renderer::draw(const Player& player) {
     drawActor(player.position(), assets->playerTexture());
+    drawHpBar(player.position(), player.hp(), player.maxHp());
 }
 
 void Renderer::draw(const Goblin& goblin) {
     drawActor(goblin.position(), assets->goblinTexture());
+    drawHpBar(goblin.position(), goblin.hp(), goblin.maxHp());
 }
 
 void Renderer::drawActor(sf::Vector3i position, const sf::Texture& texture) {
@@ -84,6 +86,24 @@ void Renderer::drawActor(sf::Vector3i position, const sf::Texture& texture) {
     sprite.setPosition(toScreen(getXY(position)));
 
     window->draw(sprite);
+}
+
+void Renderer::drawHpBar(sf::Vector3i position, int hp, int maxHp) {
+    if (camera->level() != position.z)
+        return;
+
+    float hpFraction = static_cast<float>(hp) / maxHp;
+    sf::Vector2f size{ hpFraction * assets->tileSize().x, 2.f };
+    sf::Color color( (1 - hpFraction) * 255, hpFraction * 255, 0);
+
+    sf::Vector2f screenPos = toScreen(getXY(position));
+    sf::Vector2f cornerPos{ screenPos.x, screenPos.y + assets->tileSize().y - size.y };
+
+    sf::RectangleShape shape{ size };
+    shape.setPosition(cornerPos);
+    shape.setFillColor(color);
+
+    window->draw(shape);
 }
 
 void Renderer::draw() {

@@ -92,6 +92,7 @@ private:
     void drawAreas(const Level& level);
 
     void drawActor(sf::Vector3i position, const sf::Texture& texture);
+    void drawHpBar(sf::Vector3i position, int hp, int maxHp);
 
     void drawInWorldRect(sf::IntRect rect, 
         sf::Color fillColor, sf::Color outlineColor, float outlineThickness);
