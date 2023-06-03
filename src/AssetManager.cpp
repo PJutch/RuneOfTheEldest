@@ -21,16 +21,16 @@ If not, see <https://www.gnu.org/licenses/>. */
 AssetManager::AssetManager(LoggerFactory& loggerFactory) : logger{ loggerFactory.create("assets") } {
     logger->info("Loading...");
 
-    loadTexture(tileTextureMut(Tile::EMPTY ), "floor tile" , "resources/floor.png" );
-    loadTexture(tileTextureMut(Tile::WALL  ), "wall tile"  , "resources/wall.png"  );
-    loadTexture(tileTextureMut(Tile::UNSEEN), "unseen tile", "resources/unseen.png");
+    loadTexture(tileTextureMut(Tile::EMPTY ), "floor tile" , "resources/textures/Tile/floor.png" );
+    loadTexture(tileTextureMut(Tile::WALL  ), "wall tile"  , "resources/textures/Tile/wall.png"  );
+    loadTexture(tileTextureMut(Tile::UNSEEN), "unseen tile", "resources/textures/Tile/unseen.png");
 
-    loadTexture(tileTextureMut(Tile::UP_STAIRS  ), "up stairs tile"  , "resources/up_stairs.png"  );
-    loadTexture(tileTextureMut(Tile::DOWN_STAIRS), "down stairs tile", "resources/down_stairs.png");
+    loadTexture(tileTextureMut(Tile::UP_STAIRS  ), "up stairs tile"  , "resources/textures/Tile/up_stairs.png"  );
+    loadTexture(tileTextureMut(Tile::DOWN_STAIRS), "down stairs tile", "resources/textures/Tile/down_stairs.png");
 
-    loadTexture(playerTexture_, "player", "resources/player.png");
+    loadTexture(playerTexture_, "player", "resources/textures/player.png");
 
-    loadTexture(goblinTexture_, "goblin", "resources/goblin.png");
+    loadTexture(goblinTexture_, "goblin", "resources/textures/goblin.png");
 
     logger->info("Creating debug tile textures...");
     fillTexture(tileTextureMut(Tile::ROOM         ), tileSize(), sf::Color::Red    );
