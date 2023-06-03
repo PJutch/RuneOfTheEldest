@@ -23,12 +23,22 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <SFML/Graphics.hpp>
 
-/// loads and manages textures
+/// Loads and manages textures
 class AssetManager {
 public:
-	/// error whil loading texture
-	class TextureLoadError : public RuntimeError {
+	/// Error while loading some asset
+	class LoadError : public RuntimeError {
 		using RuntimeError::RuntimeError;
+	};
+
+	/// Error while loading texture
+	class TextureLoadError : public LoadError {
+		using LoadError::LoadError;
+	};
+
+	/// Error while loading font
+	class FontLoadError : public LoadError {
+		using LoadError::LoadError;
 	};
 
 	/// @brief creates AssetManager and loads textures
@@ -50,6 +60,11 @@ public:
 		return goblinTexture_;
 	}
 
+	/// Gets default font
+	const sf::Font& font() const noexcept {
+		return font_;
+	}
+
 	/// Gets size of single tile
 	sf::Vector2i tileSize() const noexcept {
 		return tileSize_;
@@ -59,8 +74,9 @@ private:
 	std::array<sf::Texture, totalTiles> tileTextures;
 
 	sf::Texture playerTexture_;
-
 	sf::Texture goblinTexture_;
+
+	sf::Font font_;
 
 	std::shared_ptr<spdlog::logger> logger;
 

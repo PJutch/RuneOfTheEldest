@@ -116,3 +116,23 @@ void Renderer::draw() {
 
     window->display();
 }
+
+void Renderer::drawDeathScreen() {
+    window->clear(sf::Color::Black);
+    window->setView(window->getDefaultView());
+
+    sf::Text text;
+    text.setString("You died");
+    text.setFont(assets->font());
+    text.setColor(sf::Color::Red);
+    text.setCharacterSize(200);
+
+    sf::FloatRect textBounds = text.getLocalBounds();
+    text.setOrigin(textBounds.width / 2, textBounds.height / 2);
+
+    auto [screenX, screenY] = window->getSize();
+    text.setPosition(screenX / 2, screenY / 2);
+
+    window->draw(text);
+    window->display();
+}

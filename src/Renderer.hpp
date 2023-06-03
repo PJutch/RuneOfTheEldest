@@ -58,6 +58,9 @@ public:
 
     /// Renders goblin
     void draw(const Goblin& goblin);
+
+    /// Renders "You died screen"
+    void drawDeathScreen();
 private:
     bool renderAreas_ = false;
 
@@ -88,7 +91,6 @@ private:
 
     void drawWorld();
     void draw(const Level& level);
-    void draw(Tile tile, sf::Vector2i position);
     void drawAreas(const Level& level);
     void drawHpBar(sf::Vector3i position, int hp, int maxHp);
 

@@ -37,6 +37,10 @@ AssetManager::AssetManager(LoggerFactory& loggerFactory) : logger{ loggerFactory
     fillTexture(tileTextureMut(Tile::ROOM_ENTRANCE), tileSize(), sf::Color::Magenta);
     fillTexture(tileTextureMut(Tile::PASSAGE      ), tileSize(), sf::Color::Blue   );
 
+    logger->info("Loading font...");
+    if (!font_.loadFromFile("resources/fonts/Roboto/Roboto-Medium.ttf"))
+        throw FontLoadError{ "Unable to load font" };
+
     logger->info("Finished loading...");
 }
 

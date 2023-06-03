@@ -44,12 +44,15 @@ void Game::run() {
         while (window->pollEvent(event))
             handleEvent(event);
 
-        world().update();
+        if (player->isAlive()) {
+            world().update();
 
-        sf::Time elapsedTime = clock.restart();
-        camera->update(elapsedTime);
+            sf::Time elapsedTime = clock.restart();
+            camera->update(elapsedTime);
 
-        renderer().draw();
+            renderer().draw();
+        } else
+            renderer().drawDeathScreen();
     }
 }
 

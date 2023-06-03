@@ -47,6 +47,10 @@ public:
 		if (isAlive())
 			renderer.draw(*this);
 	}
+
+	bool shouldInterruptOnDelete() const final {
+		return true;
+	}
 private:
 	enum class State {
 		WAITING_TURN,

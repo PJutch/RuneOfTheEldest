@@ -45,15 +45,19 @@ public:
 			renderer.draw(*this);
 	}
 
-	void attack(Actor& actor) final {
-		actor.beDamaged(1);
+	bool shouldInterruptOnDelete() const final {
+		return false;
 	}
+private:
+	RandomEngine* randomEngine;
 
 	void endTurn() noexcept final {
 		delayNextTurn(1);
 	}
-private:
-	RandomEngine* randomEngine;
+
+	void attack(Actor& actor) final {
+		actor.beDamaged(1);
+	}
 };
 
 #endif

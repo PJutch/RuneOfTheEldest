@@ -41,6 +41,9 @@ public:
 	/// Checks if Actor should be removed
 	virtual bool isAlive() const = 0;
 
+	/// If true interrupts Actor processing in queue and continue Game loop when this Actor deleted
+	virtual bool shouldInterruptOnDelete() const = 0;
+
 	/// Damages Actor by given HPs
 	virtual void beDamaged(int damage) = 0;
 

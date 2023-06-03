@@ -77,8 +77,12 @@ public:
 				pushActor();
 				if (!complete)
 					break;
-			} else
+			} else {
+				bool interrupt = actors_.back()->shouldInterruptOnDelete();
 				actors_.pop_back();
+				if (interrupt)
+					break;
+			}
 		}
 	}
 
