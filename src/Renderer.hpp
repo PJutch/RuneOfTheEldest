@@ -90,12 +90,24 @@ private:
     void draw(const Level& level);
     void draw(Tile tile, sf::Vector2i position);
     void drawAreas(const Level& level);
-
-    void drawActor(sf::Vector3i position, const sf::Texture& texture);
     void drawHpBar(sf::Vector3i position, int hp, int maxHp);
+
+    void drawSprite(sf::Vector3i position, const sf::Texture& texture);
+    void drawSprite(sf::Vector2i position, const sf::Texture& texture);
+
+    void drawRect(sf::FloatRect rect,
+        sf::Color fillColor, sf::Color outlineColor, float outlineThickness);
+
+    void drawRect(sf::FloatRect rect, sf::Color color) {
+        drawRect(rect, color, sf::Color::Transparent, 0.0f);
+    }
 
     void drawInWorldRect(sf::IntRect rect, 
         sf::Color fillColor, sf::Color outlineColor, float outlineThickness);
+
+    void drawInWorldRect(sf::IntRect rect, sf::Color color) {
+        drawInWorldRect(rect, color, sf::Color::Transparent, 0.0f);
+    }
 };
 
 #endif

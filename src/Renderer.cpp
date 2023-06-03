@@ -36,7 +36,7 @@ void Renderer::drawWorld() {
 void Renderer::draw(const Level& level) {
     for (int x = 0; x < level.shape().x; ++ x)
         for (int y = 0; y < level.shape().y; ++ y)
-            draw(level.at(x, y), {x, y});
+            drawSprite(sf::Vector2i{ x, y }, assets->tileTexture(level.at(x, y)));
     
     if (renderAreas_) drawAreas(level);
 }
@@ -47,18 +47,17 @@ void Renderer::drawAreas(const Level& level) {
                                 sf::Color::Green, 1.0);
 }
 
-void Renderer::draw(Tile tile, sf::Vector2i position) {
-    sf::Sprite tileSprite;
-    tileSprite.setTexture(assets->tileTexture(tile));
-    tileSprite.setPosition(toScreen(position));
-
-    window->draw(tileSprite);
-}
-
 void Renderer::drawInWorldRect(sf::IntRect rect, 
         sf::Color fillColor, sf::Color outlineColor, float outlineThickness) {
-    sf::RectangleShape rectShape{toScreen(rect.width, rect.height)};
-    rectShape.setPosition(toScreen(rect.left, rect.top));
+    auto [left, top] = toScreen(rect.left, rect.top);
+    auto [width, height] = toScreen(rect.width, rect.height);
+    drawRect({ left, top, width, height}, fillColor, outlineColor, outlineThickness);
+}
+
+void Renderer::drawRect(sf::FloatRect rect,
+    sf::Color fillColor, sf::Color outlineColor, float outlineThickness) {
+    sf::RectangleShape rectShape{ {rect.width, rect.height} };
+    rectShape.setPosition(rect.left, rect.top);
 
     rectShape.setFillColor(fillColor);
     rectShape.setOutlineColor(outlineColor);
@@ -68,22 +67,26 @@ void Renderer::drawInWorldRect(sf::IntRect rect,
 }
 
 void Renderer::draw(const Player& player) {
-    drawActor(player.position(), assets->playerTexture());
+    drawSprite(player.position(), assets->playerTexture());
     drawHpBar(player.position(), player.hp(), player.maxHp());
 }
 
 void Renderer::draw(const Goblin& goblin) {
-    drawActor(goblin.position(), assets->goblinTexture());
+    drawSprite(goblin.position(), assets->goblinTexture());
     drawHpBar(goblin.position(), goblin.hp(), goblin.maxHp());
 }
 
-void Renderer::drawActor(sf::Vector3i position, const sf::Texture& texture) {
+void Renderer::drawSprite(sf::Vector3i position, const sf::Texture& texture) {
     if (camera->level() != position.z)
         return;
 
+    drawSprite(getXY(position), texture);
+}
+
+void Renderer::drawSprite(sf::Vector2i position, const sf::Texture& texture) {
     sf::Sprite sprite;
     sprite.setTexture(texture);
-    sprite.setPosition(toScreen(getXY(position)));
+    sprite.setPosition(toScreen(position));
 
     window->draw(sprite);
 }
@@ -93,17 +96,16 @@ void Renderer::drawHpBar(sf::Vector3i position, int hp, int maxHp) {
         return;
 
     float hpFraction = static_cast<float>(hp) / maxHp;
-    sf::Vector2f size{ hpFraction * assets->tileSize().x, 2.f };
     sf::Color color( (1 - hpFraction) * 255, hpFraction * 255, 0);
 
+    float width = hpFraction * assets->tileSize().x;
+    float height = 2.f;
+
     sf::Vector2f screenPos = toScreen(getXY(position));
-    sf::Vector2f cornerPos{ screenPos.x, screenPos.y + assets->tileSize().y - size.y };
+    float top = screenPos.x;
+    float left = screenPos.y + assets->tileSize().y - height;
 
-    sf::RectangleShape shape{ size };
-    shape.setPosition(cornerPos);
-    shape.setFillColor(color);
-
-    window->draw(shape);
+    drawRect({ top, left, width, height }, color);
 }
 
 void Renderer::draw() {
