@@ -85,7 +85,7 @@ private:
     }
 
     void worldScreenView() noexcept {
-        auto cameraPos = toScreen(camera->position());
+        auto cameraPos = toScreen(camera->position().xy());
         window->setView(createFullscreenView(cameraPos, 512, window->getSize()));
     }
 

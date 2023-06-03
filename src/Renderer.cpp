@@ -27,7 +27,7 @@ Renderer::Renderer(std::shared_ptr<Camera> camera,
     window{ std::move(window_) } {}
 
 void Renderer::drawWorld() {
-    draw(world->dungeon()[camera->level()]);
+    draw(world->dungeon()[camera->position().level]);
 
     for (std::shared_ptr<Actor> actor : world->actors())
         actor->draw(*this);
@@ -77,7 +77,7 @@ void Renderer::draw(const Goblin& goblin) {
 }
 
 void Renderer::drawSprite(sf::Vector3i position, const sf::Texture& texture) {
-    if (camera->level() != position.z)
+    if (camera-> position().level != position.z)
         return;
 
     drawSprite(getXY(position), texture);
@@ -92,7 +92,7 @@ void Renderer::drawSprite(sf::Vector2i position, const sf::Texture& texture) {
 }
 
 void Renderer::drawHpBar(sf::Vector3i position, double hp, double maxHp) {
-    if (camera->level() != position.z)
+    if (camera->position().level != position.z)
         return;
 
     float hpFraction = static_cast<float>(hp) / maxHp;

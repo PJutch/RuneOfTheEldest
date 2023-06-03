@@ -23,11 +23,10 @@ void SwitchableCamera::handleEvent(sf::Event event) {
 }
 
 void SwitchableCamera::nextCamera() noexcept {
-    sf::Vector2f oldPosition = currentCamera().position();
-    int oldLevel = currentCamera().level();
+    Position oldPosition = currentCamera().position();
 
     ++currentCameraIndex;
     currentCameraIndex %= std::ssize(cameras);
 
-    currentCamera().moveTo(oldPosition, oldLevel);
+    currentCamera().moveTo(oldPosition);
 }

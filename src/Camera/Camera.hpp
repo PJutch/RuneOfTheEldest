@@ -22,16 +22,28 @@ If not, see <https://www.gnu.org/licenses/>. */
 /// Interface for cameras. Determines point of view
 class Camera {
 public:
+    /// Position of the Camera
+    struct Position {
+        float x;
+        float y;
+        int level;
+
+        Position() = default;
+        Position(float x_, float y_, int level_) : x{ x_ }, y{ y_ }, level{ level_ } {}
+        explicit Position(sf::Vector3i position) : Position(position.x, position.y, position.z) {}
+
+        sf::Vector2f xy() const noexcept {
+            return { x, y };
+        }
+    };
+
     virtual ~Camera() = default;
 
     /// Position of the Camera
-    virtual sf::Vector2f position() const = 0;
-
-    /// Level of the Camera
-    virtual int level() const = 0;
+    virtual Position position() const = 0;
 
     /// Moves Camera to new point. Called on switching Camera
-    virtual void moveTo(sf::Vector2f position, int level) = 0;
+    virtual void moveTo(Position position) = 0;
 
     /// Resets Camera state
     virtual void reset() = 0;

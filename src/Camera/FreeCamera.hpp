@@ -27,24 +27,18 @@ class FreeCamera : public Camera {
 public:
     FreeCamera(std::shared_ptr<Dungeon> dungeon_);
 
-    /// Moves to default position
-    void reset() final {
-        position_ = { 0, 0 };
-        level_ = 0;
-    }
-
-    sf::Vector2f position() const noexcept final {
+    Position position() const noexcept final {
         return position_;
     }
 
-    int level() const noexcept final {
-        return level_;
+    /// Moves to default position
+    void reset() noexcept final {
+        position_ = { 0.f, 0.f, 0 };
     }
 
     /// Moves to new point
-    void moveTo(sf::Vector2f newPosition, int newLevel) noexcept final {
+    void moveTo(Position newPosition) noexcept final {
         position_ = newPosition;
-        level_ = newLevel;
     }
 
     /// Prevents player charcater moving together with camera
@@ -58,8 +52,7 @@ public:
     /// Changes floor by <>
     void handleEvent(sf::Event event) final;
 private:
-    sf::Vector2f position_;
-    int level_;
+    Position position_;
 
     std::shared_ptr<Dungeon> dungeon;
 };

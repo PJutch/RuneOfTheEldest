@@ -30,18 +30,13 @@ public:
         cameras{ std::move(cameras_) } {}
 
     /// Uses current camera position
-    sf::Vector2f position() const final {
+    Position position() const final {
         return currentCamera().position();
     }
 
-    /// Uses current camera level
-    int level() const final {
-        return currentCamera().level();
-    }
-
     /// Moves current camera
-    void moveTo(sf::Vector2f newPosition, int newLevel) final {
-        currentCamera().moveTo(newPosition, newLevel);
+    void moveTo(Position newPosition) final {
+        currentCamera().moveTo(newPosition);
     }
 
     /// Resets all cameras and selects 1st

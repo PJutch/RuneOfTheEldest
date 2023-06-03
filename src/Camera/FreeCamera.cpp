@@ -39,10 +39,10 @@ void FreeCamera::update(sf::Time elapsedTime) {
 
 void FreeCamera::handleEvent(sf::Event event) {
     if (wasKeyPressed(event, sf::Keyboard::Comma) && event.key.shift) {
-        if (level_ > 0)
-            --level_;
+        if (position().level > 0)
+            --position_.level;
     } else if (wasKeyPressed(event, sf::Keyboard::Period) && event.key.shift) {
-        if (level_ + 1 < dungeon->size())
-            ++ level_;
+        if (position().level + 1 < dungeon->size())
+            ++position_.level;
     }
 }

@@ -29,18 +29,12 @@ public:
         player{ std::move(player_) } {}
 
     /// Uses player position
-    sf::Vector2f position() const final {
-        auto [x, y, z] = player->position();
-        return sf::Vector2f(x, y);
-    }
-
-    /// Uses player level
-    int level() const final {
-        return player->position().z;
+    Position position() const final {
+        return Position{ player->position() };
     }
 
     /// Can't move
-    void moveTo(sf::Vector2f, int) final {}
+    void moveTo(Position) final {}
 
     /// Ignore reset
     void reset() final {}
