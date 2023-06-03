@@ -16,7 +16,7 @@
 add_library(sources STATIC)
 
 target_sources(sources PRIVATE Game.cpp Level.cpp Renderer.cpp 
-                               Area.cpp DungeonGenerator.cpp  Player.cpp AssetManager.cpp Dungeon.cpp  Goblin.cpp)
+                               Area.cpp DungeonGenerator.cpp  Player.cpp AssetManager.cpp Dungeon.cpp  Goblin.cpp AliveActor.cpp World.cpp)
 
 add_subdirectory(RoomGenerator)
 target_link_libraries(sources PRIVATE RoomGenerator)

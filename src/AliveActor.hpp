@@ -49,10 +49,8 @@ public:
 		return maxHp_;
 	}
 protected:
-	AliveActor(double newMaxHp, double regen_, sf::Vector3i newPosition, std::shared_ptr<World> newWorld) : 
-		position_{ newPosition }, hp_{ newMaxHp }, maxHp_{ newMaxHp }, regen{ regen_ }, world_ {std::move(newWorld)} {}
-	AliveActor(double newMaxHp, double regen_, std::shared_ptr<World> newWorld) : 
-		AliveActor{ newMaxHp, regen_, {0, 0, 0}, std::move(newWorld) } {}
+	AliveActor(double newMaxHp, double regen_, sf::Vector3i newPosition, std::shared_ptr<World> newWorld);
+	AliveActor(double newMaxHp, double regen_, std::shared_ptr<World> newWorld);
 
 	World& world() noexcept {
 		return *world_;
@@ -68,12 +66,7 @@ protected:
 	}
 
 	/// Dealys next Actor turn and applies over time effects
-	void wait(int time) noexcept {
-		nextTurn_ += time;
-
-		hp_ += regen * time;
-		hp(std::min(hp(), maxHp()));
-	}
+	void wait(int time) noexcept;
 
 	/// Attacks other Actor
 	virtual void attack(Actor& actor) = 0;
@@ -87,16 +80,7 @@ protected:
 	}
 
 	/// changes position if newPosition isn't occupied
-	void tryMoveTo(sf::Vector3i newPosition) {
-		if (isPassable(world().dungeon().at(newPosition))) {
-			if (auto other = world().actorAt(newPosition))
-				attack(*other);
-			else {
-				position(newPosition);
-				moveSucceed();
-			}
-		}
-	}
+	void tryMoveTo(sf::Vector3i newPosition);
 
 	/// changes position if newPosition isn't occupied
 	void tryMoveTo(sf::Vector2i newPosition) {

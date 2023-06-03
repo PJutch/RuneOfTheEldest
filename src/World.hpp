@@ -43,11 +43,13 @@ public:
 		return *dungeon_;
 	}
 
+	/// Add Actor to list
 	void addActor(std::shared_ptr<Actor> actor) {
 		actors_.push_back(std::move(actor));
 		pushActor();
 	}
 
+	/// Remove all actors
 	void clearActors() {
 		actors_.clear();
 	}
@@ -58,37 +60,10 @@ public:
 
 	/// @brief Gets Actor at given position if it exist
 	/// @warning May return nullptr
-	std::shared_ptr<Actor> actorAt(sf::Vector3i position) {
-		auto iter = std::ranges::find_if(actors_, [position](std::shared_ptr<Actor> actor) {
-			return actor->isAlive() && actor->position() == position;
-		});
+	std::shared_ptr<Actor> actorAt(sf::Vector3i position);
 
-		if (iter == actors_.end())
-			return nullptr;
-		return *iter;
-	}
-
-	/// @brief Generates dungeon and places player
-	/// @param logger logger to log messages
-	void generate(std::shared_ptr<spdlog::logger> logger);
-
-	void update() {
-		while (!actors_.empty()) {
-			popActor();
-
-			if (actors_.back()->isAlive()) {
-				bool complete = actors_.back()->act();
-				pushActor();
-				if (!complete)
-					break;
-			} else {
-				bool interrupt = actors_.back()->shouldInterruptOnDelete();
-				actors_.pop_back();
-				if (interrupt)
-					break;
-			}
-		}
-	}
+	/// Updates actors until one of them decides to wait input
+	void update();
 
 	/// Tile isPassable and have no Actors on it
 	bool isFree(sf::Vector3i position) {
