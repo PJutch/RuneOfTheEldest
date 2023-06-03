@@ -41,7 +41,8 @@ public:
 	static void spawnAll(std::shared_ptr<World> world, RandomEngine& randomEngine);
 
 	void draw(Renderer& renderer) const final {
-		renderer.draw(*this);
+		if (isAlive())
+			renderer.draw(*this);
 	}
 
 	void attack(Actor& actor) final {

@@ -55,7 +55,10 @@ public:
 	/// @brief Gets Actor at given position if it exist
 	/// @warning May return nullptr
 	std::shared_ptr<Actor> actorAt(sf::Vector3i position) {
-		auto iter = std::ranges::find(actors_, position, &Actor::position);
+		auto iter = std::ranges::find_if(actors_, [position](std::shared_ptr<Actor> actor) {
+			return actor->isAlive() && actor->position() == position;
+		});
+
 		if (iter == actors_.end())
 			return nullptr;
 		return *iter;
@@ -66,12 +69,15 @@ public:
 	void generate(std::shared_ptr<spdlog::logger> logger);
 
 	void update() {
-		while (!actors_.empty() && actors_.front()->act()) {
+		while (!actors_.empty()) {
 			popActor();
 
-			if (actors_.back()->isAlive())
+			if (actors_.back()->isAlive()) {
+				bool complete = actors_.back()->act();
 				pushActor();
-			else
+				if (!complete)
+					break;
+			} else
 				actors_.pop_back();
 		}
 	}

@@ -44,7 +44,8 @@ public:
 	void handleEvent(sf::Event event);
 
 	void draw(Renderer& renderer) const final {
-		renderer.draw(*this);
+		if (isAlive())
+			renderer.draw(*this);
 	}
 private:
 	enum class State {
