@@ -24,6 +24,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 /// Dungeons and all objects in it
 class World : public std::enable_shared_from_this<World> {
 public:
+	World() = default;
 	World(std::shared_ptr<Dungeon> newDungeon) :
 		dungeon_{ std::move(newDungeon) } {}
 
@@ -70,7 +71,7 @@ public:
 		return isPassable(dungeon().at(position)) && !actorAt(position);
 	}
 private:
-	std::shared_ptr<Dungeon> dungeon_;
+	std::shared_ptr<Dungeon> dungeon_ = nullptr;
 	std::vector<std::shared_ptr<Actor>> actors_;
 
 	void pushActor() {
@@ -84,8 +85,6 @@ private:
 			return actor->nextTurn();
 		});
 	}
-
-	void spawnGoblins(int level);
 };
 
 #endif
