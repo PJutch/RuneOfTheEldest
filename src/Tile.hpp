@@ -36,18 +36,18 @@ const static int totalTiles = static_cast<int>(Tile::TOTAL_);
 
 /// @brief Tests if Tile is passable (!= Tile::WALL)
 /// @details Tile::UNSEEN is also impassable for placing player and debug dungeon generation 
-inline [[nodiscard]] bool isPassable(Tile tile) {
+[[nodiscard]] inline bool isPassable(Tile tile) {
     return tile != Tile::WALL && tile != Tile::UNSEEN;
 }
 
 /// same as isPassable
-inline [[nodiscard]] bool isPassableTile(Tile tile) {
+[[nodiscard]] inline bool isPassableTile(Tile tile) {
     return isPassable(tile);
 }
 
 /// @brief Tests if Tile is empty (Tile::EMPTY)
 /// @details Debug tiles for marking generation cause are also empty
-inline [[nodiscard]] bool isEmpty(Tile tile) {
+[[nodiscard]] inline bool isEmpty(Tile tile) {
     return tile == Tile::EMPTY 
         || tile == Tile::ROOM 
         || tile == Tile::ROOM_ENTRANCE 
