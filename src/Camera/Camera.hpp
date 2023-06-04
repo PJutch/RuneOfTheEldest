@@ -40,7 +40,7 @@ public:
     virtual ~Camera() = default;
 
     /// Position of the Camera
-    virtual [[nodiscard]] Position position() const = 0;
+    [[nodiscard]] virtual Position position() const = 0;
 
     /// Moves Camera to new point. Called on switching Camera
     virtual void moveTo(Position position) = 0;
@@ -49,7 +49,7 @@ public:
     virtual void reset() = 0;
 
     /// If true player controls are blocked
-    virtual [[nodiscard]] bool shouldStealControl() const {
+    [[nodiscard]] virtual bool shouldStealControl() const {
         return false; 
     }
 
