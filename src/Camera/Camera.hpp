@@ -32,7 +32,7 @@ public:
         Position(float x_, float y_, int level_) : x{ x_ }, y{ y_ }, level{ level_ } {}
         explicit Position(sf::Vector3i position) : Position(position.x, position.y, position.z) {}
 
-        sf::Vector2f xy() const noexcept {
+        [[nodiscard]] sf::Vector2f xy() const noexcept {
             return { x, y };
         }
     };
@@ -40,7 +40,7 @@ public:
     virtual ~Camera() = default;
 
     /// Position of the Camera
-    virtual Position position() const = 0;
+    virtual [[nodiscard]] Position position() const = 0;
 
     /// Moves Camera to new point. Called on switching Camera
     virtual void moveTo(Position position) = 0;
@@ -49,7 +49,7 @@ public:
     virtual void reset() = 0;
 
     /// If true player controls are blocked
-    virtual bool shouldStealControl() const {
+    virtual [[nodiscard]] bool shouldStealControl() const {
         return false; 
     }
 

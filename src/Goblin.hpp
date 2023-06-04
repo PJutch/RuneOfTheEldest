@@ -45,7 +45,7 @@ public:
 			renderer.draw(*this);
 	}
 
-	bool shouldInterruptOnDelete() const final {
+	[[nodiscard]] bool shouldInterruptOnDelete() const final {
 		return false;
 	}
 private:

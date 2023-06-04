@@ -27,7 +27,7 @@ class FreeCamera : public Camera {
 public:
     FreeCamera(std::shared_ptr<Dungeon> dungeon_);
 
-    Position position() const noexcept final {
+    [[nodiscard]] Position position() const noexcept final {
         return position_;
     }
 
@@ -42,7 +42,7 @@ public:
     }
 
     /// Prevents player charcater moving together with camera
-    bool shouldStealControl() const noexcept final { 
+    [[nodiscard]] bool shouldStealControl() const noexcept final {
         return true;
     }
 

@@ -49,7 +49,7 @@ private:
 
     RandomEngine* randomEngine;
 
-    Area randomRoomIn(const Area& area);
+    [[nodiscard]] Area randomRoomIn(const Area& area);
 
     void leftPassage(Level& level, const Area& area, Area& room, int y);
     void topPassage(Level& level, const Area& area, Area& room, int y);

@@ -34,7 +34,7 @@ using ConsoleSink = spdlog::sinks::stdout_color_sink_st;
 using FileSink = spdlog::sinks::basic_file_sink_st;
 
 /// boost::di module providing log sinks
-inline auto logModule() {
+[[nodiscard]] inline auto logModule() {
     return boost::di::make_injector(
         boost::di::bind<FileSink>.to(std::make_shared<FileSink>("log.txt", true)),
         boost::di::bind<spdlog::sinks::sink*[]>.to<ConsoleSink, FileSink>()

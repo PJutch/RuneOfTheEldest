@@ -27,19 +27,19 @@ public:
 	World(std::shared_ptr<Dungeon> newDungeon) :
 		dungeon_{ std::move(newDungeon) } {}
 
-	DungeonGenerator& dungeonGenerator() noexcept {
+	[[nodiscard]] DungeonGenerator& dungeonGenerator() noexcept {
 		return dungeon().dungeonGenerator();
 	}
 
-	const DungeonGenerator& dungeonGenerator() const noexcept {
+	[[nodiscard]] const DungeonGenerator& dungeonGenerator() const noexcept {
 		return dungeon().dungeonGenerator();
 	}
 
-	Dungeon& dungeon() noexcept {
+	[[nodiscard]] Dungeon& dungeon() noexcept {
 		return *dungeon_;
 	}
 
-	const Dungeon& dungeon() const noexcept {
+	[[nodiscard]] const Dungeon& dungeon() const noexcept {
 		return *dungeon_;
 	}
 
@@ -54,19 +54,19 @@ public:
 		actors_.clear();
 	}
 
-	std::span<const std::shared_ptr<Actor>> actors() const {
+	[[nodiscard]] std::span<const std::shared_ptr<Actor>> actors() const {
 		return actors_;
 	}
 
 	/// @brief Gets Actor at given position if it exist
 	/// @warning May return nullptr
-	std::shared_ptr<Actor> actorAt(sf::Vector3i position);
+	[[nodiscard]] std::shared_ptr<Actor> actorAt(sf::Vector3i position);
 
 	/// Updates actors until one of them decides to wait input
 	void update();
 
 	/// Tile isPassable and have no Actors on it
-	bool isFree(sf::Vector3i position) {
+	[[nodiscard]] bool isFree(sf::Vector3i position) {
 		return isPassable(dungeon().at(position)) && !actorAt(position);
 	}
 private:

@@ -23,15 +23,15 @@ If not, see <https://www.gnu.org/licenses/>. */
 /// Base for all Actors with hp and position in world
 class AliveActor : public Actor {
 public:
-	sf::Vector3i position() const noexcept final {
+	[[nodiscard]] sf::Vector3i position() const noexcept final {
 		return position_;
 	}
 
-	int nextTurn() const noexcept final {
+	[[nodiscard]] int nextTurn() const noexcept final {
 		return nextTurn_;
 	}
 
-	bool isAlive() const final {
+	[[nodiscard]] bool isAlive() const final {
 		return hp() > 0;
 	}
 
@@ -40,23 +40,23 @@ public:
 	}
 
 	/// Gets Actor HP
-	double hp() const noexcept {
+	[[nodiscard]] double hp() const noexcept {
 		return hp_;
 	}
 
 	/// Gets max possible HP
-	double maxHp() const noexcept {
+	[[nodiscard]] double maxHp() const noexcept {
 		return maxHp_;
 	}
 protected:
 	AliveActor(double newMaxHp, double regen_, sf::Vector3i newPosition, std::shared_ptr<World> newWorld);
 	AliveActor(double newMaxHp, double regen_, std::shared_ptr<World> newWorld);
 
-	World& world() noexcept {
+	[[nodiscard]] World& world() noexcept {
 		return *world_;
 	}
 
-	const World& world() const noexcept {
+	[[nodiscard]] const World& world() const noexcept {
 		return *world_;
 	}
 

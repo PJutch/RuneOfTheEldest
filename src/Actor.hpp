@@ -26,7 +26,7 @@ public:
 	virtual ~Actor() = default;
 
 	/// Actor position in world
-	virtual sf::Vector3i position() const = 0;
+	virtual [[nodiscard]] sf::Vector3i position() const = 0;
 	
 	/// @brief Perform action in its turn
 	/// @details Called in this actor turn.
@@ -36,13 +36,13 @@ public:
 
 	/// @brief Gets time when actor's next turn begins
 	/// @warning Returned time should change only in Actor's turn
-	virtual int nextTurn() const = 0;
+	virtual [[nodiscard]] int nextTurn() const = 0;
 	
 	/// Checks if Actor should be removed
-	virtual bool isAlive() const = 0;
+	virtual [[nodiscard]] bool isAlive() const = 0;
 
 	/// If true interrupts Actor processing in queue and continue Game loop when this Actor deleted
-	virtual bool shouldInterruptOnDelete() const = 0;
+	virtual [[nodiscard]] bool shouldInterruptOnDelete() const = 0;
 
 	/// Damages Actor by given HPs
 	virtual void beDamaged(double damage) = 0;

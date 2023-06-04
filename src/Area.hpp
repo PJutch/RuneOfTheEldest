@@ -32,37 +32,37 @@ public:
     explicit Area(sf::IntRect area_) : area{area_} {}
 
     /// Left side of the area (min x)
-    int left() const noexcept {
+    [[nodiscard]] int left() const noexcept {
         return area.left;
     }
 
     /// Top side of the area (min y)
-    int top() const noexcept {
+    [[nodiscard]] int top() const noexcept {
         return area.top;
     }
 
     /// Right side of the area (max x)
-    int right() const noexcept {
+    [[nodiscard]] int right() const noexcept {
         return area.left + area.width;
     }
 
     /// Bottom side of the area (max y)
-    int bottom() const noexcept {
+    [[nodiscard]] int bottom() const noexcept {
         return area.top + area.height;
     }
 
     /// Width of the area (x size)
-    int width() const noexcept {
+    [[nodiscard]] int width() const noexcept {
         return area.width;
     }
 
     /// Width of the area (y size)
-    int height() const noexcept {
+    [[nodiscard]] int height() const noexcept {
         return area.height;
     }
 
     /// Area bounding rect
-    sf::IntRect bounds() const noexcept {
+    [[nodiscard]] sf::IntRect bounds() const noexcept {
         return area;
     }
 
@@ -87,30 +87,30 @@ public:
     }
 
     /// All passage on the left side of the area at (left(), *)
-    std::span<const int> leftPassages() const noexcept {
+    [[nodiscard]] std::span<const int> leftPassages() const noexcept {
         return leftPassages_;
     }
 
     /// All passage on the top side of the area at (*, top())
-    std::span<const int> topPassages() const noexcept {
+    [[nodiscard]] std::span<const int> topPassages() const noexcept {
         return topPassages_;
     }
 
     /// All passage on the right side of the area at (right(), *)
-    std::span<const int> rightPassages() const noexcept {
+    [[nodiscard]] std::span<const int> rightPassages() const noexcept {
         return rightPassages_;
     }
 
     /// All passage on the bottom side of the area at (*, bottom())
-    std::span<const int> bottomPassages() const noexcept {
+    [[nodiscard]] std::span<const int> bottomPassages() const noexcept {
         return bottomPassages_;
     }
 
     /// Splits area horizontally
-    std::pair<Area, Area> splitX(int boundary) const noexcept;
+    [[nodiscard]] std::pair<Area, Area> splitX(int boundary) const noexcept;
 
     /// Splits area vertically
-    std::pair<Area, Area> splitY(int boundary) const noexcept;
+    [[nodiscard]] std::pair<Area, Area> splitY(int boundary) const noexcept;
 private:
     sf::IntRect area;
 

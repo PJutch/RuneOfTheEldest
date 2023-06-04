@@ -29,7 +29,7 @@ public:
         player{ std::move(player_) } {}
 
     /// Uses player position
-    Position position() const final {
+    [[nodiscard]] Position position() const final {
         return Position{ player->position() };
     }
 

@@ -32,12 +32,12 @@ using Stacktrace = boost::stacktrace::stacktrace;
 class TracableException {
 public:   
     /// Location of the error
-    const Stacktrace& stacktrace() const noexcept {
+    [[nodiscard]] const Stacktrace& stacktrace() const noexcept {
         return stacktrace_;
     }
 
     /// Error description
-    virtual const char* what() const noexcept = 0;
+    [[nodiscard]] virtual const char* what() const noexcept = 0;
 protected:
     TracableException(Stacktrace currentStacktrace) noexcept : 
         stacktrace_{std::move(currentStacktrace)} {}
@@ -66,7 +66,7 @@ public:
         TracableException{std::move(currentStacktrace)} {}
     
     /// Uses std::runtime_error::what as TracableException::what
-    const char* what() const noexcept override {
+    [[nodiscard]] const char* what() const noexcept override {
         return std::runtime_error::what();
     }
 };
@@ -80,7 +80,7 @@ public:
         TracableException{std::move(currentStacktrace)} {}
     
     /// Uses std::logic_error::what as TracableException::what
-    const char* what() const noexcept override {
+    [[nodiscard]] const char* what() const noexcept override {
         return std::logic_error::what();
     }
 };

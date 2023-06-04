@@ -30,7 +30,7 @@ public:
         cameras{ std::move(cameras_) } {}
 
     /// Uses current camera position
-    Position position() const final {
+    [[nodiscard]] Position position() const final {
         return currentCamera().position();
     }
 
@@ -47,7 +47,7 @@ public:
     }
 
     /// Steal control if current camera does
-    bool shouldStealControl() const final {
+    [[nodiscard]] bool shouldStealControl() const final {
         return currentCamera().shouldStealControl();
     }
 
@@ -64,11 +64,11 @@ private:
     std::vector<std::unique_ptr<Camera>> cameras;
     int currentCameraIndex = 0;
 
-    Camera& currentCamera() noexcept {
+    [[nodiscard]] Camera& currentCamera() noexcept {
         return *cameras[currentCameraIndex];
     }
 
-    const Camera& currentCamera() const noexcept {
+    [[nodiscard]] const Camera& currentCamera() const noexcept {
         return *cameras[currentCameraIndex];
     }
 

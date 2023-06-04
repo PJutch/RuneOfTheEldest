@@ -33,22 +33,22 @@ If not, see <https://www.gnu.org/licenses/>. */
 class Level{
 public:
     /// Checks if there are tiles with this x
-    bool isValidX(int x) const noexcept {
+    [[nodiscard]] bool isValidX(int x) const noexcept {
         return 0 <= x && x < shape().x;
     }
 
     /// Checks if there are tiles with this y
-    bool isValidY(int y) const noexcept {
+    [[nodiscard]] bool isValidY(int y) const noexcept {
         return 0 <= y && y < shape().y;
     }
 
     /// Checks if rect sides are >=0 and all tiles in it are exists
-    bool isValidRect(sf::IntRect rect) const noexcept;
+    [[nodiscard]] bool isValidRect(sf::IntRect rect) const noexcept;
 
     /// Access to individual tile at (x, y)
     /// @warning Check indices by yourself
     ///       \n You may use isValidX and isValidY or shape
-    Tile& at(int x, int y) noexcept {
+    [[nodiscard]] Tile& at(int x, int y) noexcept {
         TROTE_ASSERT(isValidX(x));
         TROTE_ASSERT(isValidY(y));
         return tiles[x * shape().y + y];
@@ -57,7 +57,7 @@ public:
     /// Access to individual tile at (x, y)
     /// @warning Check indices by yourself
     ///       \n You may use isValidX and isValidY or shape
-    const Tile& at(int x, int y) const noexcept {
+    [[nodiscard]] const Tile& at(int x, int y) const noexcept {
         TROTE_ASSERT(isValidX(x));
         TROTE_ASSERT(isValidY(y));
         return tiles[x * shape().y + y];
@@ -66,24 +66,24 @@ public:
     /// Access to individual tile at (position.x, position.y)
     /// @warning Check indices by yourself
     ///       \n You may use isValidX and isValidY or shape
-    Tile& at(sf::Vector2i position) noexcept {
+    [[nodiscard]] Tile& at(sf::Vector2i position) noexcept {
         return at(position.x, position.y);
     }
 
     /// Access to individual tile at (position.x, position.y)
     /// @warning Check indices by yourself
     ///       \n You may use isValidX and isValidY or shape
-    const Tile& at(sf::Vector2i position) const noexcept {
+    [[nodiscard]] const Tile& at(sf::Vector2i position) const noexcept {
         return at(position.x, position.y);
     }
 
     /// Size in both dimensions as vector (sizeX, sizeY)
-    sf::Vector2i shape() const noexcept {
+    [[nodiscard]] sf::Vector2i shape() const noexcept {
         return shape_;
     }
 
     /// Rect containing all valid tiles
-    sf::IntRect bounds() const noexcept {
+    [[nodiscard]] sf::IntRect bounds() const noexcept {
         return {{0, 0}, shape()};
     }
 
@@ -100,13 +100,13 @@ public:
     }
 
     /// Get all bsp areas. Used for debug area rendering
-    std::span<const sf::IntRect> areas() const noexcept {
+    [[nodiscard]] std::span<const sf::IntRect> areas() const noexcept {
         return areas_;
     }
 
     /// Random tile position
     /// @details position distribution is uniform and independent for both dimensions
-    sf::Vector2i randomPosition(RandomEngine& engine) const {
+    [[nodiscard]] sf::Vector2i randomPosition(RandomEngine& engine) const {
         return { std::uniform_int_distribution{ 0, shape().x - 1 }(engine),
                  std::uniform_int_distribution{ 0, shape().y - 1 }(engine) };
     }
@@ -115,7 +115,7 @@ public:
     /// @details randomPosition(engine) distrbution filtered by pred(pos, *this)
     template <typename Pred> 
         requires std::convertible_to<std::invoke_result_t<Pred, sf::Vector2i, const Level&>, bool>
-    sf::Vector2i randomPosition(RandomEngine& engine, Pred&& pred) const {
+    [[nodiscard]] sf::Vector2i randomPosition(RandomEngine& engine, Pred&& pred) const {
         sf::Vector2i pos;
         do {
             pos = randomPosition(engine);
@@ -127,7 +127,7 @@ public:
     /// @details randomPosition(engine) distrbution filtered by pred(tile)
     template <typename Pred>
         requires std::convertible_to<std::invoke_result_t<Pred, Tile>, bool>
-    sf::Vector2i randomPosition(RandomEngine& engine, Pred&& pred) const {
+    [[nodiscard]] sf::Vector2i randomPosition(RandomEngine& engine, Pred&& pred) const {
         return randomPosition(engine, [&pred](sf::Vector2i pos, const Level& level) {
             return std::invoke(pred, level.at(pos));
         });

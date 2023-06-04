@@ -34,76 +34,76 @@ public:
 		generator{ std::move(generator_) },
 		randomEngine{ &randomEngine_ } {}
 
-	DungeonGenerator& dungeonGenerator() noexcept {
+	[[nodiscard]] DungeonGenerator& dungeonGenerator() noexcept {
 		return generator;
 	}
 
-	const DungeonGenerator& dungeonGenerator() const noexcept {
+	[[nodiscard]] const DungeonGenerator& dungeonGenerator() const noexcept {
 		return generator;
 	}
 
 	/// @brief Access to individual level
 	/// @warning Check level index by yourself
 	///       \n You may use size
-	Level& operator[] (int level) {
+	[[nodiscard]] Level& operator[] (int level) {
 		return levels[level];
 	}
 
 	/// @brief Access to individual level
 	/// @warning Check level index by yourself
 	///       \n You may use size
-	const Level& operator[] (int level) const {
+	[[nodiscard]] const Level& operator[] (int level) const {
 		return levels[level];
 	}
 
 	/// @brief Access to individual tile on level level at (x, y)
 	/// @warning Check all indices by yourself
-	Tile& at(int x, int y, int level) noexcept {
+	[[nodiscard]] Tile& at(int x, int y, int level) noexcept {
 		return (*this)[level].at(x, y);
 	}
 
 	/// @brief Access to individual tile on level level at (x, y)
 	/// @warning Check all indices by yourself
-	const Tile& at(int x, int y, int level) const noexcept {
+	[[nodiscard]] const Tile& at(int x, int y, int level) const noexcept {
 		return (*this)[level].at(x, y);
 	}
 
 	/// @brief Access to individual tile on level level at (x, y)
 	/// @warning Check all indices by yourself
-	Tile& at(sf::Vector2i position, int level) noexcept {
+	[[nodiscard]] Tile& at(sf::Vector2i position, int level) noexcept {
 		return at(position.x, position.y, level);
 	}
 
 	/// @brief Access to individual tile on level level at (x, y)
 	/// @warning Check all indices by yourself
-	const Tile& at(sf::Vector2i position, int level) const noexcept {
+	[[nodiscard]] const Tile& at(sf::Vector2i position, int level) const noexcept {
 		return at(position.x, position.y, level);
 	}
 
 	/// @brief Access to individual tile on level z at (x, y)
 	/// @warning Check all indices by yourself
-	Tile& at(sf::Vector3i position) noexcept {
+	[[nodiscard]] Tile& at(sf::Vector3i position) noexcept {
 		return at(position.x, position.y, position.z);
 	}
 
 	/// @brief Access to individual tile on level z at (x, y)
 	/// @warning Check all indices by yourself
-	const Tile& at(sf::Vector3i position) const noexcept {
+	[[nodiscard]] const Tile& at(sf::Vector3i position) const noexcept {
 		return at(position.x, position.y, position.z);
 	}
 
 	/// Level count
-	int size() const noexcept {
+	[[nodiscard]] int size() const noexcept {
 		return levels.size();
 	}
 
 	/// Returns at(position) destination if it's Tile::UP_STAIRS
-	std::optional<sf::Vector3i> upStairs(sf::Vector3i position) {
+	[[nodiscard]] std::optional<sf::Vector3i> upStairs(sf::Vector3i position) {
 		return getOptional(upStairs_, position);
 	}
 
 	/// Returns at(position) destination if it's Tile::DOWN_STAIRS
-	std::optional<sf::Vector3i> downStairs(sf::Vector3i position) {
+	[[nodiscard]] std::optional<sf::Vector3i> downStairs(sf::Vector3i position) {
 		return getOptional(downStairs_, position);
 	}
 

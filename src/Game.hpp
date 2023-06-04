@@ -40,19 +40,19 @@ public:
          RandomEngine& randomEngine,
          LoggerFactory& loggerFactory);
 
-    World& world() noexcept {
+    [[nodiscard]] World& world() noexcept {
         return *world_;
     }
 
-    const World& world() const noexcept {
+    [[nodiscard]] const World& world() const noexcept {
         return *world_;
     }
 
-    Renderer& renderer() noexcept {
+    [[nodiscard]] Renderer& renderer() noexcept {
         return *renderer_;
     }
 
-    const Renderer& renderer() const noexcept {
+    [[nodiscard]] const Renderer& renderer() const noexcept {
         return *renderer_;
     }
 

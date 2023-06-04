@@ -46,27 +46,27 @@ public:
 	AssetManager(LoggerFactory& loggerFactory);
 
 	/// Gets texture for given tile
-	const sf::Texture& tileTexture(Tile tile) const noexcept {
+	[[nodiscard]] const sf::Texture& tileTexture(Tile tile) const noexcept {
 		return tileTextures[static_cast<int>(tile)];
 	}
 
 	/// Gets player texture
-	const sf::Texture& playerTexture() const noexcept {
+	[[nodiscard]] const sf::Texture& playerTexture() const noexcept {
 		return playerTexture_;
 	}
 
 	/// Gets goblin texture
-	const sf::Texture& goblinTexture() const noexcept {
+	[[nodiscard]] const sf::Texture& goblinTexture() const noexcept {
 		return goblinTexture_;
 	}
 
 	/// Gets default font
-	const sf::Font& font() const noexcept {
+	[[nodiscard]] const sf::Font& font() const noexcept {
 		return font_;
 	}
 
 	/// Gets size of single tile
-	sf::Vector2i tileSize() const noexcept {
+	[[nodiscard]] sf::Vector2i tileSize() const noexcept {
 		return tileSize_;
 	}
 private:
@@ -80,7 +80,7 @@ private:
 
 	std::shared_ptr<spdlog::logger> logger;
 
-	sf::Texture& tileTextureMut(Tile tile) noexcept {
+	[[nodiscard]] sf::Texture& tileTextureMut(Tile tile) noexcept {
 		return tileTextures[static_cast<int>(tile)];
 	}
 

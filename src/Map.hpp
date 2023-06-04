@@ -25,7 +25,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <optional>
 
 template <typename Map, typename Key>
-typename Map::mapped_type* getPtr(Map& map, const Key& key) {
+[[nodiscard]] typename Map::mapped_type* getPtr(Map& map, const Key& key) {
     typename Map::iterator iter = map.find(key);
     if (iter == map.end())
         return nullptr;
@@ -34,7 +34,7 @@ typename Map::mapped_type* getPtr(Map& map, const Key& key) {
 }
 
 template <typename Map, typename Key>
-const typename Map::mapped_type* getPtr(const Map& map, const Key& key) {
+[[nodiscard]] const typename Map::mapped_type* getPtr(const Map& map, const Key& key) {
     typename Map::const_iterator iter = map.find(key);
     if (iter == map.end())
         return nullptr;
@@ -43,7 +43,7 @@ const typename Map::mapped_type* getPtr(const Map& map, const Key& key) {
 }
 
 template <typename Map, typename Key>
-std::optional<typename Map::mapped_type> getOptional(const Map& map, const Key& key) {
+[[nodiscard]] std::optional<typename Map::mapped_type> getOptional(const Map& map, const Key& key) {
     typename Map::const_iterator iter = map.find(key);
     if (iter == map.end())
         return std::nullopt;

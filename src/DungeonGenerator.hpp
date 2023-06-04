@@ -43,11 +43,11 @@ public:
         splitChance_ = newSplitChance;
     }
 
-    RoomGenerator& roomGenerator() noexcept {
+    [[nodiscard]] RoomGenerator& roomGenerator() noexcept {
         return *roomGenerator_;
     }
 
-    const RoomGenerator& roomGenerator() const noexcept {
+    [[nodiscard]] const RoomGenerator& roomGenerator() const noexcept {
         return *roomGenerator_;
     }
 
@@ -64,7 +64,7 @@ private:
 
     void processArea(Level& level, Area area);
 
-    bool canSplit(int dimension) const noexcept {
+    [[nodiscard]] bool canSplit(int dimension) const noexcept {
         return dimension > 2 * minSize_;
     }
 

@@ -23,49 +23,49 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 /// Cast sf::Vector2<U> to sf::Vector2<T> using static_cast
 template <typename T, typename U>
-sf::Vector2<T> geometry_cast(sf::Vector2<U> vec) noexcept {
+[[nodiscard]] sf::Vector2<T> geometry_cast(sf::Vector2<U> vec) noexcept {
     return {static_cast<T>(vec.x), static_cast<T>(vec.y)};
 }
 
 /// Add deltaX to vec.x
 /// @returns result as new vector
 template <typename T>
-sf::Vector2<T> addX(sf::Vector2<T> vec, T deltaX) noexcept {
+[[nodiscard]] sf::Vector2<T> addX(sf::Vector2<T> vec, T deltaX) noexcept {
     return {vec.x + deltaX, vec.y};
 }
 
 /// Substract deltaX from vec.x
 /// @returns result as new vector
 template <typename T>
-sf::Vector2<T> subX(sf::Vector2<T> vec, T deltaX) noexcept {
+[[nodiscard]] sf::Vector2<T> subX(sf::Vector2<T> vec, T deltaX) noexcept {
     return {vec.x - deltaX, vec.y};
 }
 
 /// Add deltaY to vec.y
 /// @returns result as new vector
 template <typename T>
-sf::Vector2<T> addY(sf::Vector2<T> vec, T deltaY) noexcept {
+[[nodiscard]] sf::Vector2<T> addY(sf::Vector2<T> vec, T deltaY) noexcept {
     return {vec.x, vec.y + deltaY};
 }
 
 /// Substract deltaY from vec.y
 /// @returns result as new vector
 template <typename T>
-sf::Vector2<T> subY(sf::Vector2<T> vec, T deltaY) noexcept {
+[[nodiscard]] sf::Vector2<T> subY(sf::Vector2<T> vec, T deltaY) noexcept {
     return {vec.x, vec.y - deltaY};
 }
 
 /// Add z component to 2D vector
 /// @returns result as new 3D vector
 template <typename T>
-sf::Vector3<T> make3D(sf::Vector2<T> xy, T z) noexcept {
+[[nodiscard]] sf::Vector3<T> make3D(sf::Vector2<T> xy, T z) noexcept {
     return { xy.x, xy.y, z };
 }
 
 /// Add x and y components from 3D vector
 /// @returns result as new 2D vector
 template <typename T>
-sf::Vector2<T> getXY(sf::Vector3<T> vec) noexcept {
+[[nodiscard]] sf::Vector2<T> getXY(sf::Vector3<T> vec) noexcept {
     return { vec.x, vec.y };
 }
 
@@ -186,7 +186,7 @@ namespace std {
 /// If positive, rectangle is extended
 /// @returns result as new rect
 template <typename T>
-sf::Rect<T> extendTopLeft(sf::Rect<T> rect, 
+[[nodiscard]] sf::Rect<T> extendTopLeft(sf::Rect<T> rect,
                           sf::Vector2<T> extension) noexcept {
     return {rect.left  - extension.x, rect.top    - extension.y, 
             rect.width + extension.x, rect.height + extension.y};
@@ -198,7 +198,7 @@ sf::Rect<T> extendTopLeft(sf::Rect<T> rect,
 /// If positive, rectangle is extended
 /// @returns result as new rect
 template <typename T>
-sf::Rect<T> extendBottomRight(sf::Rect<T> rect, 
+[[nodiscard]] sf::Rect<T> extendBottomRight(sf::Rect<T> rect,
                               sf::Vector2<T> extension) noexcept {
     return {rect.left, rect.top, 
             rect.width + extension.x, rect.height + extension.y};
@@ -210,7 +210,7 @@ sf::Rect<T> extendBottomRight(sf::Rect<T> rect,
 /// If positive, rectangle is shrinked
 /// @returns result as new rect
 template <typename T>
-sf::Rect<T> shrinkTopLeft(sf::Rect<T> rect, 
+[[nodiscard]] sf::Rect<T> shrinkTopLeft(sf::Rect<T> rect,
                           sf::Vector2<T> shrink) noexcept {
     return {rect.left  + shrink.x, rect.top    + shrink.y, 
             rect.width - shrink.x, rect.height - shrink.y};
@@ -222,7 +222,7 @@ sf::Rect<T> shrinkTopLeft(sf::Rect<T> rect,
 /// If positive, rectangle is shrinked
 /// @returns result as new rect
 template <typename T>
-sf::Rect<T> shrinkBottomRight(sf::Rect<T> rect, 
+[[nodiscard]] sf::Rect<T> shrinkBottomRight(sf::Rect<T> rect,
                               sf::Vector2<T> shrink) noexcept {
     return {rect.left, rect.top, 
             rect.width - shrink.x, rect.height - shrink.y};

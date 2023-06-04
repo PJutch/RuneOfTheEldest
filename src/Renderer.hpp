@@ -71,15 +71,15 @@ private:
 
     std::shared_ptr<sf::RenderWindow> window;
 
-    sf::Vector2f toScreen(sf::Vector2i worldVector) const noexcept {
+    [[nodiscard]] sf::Vector2f toScreen(sf::Vector2i worldVector) const noexcept {
         return toScreen(worldVector.x, worldVector.y);
     }
 
-    sf::Vector2f toScreen(sf::Vector2f worldVector) const noexcept {
+    [[nodiscard]] sf::Vector2f toScreen(sf::Vector2f worldVector) const noexcept {
         return toScreen(worldVector.x, worldVector.y);
     }
 
-    sf::Vector2f toScreen(float worldX, float worldY) const noexcept {
+    [[nodiscard]] sf::Vector2f toScreen(float worldX, float worldY) const noexcept {
         auto [tileX, tileY] = assets->tileSize();
         return { worldX * tileX, worldY * tileY };
     }

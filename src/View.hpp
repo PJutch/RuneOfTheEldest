@@ -25,7 +25,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 /// @param height Height of new view
 /// @param screenSize sides of the screen. Sides of the new view are proportional to them
 template <typename T>
-sf::View createFullscreenView(float height,
+[[nodiscard]] sf::View createFullscreenView(float height,
     sf::Vector2<T> screenSize) noexcept {
     return sf::View{ {0, 0, height * screenSize.x / screenSize.y, height} };
 }
@@ -35,7 +35,7 @@ sf::View createFullscreenView(float height,
 /// @param height Height of new view
 /// @param screenSize sides of the screen. Sides of the new view are proportional to them
 template <typename T>
-sf::View createFullscreenView(sf::Vector2f center,
+[[nodiscard]] sf::View createFullscreenView(sf::Vector2f center,
     float height, sf::Vector2<T> screenSize) noexcept {
     return sf::View{ center, {height * screenSize.x / screenSize.y, height} };
 }
