@@ -32,6 +32,10 @@ public:
 		return position_;
 	}
 
+	void position(sf::Vector3i newPosition) noexcept final {
+		position_ = newPosition;
+	}
+
 	bool act() override {
 		if (log)
 			log->push_back(id());
@@ -57,6 +61,10 @@ public:
 
 	int id() const noexcept {
 		return id_;
+	}
+
+	[[nodiscard]] bool isOnPlayerSide() const final {
+		return false;
 	}
 private:
 	int nextTurn_ = 0;

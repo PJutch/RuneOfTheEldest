@@ -36,10 +36,6 @@ public:
 
 	virtual void moveSucceed() {}
 
-	void position(sf::Vector3i newPosition) noexcept {
-		AliveActor::position(newPosition);
-	}
-
 	void tryMoveTo(sf::Vector3i newPosition) {
 		AliveActor::tryMoveTo(newPosition);
 	}
@@ -67,6 +63,10 @@ public:
 	}
 
 	void draw(Renderer&) const noexcept final {}
+
+	[[nodiscard]] bool isOnPlayerSide() const noexcept final {
+		return true;
+	}
 };
 
 TEST(AliveActor, initialHp) {

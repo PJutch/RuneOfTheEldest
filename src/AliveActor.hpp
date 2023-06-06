@@ -27,6 +27,10 @@ public:
 		return position_;
 	}
 
+	void position(sf::Vector3i newPosition) noexcept final {
+		position_ = newPosition;
+	}
+
 	[[nodiscard]] int nextTurn() const noexcept final {
 		return nextTurn_;
 	}
@@ -73,11 +77,6 @@ protected:
 
 	/// Callled after successful move
 	virtual void moveSucceed() {}
-
-	/// Sets position in world
-	void position(sf::Vector3i newPosition) noexcept {
-		position_ = newPosition;
-	}
 
 	/// changes position if newPosition isn't occupied
 	void tryMoveTo(sf::Vector3i newPosition);

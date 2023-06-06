@@ -30,9 +30,16 @@ void AliveActor::wait(int time) noexcept {
 
 void AliveActor::tryMoveTo(sf::Vector3i newPosition) {
 	if (isPassable(world().dungeon().at(newPosition))) {
-		if (auto other = world().actorAt(newPosition))
-			attack(*other);
-		else {
+		if (auto other = world().actorAt(newPosition)) {
+			if (other->isOnPlayerSide() == isOnPlayerSide()) {
+				sf::Vector3i oldPosition = position();
+				position(other->position());
+				other->position(oldPosition);
+
+				moveSucceed();
+			} else
+				attack(*other);
+		} else {
 			position(newPosition);
 			moveSucceed();
 		}

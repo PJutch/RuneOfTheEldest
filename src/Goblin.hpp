@@ -32,7 +32,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 class Goblin : public AliveActor {
 public:
 	Goblin(sf::Vector3i newPosition, std::shared_ptr<World> world_, RandomEngine& randomEngine_) :
-		AliveActor{ 3, 0.1, newPosition, std::move(world_) }, randomEngine{ &randomEngine_ } {}
+			AliveActor{ 3, 0.1, newPosition, std::move(world_) }, randomEngine{ &randomEngine_ } {}
 
 	/// Randomly moves goblin
 	bool act() final;
@@ -46,6 +46,10 @@ public:
 	}
 
 	[[nodiscard]] bool shouldInterruptOnDelete() const final {
+		return false;
+	}
+
+	[[nodiscard]] bool isOnPlayerSide() const final {
 		return false;
 	}
 private:

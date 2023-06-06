@@ -27,6 +27,9 @@ public:
 
 	/// Actor position in world
 	[[nodiscard]] virtual sf::Vector3i position() const = 0;
+
+	/// Sets position in world
+	virtual void position(sf::Vector3i newPosition) = 0;
 	
 	/// @brief Perform action in its turn
 	/// @details Called in this actor turn.
@@ -43,6 +46,9 @@ public:
 
 	/// If true interrupts Actor processing in queue and continue Game loop when this Actor deleted
 	[[nodiscard]] virtual bool shouldInterruptOnDelete() const = 0;
+
+	/// Checks if Actor is player ally
+	[[nodiscard]] virtual bool isOnPlayerSide() const = 0;
 
 	/// Damages Actor by given HPs
 	virtual void beDamaged(double damage) = 0;

@@ -51,6 +51,10 @@ public:
 	[[nodiscard]] bool shouldInterruptOnDelete() const final {
 		return true;
 	}
+
+	[[nodiscard]] bool isOnPlayerSide() const final {
+		return true;
+	}
 private:
 	enum class State {
 		WAITING_TURN,
