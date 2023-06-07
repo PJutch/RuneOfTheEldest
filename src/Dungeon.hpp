@@ -30,16 +30,17 @@ If not, see <https://www.gnu.org/licenses/>. */
 /// Dungeon consisting of multiple levels and stairs between them
 class Dungeon {
 public:
-	Dungeon(DungeonGenerator generator_, RandomEngine& randomEngine_) :
-		generator{ std::move(generator_) },
+	Dungeon() = default;
+	Dungeon(std::unique_ptr<DungeonGenerator> newGenerator, RandomEngine& randomEngine_) :
+		generator_{ std::move(newGenerator) },
 		randomEngine{ &randomEngine_ } {}
 
-	[[nodiscard]] DungeonGenerator& dungeonGenerator() noexcept {
-		return generator;
+	[[nodiscard]] DungeonGenerator& generator() noexcept {
+		return *generator_;
 	}
 
-	[[nodiscard]] const DungeonGenerator& dungeonGenerator() const noexcept {
-		return generator;
+	[[nodiscard]] const DungeonGenerator& generator() const noexcept {
+		return *generator_;
 	}
 
 	/// @brief Access to individual level
@@ -97,6 +98,11 @@ public:
 		return levels.size();
 	}
 
+	/// Creates or deletes last levels to make size() == newSize
+	void resize(int newSize) noexcept {
+		levels.resize(newSize);
+	}
+
 	/// Returns at(position) destination if it's Tile::UP_STAIRS
 	[[nodiscard]] std::optional<sf::Vector3i> upStairs(sf::Vector3i position) {
 		return getOptional(upStairs_, position);
@@ -116,8 +122,8 @@ private:
 	UnorderedMap<sf::Vector3i, sf::Vector3i> upStairs_;
 	UnorderedMap<sf::Vector3i, sf::Vector3i> downStairs_;
 
-	DungeonGenerator generator;
-	RandomEngine* randomEngine;
+	std::unique_ptr<DungeonGenerator> generator_ = nullptr;
+	RandomEngine* randomEngine = nullptr;
 
 	void addStairs(sf::Vector3i pos1, sf::Vector3i pos2);
 	void generateUpStairs(int fromLevel);

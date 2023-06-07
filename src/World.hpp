@@ -29,11 +29,11 @@ public:
 		dungeon_{ std::move(newDungeon) } {}
 
 	[[nodiscard]] DungeonGenerator& dungeonGenerator() noexcept {
-		return dungeon().dungeonGenerator();
+		return dungeon().generator();
 	}
 
 	[[nodiscard]] const DungeonGenerator& dungeonGenerator() const noexcept {
-		return dungeon().dungeonGenerator();
+		return dungeon().generator();
 	}
 
 	[[nodiscard]] Dungeon& dungeon() noexcept {
