@@ -23,6 +23,8 @@ public:
 		AliveActor{ newMaxHp, regen_, newPosition, std::move(newWorld) } {}
 	TestAliveActor(double newMaxHp, double regen_, std::shared_ptr<World> newWorld = nullptr) :
 		AliveActor{ newMaxHp, regen_, std::move(newWorld) } {}
+	TestAliveActor(sf::Vector3i newPosition, std::shared_ptr<World> newWorld = nullptr) :
+		AliveActor{ 1.0, 0.0, newPosition, std::move(newWorld) } {}
 
 	void nextTurn(int newNextTurn) noexcept {
 		AliveActor::nextTurn(newNextTurn);
@@ -111,4 +113,56 @@ TEST(AliveActor, regenLimit) {
 
 	EXPECT_TRUE(actor.isAlive());
 	EXPECT_EQ(actor.hp(), 5);
+}
+
+auto createAliveActorTryMoveToTest() {
+	auto dungeon = std::make_shared<Dungeon>();
+	dungeon->resize(1);
+	(*dungeon)[0].generateBlank({ 3, 3 });
+
+	dungeon->at({ 0, 0, 0 }) = Tile::EMPTY;
+	dungeon->at({ 0, 1, 0 }) = Tile::EMPTY;
+	dungeon->at({ 0, 2, 0 }) = Tile::EMPTY;
+	dungeon->at({ 1, 0, 0 }) = Tile::WALL;
+	dungeon->at({ 1, 1, 0 }) = Tile::UNSEEN;
+	dungeon->at({ 1, 2, 0 }) = Tile::EMPTY;
+
+	auto world = std::make_shared<World>(std::move(dungeon));
+
+	auto actor = std::make_shared<TestAliveActor>(sf::Vector3i{ 0, 1, 0 }, world);
+	auto other = std::make_shared<TestAliveActor>(sf::Vector3i{ 0, 2, 0 }, world);
+
+	world->addActor(actor);
+	world->addActor(other);
+
+	return std::pair{ std::move(actor), std::move(other) };
+}
+
+TEST(AliveActor, tryMoveToEmpty) {
+	auto [actor, other] = createAliveActorTryMoveToTest();
+	actor->tryMoveTo({1, 2, 0});
+
+	EXPECT_EQ(actor->position(), (sf::Vector3i{1, 2, 0}));
+}
+
+TEST(AliveActor, tryMoveToWall) {
+	auto [actor, other] = createAliveActorTryMoveToTest();
+	actor->tryMoveTo({ 1, 0, 0 });
+
+	EXPECT_EQ(actor->position(), (sf::Vector3i{ 0, 1, 0 }));
+}
+
+TEST(AliveActor, tryMoveToUnseen) {
+	auto [actor, other] = createAliveActorTryMoveToTest();
+	actor->tryMoveTo({ 1, 1, 0 });
+
+	EXPECT_EQ(actor->position(), (sf::Vector3i{ 0, 1, 0 }));
+}
+
+TEST(AliveActor, tryMoveToSwap) {
+	auto [actor, other] = createAliveActorTryMoveToTest();
+	actor->tryMoveTo({ 0, 2, 0 });
+
+	EXPECT_EQ(actor->position(), (sf::Vector3i{ 0, 2, 0 }));
+	EXPECT_EQ(other->position(), (sf::Vector3i{ 0, 1, 0 }));
 }

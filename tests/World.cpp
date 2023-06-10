@@ -188,3 +188,22 @@ TEST(World, updateDeathInterrupt) {
 
 	EXPECT_EQ(std::ranges::count(log, 1), 2);
 }
+
+TEST(World, isFree) {
+	auto dungeon = std::make_shared<Dungeon>();
+	dungeon->resize(1);
+	(*dungeon)[0].generateBlank({ 2, 2 });
+
+	dungeon->at({ 0, 0, 0 }) = Tile::EMPTY;
+	dungeon->at({ 0, 1, 0 }) = Tile::EMPTY;
+	dungeon->at({ 1, 0, 0 }) = Tile::WALL;
+	dungeon->at({ 1, 1, 0 }) = Tile::UNSEEN;
+
+	World world{ std::move(dungeon) };
+	world.addActor(std::make_shared<TestActor>(sf::Vector3i{0, 1, 0}));
+
+	EXPECT_TRUE(world.isFree({ 0, 0, 0 }));
+	EXPECT_FALSE(world.isFree({ 0, 1, 0 }));
+	EXPECT_FALSE(world.isFree({ 1, 0, 0 }));
+	EXPECT_FALSE(world.isFree({ 1, 1, 0 }));
+}

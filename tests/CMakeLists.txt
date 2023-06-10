@@ -15,7 +15,7 @@
 
 enable_testing()
 
-add_executable(tests Level.cpp geometry.cpp BasicRoomGenerator.cpp Area.cpp View.cpp Map.cpp "World.cpp" "AliveActor.cpp")
+add_executable(tests Level.cpp geometry.cpp BasicRoomGenerator.cpp Area.cpp View.cpp Map.cpp World.cpp AliveActor.cpp )
 
 target_link_libraries(tests test_dependencies sources)
 target_include_directories(tests PRIVATE ../src)
