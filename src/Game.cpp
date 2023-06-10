@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Player.hpp"
 #include "Goblin.hpp"
 
-#include "Event.hpp"
+#include "Keyboard.hpp"
 
 Game::Game(std::shared_ptr<World> newWorld,
            std::shared_ptr<Player> player_,

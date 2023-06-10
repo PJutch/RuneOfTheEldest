@@ -17,6 +17,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "World.hpp"
 
+#include "Keyboard.hpp"
+
 #include <iostream>
 
 void Player::spawn() {
@@ -36,26 +38,23 @@ void Player::handleEvent(sf::Event event) {
 	if (state != State::WAITING_INPUT)
 		return;
 
-	if (event.type == sf::Event::KeyPressed)
-		switch (event.key.code) {
-		case sf::Keyboard::Numpad7: tryMove({ -1, -1 }); break;
-		case sf::Keyboard::Numpad8: tryMove({ 0, -1 }); break;
-		case sf::Keyboard::Numpad9: tryMove({ 1, -1 }); break;
-		case sf::Keyboard::Numpad4: tryMove({ -1,  0 }); break;
-		case sf::Keyboard::Numpad5: endTurn(); break;
-		case sf::Keyboard::Numpad6: tryMove({ 1,  0 }); break;
-		case sf::Keyboard::Numpad1: tryMove({ -1,  1 }); break;
-		case sf::Keyboard::Numpad2: tryMove({ 0,  1 }); break;
-		case sf::Keyboard::Numpad3: tryMove({ 1,  1 }); break;
-		case sf::Keyboard::Comma:
+	if (event.type == sf::Event::KeyPressed) {
+		if (event.key.code == sf::Keyboard::Numpad5)
+			endTurn();
+		else if (event.key.code == sf::Keyboard::Comma) {
 			if (event.key.shift)
 				tryAscentStairs();
-			break;
-		case sf::Keyboard::Period:
+		} else if (event.key.code == sf::Keyboard::Period) {
 			if (event.key.shift)
 				tryDescentStairs();
-			break;
-		}
+			return;
+		} else if (isNumpad(event.key.code))
+			for (int i = 1; i <= 9; ++i)
+				if (sf::Keyboard::isKeyPressed(numpad(i))) {
+					tryMove(directions<int>[i - 1]);
+					return;
+				}
+	}
 }
 
 bool Player::act() {

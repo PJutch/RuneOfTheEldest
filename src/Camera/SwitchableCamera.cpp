@@ -15,6 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "SwitchableCamera.hpp"
 
+#include "../Keyboard.hpp"
+
 void SwitchableCamera::handleEvent(sf::Event event) {
     if (wasKeyPressed(event, sf::Keyboard::V))
         nextCamera();

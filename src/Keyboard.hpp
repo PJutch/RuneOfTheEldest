@@ -13,16 +13,31 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef EVENT_HPP_
-#define EVENT_HPP_
+#ifndef KEYBOARD_HPP_
+#define KEYBOARD_HPP_
 
-/// @file event.hpp Utilities for sf::Event
+/// @file event.hpp Utilities for sf::Keyboard
 
 #include <SFML/Window.hpp>
 
 /// Checks if event is KeyPressed event for key key
 inline bool wasKeyPressed(sf::Event event, sf::Keyboard::Key key) noexcept {
     return event.type == sf::Event::KeyPressed && event.key.code == key;
+}
+
+/// Gets numpad key for number
+inline sf::Keyboard::Key numpad(int i) noexcept {
+    return static_cast<sf::Keyboard::Key>(sf::Keyboard::Numpad0 + i);
+}
+
+/// Gets number for numpad key
+inline int fromNumpad(sf::Keyboard::Key numpad_) noexcept {
+    return numpad_ - sf::Keyboard::Numpad0;
+}
+
+///  Chacks if key is numpad key
+inline bool isNumpad(sf::Keyboard::Key key) noexcept {
+    return sf::Keyboard::Numpad0 <= key && key <= sf::Keyboard::Numpad9;
 }
 
 #endif

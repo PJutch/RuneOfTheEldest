@@ -21,6 +21,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 
+#include <array>
+
 /// Cast sf::Vector2<U> to sf::Vector2<T> using static_cast
 template <typename T, typename U>
 [[nodiscard]] sf::Vector2<T> geometry_cast(sf::Vector2<U> vec) noexcept {
@@ -227,5 +229,18 @@ template <typename T>
     return {rect.left, rect.top, 
             rect.width - shrink.x, rect.height - shrink.y};
 }
+
+template <typename T>
+inline static const std::array<sf::Vector2<T>, 9> directions{
+    sf::Vector2<T>(-1,  1),
+    sf::Vector2<T>( 0,  1),
+    sf::Vector2<T>( 1,  1),
+    sf::Vector2<T>(-1,  0),
+    sf::Vector2<T>( 0,  0),
+    sf::Vector2<T>( 1,  0),
+    sf::Vector2<T>(-1, -1),
+    sf::Vector2<T>( 0, -1),
+    sf::Vector2<T>( 1, -1)
+};
 
 #endif

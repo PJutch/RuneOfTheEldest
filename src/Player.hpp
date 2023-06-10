@@ -22,9 +22,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Renderer.hpp"
 
-#include "Event.hpp"
 #include "geometry.hpp"
 
+#include <SFML/Window.hpp>
 #include <SFML/System.hpp>
 
 /// Player character

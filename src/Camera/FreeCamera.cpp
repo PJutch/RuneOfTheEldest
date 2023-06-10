@@ -15,7 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "FreeCamera.hpp"
 
-#include "../Event.hpp"
+#include "../Keyboard.hpp"
+#include "../geometry.hpp"
 
 FreeCamera::FreeCamera(std::shared_ptr<Dungeon> dungeon_) :
         dungeon{ std::move(dungeon_) } {
@@ -26,21 +27,9 @@ void FreeCamera::update(sf::Time elapsedTime) {
     const float cameraSpeed = 40.f;
     float moved = cameraSpeed * elapsedTime.asSeconds();
 
-    std::array<sf::Vector2f, 9> directions{
-        sf::Vector2f{-1.f,  1.f},
-        sf::Vector2f{ 0.f,  1.f},
-        sf::Vector2f{ 1.f,  1.f},
-        sf::Vector2f{-1.f,  0.f},
-        sf::Vector2f{ 0.f,  0.f},
-        sf::Vector2f{ 1.f,  0.f},
-        sf::Vector2f{-1.f, -1.f},
-        sf::Vector2f{ 0.f, -1.f},
-        sf::Vector2f{ 1.f, -1.f}
-    };
-
-    for (int i = 0; i < 9; ++ i)
-        if (sf::Keyboard::isKeyPressed(static_cast<sf::Keyboard::Key>(sf::Keyboard::Numpad1 + i)))
-            move(directions[i] * moved);
+    for (int i = 1; i <= 9; ++i)
+        if (sf::Keyboard::isKeyPressed(numpad(i)))
+            move(directions<float>[i - 1] * moved);
 }
 
 void FreeCamera::handleEvent(sf::Event event) {
