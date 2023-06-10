@@ -55,6 +55,12 @@ private:
     Position position_;
 
     std::shared_ptr<Dungeon> dungeon;
+
+    /// Moves to (x, y) + offset at current level
+    void move(sf::Vector2f offset) noexcept {
+        position_.x += offset.x;
+        position_.y += offset.y;
+    }
 };
 
 #endif

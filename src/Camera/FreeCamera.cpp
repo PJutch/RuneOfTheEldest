@@ -24,17 +24,23 @@ FreeCamera::FreeCamera(std::shared_ptr<Dungeon> dungeon_) :
 
 void FreeCamera::update(sf::Time elapsedTime) {
     const float cameraSpeed = 40.f;
-
     float moved = cameraSpeed * elapsedTime.asSeconds();
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-        position_.y -= moved;
-    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-        position_.y += moved;
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-        position_.x -= moved;
-    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-        position_.x += moved;
+    std::array<sf::Vector2f, 9> directions{
+        sf::Vector2f{-1.f,  1.f},
+        sf::Vector2f{ 0.f,  1.f},
+        sf::Vector2f{ 1.f,  1.f},
+        sf::Vector2f{-1.f,  0.f},
+        sf::Vector2f{ 0.f,  0.f},
+        sf::Vector2f{ 1.f,  0.f},
+        sf::Vector2f{-1.f, -1.f},
+        sf::Vector2f{ 0.f, -1.f},
+        sf::Vector2f{ 1.f, -1.f}
+    };
+
+    for (int i = 0; i < 9; ++ i)
+        if (sf::Keyboard::isKeyPressed(static_cast<sf::Keyboard::Key>(sf::Keyboard::Numpad1 + i)))
+            move(directions[i] * moved);
 }
 
 void FreeCamera::handleEvent(sf::Event event) {
