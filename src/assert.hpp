@@ -49,10 +49,10 @@ public:
 /// @param condition_str Stringified condition
 /// @param message   User provided message
 /// @throws AssertionFailed if condition is false
-inline void assert_impl(bool condition, std::string_view condition_str, std::string_view message = "", Stacktrace stacktace = {}) {
+inline void assert_impl(bool condition, std::string_view condition_str, std::string_view message = "") {
     if (enableAssertions)
         if (!condition) 
-            throw AssertionFailed(condition_str, message, std::move(stacktace));
+            throw AssertionFailed(condition_str, message);
 }
 
 /// @brief Assertion macro
