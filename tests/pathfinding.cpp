@@ -34,8 +34,7 @@ TEST(pathfinding, nextStepFree) {
         for (int y = 0; y < 3; ++y)
             dungeon.at(x, y, 0) = Tile::EMPTY;
 
-    sf::Vector3i nextStep_ = nextStep(dungeon, { 0, 2, 0 }, { 2, 0, 0 });
-    EXPECT_TRUE((nextStep_ == sf::Vector3i{0, -1, 0} || nextStep_ == sf::Vector3i{1,  0, 0}));
+    EXPECT_EQ(nextStep(dungeon, { 0, 2, 0 }, { 2, 0, 0 }), (sf::Vector3i{1, -1, 0}));
 }
 
 TEST(pathfinding, nextStepTurn) {

@@ -75,7 +75,7 @@ namespace {
 		sf::Vector3i prevOffset;
 
 		friend auto operator <=> (const PathUpdate& lhs, const PathUpdate& rhs) noexcept {
-			return lhs.minFullDistance <=> rhs.distance + lhs.minFullDistance;
+			return lhs.minFullDistance <=> rhs.minFullDistance;
 		}
 	};
 
