@@ -255,4 +255,14 @@ inline static const std::array<sf::Vector2<T>, 8> directions{
     sf::Vector2<T>( 1, -1)
 };
 
+template <typename T>
+T uniformNorm(sf::Vector3<T> vec) noexcept {
+    return std::max(std::max(std::abs(vec.x), std::abs(vec.y)), std::abs(vec.z));
+}
+
+template <typename T>
+T uniformDistance(sf::Vector3<T> from, sf::Vector3<T> to) noexcept {
+    return uniformNorm(to - from);
+}
+
 #endif

@@ -72,3 +72,27 @@ TEST(geometry, shrinkBottomRight) {
     sf::Vector2i shrink{4, 2};
     EXPECT_EQ(shrinkBottomRight(rect, shrink), result);
 }
+
+TEST(geometry, uniformNorm) {
+    EXPECT_EQ(uniformNorm(sf::Vector3i{ 3, 5, 4 }), 5);
+}
+
+TEST(geometry, uniformNormZero) {
+    EXPECT_EQ(uniformNorm(sf::Vector3i{ 0, 0, 0 }), 0);
+}
+
+TEST(geometry, uniformNormNegative) {
+    EXPECT_EQ(uniformNorm(sf::Vector3i{ 3, -5, 4 }), 5);
+}
+
+TEST(geometry, uniformDistance) {
+    EXPECT_EQ(uniformDistance(sf::Vector3i{1, 2, 3}, sf::Vector3i{5, 7, 10}), 7);
+}
+
+TEST(geometry, uniformDistanceZero) {
+    EXPECT_EQ(uniformDistance(sf::Vector3i{ 1, 2, 3 }, sf::Vector3i{ 1, 2, 3 }), 0);
+}
+
+TEST(geometry, uniformDistanceNegative) {
+    EXPECT_EQ(uniformDistance(sf::Vector3i{ 5, 7, 10 }, sf::Vector3i{ 1, 2, 3 }), 7);
+}

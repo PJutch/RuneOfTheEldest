@@ -64,14 +64,6 @@ namespace {
 		std::vector<LevelPathBuffer> buffer;
 	};
 
-	int uniformNorm(sf::Vector3i vec) noexcept {
-		return std::max(std::max(std::abs(vec.x), std::abs(vec.y)), std::abs(vec.z));
-	}
-
-	int uniformDistance(sf::Vector3i from, sf::Vector3i to) noexcept {
-		return uniformNorm(to - from);
-	}
-
 	struct PathUpdate {
 		PathUpdate(int distance_, sf::Vector3i position_, sf::Vector3i target, sf::Vector3i prevOffset_) noexcept :
 			distance{ distance_ }, minFullDistance{ distance_ + uniformDistance(position_, target) },
