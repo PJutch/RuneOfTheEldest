@@ -231,12 +231,24 @@ template <typename T>
 }
 
 template <typename T>
-inline static const std::array<sf::Vector2<T>, 9> directions{
+inline static const std::array<sf::Vector2<T>, 9> numpadDirections{
     sf::Vector2<T>(-1,  1),
     sf::Vector2<T>( 0,  1),
     sf::Vector2<T>( 1,  1),
     sf::Vector2<T>(-1,  0),
     sf::Vector2<T>( 0,  0),
+    sf::Vector2<T>( 1,  0),
+    sf::Vector2<T>(-1, -1),
+    sf::Vector2<T>( 0, -1),
+    sf::Vector2<T>( 1, -1)
+};
+
+template <typename T>
+inline static const std::array<sf::Vector2<T>, 8> directions{
+    sf::Vector2<T>(-1,  1),
+    sf::Vector2<T>( 0,  1),
+    sf::Vector2<T>( 1,  1),
+    sf::Vector2<T>(-1,  0),
     sf::Vector2<T>( 1,  0),
     sf::Vector2<T>(-1, -1),
     sf::Vector2<T>( 0, -1),

@@ -103,6 +103,13 @@ public:
 		levels.resize(newSize);
 	}
 
+	/// Checks if position is valid tile position
+	[[nodiscard]] bool isValidPosition(sf::Vector3i position) const noexcept {
+		return 0 <= position.z && position.z < size()
+			&& (*this)[position.z].isValidX(position.x)
+			&& (*this)[position.z].isValidY(position.y);
+	}
+
 	/// Returns at(position) destination if it's Tile::UP_STAIRS
 	[[nodiscard]] std::optional<sf::Vector3i> upStairs(sf::Vector3i position) {
 		return getOptional(upStairs_, position);

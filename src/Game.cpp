@@ -86,7 +86,7 @@ void Game::generate() {
     world().dungeon().generate(generationLogger);
 
     generationLogger->info("Spawning goblins...");
-    Goblin::spawnAll(world_, *randomEngine);
+    Goblin::spawnAll(world_, player, *randomEngine);
 
     generationLogger->info("Spawning player...");
     player->spawn();

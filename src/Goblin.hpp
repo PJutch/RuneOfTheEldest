@@ -18,6 +18,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "AliveActor.hpp"
 
+#include "Player.hpp"
+
 #include "Renderer.hpp"
 
 #include "random.hpp"
@@ -31,14 +33,14 @@ If not, see <https://www.gnu.org/licenses/>. */
 /// Goblin enemy
 class Goblin : public AliveActor {
 public:
-	Goblin(sf::Vector3i newPosition, std::shared_ptr<World> world_, RandomEngine& randomEngine_) :
-			AliveActor{ 3, 0.1, newPosition, std::move(world_) }, randomEngine{ &randomEngine_ } {}
+	Goblin(sf::Vector3i newPosition, std::shared_ptr<World> world_, std::shared_ptr<Player> player_, RandomEngine& randomEngine_) :
+		AliveActor{ 3, 0.1, newPosition, std::move(world_) }, player{ player_ }, randomEngine {&randomEngine_} {}
 
 	/// Randomly moves goblin
 	bool act() final;
 
-	static void spawnSingle(int level, std::shared_ptr<World> world, RandomEngine& randomEngine);
-	static void spawnAll(std::shared_ptr<World> world, RandomEngine& randomEngine);
+	static void spawnSingle(int level, std::shared_ptr<World> world, std::shared_ptr<Player> player_, RandomEngine& randomEngine);
+	static void spawnAll(std::shared_ptr<World> world, std::shared_ptr<Player> player_, RandomEngine& randomEngine);
 
 	void draw(Renderer& renderer) const final {
 		if (isAlive())
@@ -53,6 +55,7 @@ public:
 		return false;
 	}
 private:
+	std::shared_ptr<Player> player;
 	RandomEngine* randomEngine;
 
 	void attack(Actor& actor) final {

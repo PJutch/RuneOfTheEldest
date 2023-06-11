@@ -51,7 +51,7 @@ void Player::handleEvent(sf::Event event) {
 		} else if (isNumpad(event.key.code))
 			for (int i = 1; i <= 9; ++i)
 				if (sf::Keyboard::isKeyPressed(numpad(i))) {
-					tryMove(directions<int>[i - 1]);
+					tryMove(numpadDirections<int>[i - 1]);
 					return;
 				}
 	}

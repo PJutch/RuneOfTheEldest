@@ -87,6 +87,11 @@ protected:
 	}
 
 	/// changes position if position + offset isn't occupied
+	void tryMove(sf::Vector3i offset) {
+		tryMoveTo(position() + offset);
+	}
+
+	/// changes position if position + offset isn't occupied
 	void tryMove(sf::Vector2i offset) {
 		tryMoveTo(getXY(position()) + offset);
 	}

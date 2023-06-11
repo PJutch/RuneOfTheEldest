@@ -15,36 +15,25 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Goblin.hpp"
 
-#include "World.hpp"
+#include "pathfinding.hpp"
 
 bool Goblin::act() {
-	std::array<sf::Vector2i, 8> offsets{ 
-		sf::Vector2i{ 1, -1},
-		sf::Vector2i{ 1,  0}, 
-		sf::Vector2i{ 1,  1}, 
-	    sf::Vector2i{ 0,  1},
-		sf::Vector2i{ 0, -1},
-		sf::Vector2i{-1, -1},
-		sf::Vector2i{-1,  0}, 
-		sf::Vector2i{-1,  1},
-	};
-	int offsetIndex = std::uniform_int_distribution<int>{ 0, std::ssize(offsets) - 1 }(*randomEngine);
-	sf::Vector2i offset = offsets[offsetIndex];
-	tryMove(offset);
+	sf::Vector3i nextStep_ = nextStep(world().dungeon(), position(), player->position());
+	tryMove(nextStep_);
 	wait(1);
 	return true;
 }
 
-void Goblin::spawnSingle(int level, std::shared_ptr<World> world, RandomEngine& randomEngine) {
+void Goblin::spawnSingle(int level, std::shared_ptr<World> world, std::shared_ptr<Player> player_, RandomEngine& randomEngine) {
 	sf::Vector2i position = world->dungeon()[level].randomPosition(randomEngine, [world, level](sf::Vector2i pos, const Level&) {
 		return world->isFree(make3D(pos, level));
 	});
 
-	world->addActor(std::make_shared<Goblin>(make3D(position, level), world, randomEngine));
+	world->addActor(std::make_shared<Goblin>(make3D(position, level), world, std::move(player_), randomEngine));
 }
 
-void Goblin::spawnAll(std::shared_ptr<World> world, RandomEngine& randomEngine) {
+void Goblin::spawnAll(std::shared_ptr<World> world, std::shared_ptr<Player> player_, RandomEngine& randomEngine) {
 	for (int level = 0; level < world->dungeon().size(); ++level)
 		for (int i = 0; i < std::uniform_int_distribution{ 5, 20 }(randomEngine); ++i)
-			spawnSingle(level, world, randomEngine);
+			spawnSingle(level, world, player_, randomEngine);
 }

@@ -29,7 +29,7 @@ void FreeCamera::update(sf::Time elapsedTime) {
 
     for (int i = 1; i <= 9; ++i)
         if (sf::Keyboard::isKeyPressed(numpad(i)))
-            move(directions<float>[i - 1] * moved);
+            move(numpadDirections<float>[i - 1] * moved);
 }
 
 void FreeCamera::handleEvent(sf::Event event) {
