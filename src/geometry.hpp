@@ -261,7 +261,17 @@ T uniformNorm(sf::Vector3<T> vec) noexcept {
 }
 
 template <typename T>
+T uniformNorm(sf::Vector2<T> vec) noexcept {
+    return std::max(std::abs(vec.x), std::abs(vec.y));
+}
+
+template <typename T>
 T uniformDistance(sf::Vector3<T> from, sf::Vector3<T> to) noexcept {
+    return uniformNorm(to - from);
+}
+
+template <typename T>
+T uniformDistance(sf::Vector2<T> from, sf::Vector2<T> to) noexcept {
     return uniformNorm(to - from);
 }
 

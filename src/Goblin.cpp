@@ -18,8 +18,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "pathfinding.hpp"
 
 bool Goblin::act() {
-	sf::Vector3i nextStep_ = nextStep(world().dungeon(), position(), player->position());
-	tryMove(nextStep_);
+	if (position().z == player->position().z) {
+		sf::Vector3i nextStep_ = nextStep(world().dungeon(), position(), player->position());
+		tryMove(nextStep_);
+	}
 	wait(1);
 	return true;
 }

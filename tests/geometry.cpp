@@ -96,3 +96,11 @@ TEST(geometry, uniformDistanceZero) {
 TEST(geometry, uniformDistanceNegative) {
     EXPECT_EQ(uniformDistance(sf::Vector3i{ 5, 7, 10 }, sf::Vector3i{ 1, 2, 3 }), 7);
 }
+
+TEST(geometry, uniformNorm2D) {
+    EXPECT_EQ(uniformNorm(sf::Vector2i{ 3, 5 }), 5);
+}
+
+TEST(geometry, uniformDistance2D) {
+    EXPECT_EQ(uniformDistance(sf::Vector2i{ 1, 2}, sf::Vector2i{ 5, 7 }), 5);
+}
