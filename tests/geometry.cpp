@@ -104,3 +104,23 @@ TEST(geometry, uniformNorm2D) {
 TEST(geometry, uniformDistance2D) {
     EXPECT_EQ(uniformDistance(sf::Vector2i{ 1, 2}, sf::Vector2i{ 5, 7 }), 5);
 }
+
+TEST(geometry, turn90LeftUniform) {
+    EXPECT_EQ(turn90Left(sf::Vector2i{ 0, -1 }), (sf::Vector2i{ -1, 0 }));
+}
+
+TEST(geometry, turn90Left) {
+    EXPECT_EQ(turn90Left(sf::Vector2i{ 3, 4 }), (sf::Vector2i{ 4, -3 }));
+}
+
+TEST(geometry, turn90RightUniform) {
+    EXPECT_EQ(turn90Right(sf::Vector2i{ 0, -1 }), (sf::Vector2i{ 1, 0 }));
+}
+
+TEST(geometry, turn90Right) {
+    EXPECT_EQ(turn90Right(sf::Vector2i{ 3, 4 }), (sf::Vector2i{ -4, 3 }));
+}
+
+TEST(geometry, turnDirection45Left) {
+    EXPECT_EQ(turnDirection45Left(sf::Vector2i{ 0, -1 }), (sf::Vector2i{ -1, -1 }));
+}

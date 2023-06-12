@@ -255,6 +255,36 @@ inline static const std::array<sf::Vector2<T>, 8> directions{
     sf::Vector2<T>( 1, -1)
 };
 
+/// @brief Turns vector 90 degrees left (anticlockwise)
+/// @warning SFML coordinate system where positive y direction is down not up
+template <typename T>
+sf::Vector2<T> turn90Left(sf::Vector2<T> dir) {
+    return { dir.y,  -dir.x };
+}
+
+/// @brief Turns vector 90 degrees right (clockwise)
+/// @warning SFML coordinate system where positive y direction is down not up
+template <typename T>
+sf::Vector2<T> turn90Right(sf::Vector2<T> dir) {
+    return {  -dir.y, dir.x };
+}
+
+/// @brief Turns vector 45 degrees left (anticlockwise)
+/// @warning SFML coordinate system where positive y direction is down not up
+/// @warning Works only with vectos each components of which are -1, 0 or 1.
+template <typename T>
+sf::Vector2<T> turnDirection45Left(sf::Vector2<T> dir) {
+    return dir + turn90Left(dir);
+}
+
+/// @brief Turns vector 45 degrees right (clockwise)
+/// @warning SFML coordinate system where positive y direction is down not up
+/// @warning Works only with vectos each components of which are -1, 0 or 1.
+template <typename T>
+sf::Vector2<T> turnDirection45Right(sf::Vector2<T> dir) {
+    return dir + turn90Right(dir);
+}
+
 template <typename T>
 T uniformNorm(sf::Vector3<T> vec) noexcept {
     return std::max(std::max(std::abs(vec.x), std::abs(vec.y)), std::abs(vec.z));
