@@ -285,21 +285,25 @@ sf::Vector2<T> turnDirection45Right(sf::Vector2<T> dir) {
     return dir + turn90Right(dir);
 }
 
+/// Computes uniform (Chebyshev, supremum, max, infinity) norm of 3D vector
 template <typename T>
 T uniformNorm(sf::Vector3<T> vec) noexcept {
     return std::max(std::max(std::abs(vec.x), std::abs(vec.y)), std::abs(vec.z));
 }
 
+/// Computes uniform (Chebyshev, supremum, max, infinity) norm of 2D vector
 template <typename T>
 T uniformNorm(sf::Vector2<T> vec) noexcept {
     return std::max(std::abs(vec.x), std::abs(vec.y));
 }
 
+/// Computes uniform (Chebyshev, supremum, max, infinity) distance between 3D points
 template <typename T>
 T uniformDistance(sf::Vector3<T> from, sf::Vector3<T> to) noexcept {
     return uniformNorm(to - from);
 }
 
+/// Computes uniform (Chebyshev, supremum, max, infinity) distance between 2D points
 template <typename T>
 T uniformDistance(sf::Vector2<T> from, sf::Vector2<T> to) noexcept {
     return uniformNorm(to - from);
