@@ -74,6 +74,7 @@ void Renderer::draw(const Player& player) {
 void Renderer::draw(const Goblin& goblin) {
     drawSprite(goblin.position(), assets->goblinTexture());
     drawHpBar(goblin.position(), goblin.hp(), goblin.maxHp());
+    drawSprite(goblin.position(), assets->aiStateIcon(goblin.aiState()));
 }
 
 void Renderer::drawSprite(sf::Vector3i position, const sf::Texture& texture) {

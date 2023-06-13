@@ -37,6 +37,10 @@ AssetManager::AssetManager(LoggerFactory& loggerFactory) : logger{ loggerFactory
     fillTexture(tileTextureMut(Tile::ROOM_ENTRANCE), tileSize(), sf::Color::Magenta);
     fillTexture(tileTextureMut(Tile::PASSAGE      ), tileSize(), sf::Color::Blue   );
 
+    loadTexture(aiStateIconMut(AiState::INACTIVE), "incative AI state", "resources/textures/AiState/sleeping.png");
+    loadTexture(aiStateIconMut(AiState::SEEKING), "seeking AI state", "resources/textures/AiState/confused.png");
+    loadTexture(aiStateIconMut(AiState::ATTACKING), "attacking AI state", "resources/textures/AiState/angry.png");
+
     logger->info("Loading font...");
     if (!font_.loadFromFile("resources/fonts/Roboto/Roboto-Medium.ttf"))
         throw FontLoadError{ "Unable to load font" };

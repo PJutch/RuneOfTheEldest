@@ -21,6 +21,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "AssetManager.hpp"
 
 #include "World.hpp"
+#include "AiState.hpp"
 
 class Player;
 class Goblin;
@@ -92,6 +93,7 @@ private:
     void drawWorld();
     void draw(const Level& level);
     void drawAreas(const Level& level);
+
     void drawHpBar(sf::Vector3i position, double hp, double maxHp);
 
     void drawSprite(sf::Vector3i position, const sf::Texture& texture);

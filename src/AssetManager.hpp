@@ -17,6 +17,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define ASSET_MANAGER_HPP_
 
 #include "Tile.hpp"
+#include "AiState.hpp"
 
 #include "log.hpp"
 #include "Exception.hpp"
@@ -60,6 +61,11 @@ public:
 		return goblinTexture_;
 	}
 
+	/// Gets icon for given AiState
+	[[nodiscard]] const sf::Texture& aiStateIcon(AiState state) const noexcept {
+		return aiStateIcons[static_cast<int>(state)];
+	}
+
 	/// Gets default font
 	[[nodiscard]] const sf::Font& font() const noexcept {
 		return font_;
@@ -76,12 +82,18 @@ private:
 	sf::Texture playerTexture_;
 	sf::Texture goblinTexture_;
 
+	std::array<sf::Texture, totalAiStates> aiStateIcons;
+
 	sf::Font font_;
 
 	std::shared_ptr<spdlog::logger> logger;
 
 	[[nodiscard]] sf::Texture& tileTextureMut(Tile tile) noexcept {
 		return tileTextures[static_cast<int>(tile)];
+	}
+
+	[[nodiscard]] sf::Texture& aiStateIconMut(AiState state) noexcept {
+		return aiStateIcons[static_cast<int>(state)];
 	}
 
 	void fillTexture(sf::Texture& texture,

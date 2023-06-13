@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "pathfinding.hpp"
 
 bool Goblin::act() {
-	if (position().z == player->position().z && uniformDistance(position(), player->position()) <= 7)
+	if (canSeePlayer())
 		active = true;
 
 	wantsSwap_ = true;
@@ -28,6 +28,17 @@ bool Goblin::act() {
 	}
 	wait(1);
 	return true;
+}
+
+AiState Goblin::aiState() const noexcept {
+	if (canSeePlayer())
+		return AiState::ATTACKING;
+
+	if (active) {
+		return AiState::SEEKING;
+	}
+	else
+		return AiState::INACTIVE;
 }
 
 void Goblin::spawnSingle(int level, std::shared_ptr<World> world, std::shared_ptr<Player> player_, RandomEngine& randomEngine) {

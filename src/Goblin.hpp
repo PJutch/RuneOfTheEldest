@@ -19,6 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "AliveActor.hpp"
 
 #include "Player.hpp"
+#include "AiState.hpp"
 
 #include "Renderer.hpp"
 
@@ -62,6 +63,9 @@ public:
 	void handleSwap() noexcept final {
 		wantsSwap_ = false;
 	}
+
+	/// Gets Goblin's AI state
+	AiState aiState() const noexcept;
 private:
 	std::shared_ptr<Player> player;
 	bool wantsSwap_ = true;
@@ -70,6 +74,11 @@ private:
 
 	void attack(Actor& actor) final {
 		actor.beDamaged(1);
+	}
+
+	bool canSeePlayer() const noexcept {
+		return position().z == player->position().z
+			&& uniformDistance(position(), player->position()) <= 7;
 	}
 };
 
