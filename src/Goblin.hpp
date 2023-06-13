@@ -66,6 +66,8 @@ private:
 	std::shared_ptr<Player> player;
 	bool wantsSwap_ = true;
 
+	bool active = false;
+
 	void attack(Actor& actor) final {
 		actor.beDamaged(1);
 	}
