@@ -38,6 +38,10 @@ public:
 
 	virtual void moveSucceed() {}
 
+	bool canMoveToOrAttack(sf::Vector3i newPosition, bool forceSwap = false) const {
+		return AliveActor::canMoveToOrAttack(newPosition, forceSwap);
+	}
+
 	void tryMoveTo(sf::Vector3i newPosition, bool forceSwap = false) {
 		AliveActor::tryMoveTo(newPosition, forceSwap);
 	}
@@ -159,29 +163,34 @@ auto createAliveActorTryMoveToTest() {
 
 TEST(AliveActor, tryMoveToEmpty) {
 	auto [actor, other] = createAliveActorTryMoveToTest();
-	actor->tryMoveTo({1, 2, 0});
 
+	EXPECT_TRUE(actor->canMoveToOrAttack({ 1, 2, 0 }));
+	actor->tryMoveTo({1, 2, 0});
 	EXPECT_EQ(actor->position(), (sf::Vector3i{1, 2, 0}));
 }
 
 TEST(AliveActor, tryMoveToWall) {
 	auto [actor, other] = createAliveActorTryMoveToTest();
-	actor->tryMoveTo({ 1, 0, 0 });
 
+	EXPECT_FALSE(actor->canMoveToOrAttack({ 1, 0, 0 }));
+	actor->tryMoveTo({ 1, 0, 0 });
 	EXPECT_EQ(actor->position(), (sf::Vector3i{ 0, 1, 0 }));
 }
 
 TEST(AliveActor, tryMoveToUnseen) {
 	auto [actor, other] = createAliveActorTryMoveToTest();
-	actor->tryMoveTo({ 1, 1, 0 });
 
+	EXPECT_FALSE(actor->canMoveToOrAttack({ 1, 1, 0 }));
+	actor->tryMoveTo({ 1, 1, 0 });
 	EXPECT_EQ(actor->position(), (sf::Vector3i{ 0, 1, 0 }));
 }
 
 TEST(AliveActor, tryMoveToSwap) {
 	auto [actor, other] = createAliveActorTryMoveToTest();
-	actor->tryMoveTo({ 0, 2, 0 });
 
+	EXPECT_TRUE(actor->canMoveToOrAttack({ 0, 2, 0 }));
+
+	actor->tryMoveTo({ 0, 2, 0 });
 	EXPECT_EQ(actor->position(), (sf::Vector3i{ 0, 2, 0 }));
 	EXPECT_EQ(other->position(), (sf::Vector3i{ 0, 1, 0 }));
 	EXPECT_TRUE(actor->hadSwapped());
@@ -191,8 +200,10 @@ TEST(AliveActor, tryMoveToSwap) {
 TEST(AliveActor, tryMoveToDontSwap) {
 	auto [actor, other] = createAliveActorTryMoveToTest();
 	other->wantsSwap(false);
-	actor->tryMoveTo({ 0, 2, 0 });
 
+	EXPECT_FALSE(actor->canMoveToOrAttack({ 0, 2, 0 }));
+
+	actor->tryMoveTo({ 0, 2, 0 });
 	EXPECT_EQ(actor->position(), (sf::Vector3i{ 0, 1, 0 }));
 	EXPECT_EQ(other->position(), (sf::Vector3i{ 0, 2, 0 }));
 	EXPECT_FALSE(actor->hadSwapped());
@@ -202,8 +213,10 @@ TEST(AliveActor, tryMoveToDontSwap) {
 TEST(AliveActor, tryMoveToForceSwap) {
 	auto [actor, other] = createAliveActorTryMoveToTest();
 	other->wantsSwap(false);
-	actor->tryMoveTo({ 0, 2, 0 }, true);
 
+	EXPECT_TRUE(actor->canMoveToOrAttack({ 0, 2, 0 }, true));
+
+	actor->tryMoveTo({ 0, 2, 0 }, true);
 	EXPECT_EQ(actor->position(), (sf::Vector3i{ 0, 2, 0 }));
 	EXPECT_EQ(other->position(), (sf::Vector3i{ 0, 1, 0 }));
 	EXPECT_TRUE(actor->hadSwapped());
