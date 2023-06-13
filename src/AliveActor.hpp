@@ -84,12 +84,12 @@ protected:
 
 	/// @brief Checks if can move to newPosition or swap with Actor there
 	/// @param forceSwap Forces swap even if other Actor doesn't want it
-	[[nodiscard]] bool canMoveTo(sf::Vector3i newPosition, bool forceSwap) const;
+	[[nodiscard]] bool canMoveToOrAttack(sf::Vector3i newPosition, bool forceSwap) const;
 
 	/// @brief Checks if can move to position + offset or swap with Actor there
     /// @param forceSwap Forces swap even if other Actor doesn't want it
-	[[nodiscard]] bool canMove(sf::Vector2i offset, bool forceSwap) const {
-		return canMoveTo(position() + make3D(offset, 0), forceSwap);
+	[[nodiscard]] bool canMoveToOrAttack(sf::Vector2i offset, bool forceSwap) const {
+		return canMoveToOrAttack(position() + make3D(offset, 0), forceSwap);
 	}
 
 	/// @brief Changes position if newPosition isn't occupied

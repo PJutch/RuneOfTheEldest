@@ -51,7 +51,7 @@ void AliveActor::tryMoveTo(sf::Vector3i newPosition, bool forceSwap) {
 	}
 }
 
-bool AliveActor::canMoveTo(sf::Vector3i newPosition, bool forceSwap) const {
+bool AliveActor::canMoveToOrAttack(sf::Vector3i newPosition, bool forceSwap) const {
 	if (!isPassable(world().dungeon().at(newPosition)))
 		return false;
 
@@ -60,7 +60,7 @@ bool AliveActor::canMoveTo(sf::Vector3i newPosition, bool forceSwap) const {
 		return true;
 
 	if (other->isOnPlayerSide() != isOnPlayerSide())
-		return false;
+		return true;
 
 	if (forceSwap || other->wantsSwap())
 		return true;
@@ -69,30 +69,30 @@ bool AliveActor::canMoveTo(sf::Vector3i newPosition, bool forceSwap) const {
 }
 
 void AliveActor::tryMoveInDirection(sf::Vector2i direction, bool forceSwap) {
-	if (canMove(direction, forceSwap)) {
+	if (canMoveToOrAttack(direction, forceSwap)) {
 		tryMove(direction, forceSwap);
 		return;
 	}
 
 	bool preferLeft = std::uniform_int_distribution<int>{ 0, 1 }(randomEngine()) == 1;
 	if (preferLeft) {
-		if (canMove(turnDirection45Left(direction), forceSwap)) {
+		if (canMoveToOrAttack(turnDirection45Left(direction), forceSwap)) {
 			tryMove(turnDirection45Left(direction), forceSwap);
 			return;
 		}
 
-		if (canMove(turnDirection45Right(direction), forceSwap)) {
+		if (canMoveToOrAttack(turnDirection45Right(direction), forceSwap)) {
 			tryMove(turnDirection45Right(direction), forceSwap);
 			return;
 		}
 	}
 	else {
-		if (canMove(turnDirection45Right(direction), forceSwap)) {
+		if (canMoveToOrAttack(turnDirection45Right(direction), forceSwap)) {
 			tryMove(turnDirection45Right(direction), forceSwap);
 			return;
 		}
 
-		if (canMove(turnDirection45Left(direction), forceSwap)) {
+		if (canMoveToOrAttack(turnDirection45Left(direction), forceSwap)) {
 			tryMove(turnDirection45Left(direction), forceSwap);
 			return;
 		}
