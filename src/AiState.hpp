@@ -16,14 +16,14 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef AI_STATE_HPP_
 #define AI_STATE_HPP_
 
-/// State of Goblin AI
+/// State of Enemy AI
 enum class AiState {
 	INACTIVE,  ///< Hasn't seen player before
 	SEEKING,   ///< Has seen player but can't see it currently
 	ATTACKING, ///< Can see player
-	TOTAL      ///< Internal use only. Should always be last
+	TOTAL_      ///< Technical enumerator. Should always be last
 };
 
-const int totalAiStates = static_cast<int>(AiState::TOTAL);
+const int totalAiStates = static_cast<int>(AiState::TOTAL_);
 
 #endif

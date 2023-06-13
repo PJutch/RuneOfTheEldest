@@ -28,7 +28,7 @@ enum class Tile {
     PASSAGE,       ///< Debug only @see RandomSizeRoomGenerator::debugTiles
     DOWN_STAIRS,   ///< Stairs leading to next level
     UP_STAIRS,     ///< Stairs leading to previous level
-    TOTAL_         ///< Internal use only. Should always be last
+    TOTAL_         ///< Technical enumerator. Should always be last
 };
 
 /// Total amount of tiles
