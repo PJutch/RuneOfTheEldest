@@ -15,11 +15,12 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "AliveActor.hpp"
 
-AliveActor::AliveActor(double newMaxHp, double regen_, sf::Vector3i newPosition, std::shared_ptr<World> newWorld) :
-	position_{ newPosition }, hp_{ newMaxHp }, maxHp_{ newMaxHp }, regen{ regen_ }, world_{ std::move(newWorld) } {}
+AliveActor::AliveActor(double newMaxHp, double regen_, sf::Vector3i newPosition, std::shared_ptr<World> newWorld, RandomEngine* newRandomEngine) :
+	position_{ newPosition }, hp_{ newMaxHp }, maxHp_{ newMaxHp }, regen{ regen_ },
+	world_{ std::move(newWorld) }, randomEngine_{ newRandomEngine } {}
 
-AliveActor::AliveActor(double newMaxHp, double regen_, std::shared_ptr<World> newWorld) :
-	AliveActor{ newMaxHp, regen_, {0, 0, 0}, std::move(newWorld) } {}
+AliveActor::AliveActor(double newMaxHp, double regen_, std::shared_ptr<World> newWorld, RandomEngine* newRandomEngine) :
+	AliveActor{ newMaxHp, regen_, {0, 0, 0}, std::move(newWorld), newRandomEngine } {}
 
 void AliveActor::wait(int time) noexcept {
 	nextTurn_ += time;
@@ -28,20 +29,72 @@ void AliveActor::wait(int time) noexcept {
 	hp(std::min(hp(), maxHp()));
 }
 
-void AliveActor::tryMoveTo(sf::Vector3i newPosition) {
+void AliveActor::tryMoveTo(sf::Vector3i newPosition, bool forceSwap) {
 	if (isPassable(world().dungeon().at(newPosition))) {
 		if (auto other = world().actorAt(newPosition)) {
 			if (other->isOnPlayerSide() == isOnPlayerSide()) {
-				sf::Vector3i oldPosition = position();
-				position(other->position());
-				other->position(oldPosition);
+				if (forceSwap || other->wantsSwap()) {
+					sf::Vector3i oldPosition = position();
+					position(other->position());
+					other->position(oldPosition);
 
-				moveSucceed();
+					handleSwap();
+					other->handleSwap();
+					moveSucceed();
+				}
 			} else
 				attack(*other);
 		} else {
 			position(newPosition);
 			moveSucceed();
+		}
+	}
+}
+
+bool AliveActor::canMoveTo(sf::Vector3i newPosition, bool forceSwap) const {
+	if (!isPassable(world().dungeon().at(newPosition)))
+		return false;
+
+	auto other = world().actorAt(newPosition);
+	if (!other)
+		return true;
+
+	if (other->isOnPlayerSide() != isOnPlayerSide())
+		return false;
+
+	if (forceSwap || other->wantsSwap())
+		return true;
+	else
+		return false;
+}
+
+void AliveActor::tryMoveInDirection(sf::Vector2i direction, bool forceSwap) {
+	if (canMove(direction, forceSwap)) {
+		tryMove(direction, forceSwap);
+		return;
+	}
+
+	bool preferLeft = std::uniform_int_distribution<int>{ 0, 1 }(randomEngine()) == 1;
+	if (preferLeft) {
+		if (canMove(turnDirection45Left(direction), forceSwap)) {
+			tryMove(turnDirection45Left(direction), forceSwap);
+			return;
+		}
+
+		if (canMove(turnDirection45Right(direction), forceSwap)) {
+			tryMove(turnDirection45Right(direction), forceSwap);
+			return;
+		}
+	}
+	else {
+		if (canMove(turnDirection45Right(direction), forceSwap)) {
+			tryMove(turnDirection45Right(direction), forceSwap);
+			return;
+		}
+
+		if (canMove(turnDirection45Left(direction), forceSwap)) {
+			tryMove(turnDirection45Left(direction), forceSwap);
+			return;
 		}
 	}
 }

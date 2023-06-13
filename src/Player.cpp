@@ -28,7 +28,7 @@ void Player::spawn() {
 	world().addActor(shared_from_this());
 
 	int level = 0;
-	sf::Vector2i playerPos = world().dungeon()[level].randomPosition(*randomEngine, [this, level](sf::Vector2i pos, const Level&) {
+	sf::Vector2i playerPos = world().dungeon()[level].randomPosition(randomEngine(), [this, level](sf::Vector2i pos, const Level&) {
 		return world().isFree(make3D(pos, level));
 	});
 	position(make3D(playerPos, level));
@@ -51,7 +51,7 @@ void Player::handleEvent(sf::Event event) {
 		} else if (isNumpad(event.key.code))
 			for (int i = 1; i <= 9; ++i)
 				if (sf::Keyboard::isKeyPressed(numpad(i))) {
-					tryMove(numpadDirections<int>[i - 1]);
+					tryMove(numpadDirections<int>[i - 1], true);
 					return;
 				}
 	}
@@ -70,10 +70,10 @@ bool Player::act() {
 
 void Player::tryAscentStairs() {
 	if (std::optional<sf::Vector3i> newPos = world().dungeon().upStairs(position()))
-		tryMoveTo(*newPos);
+		tryMoveTo(*newPos, true);
 }
 
 void Player::tryDescentStairs() {
 	if (std::optional<sf::Vector3i> newPos = world().dungeon().downStairs(position()))
-		tryMoveTo(*newPos);
+		tryMoveTo(*newPos, true);
 }

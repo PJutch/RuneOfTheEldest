@@ -31,7 +31,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 class Player : public AliveActor, public std::enable_shared_from_this<Player> {
 public:
 	Player(std::shared_ptr<World> world_, RandomEngine& randomEngine_) : 
-		AliveActor{ 10, 0.1, std::move(world_) }, randomEngine{ &randomEngine_ } {}
+		AliveActor{ 10, 0.1, std::move(world_), &randomEngine_ } {}
 
 	void spawn();
 
@@ -55,6 +55,12 @@ public:
 	[[nodiscard]] bool isOnPlayerSide() const final {
 		return true;
 	}
+
+	[[nodiscard]] bool wantsSwap() const noexcept final {
+		return false;
+	}
+
+	void handleSwap() noexcept final {}
 private:
 	enum class State {
 		WAITING_TURN,
@@ -62,8 +68,6 @@ private:
 		ENDED_TURN
 	};
 	State state = State::WAITING_TURN;
-
-	RandomEngine* randomEngine;
 
 	void tryAscentStairs();
 	void tryDescentStairs();

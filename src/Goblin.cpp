@@ -18,9 +18,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "pathfinding.hpp"
 
 bool Goblin::act() {
+	wantsSwap_ = true;
 	if (position().z == player->position().z) {
 		sf::Vector3i nextStep_ = nextStep(world().dungeon(), position(), player->position());
-		tryMove(nextStep_);
+		tryMoveInDirection(getXY(nextStep_), false);
 	}
 	wait(1);
 	return true;

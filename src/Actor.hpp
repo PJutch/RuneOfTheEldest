@@ -50,6 +50,12 @@ public:
 	/// Checks if Actor is player ally
 	[[nodiscard]] virtual bool isOnPlayerSide() const = 0;
 
+	/// Checks if Actor can swap with AI controlled Actor
+	[[nodiscard]] virtual bool wantsSwap() const = 0;
+
+	/// Called after swapping with another Actor
+	virtual void handleSwap() = 0;
+
 	/// Damages Actor by given HPs
 	virtual void beDamaged(double damage) = 0;
 

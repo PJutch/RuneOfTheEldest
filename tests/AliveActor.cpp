@@ -20,11 +20,11 @@ If not, see <https://www.gnu.org/licenses/>. */
 class TestAliveActor : public AliveActor {
 public:
 	TestAliveActor(double newMaxHp, double regen_, sf::Vector3i newPosition, std::shared_ptr<World> newWorld = nullptr) :
-		AliveActor{ newMaxHp, regen_, newPosition, std::move(newWorld) } {}
+		AliveActor{ newMaxHp, regen_, newPosition, std::move(newWorld), nullptr } {}
 	TestAliveActor(double newMaxHp, double regen_, std::shared_ptr<World> newWorld = nullptr) :
-		AliveActor{ newMaxHp, regen_, std::move(newWorld) } {}
+		AliveActor{ newMaxHp, regen_, std::move(newWorld), nullptr } {}
 	TestAliveActor(sf::Vector3i newPosition, std::shared_ptr<World> newWorld = nullptr) :
-		AliveActor{ 1.0, 0.0, newPosition, std::move(newWorld) } {}
+		AliveActor{ 1.0, 0.0, newPosition, std::move(newWorld), nullptr } {}
 
 	void nextTurn(int newNextTurn) noexcept {
 		AliveActor::nextTurn(newNextTurn);
@@ -38,16 +38,16 @@ public:
 
 	virtual void moveSucceed() {}
 
-	void tryMoveTo(sf::Vector3i newPosition) {
-		AliveActor::tryMoveTo(newPosition);
+	void tryMoveTo(sf::Vector3i newPosition, bool forceSwap = false) {
+		AliveActor::tryMoveTo(newPosition, forceSwap);
 	}
 
-	void tryMoveTo(sf::Vector2i newPosition) {
-		AliveActor::tryMoveTo(newPosition);
+	void tryMoveTo(sf::Vector2i newPosition, bool forceSwap = false) {
+		AliveActor::tryMoveTo(newPosition, forceSwap);
 	}
 
-	void tryMove(sf::Vector2i offset) {
-		AliveActor::tryMoveTo(offset);
+	void tryMove(sf::Vector2i offset, bool forceSwap = false) {
+		AliveActor::tryMoveTo(offset, forceSwap);
 	}
 
 	using AliveActor::hp;
@@ -69,6 +69,25 @@ public:
 	[[nodiscard]] bool isOnPlayerSide() const noexcept final {
 		return true;
 	}
+
+	[[nodiscard]] bool wantsSwap() const noexcept final {
+		return wantsSwap_;
+	}
+
+	void wantsSwap(bool newWantsSwap) noexcept {
+		wantsSwap_ = newWantsSwap;
+	}
+
+	void handleSwap() noexcept final {
+		hadSwapped_ = true;
+	}
+
+	[[nodiscard]] bool hadSwapped() const noexcept {
+		return hadSwapped_;
+	}
+private:
+	bool wantsSwap_ = true;
+	bool hadSwapped_ = false;
 };
 
 TEST(AliveActor, initialHp) {
@@ -165,4 +184,28 @@ TEST(AliveActor, tryMoveToSwap) {
 
 	EXPECT_EQ(actor->position(), (sf::Vector3i{ 0, 2, 0 }));
 	EXPECT_EQ(other->position(), (sf::Vector3i{ 0, 1, 0 }));
+	EXPECT_TRUE(actor->hadSwapped());
+	EXPECT_TRUE(other->hadSwapped());
+}
+
+TEST(AliveActor, tryMoveToDontSwap) {
+	auto [actor, other] = createAliveActorTryMoveToTest();
+	other->wantsSwap(false);
+	actor->tryMoveTo({ 0, 2, 0 });
+
+	EXPECT_EQ(actor->position(), (sf::Vector3i{ 0, 1, 0 }));
+	EXPECT_EQ(other->position(), (sf::Vector3i{ 0, 2, 0 }));
+	EXPECT_FALSE(actor->hadSwapped());
+	EXPECT_FALSE(other->hadSwapped());
+}
+
+TEST(AliveActor, tryMoveToForceSwap) {
+	auto [actor, other] = createAliveActorTryMoveToTest();
+	other->wantsSwap(false);
+	actor->tryMoveTo({ 0, 2, 0 }, true);
+
+	EXPECT_EQ(actor->position(), (sf::Vector3i{ 0, 2, 0 }));
+	EXPECT_EQ(other->position(), (sf::Vector3i{ 0, 1, 0 }));
+	EXPECT_TRUE(actor->hadSwapped());
+	EXPECT_TRUE(other->hadSwapped());
 }

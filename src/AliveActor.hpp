@@ -53,8 +53,8 @@ public:
 		return maxHp_;
 	}
 protected:
-	AliveActor(double newMaxHp, double regen_, sf::Vector3i newPosition, std::shared_ptr<World> newWorld);
-	AliveActor(double newMaxHp, double regen_, std::shared_ptr<World> newWorld);
+	AliveActor(double newMaxHp, double regen_, sf::Vector3i newPosition, std::shared_ptr<World> newWorld, RandomEngine* newRandomEngine);
+	AliveActor(double newMaxHp, double regen_, std::shared_ptr<World> newWorld, RandomEngine* newRandomEngine);
 
 	[[nodiscard]] World& world() noexcept {
 		return *world_;
@@ -62,6 +62,10 @@ protected:
 
 	[[nodiscard]] const World& world() const noexcept {
 		return *world_;
+	}
+
+	[[nodiscard]] RandomEngine& randomEngine() noexcept {
+		return *randomEngine_;
 	}
 
 	/// Sets next turn time
@@ -78,23 +82,41 @@ protected:
 	/// Callled after successful move
 	virtual void moveSucceed() {}
 
-	/// changes position if newPosition isn't occupied
-	void tryMoveTo(sf::Vector3i newPosition);
+	/// @brief Checks if can move to newPosition or swap with Actor there
+	/// @param forceSwap Forces swap even if other Actor doesn't want it
+	[[nodiscard]] bool canMoveTo(sf::Vector3i newPosition, bool forceSwap) const;
 
-	/// changes position if newPosition isn't occupied
-	void tryMoveTo(sf::Vector2i newPosition) {
-		tryMoveTo(make3D(newPosition, position().z));
+	/// @brief Checks if can move to position + offset or swap with Actor there
+    /// @param forceSwap Forces swap even if other Actor doesn't want it
+	[[nodiscard]] bool canMove(sf::Vector2i offset, bool forceSwap) const {
+		return canMoveTo(position() + make3D(offset, 0), forceSwap);
 	}
 
-	/// changes position if position + offset isn't occupied
-	void tryMove(sf::Vector3i offset) {
-		tryMoveTo(position() + offset);
+	/// @brief Changes position if newPosition isn't occupied
+	/// @param forceSwap Forces swap even if other Actor doesn't want it
+	void tryMoveTo(sf::Vector3i newPosition, bool forceSwap);
+
+	/// @brief Changes position if newPosition isn't occupied
+	/// @param forceSwap Forces swap even if other Actor doesn't want it
+	void tryMoveTo(sf::Vector2i newPosition, bool forceSwap) {
+		tryMoveTo(make3D(newPosition, position().z), forceSwap);
 	}
 
-	/// changes position if position + offset isn't occupied
-	void tryMove(sf::Vector2i offset) {
-		tryMoveTo(getXY(position()) + offset);
+	/// @brief Changes position if position + offset isn't occupied
+	/// @param forceSwap Forces swap even if other Actor doesn't want it
+	void tryMove(sf::Vector3i offset, bool forceSwap) {
+		tryMoveTo(position() + offset, forceSwap);
 	}
+
+	/// @brief Changes position if position + offset isn't occupied
+	/// @param forceSwap Forces swap even if other Actor doesn't want it
+	void tryMove(sf::Vector2i offset, bool forceSwap) {
+		tryMoveTo(getXY(position()) + offset, forceSwap);
+	}
+
+	/// @brief Tries to move in given direction or 45 degrees left or right
+	/// @param forceSwap Forces swap even if other Actor doesn't want it
+	void tryMoveInDirection(sf::Vector2i direction, bool forceSwap);
 
 	void hp(double newHp) noexcept {
 		hp_ = newHp;
@@ -108,6 +130,7 @@ private:
 	double regen;
 
 	std::shared_ptr<World> world_;
+	RandomEngine* randomEngine_;
 };
 
 #endif

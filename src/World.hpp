@@ -63,6 +63,10 @@ public:
 	/// @warning May return nullptr
 	[[nodiscard]] std::shared_ptr<Actor> actorAt(sf::Vector3i position);
 
+	/// @brief Gets Actor at given position if it exist
+    /// @warning May return nullptr
+	[[nodiscard]] std::shared_ptr<const Actor> actorAt(sf::Vector3i position) const;
+
 	/// Updates actors until one of them decides to wait input
 	void update();
 

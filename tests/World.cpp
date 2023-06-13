@@ -66,6 +66,12 @@ public:
 	[[nodiscard]] bool isOnPlayerSide() const final {
 		return false;
 	}
+
+	bool wantsSwap() const noexcept final {
+		return true;
+	}
+
+	void handleSwap() noexcept final {}
 private:
 	int nextTurn_ = 0;
 	int turnDelay = 0;

@@ -25,6 +25,16 @@ std::shared_ptr<Actor> World::actorAt(sf::Vector3i position) {
 	return *iter;
 }
 
+std::shared_ptr<const Actor> World::actorAt(sf::Vector3i position) const {
+	auto iter = std::ranges::find_if(actors_, [position](std::shared_ptr<Actor> actor) {
+		return actor->isAlive() && actor->position() == position;
+	});
+
+	if (iter == actors_.end())
+		return nullptr;
+	return *iter;
+}
+
 void World::update() {
 	while (!actors_.empty()) {
 		popActor();
