@@ -124,6 +124,11 @@ public:
 	/// @details Generates dungeon with DungeonGenerator, then generate walls and stairs
 	/// @param logger logger to log messages
 	void generate(std::shared_ptr<spdlog::logger> logger);
+
+	/// @brief Create stairs between position1 and position2
+	/// @details Sets tiles and registers stairs in maps.
+	/// Up or down stairs are choosen automatically by z coordinate.
+	void addStairs(sf::Vector3i position1, sf::Vector3i position2);
 private:
 	std::vector<Level> levels;
 	UnorderedMap<sf::Vector3i, sf::Vector3i> upStairs_;
@@ -131,8 +136,6 @@ private:
 
 	std::unique_ptr<DungeonGenerator> generator_ = nullptr;
 	RandomEngine* randomEngine = nullptr;
-
-	void addStairs(sf::Vector3i pos1, sf::Vector3i pos2);
 	void generateUpStairs(int fromLevel);
 };
 

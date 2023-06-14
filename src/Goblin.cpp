@@ -24,7 +24,10 @@ bool Goblin::act() {
 	wantsSwap_ = true;
 	if (active) {
 		sf::Vector3i nextStep_ = nextStep(world().dungeon(), position(), player->position());
-		tryMoveInDirection(getXY(nextStep_), false);
+		if (nextStep_.z == 0)
+			tryMoveInDirection(getXY(nextStep_), false);
+		else
+			tryMove(nextStep_, false);
 	}
 	wait(1);
 	return true;

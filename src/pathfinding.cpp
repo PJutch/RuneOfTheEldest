@@ -104,6 +104,12 @@ namespace {
 				if (dungeon.isValidPosition(nextPos) && isPassable(dungeon.at(nextPos)))
 					queue.emplace(update.distance + 1, nextPos, to, -direction3D);
 			}
+
+			if (auto destination = dungeon.upStairs(update.position))
+				queue.emplace(update.distance + 1, *destination, to, update.position - *destination);
+
+			if (auto destination = dungeon.downStairs(update.position))
+				queue.emplace(update.distance + 1, *destination, to, update.position - *destination);
 		}
 
 		return buffer;

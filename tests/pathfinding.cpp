@@ -53,3 +53,43 @@ TEST(pathfinding, nextStepTurn) {
 
     EXPECT_EQ(nextStep(dungeon, { 0, 2, 0 }, { 1, 0, 0 }), (sf::Vector3i{ 1,  0, 0 }));
 }
+
+TEST(pathfinding, nextStepDownStairs) {
+    Dungeon dungeon;
+    dungeon.resize(2);
+    dungeon[0].generateBlank({ 2, 2 });
+    dungeon[1].generateBlank({ 2, 2 });
+
+    dungeon.at(0, 0, 0) = Tile::WALL;
+    dungeon.at(1, 0, 0) = Tile::WALL;
+    dungeon.at(0, 1, 0) = Tile::WALL;
+    dungeon.at(1, 1, 0) = Tile::WALL;
+    dungeon.at(0, 0, 1) = Tile::WALL;
+    dungeon.at(1, 0, 1) = Tile::WALL;
+    dungeon.at(0, 1, 1) = Tile::WALL;
+    dungeon.at(1, 1, 1) = Tile::EMPTY;
+
+    dungeon.addStairs({0, 1, 0}, {1, 0, 1});
+
+    EXPECT_EQ(nextStep(dungeon, { 0, 1, 0 }, { 1, 1, 1 }), (sf::Vector3i{ 1,  -1, 1 }));
+}
+
+TEST(pathfinding, nextStepUpStairs) {
+    Dungeon dungeon;
+    dungeon.resize(2);
+    dungeon[0].generateBlank({ 2, 2 });
+    dungeon[1].generateBlank({ 2, 2 });
+
+    dungeon.at(0, 0, 0) = Tile::WALL;
+    dungeon.at(1, 0, 0) = Tile::WALL;
+    dungeon.at(0, 1, 0) = Tile::WALL;
+    dungeon.at(1, 1, 0) = Tile::EMPTY;
+    dungeon.at(0, 0, 1) = Tile::WALL;
+    dungeon.at(1, 0, 1) = Tile::WALL;
+    dungeon.at(0, 1, 1) = Tile::WALL;
+    dungeon.at(1, 1, 1) = Tile::WALL;
+
+    dungeon.addStairs({ 0, 1, 1 }, { 1, 0, 0 });
+
+    EXPECT_EQ(nextStep(dungeon, { 0, 1, 1 }, { 1, 1, 0 }), (sf::Vector3i{ 1,  -1, -1 }));
+}
