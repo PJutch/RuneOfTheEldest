@@ -111,12 +111,12 @@ public:
 	}
 
 	/// Returns at(position) destination if it's Tile::UP_STAIRS
-	[[nodiscard]] std::optional<sf::Vector3i> upStairs(sf::Vector3i position) {
+	[[nodiscard]] std::optional<sf::Vector3i> upStairs(sf::Vector3i position) const {
 		return getOptional(upStairs_, position);
 	}
 
 	/// Returns at(position) destination if it's Tile::DOWN_STAIRS
-	[[nodiscard]] std::optional<sf::Vector3i> downStairs(sf::Vector3i position) {
+	[[nodiscard]] std::optional<sf::Vector3i> downStairs(sf::Vector3i position) const {
 		return getOptional(downStairs_, position);
 	}
 
