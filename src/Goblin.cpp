@@ -18,17 +18,17 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "pathfinding.hpp"
 
 bool Goblin::act() {
-	if (canSeePlayer())
-		active = true;
-
 	wantsSwap_ = true;
-	if (active) {
-		sf::Vector3i nextStep_ = nextStep(world().dungeon(), position(), player->position());
-		if (nextStep_.z == 0)
-			tryMoveInDirection(getXY(nextStep_), false);
-		else
-			tryMove(nextStep_, false);
-	}
+
+	if (canSeePlayer())
+		targetPosition = player->position();
+
+	sf::Vector3i nextStep_ = nextStep(world().dungeon(), position(), targetPosition);
+	if (nextStep_.z == 0)
+		tryMoveInDirection(getXY(nextStep_), false);
+	else
+		tryMove(nextStep_, false);
+
 	wait(1);
 	return true;
 }
@@ -37,7 +37,7 @@ AiState Goblin::aiState() const noexcept {
 	if (canSeePlayer())
 		return AiState::ATTACKING;
 
-	if (active) {
+	if (targetPosition != position()) {
 		return AiState::SEEKING;
 	}
 	else
