@@ -23,6 +23,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <array>
 #include <type_traits>
+#include <cmath>
 
 /// Cast sf::Vector2<U> to sf::Vector2<T> using static_cast
 template <typename T, typename U>
