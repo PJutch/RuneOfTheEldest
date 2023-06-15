@@ -34,9 +34,9 @@ bool Goblin::act() {
 		int minLevel = std::max(position().z - 1, 0);
 		int maxLevel = std::max(position().z + 1, world().dungeon().size());
 		int targetLevel = std::uniform_int_distribution{ minLevel, maxLevel }(randomEngine());
-		targetPosition = make3D(world().dungeon()[targetLevel].randomPosition(randomEngine(), [this, targetLevel](sf::Vector2i pos, const Level&) {
-			return world().isFree(make3D(pos, targetLevel));
-		}), targetLevel);
+		targetPosition = world().dungeon().randomPositionAt(targetLevel, randomEngine(), [this](sf::Vector3i pos, const Dungeon&) {
+			return world().isFree(pos);
+		});
 	}
 
 	sf::Vector3i nextStep_ = nextStep(world().dungeon(), position(), targetPosition);
@@ -54,11 +54,11 @@ AiState Goblin::aiState() const noexcept {
 }
 
 void Goblin::spawnSingle(int level, std::shared_ptr<World> world, std::shared_ptr<Player> player_, RandomEngine& randomEngine) {
-	sf::Vector2i position = world->dungeon()[level].randomPosition(randomEngine, [world, level](sf::Vector2i pos, const Level&) {
-		return world->isFree(make3D(pos, level));
+	sf::Vector3i position = world->dungeon().randomPositionAt(level, randomEngine, [world](sf::Vector3i pos, const Dungeon&) {
+		return world->isFree(pos);
 	});
 
-	world->addActor(std::make_shared<Goblin>(make3D(position, level), world, std::move(player_), randomEngine));
+	world->addActor(std::make_shared<Goblin>(position, world, std::move(player_), randomEngine));
 }
 
 void Goblin::spawnAll(std::shared_ptr<World> world, std::shared_ptr<Player> player_, RandomEngine& randomEngine) {

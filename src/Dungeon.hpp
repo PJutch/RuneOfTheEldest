@@ -129,6 +129,18 @@ public:
 	/// @details Sets tiles and registers stairs in maps.
 	/// Up or down stairs are choosen automatically by z coordinate.
 	void addStairs(sf::Vector3i position1, sf::Vector3i position2);
+
+	/// @brief Random tile position (3D) at given level satisfying pred
+	/// @details randomPosition(engine) distrbution filtered by pred(pos, *this)
+	template <typename Pred>
+		requires std::convertible_to<std::invoke_result_t<Pred, sf::Vector3i, Dungeon&>, bool>
+	[[nodiscard]] sf::Vector3i randomPositionAt(int level, RandomEngine& engine, Pred&& pred) const {
+		sf::Vector2i pos;
+		do {
+			pos = (*this)[level].randomPosition(engine);
+		} while (!std::invoke(pred, make3D(pos, level), *this));
+		return make3D(pos, level);
+	}
 private:
 	std::vector<Level> levels;
 	UnorderedMap<sf::Vector3i, sf::Vector3i> upStairs_;
