@@ -16,6 +16,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Goblin.hpp"
 
 #include "pathfinding.hpp"
+#include "raycast.hpp"
+#include "geometry.hpp"
 
 bool Goblin::act() {
 	wantsSwap_ = true;
@@ -65,4 +67,9 @@ void Goblin::spawnAll(std::shared_ptr<World> world, std::shared_ptr<Player> play
 	for (int level = 0; level < world->dungeon().size(); ++level)
 		for (int i = 0; i < std::uniform_int_distribution{ 5, 20 }(randomEngine); ++i)
 			spawnSingle(level, world, player_, randomEngine);
+}
+
+bool Goblin::canSeePlayer() const noexcept {
+	return uniformDistance(position(), player->position()) <= 7
+		&& canSee(position(), player->position(), world().dungeon());
 }

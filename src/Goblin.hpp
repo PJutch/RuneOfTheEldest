@@ -24,7 +24,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Renderer.hpp"
 
 #include "random.hpp"
-#include "geometry.hpp"
 
 #include <SFML/System.hpp>
 
@@ -77,10 +76,7 @@ private:
 		actor.beDamaged(1);
 	}
 
-	bool canSeePlayer() const noexcept {
-		return position().z == player->position().z
-			&& uniformDistance(position(), player->position()) <= 7;
-	}
+	bool canSeePlayer() const noexcept;
 };
 
 #endif
