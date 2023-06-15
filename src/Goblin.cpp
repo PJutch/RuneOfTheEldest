@@ -20,35 +20,46 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "geometry.hpp"
 
 bool Goblin::act() {
-	wantsSwap_ = true;
+	updateTarget();
+	travelToTarget();
+	wait(1);
+	return true;
+}
 
+void Goblin::updateTarget() noexcept {
 	if (canSeePlayer()) {
 		targetPosition = player->position();
 		aiState_ = AiState::ATTACKING;
 	} else if (aiState_ == AiState::ATTACKING) {
-		if (auto destination = world().dungeon().upStairs(targetPosition))
-			targetPosition = *destination;
-		else if (auto destination = world().dungeon().downStairs(targetPosition))
-			targetPosition = *destination;
-
+		targetPosition = tryFollowStairs(targetPosition);
 		aiState_ = AiState::SEEKING;
-	} else if (aiState_ == AiState::SEEKING && position() == targetPosition) {
-		int minLevel = std::max(position().z - 1, 0);
-		int maxLevel = std::max(position().z + 1, world().dungeon().size());
-		int targetLevel = std::uniform_int_distribution{ minLevel, maxLevel }(randomEngine());
-		targetPosition = world().dungeon().randomPositionAt(targetLevel, randomEngine(), [this](sf::Vector3i pos, const Dungeon&) {
-			return world().isFree(pos);
-		});
-	}
+	} else if (aiState_ == AiState::SEEKING && position() == targetPosition)
+		targetPosition = randomNearbyTarget();
+}
 
+sf::Vector3i Goblin::randomNearbyTarget() noexcept {
+	int minLevel = std::max(position().z - 1, 0);
+	int maxLevel = std::max(position().z + 1, world().dungeon().size());
+	int targetLevel = std::uniform_int_distribution{ minLevel, maxLevel }(randomEngine());
+	return world().dungeon().randomPositionAt(targetLevel, randomEngine(), [this](sf::Vector3i pos, const Dungeon&) {
+		return world().isFree(pos);
+	});
+}
+
+sf::Vector3i Goblin::tryFollowStairs(sf::Vector3i position) noexcept {
+	if (auto destination = world().dungeon().upStairs(position))
+		return *destination;
+	else if (auto destination = world().dungeon().downStairs(position))
+		return *destination;
+	return position;
+}
+
+void Goblin::travelToTarget() noexcept {
 	sf::Vector3i nextStep_ = nextStep(world().dungeon(), position(), targetPosition);
 	if (nextStep_.z == 0)
 		tryMoveInDirection(getXY(nextStep_), false);
 	else
 		tryMove(nextStep_, false);
-
-	wait(1);
-	return true;
 }
 
 AiState Goblin::aiState() const noexcept {

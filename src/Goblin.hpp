@@ -77,6 +77,12 @@ private:
 	}
 
 	bool canSeePlayer() const noexcept;
+
+	void updateTarget() noexcept;
+	sf::Vector3i randomNearbyTarget() noexcept;
+	sf::Vector3i tryFollowStairs(sf::Vector3i position) noexcept;
+
+	void travelToTarget() noexcept;
 };
 
 #endif
