@@ -22,6 +22,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <SFML/System.hpp>
 
 #include <array>
+#include <type_traits>
 
 /// Cast sf::Vector2<U> to sf::Vector2<T> using static_cast
 template <typename T, typename U>
@@ -307,6 +308,27 @@ T uniformDistance(sf::Vector3<T> from, sf::Vector3<T> to) noexcept {
 template <typename T>
 T uniformDistance(sf::Vector2<T> from, sf::Vector2<T> to) noexcept {
     return uniformNorm(to - from);
+}
+
+namespace detail {
+    template <typename T, typename Default>
+    using withDefault = std::conditional_t<std::is_void_v<T>, Default, T>;
+}
+
+/// @brief Computes euclidian norm of 2D vector
+/// @tparam Result Type of the result.
+/// Use to get norm of integer vector as floating point number
+template <typename Result = void, typename T>
+detail::withDefault<Result, T> norm(sf::Vector2<T> vec) noexcept {
+    return std::sqrt(vec.x * vec.x + vec.y * vec.y);
+}
+
+/// Computes euclidian distance between 2D points
+/// @tparam Result Type of the result.
+/// Use to get norm of integer vector as floating point number
+template <typename Result = void, typename T>
+detail::withDefault<Result, T> distance(sf::Vector2<T> from, sf::Vector2<T> to) noexcept {
+    return norm<Result, T>(to - from);
 }
 
 #endif

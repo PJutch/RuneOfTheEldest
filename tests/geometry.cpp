@@ -124,3 +124,35 @@ TEST(geometry, turn90Right) {
 TEST(geometry, turnDirection45Left) {
     EXPECT_EQ(turnDirection45Left(sf::Vector2i{ 0, -1 }), (sf::Vector2i{ -1, -1 }));
 }
+
+TEST(geometry, norm) {
+    EXPECT_EQ(norm(sf::Vector2i{3, 4}), 5);
+}
+
+TEST(geometry, normZero) {
+    EXPECT_EQ(norm(sf::Vector2i{ 0, 0 }), 0);
+}
+
+TEST(geometry, normNegativeComponents) {
+    EXPECT_EQ(norm(sf::Vector2i{ -3, -4 }), 5);
+}
+
+TEST(geometry, normIrrational) {
+    EXPECT_EQ(norm<double>(sf::Vector2i{ 1, 1 }), std::sqrt(2));
+}
+
+TEST(geometry, distance) {
+    EXPECT_EQ(distance(sf::Vector2i{ 1, 4 }, sf::Vector2i{ 4, 8 }), 5);
+}
+
+TEST(geometry, distanceZero) {
+    EXPECT_EQ(distance(sf::Vector2i{ 1, 4 }, sf::Vector2i{ 1, 4 }), 0);
+}
+
+TEST(geometry, distanceNegativeComponents) {
+    EXPECT_EQ(distance(sf::Vector2i{ 4, 8 }, sf::Vector2i{ 1, 4 }), 5);
+}
+
+TEST(geometry, distanceIrrational) {
+    EXPECT_EQ(distance<double>(sf::Vector2i{ 2, 2 }, sf::Vector2i{ 3, 3 }), std::sqrt(2));
+}
