@@ -71,6 +71,7 @@ private:
 	bool wantsSwap_ = true;
 
 	sf::Vector3i targetPosition;
+	AiState aiState_ = AiState::INACTIVE;
 
 	void attack(Actor& actor) final {
 		actor.beDamaged(1);

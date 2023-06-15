@@ -20,8 +20,24 @@ If not, see <https://www.gnu.org/licenses/>. */
 bool Goblin::act() {
 	wantsSwap_ = true;
 
-	if (canSeePlayer())
+	if (canSeePlayer()) {
 		targetPosition = player->position();
+		aiState_ = AiState::ATTACKING;
+	} else if (aiState_ == AiState::ATTACKING) {
+		if (auto destination = world().dungeon().upStairs(targetPosition))
+			targetPosition = *destination;
+		else if (auto destination = world().dungeon().downStairs(targetPosition))
+			targetPosition = *destination;
+
+		aiState_ = AiState::SEEKING;
+	} else if (aiState_ == AiState::SEEKING && position() == targetPosition) {
+		int minLevel = std::max(position().z - 1, 0);
+		int maxLevel = std::max(position().z + 1, world().dungeon().size());
+		int targetLevel = std::uniform_int_distribution{ minLevel, maxLevel }(randomEngine());
+		targetPosition = make3D(world().dungeon()[targetLevel].randomPosition(randomEngine(), [this, targetLevel](sf::Vector2i pos, const Level&) {
+			return world().isFree(make3D(pos, targetLevel));
+		}), targetLevel);
+	}
 
 	sf::Vector3i nextStep_ = nextStep(world().dungeon(), position(), targetPosition);
 	if (nextStep_.z == 0)
@@ -34,14 +50,7 @@ bool Goblin::act() {
 }
 
 AiState Goblin::aiState() const noexcept {
-	if (canSeePlayer())
-		return AiState::ATTACKING;
-
-	if (targetPosition != position()) {
-		return AiState::SEEKING;
-	}
-	else
-		return AiState::INACTIVE;
+	return aiState_;
 }
 
 void Goblin::spawnSingle(int level, std::shared_ptr<World> world, std::shared_ptr<Player> player_, RandomEngine& randomEngine) {
