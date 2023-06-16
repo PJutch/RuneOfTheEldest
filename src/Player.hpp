@@ -81,10 +81,12 @@ private:
 
 	void attack(Actor& actor) final {
 		actor.beDamaged(1);
+		world().makeSound(position(), 0.5);
 		endTurn();
 	}
 
 	void moveSucceed() final {
+		world().makeSound(position(), 0.1);
 		endTurn();
 	}
 };

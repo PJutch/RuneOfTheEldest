@@ -43,7 +43,7 @@ void Goblin::updateTarget() noexcept {
 
 sf::Vector3i Goblin::randomNearbyTarget() noexcept {
 	int minLevel = std::max(position().z - 1, 0);
-	int maxLevel = std::max(position().z + 1, world().dungeon().size());
+	int maxLevel = std::min(position().z + 1, world().dungeon().size() - 1);
 	int targetLevel = std::uniform_int_distribution{ minLevel, maxLevel }(randomEngine());
 	return world().dungeon().randomPositionAt(targetLevel, randomEngine(), [this](sf::Vector3i pos, const Dungeon&) {
 		return world().isFree(pos);
@@ -91,6 +91,9 @@ bool Goblin::canSeePlayer() const noexcept {
 
 void Goblin::handleSound(sf::Vector3i soundPosition, double volume) noexcept {
 	if (soundPosition.z != position().z)
+		return;
+
+	if (canSee(position(), soundPosition, world().dungeon()))
 		return;
 
 	auto [dx, dy, dz] = soundPosition - position();

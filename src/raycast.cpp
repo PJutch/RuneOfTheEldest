@@ -18,6 +18,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "geometry.hpp"
 
 bool canSee(sf::Vector3i pos1, sf::Vector3i pos2, const Dungeon& dungeon) {
+	if (pos1 == pos2)
+		return true;
+
 	if (pos1.z != pos2.z)
 		return false;
 

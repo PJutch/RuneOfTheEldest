@@ -30,6 +30,9 @@ void AliveActor::wait(int time) noexcept {
 }
 
 void AliveActor::tryMoveTo(sf::Vector3i newPosition, bool forceSwap) {
+	if (newPosition == position())
+		return;
+
 	if (isPassable(world().dungeon().at(newPosition))) {
 		if (auto other = world().actorAt(newPosition)) {
 			if (other->isOnPlayerSide() == isOnPlayerSide()) {

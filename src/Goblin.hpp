@@ -77,6 +77,7 @@ private:
 
 	void attack(Actor& actor) final {
 		actor.beDamaged(1);
+		world().makeSound(position(), 0.5);
 	}
 
 	bool canSeePlayer() const noexcept;
@@ -86,6 +87,10 @@ private:
 	sf::Vector3i tryFollowStairs(sf::Vector3i position) noexcept;
 
 	void travelToTarget() noexcept;
+
+	void moveSucceed() final {
+		world().makeSound(position(), 0.1);
+	}
 };
 
 #endif
