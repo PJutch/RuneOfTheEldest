@@ -89,6 +89,8 @@ public:
 	[[nodiscard]] bool hadSwapped() const noexcept {
 		return hadSwapped_;
 	}
+
+	void handleSound(sf::Vector3i, double) noexcept final {}
 private:
 	bool wantsSwap_ = true;
 	bool hadSwapped_ = false;

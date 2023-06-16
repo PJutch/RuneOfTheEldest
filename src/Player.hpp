@@ -61,6 +61,8 @@ public:
 	}
 
 	void handleSwap() noexcept final {}
+
+	void handleSound(sf::Vector3i, double) noexcept final {}
 private:
 	enum class State {
 		WAITING_TURN,

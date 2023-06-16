@@ -74,6 +74,8 @@ public:
 	[[nodiscard]] bool isFree(sf::Vector3i position) {
 		return isPassable(dungeon().at(position)) && !actorAt(position);
 	}
+
+	void makeSound(sf::Vector3i position, double volume);
 private:
 	std::shared_ptr<Dungeon> dungeon_ = nullptr;
 	std::vector<std::shared_ptr<Actor>> actors_;

@@ -20,6 +20,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 class TestActor : public Actor {
 public:
+	TestActor() = default;
 	TestActor(sf::Vector3i newPosition, int newId = -1) noexcept :
 		position_{ newPosition }, id_{ newId } {}
 	TestActor(int firstTurn, int turnDelay_, int newId = -1, std::vector<int>* log_ = nullptr,
@@ -72,6 +73,19 @@ public:
 	}
 
 	void handleSwap() noexcept final {}
+
+	void handleSound(sf::Vector3i position, double volume) noexcept final {
+		lastSoundPosition_ = position;
+		lastSoundVolume_ = volume;
+	}
+
+	sf::Vector3i lastSoundPosition() const noexcept {
+		return lastSoundPosition_;
+	}
+
+	double lastSoundVolume() const noexcept {
+		return lastSoundVolume_;
+	}
 private:
 	int nextTurn_ = 0;
 	int turnDelay = 0;
@@ -84,6 +98,9 @@ private:
 	int waitAfter = std::numeric_limits<int>::max();
 	int dieAfter = std::numeric_limits<int>::max();
 	bool interruptOnDelete = false;
+
+	sf::Vector3i lastSoundPosition_{ 0, 0, 0 };
+	double lastSoundVolume_ = 0.;
 };
 
 TEST(World, emptyActors) {
@@ -212,4 +229,21 @@ TEST(World, isFree) {
 	EXPECT_FALSE(world.isFree({ 0, 1, 0 }));
 	EXPECT_FALSE(world.isFree({ 1, 0, 0 }));
 	EXPECT_FALSE(world.isFree({ 1, 1, 0 }));
+}
+
+TEST(World, makeSound) {
+	World world;
+	auto actor1 = std::make_shared<TestActor>();
+	auto actor2 = std::make_shared<TestActor>();
+	world.addActor(actor1);
+	world.addActor(actor2);
+
+	sf::Vector3i position{ 1, 0, 1 };
+	double volume = 0.5;
+	world.makeSound(position, volume);
+
+	EXPECT_EQ(actor1->lastSoundPosition(), position);
+	EXPECT_EQ(actor2->lastSoundPosition(), position);
+	EXPECT_EQ(actor1->lastSoundVolume(), volume);
+	EXPECT_EQ(actor2->lastSoundVolume(), volume);
 }

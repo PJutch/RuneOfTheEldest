@@ -53,3 +53,8 @@ void World::update() {
 		}
 	}
 }
+
+void World::makeSound(sf::Vector3i position, double volume) {
+	for (auto actor : actors())
+		actor->handleSound(position, volume);
+}

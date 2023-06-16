@@ -59,6 +59,9 @@ public:
 	/// Damages Actor by given HPs
 	virtual void beDamaged(double damage) = 0;
 
+	/// called when Actor hears a sound
+	virtual void handleSound(sf::Vector3i position, double volume) = 0;
+
 	/// Draw an actor using a renderer. Basically a visitor pattern
 	virtual void draw(Renderer& renderer) const = 0;
 };
