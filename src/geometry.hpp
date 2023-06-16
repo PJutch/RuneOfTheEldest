@@ -311,25 +311,16 @@ T uniformDistance(sf::Vector2<T> from, sf::Vector2<T> to) noexcept {
     return uniformNorm(to - from);
 }
 
-namespace detail {
-    template <typename T, typename Default>
-    using withDefault = std::conditional_t<std::is_void_v<T>, Default, T>;
-}
-
-/// @brief Computes euclidian norm of 2D vector
-/// @tparam Result Type of the result.
-/// Use to get norm of integer vector as floating point number
-template <typename Result = void, typename T>
-detail::withDefault<Result, T> norm(sf::Vector2<T> vec) noexcept {
-    return std::sqrt(vec.x * vec.x + vec.y * vec.y);
+/// Computes euclidian norm of 2D vector
+template <typename T>
+auto norm(sf::Vector2<T> vec) noexcept {
+    return std::hypot(vec.x, vec.y);
 }
 
 /// Computes euclidian distance between 2D points
-/// @tparam Result Type of the result.
-/// Use to get norm of integer vector as floating point number
-template <typename Result = void, typename T>
-detail::withDefault<Result, T> distance(sf::Vector2<T> from, sf::Vector2<T> to) noexcept {
-    return norm<Result, T>(to - from);
+template <typename T>
+auto distance(sf::Vector2<T> from, sf::Vector2<T> to) noexcept {
+    return norm(to - from);
 }
 
 #endif

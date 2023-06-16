@@ -21,7 +21,7 @@ bool canSee(sf::Vector3i pos1, sf::Vector3i pos2, const Dungeon& dungeon) {
 	if (pos1.z != pos2.z)
 		return false;
 
-	double distance_ = distance<double>(getXY(pos1), getXY(pos2));
+	double distance_ = distance(getXY(pos1), getXY(pos2));
 
 	// sin and cos of angle between pos2 - pos1 and x axis
 	double cos = (pos2.x - pos1.x) / distance_;

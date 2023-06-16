@@ -138,7 +138,7 @@ TEST(geometry, normNegativeComponents) {
 }
 
 TEST(geometry, normIrrational) {
-    EXPECT_EQ(norm<double>(sf::Vector2i{ 1, 1 }), std::sqrt(2));
+    EXPECT_EQ(norm(sf::Vector2i{ 1, 1 }), std::sqrt(2));
 }
 
 TEST(geometry, distance) {
@@ -154,5 +154,5 @@ TEST(geometry, distanceNegativeComponents) {
 }
 
 TEST(geometry, distanceIrrational) {
-    EXPECT_EQ(distance<double>(sf::Vector2i{ 2, 2 }, sf::Vector2i{ 3, 3 }), std::sqrt(2));
+    EXPECT_EQ(distance(sf::Vector2i{ 2, 2 }, sf::Vector2i{ 3, 3 }), std::sqrt(2));
 }
