@@ -36,7 +36,7 @@ void Goblin::updateTarget() noexcept {
 		aiState_ = AiState::SEEKING;
 	} else if (aiState_ == AiState::SEEKING && position() == targetPosition) {
 		targetPosition = randomNearbyTarget();
-		targetPriority = 0.;
+		targetPriority = 0.01;
 	} else
 		targetPriority *= 0.9;
 }
@@ -59,6 +59,7 @@ sf::Vector3i Goblin::tryFollowStairs(sf::Vector3i position) noexcept {
 }
 
 void Goblin::travelToTarget() noexcept {
+	wantsSwap_ = true;
 	sf::Vector3i nextStep_ = nextStep(world().dungeon(), position(), targetPosition);
 	if (nextStep_.z == 0)
 		tryMoveInDirection(getXY(nextStep_), false);
