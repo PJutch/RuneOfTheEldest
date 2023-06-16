@@ -75,3 +75,8 @@ TEST(raycast, canSeeBlockByFloor) {
 
     EXPECT_FALSE(canSee({ 0, 1, 0 }, { 1, 1, 1 }, dungeon));
 }
+
+TEST(raycast, canSeeSelf) {
+    Dungeon dungeon;
+    EXPECT_TRUE(canSee({1, 1, 1}, {1, 1, 1}, dungeon));
+}
