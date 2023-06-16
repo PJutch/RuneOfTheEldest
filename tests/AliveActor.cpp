@@ -90,7 +90,7 @@ public:
 		return hadSwapped_;
 	}
 
-	void handleSound(sf::Vector3i, double) noexcept final {}
+	void handleSound(Sound sound) noexcept final {}
 private:
 	bool wantsSwap_ = true;
 	bool hadSwapped_ = false;

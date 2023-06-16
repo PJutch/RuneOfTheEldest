@@ -66,7 +66,7 @@ public:
 	/// Gets Goblin's AI state
 	AiState aiState() const noexcept;
 
-	void handleSound(sf::Vector3i position, double volume) noexcept final;
+	void handleSound(Sound sound) noexcept final;
 private:
 	std::shared_ptr<Player> player;
 	bool wantsSwap_ = true;
@@ -77,7 +77,7 @@ private:
 
 	void attack(Actor& actor) final {
 		actor.beDamaged(1);
-		world().makeSound(position(), 0.5);
+		world().makeSound({ Sound::Type::ATTACK, false, position() });
 	}
 
 	bool canSeePlayer() const noexcept;
@@ -89,7 +89,7 @@ private:
 	void travelToTarget() noexcept;
 
 	void moveSucceed() final {
-		world().makeSound(position(), 0.1);
+		world().makeSound({ Sound::Type::WALK, false, position() });
 	}
 };
 

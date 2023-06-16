@@ -74,17 +74,12 @@ public:
 
 	void handleSwap() noexcept final {}
 
-	void handleSound(sf::Vector3i position, double volume) noexcept final {
-		lastSoundPosition_ = position;
-		lastSoundVolume_ = volume;
+	void handleSound(Sound sound) noexcept final {
+		lastSound_ = sound;
 	}
 
-	sf::Vector3i lastSoundPosition() const noexcept {
-		return lastSoundPosition_;
-	}
-
-	double lastSoundVolume() const noexcept {
-		return lastSoundVolume_;
+	Sound lastSound() const noexcept {
+		return lastSound_;
 	}
 private:
 	int nextTurn_ = 0;
@@ -99,8 +94,7 @@ private:
 	int dieAfter = std::numeric_limits<int>::max();
 	bool interruptOnDelete = false;
 
-	sf::Vector3i lastSoundPosition_{ 0, 0, 0 };
-	double lastSoundVolume_ = 0.;
+	Sound lastSound_{};
 };
 
 TEST(World, emptyActors) {
@@ -238,12 +232,9 @@ TEST(World, makeSound) {
 	world.addActor(actor1);
 	world.addActor(actor2);
 
-	sf::Vector3i position{ 1, 0, 1 };
-	double volume = 0.5;
-	world.makeSound(position, volume);
+	Sound sound{ Sound::Type::ATTACK, true, {1, 0, 1} };
+	world.makeSound(sound);
 
-	EXPECT_EQ(actor1->lastSoundPosition(), position);
-	EXPECT_EQ(actor2->lastSoundPosition(), position);
-	EXPECT_EQ(actor1->lastSoundVolume(), volume);
-	EXPECT_EQ(actor2->lastSoundVolume(), volume);
+	EXPECT_EQ(actor1->lastSound(), sound);
+	EXPECT_EQ(actor2->lastSound(), sound);
 }

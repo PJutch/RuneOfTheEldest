@@ -62,7 +62,7 @@ public:
 
 	void handleSwap() noexcept final {}
 
-	void handleSound(sf::Vector3i, double) noexcept final {}
+	void handleSound(Sound) noexcept final {}
 private:
 	enum class State {
 		WAITING_TURN,
@@ -81,12 +81,12 @@ private:
 
 	void attack(Actor& actor) final {
 		actor.beDamaged(1);
-		world().makeSound(position(), 0.5);
+		world().makeSound({ Sound::Type::ATTACK, true, position() });
 		endTurn();
 	}
 
 	void moveSucceed() final {
-		world().makeSound(position(), 0.1);
+		world().makeSound({ Sound::Type::WALK, true, position() });
 		endTurn();
 	}
 };

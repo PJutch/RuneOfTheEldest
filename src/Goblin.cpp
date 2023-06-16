@@ -90,19 +90,31 @@ bool Goblin::canSeePlayer() const noexcept {
 		&& canSee(position(), player->position(), world().dungeon());
 }
 
-void Goblin::handleSound(sf::Vector3i soundPosition, double volume) noexcept {
-	if (soundPosition.z != position().z)
+namespace {
+	double basicPriority(Sound sound) {
+		switch (sound.type) {
+		case Sound::Type::WALK:
+			return sound.isSourceOnPlayerSide ? 0.1 : 0.0;
+		case Sound::Type::ATTACK: return 0.5;
+		default:
+			TROTE_ASSERT(false, "All sound types sholud be handled");
+		}
+	}
+}
+
+void Goblin::handleSound(Sound sound) noexcept {
+	if (sound.position.z != position().z)
 		return;
 
-	if (canSee(position(), soundPosition, world().dungeon()))
+	if (canSee(position(), sound.position, world().dungeon()))
 		return;
 
-	auto [dx, dy, dz] = soundPosition - position();
+	auto [dx, dy, dz] = sound.position - position();
 	double distance = dx * dx + dy * dy;
 
-	double priority = volume / distance;
+	double priority = basicPriority(sound) / distance;
 	if (priority > targetPriority) {
-		targetPosition = soundPosition;
+		targetPosition = sound.position;
 		targetPriority = priority;
 		aiState_ = AiState::SEEKING;
 	}
