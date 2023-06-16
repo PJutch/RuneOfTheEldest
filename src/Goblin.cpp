@@ -30,11 +30,15 @@ void Goblin::updateTarget() noexcept {
 	if (canSeePlayer()) {
 		targetPosition = player->position();
 		aiState_ = AiState::ATTACKING;
+		targetPriority = 1.;
 	} else if (aiState_ == AiState::ATTACKING) {
 		targetPosition = tryFollowStairs(targetPosition);
 		aiState_ = AiState::SEEKING;
-	} else if (aiState_ == AiState::SEEKING && position() == targetPosition)
+	} else if (aiState_ == AiState::SEEKING && position() == targetPosition) {
 		targetPosition = randomNearbyTarget();
+		targetPriority = 0.;
+	} else
+		targetPriority *= 0.9;
 }
 
 sf::Vector3i Goblin::randomNearbyTarget() noexcept {

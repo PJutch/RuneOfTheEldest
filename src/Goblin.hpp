@@ -70,6 +70,7 @@ private:
 	bool wantsSwap_ = true;
 
 	sf::Vector3i targetPosition;
+	double targetPriority = 0.;
 	AiState aiState_ = AiState::INACTIVE;
 
 	void attack(Actor& actor) final {
