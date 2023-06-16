@@ -66,7 +66,7 @@ public:
 	/// Gets Goblin's AI state
 	AiState aiState() const noexcept;
 
-	void handleSound(sf::Vector3i, double) noexcept final {}
+	void handleSound(sf::Vector3i position, double volume) noexcept final;
 private:
 	std::shared_ptr<Player> player;
 	bool wantsSwap_ = true;

@@ -88,3 +88,18 @@ bool Goblin::canSeePlayer() const noexcept {
 	return uniformDistance(position(), player->position()) <= 7
 		&& canSee(position(), player->position(), world().dungeon());
 }
+
+void Goblin::handleSound(sf::Vector3i soundPosition, double volume) noexcept {
+	if (soundPosition.z != position().z)
+		return;
+
+	auto [dx, dy, dz] = soundPosition - position();
+	double distance = dx * dx + dy * dy;
+
+	double priority = volume / distance;
+	if (priority > targetPriority) {
+		targetPosition = soundPosition;
+		targetPriority = priority;
+		aiState_ = AiState::SEEKING;
+	}
+}
