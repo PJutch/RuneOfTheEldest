@@ -24,6 +24,9 @@ SeenTiles::SeenTiles(std::shared_ptr<Player> player_, std::shared_ptr<Dungeon> d
 	player{ std::move(player_) }, dungeon{ std::move(dungeon_) } {}
 
 void SeenTiles::onGenerate() {
+	tileStates.clear();
+	shapes.clear();
+
 	tileStates.resize(dungeon->size());
 	shapes.reserve(dungeon->size());
 
