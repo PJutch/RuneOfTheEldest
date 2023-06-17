@@ -32,6 +32,7 @@ class Player : public AliveActor, public std::enable_shared_from_this<Player> {
 public:
 	Player(std::shared_ptr<World> world_, RandomEngine& randomEngine_) : 
 		AliveActor{ 10, 0.1, std::move(world_), &randomEngine_ } {}
+	Player() : AliveActor{ 10, 0.1, nullptr, nullptr } {}
 
 	void spawn();
 
