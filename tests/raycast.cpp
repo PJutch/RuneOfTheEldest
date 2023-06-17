@@ -80,3 +80,16 @@ TEST(raycast, canSeeSelf) {
     Dungeon dungeon;
     EXPECT_TRUE(canSee({1, 1, 1}, {1, 1, 1}, dungeon));
 }
+
+TEST(raycast, canSeeWall) {
+    Dungeon dungeon;
+    dungeon.resize(1);
+    dungeon[0].generateBlank({ 3, 3 });
+
+    for (int x = 0; x < 3; ++x)
+        for (int y = 0; y < 3; ++y)
+            dungeon.at(x, y, 0) = Tile::EMPTY;
+    dungeon.at({2, 1, 0}) = Tile::WALL;
+
+    EXPECT_TRUE(canSee({ 0, 2, 0 }, { 2, 1, 0 }, dungeon));
+}

@@ -43,7 +43,8 @@ public:
     /// Creates renderer and loads textures
     Renderer(std::shared_ptr<Camera> camera,
              std::shared_ptr<sf::RenderWindow> window, 
-             std::shared_ptr<World> world_,
+             std::shared_ptr<World> world,
+             std::shared_ptr<Player> player,
              std::unique_ptr<AssetManager> assets);
 
     /// If true bsp areas created by dungeon generation are rendered
@@ -69,6 +70,7 @@ private:
     std::unique_ptr<AssetManager> assets;
 
     std::shared_ptr<World> world;
+    std::shared_ptr<Player> player;
 
     std::shared_ptr<sf::RenderWindow> window;
 
@@ -91,7 +93,7 @@ private:
     }
 
     void drawWorld();
-    void draw(const Level& level);
+    void draw(const Level& level, int z);
     void drawAreas(const Level& level);
 
     void drawHpBar(sf::Vector3i position, double hp, double maxHp);

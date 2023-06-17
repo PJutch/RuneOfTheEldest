@@ -31,10 +31,10 @@ bool canSee(sf::Vector3i pos1, sf::Vector3i pos2, const Dungeon& dungeon) {
 	double sin = (pos2.y - pos1.y) / distance_;
 
 	double wholeDistance;
-	double offset = std::modf(distance_, &wholeDistance) / 2; // offset to make checked positions simmetrical
+	double offset = std::modf(distance_, &wholeDistance) / 2 + 1; // offset to make checked positions simmetrical
 
 	// checks points on line from pos1 to pos2 with step 1
-	for (double distance = offset; distance <= distance_; ++distance) {
+	for (double distance = offset; distance <= distance_ - offset; ++distance) {
 		int x = pos1.x + std::round(distance * cos);
 		int y = pos1.y + std::round(distance * sin);
 

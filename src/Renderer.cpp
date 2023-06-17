@@ -18,25 +18,29 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Player.hpp"
 #include "Goblin.hpp"
 
+#include "raycast.hpp"
+
 Renderer::Renderer(std::shared_ptr<Camera> camera,
                    std::shared_ptr<sf::RenderWindow> window_,
                    std::shared_ptr<World> world_,
+                   std::shared_ptr<Player> player_,
                    std::unique_ptr<AssetManager> assets_) :
     camera{ std::move(camera) }, assets{ std::move(assets_) },
-    world{ std::move(world_) },
+    world{ std::move(world_) }, player{ player_ },
     window{ std::move(window_) } {}
 
 void Renderer::drawWorld() {
-    draw(world->dungeon()[camera->position().level]);
+    draw(world->dungeon()[camera->position().level], camera->position().level);
 
     for (std::shared_ptr<Actor> actor : world->actors())
         actor->draw(*this);
 }
 
-void Renderer::draw(const Level& level) {
+void Renderer::draw(const Level& level, int z) {
     for (int x = 0; x < level.shape().x; ++ x)
         for (int y = 0; y < level.shape().y; ++ y)
-            drawSprite(sf::Vector2i{ x, y }, assets->tileTexture(level.at(x, y)));
+            if (canSee(player->position(), {x, y, z}, world->dungeon()))
+                drawSprite(sf::Vector2i{ x, y }, assets->tileTexture(level.at(x, y)));
     
     if (renderAreas_) drawAreas(level);
 }
@@ -72,6 +76,9 @@ void Renderer::draw(const Player& player) {
 }
 
 void Renderer::draw(const Goblin& goblin) {
+    if (!canSee(player->position(), goblin.position(), world->dungeon()))
+        return;
+
     drawSprite(goblin.position(), assets->goblinTexture());
     drawHpBar(goblin.position(), goblin.hp(), goblin.maxHp());
     drawSprite(goblin.position(), assets->aiStateIcon(goblin.aiState()));
