@@ -21,11 +21,12 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "raycast.hpp"
 
 Renderer::Renderer(std::shared_ptr<Camera> camera,
+                   std::shared_ptr<SeenTiles> seenTiles_,
                    std::shared_ptr<sf::RenderWindow> window_,
                    std::shared_ptr<World> world_,
                    std::shared_ptr<Player> player_,
                    std::unique_ptr<AssetManager> assets_) :
-    camera{ std::move(camera) }, assets{ std::move(assets_) },
+    camera{ std::move(camera) }, assets{ std::move(assets_) }, seenTiles{ std::move(seenTiles_) },
     world{ std::move(world_) }, player{ player_ },
     window{ std::move(window_) } {}
 
@@ -39,7 +40,7 @@ void Renderer::drawWorld() {
 void Renderer::draw(const Level& level, int z) {
     for (int x = 0; x < level.shape().x; ++ x)
         for (int y = 0; y < level.shape().y; ++ y)
-            if (canSee(player->position(), {x, y, z}, world->dungeon()))
+            if (seenTiles->tileState({x, y, z}) == SeenTiles::TileState::VISIBLE)
                 drawSprite(sf::Vector2i{ x, y }, assets->tileTexture(level.at(x, y)));
     
     if (renderAreas_) drawAreas(level);
@@ -152,4 +153,9 @@ void Renderer::drawText(sf::Vector2f position, const std::string& string, sf::Co
     text.setPosition(position);
 
     window->draw(text);
+}
+
+void Renderer::update(sf::Time elapsedTime) {
+    camera->update(elapsedTime);
+    seenTiles->update();
 }

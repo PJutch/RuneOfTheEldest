@@ -24,6 +24,7 @@ Game::Game(std::shared_ptr<World> newWorld,
            std::shared_ptr<Player> player_,
            std::shared_ptr<sf::RenderWindow> window_,
            std::shared_ptr<Camera> camera_,
+           std::shared_ptr<SeenTiles> seenTiles_,
            std::unique_ptr<Renderer> newRenderer,
            RandomEngine& randomEngine_,
            LoggerFactory& loggerFactory) :
@@ -31,6 +32,7 @@ Game::Game(std::shared_ptr<World> newWorld,
     player{ std::move(player_) },
     window{std::move(window_)},
     camera{std::move(camera_)},
+    seenTiles{ std::move(seenTiles_) },
     renderer_{std::move(newRenderer)},
     randomEngine{ &randomEngine_ }, 
     generationLogger{ loggerFactory.create("generation") } {}
@@ -48,7 +50,7 @@ void Game::run() {
             world().update();
 
             sf::Time elapsedTime = clock.restart();
-            camera->update(elapsedTime);
+            renderer().update(elapsedTime);
 
             renderer().draw();
         } else
@@ -92,4 +94,6 @@ void Game::generate() {
     player->spawn();
 
     generationLogger->info("Finished");
+
+    seenTiles->onGenerate();
 }

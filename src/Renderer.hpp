@@ -19,6 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Camera/Camera.hpp"
 #include "View.hpp"
 #include "AssetManager.hpp"
+#include "SeenTiles.hpp"
 
 #include "World.hpp"
 #include "AiState.hpp"
@@ -42,6 +43,7 @@ class Renderer {
 public:
     /// Creates renderer and loads textures
     Renderer(std::shared_ptr<Camera> camera,
+             std::shared_ptr<SeenTiles> seenTiles,
              std::shared_ptr<sf::RenderWindow> window, 
              std::shared_ptr<World> world,
              std::shared_ptr<Player> player,
@@ -51,6 +53,9 @@ public:
     void renderAreas(bool newRenderAreas = true) noexcept {
         renderAreas_ = newRenderAreas;
     }
+
+    /// Updates Renderer components such as Camera
+    void update(sf::Time elapsedTime);
 
     /// Renders game world
     void draw();
@@ -68,6 +73,7 @@ private:
 
     std::shared_ptr<Camera> camera;
     std::unique_ptr<AssetManager> assets;
+    std::shared_ptr<SeenTiles> seenTiles;
 
     std::shared_ptr<World> world;
     std::shared_ptr<Player> player;

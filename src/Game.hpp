@@ -36,6 +36,7 @@ public:
          std::shared_ptr<Player> player,
          std::shared_ptr<sf::RenderWindow> window,
          std::shared_ptr<Camera> camera,
+         std::shared_ptr<SeenTiles> seenTiles_,
          std::unique_ptr<Renderer> renderer,
          RandomEngine& randomEngine,
          LoggerFactory& loggerFactory);
@@ -64,6 +65,7 @@ private:
 
     std::shared_ptr<sf::RenderWindow> window;
     std::shared_ptr<Camera> camera;
+    std::shared_ptr<SeenTiles> seenTiles;
     std::unique_ptr<Renderer> renderer_;
 
     RandomEngine* randomEngine;
