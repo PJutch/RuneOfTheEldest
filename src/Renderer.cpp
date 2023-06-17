@@ -42,6 +42,8 @@ void Renderer::draw(const Level& level, int z) {
         for (int y = 0; y < level.shape().y; ++ y)
             if (seenTiles->tileState({x, y, z}) == SeenTiles::TileState::VISIBLE)
                 drawSprite(sf::Vector2i{ x, y }, assets->tileTexture(level.at(x, y)));
+            else if (seenTiles->tileState({ x, y, z }) == SeenTiles::TileState::MEMORIZED)
+                drawSprite(sf::Vector2i{ x, y }, assets->tileTexture(level.at(x, y)), 0.5);
     
     if (renderAreas_) drawAreas(level);
 }
@@ -93,9 +95,16 @@ void Renderer::drawSprite(sf::Vector3i position, const sf::Texture& texture) {
 }
 
 void Renderer::drawSprite(sf::Vector2i position, const sf::Texture& texture) {
+    drawSprite(position, texture, 1.0);
+}
+
+void Renderer::drawSprite(sf::Vector2i position, const sf::Texture& texture, double colorMod) {
     sf::Sprite sprite;
     sprite.setTexture(texture);
     sprite.setPosition(toScreen(position));
+
+    sf::Uint8 spriteColor = colorMod * 255;
+    sprite.setColor({ spriteColor , spriteColor , spriteColor });
 
     window->draw(sprite);
 }

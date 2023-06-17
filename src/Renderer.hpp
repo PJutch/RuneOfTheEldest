@@ -106,6 +106,7 @@ private:
 
     void drawSprite(sf::Vector3i position, const sf::Texture& texture);
     void drawSprite(sf::Vector2i position, const sf::Texture& texture);
+    void drawSprite(sf::Vector2i position, const sf::Texture& texture, double colorMod);
 
     void drawRect(sf::FloatRect rect,
         sf::Color fillColor, sf::Color outlineColor, float outlineThickness);
