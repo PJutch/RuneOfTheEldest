@@ -86,8 +86,7 @@ void Goblin::spawnAll(std::shared_ptr<World> world, std::shared_ptr<Player> play
 }
 
 bool Goblin::canSeePlayer() const noexcept {
-	return uniformDistance(position(), player->position()) <= 7
-		&& canSee(position(), player->position(), world().dungeon());
+	return canSee(position(), player->position(), world().dungeon());
 }
 
 namespace {
