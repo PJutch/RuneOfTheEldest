@@ -39,14 +39,15 @@ void PlayerMap::onGenerate() {
 }
 
 void PlayerMap::updateTiles() {
-	int z = player->position().z;
-	const Level& level = world->dungeon()[z];
-	for (int x = 0; x < level.shape().x; ++x)
-		for (int y = 0; y < level.shape().y; ++y)
-			if (canSee(player->position(), { x, y, z }, world->dungeon()))
-				tileStateMut({ x, y, z }) = TileState::VISIBLE;
-			else if (tileState({ x, y, z }) == TileState::VISIBLE)
-				tileStateMut({ x, y, z }) = TileState::MEMORIZED;
+	for (int z = 0; z < world->dungeon().size(); ++z) {
+		const Level& level = world->dungeon()[z];
+		for (int x = 0; x < level.shape().x; ++x)
+			for (int y = 0; y < level.shape().y; ++y)
+				if (canSee(player->position(), { x, y, z }, world->dungeon()))
+					tileStateMut({ x, y, z }) = TileState::VISIBLE;
+				else if (tileState({ x, y, z }) == TileState::VISIBLE)
+					tileStateMut({ x, y, z }) = TileState::MEMORIZED;
+	}
 }
 
 void PlayerMap::updateActors() {
