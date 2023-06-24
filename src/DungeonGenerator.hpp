@@ -33,7 +33,6 @@ class Dungeon;
 class DungeonGenerator {
 public:
     DungeonGenerator(std::unique_ptr<RoomGenerator> roomGenerator, 
-                     std::shared_ptr<Dungeon> dungeon,
                      RandomEngine& randomEngine);
 
     /// Minimum size of the room
@@ -54,6 +53,10 @@ public:
         return *roomGenerator_;
     }
 
+    void dungeon(Dungeon& newDungeon) {
+        dungeon_ = &newDungeon;
+    }
+
     void operator() ();
 private:
     std::unique_ptr<RoomGenerator> roomGenerator_;
@@ -63,7 +66,7 @@ private:
 
     std::queue<Area> areas;
 
-    std::shared_ptr<Dungeon> dungeon;
+    Dungeon* dungeon_ = nullptr;
     RandomEngine* randomEngine;
 
     void processLevel(int level);

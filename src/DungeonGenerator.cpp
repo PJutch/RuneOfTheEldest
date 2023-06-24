@@ -21,19 +21,17 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "geometry.hpp"
 
 DungeonGenerator::DungeonGenerator(std::unique_ptr<RoomGenerator> newRoomGenerator,
-                                   std::shared_ptr<Dungeon> dungeon_,
                                    RandomEngine& randomEngine_) :
     roomGenerator_{std::move(newRoomGenerator)},
-    dungeon{std::move(dungeon_)},
     randomEngine{&randomEngine_} {}
 
 void DungeonGenerator::operator() () {
-    for (int level = 0; level < dungeon->size(); ++level)
+    for (int level = 0; level < dungeon_->size(); ++level)
         processLevel(level);
 }
 
 void DungeonGenerator::processLevel(int z) {
-    areas.emplace(shrinkTopLeft((*dungeon)[z].bounds(), {1, 1}));
+    areas.emplace(shrinkTopLeft((*dungeon_)[z].bounds(), {1, 1}));
     while (!areas.empty()) {
         Area area = std::move(areas.front());
         areas.pop();
@@ -43,13 +41,13 @@ void DungeonGenerator::processLevel(int z) {
 }
 
 void DungeonGenerator::processArea(int z, Area area) {
-    Level& level = (*dungeon)[z];
+    Level& level = (*dungeon_)[z];
 
     TROTE_ASSERT(level.isValidRect(area.bounds()));
     TROTE_ASSERT(area.width() >= minSize_);
     TROTE_ASSERT(area.height() >= minSize_);
 
-    dungeon->addArea(area.bounds(), z);
+    dungeon_->addArea(area.bounds(), z);
 
     if (!canSplit(area.width()) && !canSplit(area.height())) {
         roomGenerator()(level, area);
