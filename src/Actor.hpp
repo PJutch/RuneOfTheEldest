@@ -22,6 +22,8 @@ class Renderer;
 
 #include <SFML/System.hpp>
 
+#include <memory>
+
 /// Abstract base for object that performs some actions in its turn
 class Actor {
 public:
