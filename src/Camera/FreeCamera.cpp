@@ -37,7 +37,7 @@ void FreeCamera::handleEvent(sf::Event event) {
         if (position().level > 0)
             --position_.level;
     } else if (wasKeyPressed(event, sf::Keyboard::Period) && event.key.shift) {
-        if (position().level + 1 < dungeon->size())
+        if (position().level + 1 < dungeon->shape().z)
             ++position_.level;
     }
 }

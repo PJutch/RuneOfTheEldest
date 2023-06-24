@@ -26,12 +26,12 @@ DungeonGenerator::DungeonGenerator(std::unique_ptr<RoomGenerator> newRoomGenerat
     randomEngine{&randomEngine_} {}
 
 void DungeonGenerator::operator() () {
-    for (int level = 0; level < dungeon_->size(); ++level)
+    for (int level = 0; level < dungeon_->shape().z; ++level)
         processLevel(level);
 }
 
 void DungeonGenerator::processLevel(int z) {
-    areas.emplace(shrinkTopLeft(dungeon_->bounds(z), {1, 1}));
+    areas.emplace(shrinkTopLeft(dungeon_->horizontalBounds(), {1, 1}));
     while (!areas.empty()) {
         Area area = std::move(areas.front());
         areas.pop();
@@ -41,7 +41,7 @@ void DungeonGenerator::processLevel(int z) {
 }
 
 void DungeonGenerator::processArea(int z, Area area) {
-    TROTE_ASSERT(dungeon_->isValidRect(area.bounds(), z));
+    TROTE_ASSERT(dungeon_->isValidRect(area.bounds()));
     TROTE_ASSERT(area.width() >= minSize_);
     TROTE_ASSERT(area.height() >= minSize_);
 

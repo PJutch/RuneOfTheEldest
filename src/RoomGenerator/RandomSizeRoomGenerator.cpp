@@ -161,7 +161,7 @@ void RandomSizeRoomGenerator::verticalPassage(int z, int top, int bottom, int x)
 }
 
 void RandomSizeRoomGenerator::operator() (int z, Area area) {
-    TROTE_ASSERT(dungeon_->isValidRect(area.bounds(), z));
+    TROTE_ASSERT(dungeon_->isValidRect(area.bounds()));
 
     Area room = randomRoomIn(area);
 

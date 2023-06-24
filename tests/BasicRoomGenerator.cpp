@@ -28,8 +28,8 @@ bool isValid(sf::IntRect rect) noexcept {
 testing::AssertionResult hasSingleRoom(const Dungeon& dungeon, int z, sf::IntRect area) {
     sf::IntRect room = shrinkBottomRight(area, {1, 1});
     
-    for (int x = 0; x < dungeon.shape(z).x; ++ x)
-        for (int y = 0; y < dungeon.shape(z).y; ++ y)
+    for (int x = 0; x < dungeon.shape().x; ++ x)
+        for (int y = 0; y < dungeon.shape().y; ++ y)
             if (room.contains(x, y)) {
                 if (dungeon.at(x, y, z) != Tile::EMPTY)
                     return testing::AssertionFailure()

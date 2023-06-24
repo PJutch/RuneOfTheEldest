@@ -20,7 +20,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "../assert.hpp"
 
 void BasicRoomGenerator::operator() (int z, Area area) {
-    TROTE_ASSERT(dungeon_->isValidRect(area.bounds(), z));
+    TROTE_ASSERT(dungeon_->isValidRect(area.bounds()));
     
     for (int x = area.left(); x < area.right() - 1; ++ x)
         for (int y = area.top(); y < area.bottom() - 1; ++ y)

@@ -45,42 +45,42 @@ public:
 
 	/// Checks if there are tiles with this z
 	[[nodiscard]] bool isValidZ(int z) const noexcept {
-		return 0 <= z && z < size();
+		return 0 <= z && z < shape().z;
 	}
 
 	/// Checks if there are tiles with this x
-	[[nodiscard]] bool isValidX(int x, int z) const noexcept {
-		return 0 <= x && x < shapes[z].x;
+	[[nodiscard]] bool isValidX(int x) const noexcept {
+		return 0 <= x && x < shape().x;
 	}
 
 	/// Checks if there are tiles with this y
-	[[nodiscard]] bool isValidY(int y, int z) const noexcept {
-		return 0 <= y && y < shapes[z].y;
+	[[nodiscard]] bool isValidY(int y) const noexcept {
+		return 0 <= y && y < shape().y;
 	}
 
 	/// Checks if position is valid tile position
 	[[nodiscard]] bool isValidPosition(sf::Vector3i position) const noexcept {
-		return isValidZ(position.z) && isValidX(position.x, position.z) && isValidY(position.y, position.z);
+		return isValidZ(position.z) && isValidX(position.x) && isValidY(position.y);
 	}
 
 	/// Checks if rect sides are >=0 and all tiles in it are exists
-	[[nodiscard]] bool isValidRect(sf::IntRect rect, int z) const noexcept {
-		return isValidX(rect.left, z) && isValidY(rect.top, z)
+	[[nodiscard]] bool isValidRect(sf::IntRect rect) const noexcept {
+		return isValidX(rect.left) && isValidY(rect.top)
 			&& rect.width >= 0 && rect.height >= 0
-			&& isValidX(rect.left + rect.width - 1, z)
-			&& isValidY(rect.top + rect.height - 1, z);
+			&& isValidX(rect.left + rect.width - 1)
+			&& isValidY(rect.top + rect.height - 1);
 	}
 
 	/// @brief Access to individual tile on level level at (x, y)
 	/// @warning Check all indices by yourself
 	[[nodiscard]] Tile& at(int x, int y, int z) noexcept {
-		return tiles[z][x * shapes[z].y + y];
+		return tiles[z * shape_.x * shape_.y + x * shape_.y + y];
 	}
 
 	/// @brief Access to individual tile on level level at (x, y)
 	/// @warning Check all indices by yourself
 	[[nodiscard]] const Tile& at(int x, int y, int z) const noexcept {
-		return tiles[z][x * shapes[z].y + y];
+		return tiles[z * shape_.x * shape_.y + x * shape_.y + y];
 	}
 
 	/// @brief Access to individual tile on level level at (x, y)
@@ -107,26 +107,18 @@ public:
 		return at(position.x, position.y, position.z);
 	}
 
-	sf::Vector2i shape(int z) const noexcept {
-		return shapes[z];
+	/// Dungeon sizes in all axis
+	sf::Vector3i shape() const noexcept {
+		return shape_;
 	}
 
-	sf::IntRect bounds(int z) const noexcept {
-		return { {0, 0}, shape(z) };
+	/// Dungeon sizes in XY axis
+	sf::IntRect horizontalBounds() const noexcept {
+		return { {0, 0}, getXY(shape()) };
 	}
 
+	/// Clears and creates new dungeon with given shape filled with given tile
 	void assign(sf::Vector3i shape, Tile tile = Tile::WALL);
-
-	/// Level count
-	[[nodiscard]] int size() const noexcept {
-		return shapes.size();
-	}
-
-	/// Creates or deletes last levels to make size() == newSize
-	void resize(int newSize) noexcept {
-		tiles.resize(newSize);
-		shapes.resize(newSize);
-	}
 
 	/// Returns at(position) destination if it's Tile::UP_STAIRS
 	[[nodiscard]] std::optional<sf::Vector3i> upStairs(sf::Vector3i position) const {
@@ -151,8 +143,8 @@ public:
 	/// @brief Random tile position
 	/// @details position distribution is uniform and independent for both dimensions
 	[[nodiscard]] sf::Vector3i randomPositionAt(int level) const {
-		return { std::uniform_int_distribution{ 0, shapes[level].x - 1 }(*randomEngine),
-				 std::uniform_int_distribution{ 0, shapes[level].y - 1 }(*randomEngine),
+		return { std::uniform_int_distribution{ 0, shape_.x - 1 }(*randomEngine),
+				 std::uniform_int_distribution{ 0, shape_.y - 1 }(*randomEngine),
 		         level };
 	}
 
@@ -188,8 +180,8 @@ public:
 		return areas_[level];
 	}
 private:
-	std::vector<std::vector<Tile>> tiles;
-	std::vector<sf::Vector2i> shapes;
+	std::vector<Tile> tiles;
+	sf::Vector3i shape_;
 
 	UnorderedMap<sf::Vector3i, sf::Vector3i> upStairs_;
 	UnorderedMap<sf::Vector3i, sf::Vector3i> downStairs_;

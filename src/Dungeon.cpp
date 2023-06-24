@@ -19,17 +19,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <algorithm>
 
-void Dungeon::assign(sf::Vector3i shape, Tile tile) {
+void Dungeon::assign(sf::Vector3i newShape, Tile tile) {
 	tiles.clear();
-	shapes.clear();
-
-	tiles.resize(shape.z);
-	shapes.reserve(shape.z);
-
-	for (auto& level : tiles) {
-		level.resize(shape.x * shape.y, tile);
-		shapes.push_back(getXY(shape));
-	}
+	shape_ = newShape;
+	tiles.resize(shape_.x * shape_.y * shape_.z, tile);
 }
 
 void Dungeon::generate(std::shared_ptr<spdlog::logger> logger) {
@@ -41,7 +34,7 @@ void Dungeon::generate(std::shared_ptr<spdlog::logger> logger) {
 	generator()();
 
 	logger->info("Generating stairs...");
-	for (int i = 1; i < size(); ++ i)
+	for (int i = 1; i < shape().z; ++ i)
 		generateUpStairs(i);
 }
 

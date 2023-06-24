@@ -28,20 +28,22 @@ void PlayerMap::onGenerate() {
 	shapes.clear();
 	seenActors_.clear();
 
-	tileStates.resize(world->dungeon().size());
-	shapes.reserve(world->dungeon().size());
+	auto [shapeX, shapeY, shapeZ] = world->dungeon().shape();
 
-	for (int z = 0; z < world->dungeon().size(); ++z) {
-		auto [shapeX, shapeY] = world->dungeon().shape(z);
+	tileStates.resize(shapeZ);
+	shapes.reserve(shapeZ);
+
+	for (int z = 0; z < shapeZ; ++z) {
 		tileStates[z].resize(shapeX * shapeY);
 		shapes.emplace_back(shapeX, shapeY);
 	}
 }
 
 void PlayerMap::updateTiles() {
-	for (int z = 0; z < world->dungeon().size(); ++z) {
-		for (int x = 0; x < world->dungeon().shape(z).x; ++x)
-			for (int y = 0; y < world->dungeon().shape(z).y; ++y)
+	auto [shapeX, shapeY, shapeZ] = world->dungeon().shape();
+	for (int z = 0; z < shapeZ; ++z) {
+		for (int x = 0; x < shapeX; ++x)
+			for (int y = 0; y < shapeY; ++y)
 				if (canSee(player->position(), { x, y, z }, world->dungeon()))
 					tileStateMut({ x, y, z }) = TileState::VISIBLE;
 				else if (tileState({ x, y, z }) == TileState::VISIBLE)

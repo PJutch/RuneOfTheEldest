@@ -46,7 +46,7 @@ void Goblin::updateTarget() noexcept {
 
 sf::Vector3i Goblin::randomNearbyTarget() noexcept {
 	int minLevel = std::max(position().z - 1, 0);
-	int maxLevel = std::min(position().z + 1, world().dungeon().size() - 1);
+	int maxLevel = std::min(position().z + 1, world().dungeon().shape().z - 1);
 	int targetLevel = std::uniform_int_distribution{ minLevel, maxLevel }(randomEngine());
 	return world().dungeon().randomPositionAt(targetLevel, [this](sf::Vector3i pos, const Dungeon&) {
 		return world().isFree(pos);
@@ -83,7 +83,7 @@ void Goblin::spawnSingle(int level, std::shared_ptr<World> world, std::shared_pt
 }
 
 void Goblin::spawnAll(std::shared_ptr<World> world, std::shared_ptr<Player> player_, RandomEngine& randomEngine) {
-	for (int level = 0; level < world->dungeon().size(); ++level)
+	for (int level = 0; level < world->dungeon().shape().z; ++level)
 		for (int i = 0; i < std::uniform_int_distribution{ 5, 20 }(randomEngine); ++i)
 			spawnSingle(level, world, player_, randomEngine);
 }

@@ -31,9 +31,9 @@ namespace {
 	class PathBuffer {
 	public:
 		PathBuffer(const Dungeon& dungeon) {
-			buffer.reserve(dungeon.size());
-			for (int level = 0; level < dungeon.size(); ++level)
-				buffer.emplace_back(dungeon.shape(level));
+			buffer.reserve(dungeon.shape().z);
+			for (int level = 0; level < dungeon.shape().z; ++level)
+				buffer.emplace_back(getXY(dungeon.shape()));
 		}
 
 		PathNode& at(sf::Vector3i position) noexcept {
