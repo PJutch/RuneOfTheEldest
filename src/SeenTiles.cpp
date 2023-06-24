@@ -16,34 +16,44 @@ If not, see < https://www.gnu.org/licenses/>. */
 #include "SeenTiles.hpp"
 
 #include "Player.hpp"
-#include "Dungeon.hpp"
+#include "World.hpp"
 
 #include "raycast.hpp"
 
-SeenTiles::SeenTiles(std::shared_ptr<Player> player_, std::shared_ptr<Dungeon> dungeon_) :
-	player{ std::move(player_) }, dungeon{ std::move(dungeon_) } {}
+SeenTiles::SeenTiles(std::shared_ptr<Player> player_, std::shared_ptr<World> world_) :
+	player{ std::move(player_) }, world{ std::move(world_) } {}
 
 void SeenTiles::onGenerate() {
 	tileStates.clear();
 	shapes.clear();
 
-	tileStates.resize(dungeon->size());
-	shapes.reserve(dungeon->size());
+	tileStates.resize(world->dungeon().size());
+	shapes.reserve(world->dungeon().size());
 
-	for (int z = 0; z < dungeon->size(); ++z) {
-		auto [shapeX, shapeY] = (*dungeon)[z].shape();
+	for (int z = 0; z < world->dungeon().size(); ++z) {
+		auto [shapeX, shapeY] = world->dungeon()[z].shape();
 		tileStates[z].resize(shapeX * shapeY);
 		shapes.emplace_back(shapeX, shapeY);
 	}
 }
 
-void SeenTiles::update() {
+void SeenTiles::updateTiles() {
 	int z = player->position().z;
-	const Level& level = (*dungeon)[z];
+	const Level& level = world->dungeon()[z];
 	for (int x = 0; x < level.shape().x; ++x)
 		for (int y = 0; y < level.shape().y; ++y)
-			if (canSee(player->position(), { x, y, z }, *dungeon))
+			if (canSee(player->position(), { x, y, z }, world->dungeon()))
 				tileStateMut({ x, y, z }) = TileState::VISIBLE;
 			else if (tileState({ x, y, z }) == TileState::VISIBLE)
 				tileStateMut({ x, y, z }) = TileState::MEMORIZED;
+}
+
+void SeenTiles::updateActors() {
+	std::erase_if(seenActors_, [&player = *player, &dungeon = world->dungeon()](const auto& actor) -> bool {
+		return canSee(player.position(), actor->position(), dungeon);
+	});
+
+	for (const auto& actor : world->actors())
+		if (canSee(player->position(), actor->position(), world->dungeon()))
+			seenActors_.push_back(actor->createDrawMemento());
 }

@@ -18,86 +18,88 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <gtest/gtest.h>
 
-class TestActor : public Actor {
-public:
-	TestActor() = default;
-	TestActor(sf::Vector3i newPosition, int newId = -1) noexcept :
-		position_{ newPosition }, id_{ newId } {}
-	TestActor(int firstTurn, int turnDelay_, int newId = -1, std::vector<int>* log_ = nullptr,
-		      int waitAfter_ = std::numeric_limits<int>::max(), 
-		      int dieAfter_ = std::numeric_limits<int>::max(), bool shouldInterruptOnDelete_ = false) noexcept :
-		nextTurn_{ firstTurn }, turnDelay{ turnDelay_ }, id_{ newId }, log{ log_ }, 
-		waitAfter{ waitAfter_ }, dieAfter {dieAfter_}, interruptOnDelete{ shouldInterruptOnDelete_ } {}
+namespace {
+	class TestActor : public Actor {
+	public:
+		TestActor() = default;
+		TestActor(sf::Vector3i newPosition, int newId = -1) noexcept :
+			position_{ newPosition }, id_{ newId } {}
+		TestActor(int firstTurn, int turnDelay_, int newId = -1, std::vector<int>* log_ = nullptr,
+			int waitAfter_ = std::numeric_limits<int>::max(),
+			int dieAfter_ = std::numeric_limits<int>::max(), bool shouldInterruptOnDelete_ = false) noexcept :
+			nextTurn_{ firstTurn }, turnDelay{ turnDelay_ }, id_{ newId }, log{ log_ },
+			waitAfter{ waitAfter_ }, dieAfter{ dieAfter_ }, interruptOnDelete{ shouldInterruptOnDelete_ } {}
 
-	sf::Vector3i position() const noexcept final {
-		return position_;
-	}
+		sf::Vector3i position() const noexcept final {
+			return position_;
+		}
 
-	void position(sf::Vector3i newPosition) noexcept final {
-		position_ = newPosition;
-	}
+		void position(sf::Vector3i newPosition) noexcept final {
+			position_ = newPosition;
+		}
 
-	bool act() override {
-		if (log)
-			log->push_back(id());
-		nextTurn_ += turnDelay;
-		return nextTurn_ <= waitAfter;
-	}
+		bool act() override {
+			if (log)
+				log->push_back(id());
+			nextTurn_ += turnDelay;
+			return nextTurn_ <= waitAfter;
+		}
 
-	int nextTurn() const noexcept final {
-		return nextTurn_;
-	}
+		int nextTurn() const noexcept final {
+			return nextTurn_;
+		}
 
-	bool isAlive() const noexcept final {
-		return nextTurn_ <= dieAfter;
-	}
+		bool isAlive() const noexcept final {
+			return nextTurn_ <= dieAfter;
+		}
 
-	bool shouldInterruptOnDelete() const noexcept final {
-		return interruptOnDelete;
-	}
+		bool shouldInterruptOnDelete() const noexcept final {
+			return interruptOnDelete;
+		}
 
-	void beDamaged(double damage) noexcept final {}
+		void beDamaged(double damage) noexcept final {}
 
-	std::unique_ptr<Actor::DrawMemento> createDrawMemento() const noexcept final {
-		return nullptr;
-	}
+		std::unique_ptr<Actor::DrawMemento> createDrawMemento() const noexcept final {
+			return nullptr;
+		}
 
-	int id() const noexcept {
-		return id_;
-	}
+		int id() const noexcept {
+			return id_;
+		}
 
-	[[nodiscard]] bool isOnPlayerSide() const final {
-		return false;
-	}
+		[[nodiscard]] bool isOnPlayerSide() const final {
+			return false;
+		}
 
-	bool wantsSwap() const noexcept final {
-		return true;
-	}
+		bool wantsSwap() const noexcept final {
+			return true;
+		}
 
-	void handleSwap() noexcept final {}
+		void handleSwap() noexcept final {}
 
-	void handleSound(Sound sound) noexcept final {
-		lastSound_ = sound;
-	}
+		void handleSound(Sound sound) noexcept final {
+			lastSound_ = sound;
+		}
 
-	Sound lastSound() const noexcept {
-		return lastSound_;
-	}
-private:
-	int nextTurn_ = 0;
-	int turnDelay = 0;
-	sf::Vector3i position_{ 0, 0, 0 };
+		Sound lastSound() const noexcept {
+			return lastSound_;
+		}
+	private:
+		int nextTurn_ = 0;
+		int turnDelay = 0;
+		sf::Vector3i position_{ 0, 0, 0 };
 
-	int id_ = -1;
+		int id_ = -1;
 
-	std::vector<int>* log = nullptr;
+		std::vector<int>* log = nullptr;
 
-	int waitAfter = std::numeric_limits<int>::max();
-	int dieAfter = std::numeric_limits<int>::max();
-	bool interruptOnDelete = false;
+		int waitAfter = std::numeric_limits<int>::max();
+		int dieAfter = std::numeric_limits<int>::max();
+		bool interruptOnDelete = false;
 
-	Sound lastSound_{};
-};
+		Sound lastSound_{};
+	};
+}
 
 TEST(World, emptyActors) {
 	World world;

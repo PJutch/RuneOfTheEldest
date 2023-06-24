@@ -33,8 +33,8 @@ Renderer::Renderer(std::shared_ptr<Camera> camera,
 void Renderer::drawWorld() {
     draw(world->dungeon()[camera->position().level], camera->position().level);
 
-    for (std::shared_ptr<Actor> actor : world->actors())
-        actor->createDrawMemento()->draw(*this);
+    for (const auto& actor : seenTiles->seenActors())
+        actor->draw(*this);
 }
 
 void Renderer::draw(const Level& level, int z) {
@@ -79,23 +79,20 @@ void Renderer::draw(const Player::DrawMemento& player) {
 }
 
 void Renderer::draw(const Goblin::DrawMemento& goblin) {
+    double colorMod = 1.0;
     if (!canSee(player->position(), goblin.position(), world->dungeon()))
-        return;
+        colorMod = 0.5;
 
-    drawSprite(goblin.position(), assets->goblinTexture());
+    drawSprite(goblin.position(), assets->goblinTexture(), colorMod);
     drawHpBar(goblin.position(), goblin.hp(), goblin.maxHp());
     drawSprite(goblin.position(), assets->aiStateIcon(goblin.aiState()));
 }
 
-void Renderer::drawSprite(sf::Vector3i position, const sf::Texture& texture) {
+void Renderer::drawSprite(sf::Vector3i position, const sf::Texture& texture, double colorMod) {
     if (camera-> position().level != position.z)
         return;
 
-    drawSprite(getXY(position), texture);
-}
-
-void Renderer::drawSprite(sf::Vector2i position, const sf::Texture& texture) {
-    drawSprite(position, texture, 1.0);
+    drawSprite(getXY(position), texture, colorMod);
 }
 
 void Renderer::drawSprite(sf::Vector2i position, const sf::Texture& texture, double colorMod) {

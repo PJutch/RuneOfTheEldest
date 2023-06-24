@@ -69,6 +69,9 @@ public:
 	/// @warning Should be usable after deleting Actor
 	class DrawMemento {
 	public:
+		/// Gets saved Actor position
+		[[nodiscard]] virtual sf::Vector3i position() const = 0;
+
 		/// Draw an actor using a renderer. Uses a visitor pattern
 		virtual void draw(Renderer& renderer) const = 0;
 	};

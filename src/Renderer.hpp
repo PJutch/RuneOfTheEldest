@@ -103,9 +103,8 @@ private:
 
     void drawHpBar(sf::Vector3i position, double hp, double maxHp);
 
-    void drawSprite(sf::Vector3i position, const sf::Texture& texture);
-    void drawSprite(sf::Vector2i position, const sf::Texture& texture);
-    void drawSprite(sf::Vector2i position, const sf::Texture& texture, double colorMod);
+    void drawSprite(sf::Vector3i position, const sf::Texture& texture, double colorMod = 1.0);
+    void drawSprite(sf::Vector2i position, const sf::Texture& texture, double colorMod = 1.0);
 
     void drawRect(sf::FloatRect rect,
         sf::Color fillColor, sf::Color outlineColor, float outlineThickness);

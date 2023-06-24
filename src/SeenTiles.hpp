@@ -17,16 +17,19 @@ If not, see < https://www.gnu.org/licenses/>. */
 #define SEEN_TILES_HPP_
 
 class Player;
-class Dungeon;
+class World;
+
+#include "Actor.hpp"
 
 #include <SFML/System.hpp>
 
 #include <vector>
+#include <span>
 #include <memory>
 
 class SeenTiles {
 public:
-	SeenTiles(std::shared_ptr<Player> player, std::shared_ptr<Dungeon> dungeon);
+	SeenTiles(std::shared_ptr<Player> player, std::shared_ptr<World> world);
 
 	enum class TileState {
 		UNSEEN,
@@ -39,15 +42,27 @@ public:
 		return tileStates[z][x * shapes[z].y + y];
 	}
 
+	[[nodiscard]] std::span<const std::unique_ptr<Actor::DrawMemento>> seenActors() const noexcept {
+		return seenActors_;
+	}
+
 	void onGenerate();
 
-	void update();
+	void update() {
+		updateTiles();
+		updateActors();
+	}
 private:
 	std::vector< std::vector<TileState>> tileStates;
 	std::vector<sf::Vector2i> shapes;
 
+	std::vector<std::unique_ptr<Actor::DrawMemento>> seenActors_;
+
 	std::shared_ptr<Player> player;
-	std::shared_ptr<Dungeon> dungeon;
+	std::shared_ptr<World> world;
+
+	void updateTiles();
+	void updateActors();
 
 	TileState& tileStateMut(sf::Vector3i position) noexcept {
 		auto [x, y, z] = position;
