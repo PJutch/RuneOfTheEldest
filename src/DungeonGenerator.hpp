@@ -20,6 +20,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Area.hpp"
 #include "Level.hpp"
 
+class Dungeon;
+
 #include "random.hpp"
 
 #include <SFML/Graphics.hpp>
@@ -31,6 +33,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 class DungeonGenerator {
 public:
     DungeonGenerator(std::unique_ptr<RoomGenerator> roomGenerator, 
+                     std::shared_ptr<Dungeon> dungeon,
                      RandomEngine& randomEngine);
 
     /// Minimum size of the room
@@ -51,17 +54,19 @@ public:
         return *roomGenerator_;
     }
 
-    void operator() (Level& level);
+    void operator() ();
 private:
     std::unique_ptr<RoomGenerator> roomGenerator_;
     
-    int minSize_;
-    double splitChance_;
+    int minSize_ = 0;
+    double splitChance_ = 0.0;
 
     std::queue<Area> areas;
 
+    std::shared_ptr<Dungeon> dungeon;
     RandomEngine* randomEngine;
 
+    void processLevel(Level& level);
     void processArea(Level& level, Area area);
 
     [[nodiscard]] bool canSplit(int dimension) const noexcept {

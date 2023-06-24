@@ -25,8 +25,7 @@ void Dungeon::generate(std::shared_ptr<spdlog::logger> logger) {
 		level.generateBlank({ 50, 50 });
 
 	logger->info("Generating dungeon...");
-	for (Level& level : levels)
-		generator()(level);
+	generator()();
 
 	logger->info("Generating stairs...");
 	for (int i = 1; i < size(); ++ i)

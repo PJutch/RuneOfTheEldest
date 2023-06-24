@@ -15,17 +15,25 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "DungeonGenerator.hpp"
 
+#include "Dungeon.hpp"
+
 #include "assert.hpp"
 #include "geometry.hpp"
 
-DungeonGenerator::DungeonGenerator(
-        std::unique_ptr<RoomGenerator> newRoomGenerator,
-        RandomEngine& randomEngine_) :
+DungeonGenerator::DungeonGenerator(std::unique_ptr<RoomGenerator> newRoomGenerator,
+                                   std::shared_ptr<Dungeon> dungeon_,
+                                   RandomEngine& randomEngine_) :
     roomGenerator_{std::move(newRoomGenerator)},
+    dungeon{std::move(dungeon_)},
     randomEngine{&randomEngine_} {}
 
-void DungeonGenerator::operator()(Level& level) {
-    areas.emplace(shrinkTopLeft(level.bounds(), {1, 1}));
+void DungeonGenerator::operator() () {
+    for (int level = 0; level < dungeon->size(); ++level)
+        processLevel((*dungeon)[level]);
+}
+
+void DungeonGenerator::processLevel(Level& level) {
+    areas.emplace(shrinkTopLeft(level.bounds(), { 1, 1 }));
     while (!areas.empty()) {
         Area area = std::move(areas.front());
         areas.pop();
