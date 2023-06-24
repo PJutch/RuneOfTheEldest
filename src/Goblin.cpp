@@ -15,6 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Goblin.hpp"
 
+#include "Renderer.hpp"
+
 #include "pathfinding.hpp"
 #include "raycast.hpp"
 #include "geometry.hpp"
@@ -69,6 +71,10 @@ void Goblin::travelToTarget() noexcept {
 
 AiState Goblin::aiState() const noexcept {
 	return aiState_;
+}
+
+void Goblin::DrawMemento::draw(Renderer& renderer) const {
+	renderer.draw(*this);
 }
 
 void Goblin::spawnSingle(int level, std::shared_ptr<World> world, std::shared_ptr<Player> player_, RandomEngine& randomEngine) {

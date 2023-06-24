@@ -58,7 +58,9 @@ public:
 
 	void beDamaged(double damage) noexcept final {}
 
-	void draw(Renderer& renderer) const noexcept final {}
+	std::unique_ptr<Actor::DrawMemento> createDrawMemento() const noexcept final {
+		return nullptr;
+	}
 
 	int id() const noexcept {
 		return id_;

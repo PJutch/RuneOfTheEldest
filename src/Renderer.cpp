@@ -34,7 +34,7 @@ void Renderer::drawWorld() {
     draw(world->dungeon()[camera->position().level], camera->position().level);
 
     for (std::shared_ptr<Actor> actor : world->actors())
-        actor->draw(*this);
+        actor->createDrawMemento()->draw(*this);
 }
 
 void Renderer::draw(const Level& level, int z) {
@@ -73,12 +73,12 @@ void Renderer::drawRect(sf::FloatRect rect,
     window->draw(rectShape);
 }
 
-void Renderer::draw(const Player& player) {
+void Renderer::draw(const Player::DrawMemento& player) {
     drawSprite(player.position(), assets->playerTexture());
     drawHpBar(player.position(), player.hp(), player.maxHp());
 }
 
-void Renderer::draw(const Goblin& goblin) {
+void Renderer::draw(const Goblin::DrawMemento& goblin) {
     if (!canSee(player->position(), goblin.position(), world->dungeon()))
         return;
 

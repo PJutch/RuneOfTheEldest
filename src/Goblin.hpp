@@ -21,7 +21,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Player.hpp"
 #include "AiState.hpp"
 
-#include "Renderer.hpp"
+class Renderer;
 
 #include "random.hpp"
 
@@ -41,11 +41,6 @@ public:
 
 	static void spawnSingle(int level, std::shared_ptr<World> world, std::shared_ptr<Player> player_, RandomEngine& randomEngine);
 	static void spawnAll(std::shared_ptr<World> world, std::shared_ptr<Player> player_, RandomEngine& randomEngine);
-
-	void draw(Renderer& renderer) const final {
-		if (isAlive())
-			renderer.draw(*this);
-	}
 
 	[[nodiscard]] bool shouldInterruptOnDelete() const final {
 		return false;
@@ -67,6 +62,24 @@ public:
 	AiState aiState() const noexcept;
 
 	void handleSound(Sound sound) noexcept final;
+
+	class DrawMemento : public AliveActor::DrawMemento {
+	public:
+		DrawMemento(const Goblin& goblin) : AliveActor::DrawMemento{ goblin }, aiState_{goblin.aiState()} {}
+
+		/// Gets the saved AI state
+		AiState aiState() const noexcept {
+			return aiState_;
+		}
+
+		void draw(Renderer& renderer) const final;
+	private:
+		AiState aiState_;
+	};
+
+	[[nodiscard]] std::unique_ptr<Actor::DrawMemento> createDrawMemento() const final {
+		return std::make_unique<DrawMemento>(*this);
+	}
 private:
 	std::shared_ptr<Player> player;
 	bool wantsSwap_ = true;

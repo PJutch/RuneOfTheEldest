@@ -20,7 +20,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "World.hpp"
 
-#include "Renderer.hpp"
+class Renderer;
 
 #include "geometry.hpp"
 
@@ -44,11 +44,6 @@ public:
 	///      \n try to ascent/descent stairs by <>
 	void handleEvent(sf::Event event);
 
-	void draw(Renderer& renderer) const final {
-		if (isAlive())
-			renderer.draw(*this);
-	}
-
 	[[nodiscard]] bool shouldInterruptOnDelete() const final {
 		return true;
 	}
@@ -64,6 +59,17 @@ public:
 	void handleSwap() noexcept final {}
 
 	void handleSound(Sound) noexcept final {}
+
+	class DrawMemento : public AliveActor::DrawMemento {
+	public:
+		DrawMemento(const Player& player) : AliveActor::DrawMemento{ player } {}
+
+		void draw(Renderer& renderer) const final;
+	};
+
+	[[nodiscard]] std::unique_ptr<Actor::DrawMemento> createDrawMemento() const final {
+		return std::make_unique<DrawMemento>(*this);
+	}
 private:
 	enum class State {
 		WAITING_TURN,

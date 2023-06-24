@@ -68,7 +68,9 @@ public:
 		return false;
 	}
 
-	void draw(Renderer&) const noexcept final {}
+	std::unique_ptr<Actor::DrawMemento> createDrawMemento() const noexcept final {
+		return nullptr;
+	}
 
 	[[nodiscard]] bool isOnPlayerSide() const noexcept final {
 		return true;

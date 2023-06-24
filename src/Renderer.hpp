@@ -23,9 +23,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "World.hpp"
 #include "AiState.hpp"
-
-class Player;
-class Goblin;
+#include "Player.hpp"
+#include "Goblin.hpp"
 
 #include "geometry.hpp"
 #include "log.hpp"
@@ -61,10 +60,10 @@ public:
     void draw();
 
     /// Renders player
-    void draw(const Player& player);
+    void draw(const Player::DrawMemento& player);
 
     /// Renders goblin
-    void draw(const Goblin& goblin);
+    void draw(const Goblin::DrawMemento& goblin);
 
     /// Renders "You died screen"
     void drawDeathScreen();

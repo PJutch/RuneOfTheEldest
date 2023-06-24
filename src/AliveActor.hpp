@@ -121,6 +121,31 @@ protected:
 	void hp(double newHp) noexcept {
 		hp_ = newHp;
 	}
+
+	class DrawMemento : public Actor::DrawMemento {
+	public:
+		DrawMemento(const AliveActor& actor) :
+			position_{ actor.position() }, hp_{ actor.hp() }, maxHp_{actor.maxHp()} {}
+
+		/// Gets the saved position
+		[[nodiscard]] sf::Vector3i position() const noexcept {
+			return position_;
+		}
+
+		/// Gets the saved HP
+		[[nodiscard]] double hp() const noexcept {
+			return hp_;
+		}
+
+		/// Gets the saved max HP
+		[[nodiscard]] double maxHp() const noexcept {
+			return maxHp_;
+		}
+	private:
+		sf::Vector3i position_;
+		double hp_;
+		double maxHp_;
+	};
 private:
 	int nextTurn_ = 0;
 	sf::Vector3i position_;

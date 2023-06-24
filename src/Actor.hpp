@@ -64,8 +64,17 @@ public:
 	/// called when Actor hears a sound
 	virtual void handleSound(Sound sound) = 0;
 
-	/// Draw an actor using a renderer. Basically a visitor pattern
-	virtual void draw(Renderer& renderer) const = 0;
+	/// @brief Saves seen Actor state and draws it.
+	/// @warning Saved state shouldn't change
+	/// @warning Should be usable after deleting Actor
+	class DrawMemento {
+	public:
+		/// Draw an actor using a renderer. Uses a visitor pattern
+		virtual void draw(Renderer& renderer) const = 0;
+	};
+
+	/// Returns new DrawMemento with copy of current Actor state
+	[[nodiscard]] virtual std::unique_ptr<DrawMemento> createDrawMemento() const = 0;
 };
 
 #endif
