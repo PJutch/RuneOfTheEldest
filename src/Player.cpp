@@ -21,8 +21,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Keyboard.hpp"
 
-#include <iostream>
-
 void Player::spawn() {
 	nextTurn(0);
 	hp(maxHp());

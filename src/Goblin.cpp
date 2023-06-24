@@ -69,10 +69,6 @@ void Goblin::travelToTarget() noexcept {
 		tryMove(nextStep_, false);
 }
 
-AiState Goblin::aiState() const noexcept {
-	return aiState_;
-}
-
 void Goblin::DrawMemento::draw(Renderer& renderer) const {
 	renderer.draw(*this);
 }

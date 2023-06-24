@@ -37,7 +37,7 @@ public:
 		VISIBLE,
 	};
 
-	TileState tileState(sf::Vector3i position) const noexcept {
+	[[nodiscard]] TileState tileState(sf::Vector3i position) const noexcept {
 		auto [x, y, z] = position;
 		return tileStates[z][x * shapes[z].y + y];
 	}

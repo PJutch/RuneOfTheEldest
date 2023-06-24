@@ -59,7 +59,9 @@ public:
 	}
 
 	/// Gets Goblin's AI state
-	AiState aiState() const noexcept;
+	AiState aiState() const noexcept {
+		return aiState_;
+	}
 
 	void handleSound(Sound sound) noexcept final;
 
