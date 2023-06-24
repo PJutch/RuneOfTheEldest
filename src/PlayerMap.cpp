@@ -26,6 +26,7 @@ PlayerMap::PlayerMap(std::shared_ptr<Player> player_, std::shared_ptr<World> wor
 void PlayerMap::onGenerate() {
 	tileStates.clear();
 	shapes.clear();
+	seenActors_.clear();
 
 	tileStates.resize(world->dungeon().size());
 	shapes.reserve(world->dungeon().size());
