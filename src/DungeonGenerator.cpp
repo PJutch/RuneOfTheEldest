@@ -29,25 +29,27 @@ DungeonGenerator::DungeonGenerator(std::unique_ptr<RoomGenerator> newRoomGenerat
 
 void DungeonGenerator::operator() () {
     for (int level = 0; level < dungeon->size(); ++level)
-        processLevel((*dungeon)[level]);
+        processLevel(level);
 }
 
-void DungeonGenerator::processLevel(Level& level) {
-    areas.emplace(shrinkTopLeft(level.bounds(), { 1, 1 }));
+void DungeonGenerator::processLevel(int z) {
+    areas.emplace(shrinkTopLeft((*dungeon)[z].bounds(), {1, 1}));
     while (!areas.empty()) {
         Area area = std::move(areas.front());
         areas.pop();
 
-        processArea(level, std::move(area));
+        processArea(z, std::move(area));
     }
 }
 
-void DungeonGenerator::processArea(Level& level, Area area) {
+void DungeonGenerator::processArea(int z, Area area) {
+    Level& level = (*dungeon)[z];
+
     TROTE_ASSERT(level.isValidRect(area.bounds()));
     TROTE_ASSERT(area.width() >= minSize_);
     TROTE_ASSERT(area.height() >= minSize_);
 
-    level.addArea(area.bounds());
+    dungeon->addArea(area.bounds(), z);
 
     if (!canSplit(area.width()) && !canSplit(area.height())) {
         roomGenerator()(level, area);

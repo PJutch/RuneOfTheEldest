@@ -90,21 +90,9 @@ public:
     /// Generates level filled with Tile::UNSEEN
     /// Shape of the new level
     void generateBlank(sf::Vector2i shape);
-
-    /// Add bsp area. Used for debug area rendering
-    void addArea(sf::IntRect area) {
-        areas_.push_back(area);
-    }
-
-    /// Get all bsp areas. Used for debug area rendering
-    [[nodiscard]] std::span<const sf::IntRect> areas() const noexcept {
-        return areas_;
-    }
 private:
     sf::Vector2i shape_;
     std::vector<Tile> tiles;
-
-    std::vector<sf::IntRect> areas_;
 };
 
 #endif

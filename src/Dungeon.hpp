@@ -159,13 +159,27 @@ public:
 		} while (!std::invoke(pred, pos, *this));
 		return pos;
 	}
+
+	/// Add bsp area. Used for debug area rendering
+	void addArea(sf::IntRect area, int level) {
+		areas_[level].push_back(area);
+	}
+
+	/// Get all bsp areas. Used for debug area rendering
+	[[nodiscard]] std::span<const sf::IntRect> areas(int level) const noexcept {
+		return areas_[level];
+	}
 private:
 	std::vector<Level> levels;
+
 	UnorderedMap<sf::Vector3i, sf::Vector3i> upStairs_;
 	UnorderedMap<sf::Vector3i, sf::Vector3i> downStairs_;
 
+	std::vector<std::vector<sf::IntRect>> areas_;
+
 	std::unique_ptr<DungeonGenerator> generator_ = nullptr;
 	RandomEngine* randomEngine = nullptr;
+
 	void generateUpStairs(int fromLevel);
 };
 

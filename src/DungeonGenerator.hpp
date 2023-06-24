@@ -66,8 +66,8 @@ private:
     std::shared_ptr<Dungeon> dungeon;
     RandomEngine* randomEngine;
 
-    void processLevel(Level& level);
-    void processArea(Level& level, Area area);
+    void processLevel(int level);
+    void processArea(int level, Area area);
 
     [[nodiscard]] bool canSplit(int dimension) const noexcept {
         return dimension > 2 * minSize_;

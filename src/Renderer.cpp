@@ -45,11 +45,11 @@ void Renderer::draw(const Level& level, int z) {
             else if (playerMap->tileState({ x, y, z }) == PlayerMap::TileState::MEMORIZED)
                 drawSprite(sf::Vector2i{ x, y }, assets->tileTexture(level.at(x, y)), 0.5);
     
-    if (renderAreas_) drawAreas(level);
+    if (renderAreas_) drawAreas(z);
 }
 
-void Renderer::drawAreas(const Level& level) {
-    for (sf::IntRect area : level.areas())
+void Renderer::drawAreas(int z) {
+    for (sf::IntRect area : world->dungeon().areas(z))
         drawInWorldRect(area, sf::Color::Transparent, 
                                 sf::Color::Green, 1.0);
 }
