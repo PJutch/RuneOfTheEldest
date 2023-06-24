@@ -84,8 +84,8 @@ void Renderer::draw(const Goblin::DrawMemento& goblin) {
         colorMod = 0.5;
 
     drawSprite(goblin.position(), assets->goblinTexture(), colorMod);
-    drawHpBar(goblin.position(), goblin.hp(), goblin.maxHp());
-    drawSprite(goblin.position(), assets->aiStateIcon(goblin.aiState()));
+    drawHpBar(goblin.position(), goblin.hp(), goblin.maxHp(), colorMod);
+    drawSprite(goblin.position(), assets->aiStateIcon(goblin.aiState()), colorMod);
 }
 
 void Renderer::drawSprite(sf::Vector3i position, const sf::Texture& texture, double colorMod) {
@@ -106,12 +106,12 @@ void Renderer::drawSprite(sf::Vector2i position, const sf::Texture& texture, dou
     window->draw(sprite);
 }
 
-void Renderer::drawHpBar(sf::Vector3i position, double hp, double maxHp) {
+void Renderer::drawHpBar(sf::Vector3i position, double hp, double maxHp, double colorMod) {
     if (camera->position().level != position.z)
         return;
 
     float hpFraction = static_cast<float>(hp) / maxHp;
-    sf::Color color( (1 - hpFraction) * 255, hpFraction * 255, 0);
+    sf::Color color( (1 - hpFraction) * colorMod * 255, hpFraction * colorMod * 255, 0);
 
     float width = hpFraction * assets->tileSize().x;
     float height = 2.f;

@@ -101,7 +101,7 @@ private:
     void draw(const Level& level, int z);
     void drawAreas(const Level& level);
 
-    void drawHpBar(sf::Vector3i position, double hp, double maxHp);
+    void drawHpBar(sf::Vector3i position, double hp, double maxHp, double colorMod = 1.0);
 
     void drawSprite(sf::Vector3i position, const sf::Texture& texture, double colorMod = 1.0);
     void drawSprite(sf::Vector2i position, const sf::Texture& texture, double colorMod = 1.0);
