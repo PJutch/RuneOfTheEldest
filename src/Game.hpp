@@ -16,7 +16,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef GAME_HPP_
 #define GAME_HPP_
 
-#include "Level.hpp"
 #include "Renderer.hpp"
 #include "DungeonGenerator.hpp"
 

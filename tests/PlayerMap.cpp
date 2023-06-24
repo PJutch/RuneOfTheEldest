@@ -89,8 +89,7 @@ namespace {
 
 TEST(PlayerMap, tileVisibilityEmpty) {
     auto dungeon = std::make_shared<Dungeon>();
-    dungeon->resize(1);
-    (*dungeon)[0].generateBlank({ 3, 3 });
+    dungeon->assign({ 3, 3, 1 });
 
     for (int x = 0; x < 3; ++x)
         for (int y = 0; y < 3; ++y)
@@ -111,8 +110,7 @@ TEST(PlayerMap, tileVisibilityEmpty) {
 namespace {
     std::shared_ptr<World> createWallWorld() {
         auto dungeon = std::make_shared<Dungeon>();
-        dungeon->resize(1);
-        (*dungeon)[0].generateBlank({ 3, 3 });
+        dungeon->assign({ 3, 3, 1 });
 
         for (int x = 0; x < 3; ++x)
             dungeon->at(x, 0, 0) = Tile::EMPTY;

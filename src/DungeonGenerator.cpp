@@ -31,7 +31,7 @@ void DungeonGenerator::operator() () {
 }
 
 void DungeonGenerator::processLevel(int z) {
-    areas.emplace(shrinkTopLeft((*dungeon_)[z].bounds(), {1, 1}));
+    areas.emplace(shrinkTopLeft(dungeon_->bounds(z), {1, 1}));
     while (!areas.empty()) {
         Area area = std::move(areas.front());
         areas.pop();

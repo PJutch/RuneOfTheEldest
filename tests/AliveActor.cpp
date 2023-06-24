@@ -144,8 +144,7 @@ TEST(AliveActor, regenLimit) {
 
 auto createAliveActorTryMoveToTest() {
 	auto dungeon = std::make_shared<Dungeon>();
-	dungeon->resize(1);
-	(*dungeon)[0].generateBlank({ 3, 3 });
+	dungeon->assign({ 3, 3, 1 });
 
 	dungeon->at({ 0, 0, 0 }) = Tile::EMPTY;
 	dungeon->at({ 0, 1, 0 }) = Tile::EMPTY;

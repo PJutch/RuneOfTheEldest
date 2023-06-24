@@ -32,7 +32,7 @@ void PlayerMap::onGenerate() {
 	shapes.reserve(world->dungeon().size());
 
 	for (int z = 0; z < world->dungeon().size(); ++z) {
-		auto [shapeX, shapeY] = world->dungeon()[z].shape();
+		auto [shapeX, shapeY] = world->dungeon().shape(z);
 		tileStates[z].resize(shapeX * shapeY);
 		shapes.emplace_back(shapeX, shapeY);
 	}
@@ -40,9 +40,8 @@ void PlayerMap::onGenerate() {
 
 void PlayerMap::updateTiles() {
 	for (int z = 0; z < world->dungeon().size(); ++z) {
-		const Level& level = world->dungeon()[z];
-		for (int x = 0; x < level.shape().x; ++x)
-			for (int y = 0; y < level.shape().y; ++y)
+		for (int x = 0; x < world->dungeon().shape(z).x; ++x)
+			for (int y = 0; y < world->dungeon().shape(z).y; ++y)
 				if (canSee(player->position(), { x, y, z }, world->dungeon()))
 					tileStateMut({ x, y, z }) = TileState::VISIBLE;
 				else if (tileState({ x, y, z }) == TileState::VISIBLE)

@@ -19,13 +19,24 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <algorithm>
 
+void Dungeon::assign(sf::Vector3i shape, Tile tile) {
+	tiles.clear();
+	shapes.clear();
+
+	tiles.resize(shape.z);
+	shapes.reserve(shape.z);
+
+	for (auto& level : tiles) {
+		level.resize(shape.x * shape.y, tile);
+		shapes.push_back(getXY(shape));
+	}
+}
+
 void Dungeon::generate(std::shared_ptr<spdlog::logger> logger) {
-	levels.resize(10);
-	for (Level& level : levels)
-		level.generateBlank({ 50, 50 });
+	assign({ 50, 50, 10 });
 
 	logger->info("Generating dungeon...");
-	areas_.resize(std::ssize(levels));
+	areas_.resize(std::ssize(tiles));
 	generator().dungeon(*this);
 	generator()();
 

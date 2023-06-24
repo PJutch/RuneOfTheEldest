@@ -20,6 +20,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "World.hpp"
 
+#include "geometry.hpp"
+
 /// Base for all Actors with hp and position in world
 class AliveActor : public Actor {
 public:

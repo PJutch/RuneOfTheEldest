@@ -19,8 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 TEST(pathfinding, nextStepInPlace) {
     Dungeon dungeon;
-    dungeon.resize(1);
-    dungeon[0].generateBlank({ 3, 3 });
+    dungeon.assign({ 3, 3, 1 });
     dungeon.at(0, 1, 0) = Tile::EMPTY;
 
     EXPECT_EQ(nextStep(dungeon, {0, 1, 0}, {0, 1, 0}), (sf::Vector3i{0, 0, 0}));
@@ -28,8 +27,7 @@ TEST(pathfinding, nextStepInPlace) {
 
 TEST(pathfinding, nextStepFree) {
     Dungeon dungeon;
-    dungeon.resize(1);
-    dungeon[0].generateBlank({ 3, 3 });
+    dungeon.assign({ 3, 3, 1 });
     for (int x = 0; x < 3; ++ x)
         for (int y = 0; y < 3; ++y)
             dungeon.at(x, y, 0) = Tile::EMPTY;
@@ -39,8 +37,7 @@ TEST(pathfinding, nextStepFree) {
 
 TEST(pathfinding, nextStepTurn) {
     Dungeon dungeon;
-    dungeon.resize(1);
-    dungeon[0].generateBlank({ 3, 3 });
+    dungeon.assign({ 3, 3, 1 });
     dungeon.at(0, 0, 0) = Tile::WALL;
     dungeon.at(1, 0, 0) = Tile::EMPTY;
     dungeon.at(2, 0, 0) = Tile::EMPTY;
@@ -56,9 +53,7 @@ TEST(pathfinding, nextStepTurn) {
 
 TEST(pathfinding, nextStepDownStairs) {
     Dungeon dungeon;
-    dungeon.resize(2);
-    dungeon[0].generateBlank({ 2, 2 });
-    dungeon[1].generateBlank({ 2, 2 });
+    dungeon.assign({ 2, 2, 2 });
 
     dungeon.at(0, 0, 0) = Tile::WALL;
     dungeon.at(1, 0, 0) = Tile::WALL;
@@ -76,9 +71,7 @@ TEST(pathfinding, nextStepDownStairs) {
 
 TEST(pathfinding, nextStepUpStairs) {
     Dungeon dungeon;
-    dungeon.resize(2);
-    dungeon[0].generateBlank({ 2, 2 });
-    dungeon[1].generateBlank({ 2, 2 });
+    dungeon.assign({ 2, 2, 2 });
 
     dungeon.at(0, 0, 0) = Tile::WALL;
     dungeon.at(1, 0, 0) = Tile::WALL;

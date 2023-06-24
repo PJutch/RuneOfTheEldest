@@ -21,19 +21,17 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 void BasicRoomGenerator::operator() (int z, Area area) {
     TROTE_ASSERT(dungeon_->isValidRect(area.bounds(), z));
-
-    Level& level = (*dungeon_)[z];
     
     for (int x = area.left(); x < area.right() - 1; ++ x)
         for (int y = area.top(); y < area.bottom() - 1; ++ y)
-            level.at(x, y) = (debugTiles_ ? Tile::ROOM 
+            dungeon_->at(x, y, z) = (debugTiles_ ? Tile::ROOM 
                                           : Tile::EMPTY);
     
     for (int y : area.rightPassages())
-        level.at(area.right() - 1, y) = (debugTiles_ 
+        dungeon_->at(area.right() - 1, y, z) = (debugTiles_
             ? Tile::ROOM_ENTRANCE : Tile::EMPTY);
     
     for (int x : area.bottomPassages())
-        level.at(x, area.bottom() - 1) = (debugTiles_ 
+        dungeon_->at(x, area.bottom() - 1, z) = (debugTiles_
             ? Tile::ROOM_ENTRANCE : Tile::EMPTY);
 }

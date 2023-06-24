@@ -61,7 +61,6 @@ int main() {
             boost::di::bind<LoggerFactory>.to(loggerFactory),
             boost::di::bind<sf::VideoMode>.to(videoMode),
             boost::di::bind<sf::RenderWindow>.to(renderWindow),
-            boost::di::bind<Level>.in(boost::di::singleton),
             boost::di::bind<RandomEngine>.to(randomEngine),
             boost::di::bind<RoomGenerator>.to<RandomSizeRoomGenerator>(),
             boost::di::bind<Camera*[]>.to<PlayerLockedCamera, FreeCamera>(),

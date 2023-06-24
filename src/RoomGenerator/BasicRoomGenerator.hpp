@@ -18,7 +18,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "RoomGenerator.hpp"
 
-#include "../Level.hpp"
 class Dungeon;
 
 #include <memory>

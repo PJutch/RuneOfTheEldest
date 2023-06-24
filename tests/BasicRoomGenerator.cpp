@@ -25,18 +25,18 @@ bool isValid(sf::IntRect rect) noexcept {
     return rect.width > 0 && rect.height > 0;
 }
 
-testing::AssertionResult hasSingleRoom(Level& level, sf::IntRect area) {
+testing::AssertionResult hasSingleRoom(const Dungeon& dungeon, int z, sf::IntRect area) {
     sf::IntRect room = shrinkBottomRight(area, {1, 1});
     
-    for (int x = 0; x < level.shape().x; ++ x)
-        for (int y = 0; y < level.shape().y; ++ y)
+    for (int x = 0; x < dungeon.shape(z).x; ++ x)
+        for (int y = 0; y < dungeon.shape(z).y; ++ y)
             if (room.contains(x, y)) {
-                if (level.at(x, y) != Tile::EMPTY)
+                if (dungeon.at(x, y, z) != Tile::EMPTY)
                     return testing::AssertionFailure()
                          << "tile at " << x << ", " << y 
                          << " should be empty but it is not";
             } else
-                if (level.at(x, y) != Tile::WALL)
+                if (dungeon.at(x, y, z) != Tile::WALL)
                     return testing::AssertionFailure()
                          << "tile at " << x << ", " << y 
                          << " should be unseen but it is not";
@@ -46,60 +46,60 @@ testing::AssertionResult hasSingleRoom(Level& level, sf::IntRect area) {
 
 TEST(BasicRoomGenerator, generateRoom) {
     Dungeon dungeon;
-    dungeon[0].generateBlank({10, 7});
+    dungeon.assign({ 10, 7, 1 });
 
     sf::IntRect room{3, 2, 6, 5};
     BasicRoomGenerator generator;
     generator.dungeon(dungeon);
     generator(0, Area{ room });
 
-    EXPECT_TRUE(hasSingleRoom(dungeon[0], room));
+    EXPECT_TRUE(hasSingleRoom(dungeon, 0, room));
 }
 
 TEST(BasicRoomGenerator, generateRoomNearEdge) {
     Dungeon dungeon;
-    dungeon[0].generateBlank({8, 7});
+    dungeon.assign({ 8, 7, 1 });
 
     sf::IntRect room{1, 2, 7, 5};
     BasicRoomGenerator generator;
     generator.dungeon(dungeon);
     generator(0, Area{ room });
 
-    EXPECT_TRUE(hasSingleRoom(dungeon[0], room));
+    EXPECT_TRUE(hasSingleRoom(dungeon, 0, room));
 }
 
 TEST(BasicRoomGenerator, generateRoom3x3) {
     Dungeon dungeon;
-    dungeon[0].generateBlank({7, 7});
+    dungeon.assign({ 7, 7, 1 });
 
     sf::IntRect room{3, 2, 3, 3};
     BasicRoomGenerator generator;
     generator.dungeon(dungeon);
     generator(0, Area{ room });
 
-    EXPECT_TRUE(hasSingleRoom(dungeon[0], room));
+    EXPECT_TRUE(hasSingleRoom(dungeon, 0, room));
 }
 
 TEST(BasicRoomGenerator, generateRoom2x2) {
     Dungeon dungeon;
-    dungeon[0].generateBlank({7, 7});
+    dungeon.assign({ 7, 7, 1 });
 
     sf::IntRect room{3, 2, 2, 2};
     BasicRoomGenerator generator;
     generator.dungeon(dungeon);
     generator(0, Area{ room });
 
-    EXPECT_TRUE(hasSingleRoom(dungeon[0], room));
+    EXPECT_TRUE(hasSingleRoom(dungeon, 0, room));
 }
 
 TEST(BasicRoomGenerator, generateRoom1x1) {
     Dungeon dungeon;
-    dungeon[0].generateBlank({7, 7});
+    dungeon.assign({ 7, 7, 1 });
 
     sf::IntRect room{3, 2, 1, 1};
     BasicRoomGenerator generator;
     generator.dungeon(dungeon);
     generator(0, Area{ room });
 
-    EXPECT_TRUE(hasSingleRoom(dungeon[0], room));
+    EXPECT_TRUE(hasSingleRoom(dungeon, 0, room));
 }

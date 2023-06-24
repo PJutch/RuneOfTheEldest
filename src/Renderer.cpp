@@ -31,19 +31,18 @@ Renderer::Renderer(std::shared_ptr<Camera> camera,
     window{ std::move(window_) } {}
 
 void Renderer::drawWorld() {
-    draw(world->dungeon()[camera->position().level], camera->position().level);
-
+    drawLevel(camera->position().level);
     for (const auto& actor : playerMap->seenActors())
         actor->draw(*this);
 }
 
-void Renderer::draw(const Level& level, int z) {
-    for (int x = 0; x < level.shape().x; ++ x)
-        for (int y = 0; y < level.shape().y; ++ y)
+void Renderer::drawLevel(int z) {
+    for (int x = 0; x < world->dungeon().shape(z).x; ++x)
+        for (int y = 0; y < world->dungeon().shape(z).y; ++ y)
             if (playerMap->tileState({x, y, z}) == PlayerMap::TileState::VISIBLE)
-                drawSprite(sf::Vector2i{ x, y }, assets->tileTexture(level.at(x, y)));
+                drawSprite(sf::Vector2i{ x, y }, assets->tileTexture(world->dungeon().at(x, y, z)));
             else if (playerMap->tileState({ x, y, z }) == PlayerMap::TileState::MEMORIZED)
-                drawSprite(sf::Vector2i{ x, y }, assets->tileTexture(level.at(x, y)), 0.5);
+                drawSprite(sf::Vector2i{ x, y }, assets->tileTexture(world->dungeon().at(x, y, z)), 0.5);
     
     if (renderAreas_) drawAreas(z);
 }

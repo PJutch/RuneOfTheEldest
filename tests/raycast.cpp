@@ -19,8 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 TEST(raycast, canSeeEmpty) {
     Dungeon dungeon;
-    dungeon.resize(1);
-    dungeon[0].generateBlank({ 3, 3 });
+    dungeon.assign({ 3, 3, 1 });
     
     for (int x = 0; x < 3; ++x)
         for (int y = 0; y < 3; ++y)
@@ -31,8 +30,7 @@ TEST(raycast, canSeeEmpty) {
 
 TEST(raycast, canSeeAdjenct) {
     Dungeon dungeon;
-    dungeon.resize(1);
-    dungeon[0].generateBlank({ 2, 2 });
+    dungeon.assign({ 2, 2, 1 });
 
     dungeon.at(0, 1, 0) = Tile::EMPTY;
     dungeon.at(1, 1, 0) = Tile::EMPTY;
@@ -42,8 +40,7 @@ TEST(raycast, canSeeAdjenct) {
 
 TEST(raycast, canSeeAdjenctDiagonal) {
     Dungeon dungeon;
-    dungeon.resize(1);
-    dungeon[0].generateBlank({ 2, 2 });
+    dungeon.assign({ 2, 2, 1 });
 
     dungeon.at(0, 1, 0) = Tile::EMPTY;
     dungeon.at(1, 0, 0) = Tile::EMPTY;
@@ -53,8 +50,7 @@ TEST(raycast, canSeeAdjenctDiagonal) {
 
 TEST(raycast, canSeeBlockByWall) {
     Dungeon dungeon;
-    dungeon.resize(1);
-    dungeon[0].generateBlank({ 3, 3 });
+    dungeon.assign({ 3, 3, 1 });
 
     dungeon.at(0, 2, 0) = Tile::EMPTY;
     dungeon.at(2, 1, 0) = Tile::EMPTY;
@@ -64,9 +60,7 @@ TEST(raycast, canSeeBlockByWall) {
 
 TEST(raycast, canSeeBlockByFloor) {
     Dungeon dungeon;
-    dungeon.resize(2);
-    dungeon[0].generateBlank({ 2, 2 });
-    dungeon[1].generateBlank({ 2, 2 });
+    dungeon.assign({ 2, 2, 2 });
 
     for (int x = 0; x < 2; ++x)
         for (int y = 0; y < 2; ++y)
@@ -83,8 +77,7 @@ TEST(raycast, canSeeSelf) {
 
 TEST(raycast, canSeeWall) {
     Dungeon dungeon;
-    dungeon.resize(1);
-    dungeon[0].generateBlank({ 3, 3 });
+    dungeon.assign({ 3, 3, 1 });
 
     for (int x = 0; x < 3; ++x)
         for (int y = 0; y < 3; ++y)

@@ -17,7 +17,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define ROOM_GENERATOR_HPP_
 
 #include "../Area.hpp"
-#include "../Level.hpp"
 class Dungeon;
 
 #include <SFML/Graphics.hpp>

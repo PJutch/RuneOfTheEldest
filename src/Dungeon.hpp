@@ -17,12 +17,12 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define DUNGEON_HPP_
 
 #include "DungeonGenerator.hpp"
-#include "Level.hpp"
 #include "Tile.hpp"
 
 #include "log.hpp"
 #include "random.hpp"
 #include "Map.hpp"
+#include "geometry.hpp"
 
 #include <vector>
 #include <memory>
@@ -50,12 +50,12 @@ public:
 
 	/// Checks if there are tiles with this x
 	[[nodiscard]] bool isValidX(int x, int z) const noexcept {
-		return 0 <= x && x < (*this)[z].shape().x;
+		return 0 <= x && x < shapes[z].x;
 	}
 
 	/// Checks if there are tiles with this y
 	[[nodiscard]] bool isValidY(int y, int z) const noexcept {
-		return 0 <= y && y < (*this)[z].shape().y;
+		return 0 <= y && y < shapes[z].y;
 	}
 
 	/// Checks if position is valid tile position
@@ -71,32 +71,16 @@ public:
 			&& isValidY(rect.top + rect.height - 1, z);
 	}
 
-	/// @brief Access to individual level
-	/// @warning Check level index by yourself
-	///       \n You may use size
-	[[nodiscard]] Level& operator[] (int level) {
-		TROTE_ASSERT(isValidZ(level));
-		return levels[level];
-	}
-
-	/// @brief Access to individual level
-	/// @warning Check level index by yourself
-	///       \n You may use size
-	[[nodiscard]] const Level& operator[] (int level) const {
-		TROTE_ASSERT(isValidZ(level));
-		return levels[level];
+	/// @brief Access to individual tile on level level at (x, y)
+	/// @warning Check all indices by yourself
+	[[nodiscard]] Tile& at(int x, int y, int z) noexcept {
+		return tiles[z][x * shapes[z].y + y];
 	}
 
 	/// @brief Access to individual tile on level level at (x, y)
 	/// @warning Check all indices by yourself
-	[[nodiscard]] Tile& at(int x, int y, int level) noexcept {
-		return (*this)[level].at(x, y);
-	}
-
-	/// @brief Access to individual tile on level level at (x, y)
-	/// @warning Check all indices by yourself
-	[[nodiscard]] const Tile& at(int x, int y, int level) const noexcept {
-		return (*this)[level].at(x, y);
+	[[nodiscard]] const Tile& at(int x, int y, int z) const noexcept {
+		return tiles[z][x * shapes[z].y + y];
 	}
 
 	/// @brief Access to individual tile on level level at (x, y)
@@ -123,14 +107,25 @@ public:
 		return at(position.x, position.y, position.z);
 	}
 
+	sf::Vector2i shape(int z) const noexcept {
+		return shapes[z];
+	}
+
+	sf::IntRect bounds(int z) const noexcept {
+		return { {0, 0}, shape(z) };
+	}
+
+	void assign(sf::Vector3i shape, Tile tile = Tile::WALL);
+
 	/// Level count
 	[[nodiscard]] int size() const noexcept {
-		return levels.size();
+		return shapes.size();
 	}
 
 	/// Creates or deletes last levels to make size() == newSize
 	void resize(int newSize) noexcept {
-		levels.resize(newSize);
+		tiles.resize(newSize);
+		shapes.resize(newSize);
 	}
 
 	/// Returns at(position) destination if it's Tile::UP_STAIRS
@@ -156,8 +151,8 @@ public:
 	/// @brief Random tile position
 	/// @details position distribution is uniform and independent for both dimensions
 	[[nodiscard]] sf::Vector3i randomPositionAt(int level) const {
-		return { std::uniform_int_distribution{ 0, (*this)[level].shape().x - 1 }(*randomEngine),
-				 std::uniform_int_distribution{ 0, (*this)[level].shape().y - 1 }(*randomEngine),
+		return { std::uniform_int_distribution{ 0, shapes[level].x - 1 }(*randomEngine),
+				 std::uniform_int_distribution{ 0, shapes[level].y - 1 }(*randomEngine),
 		         level };
 	}
 
@@ -193,7 +188,8 @@ public:
 		return areas_[level];
 	}
 private:
-	std::vector<Level> levels;
+	std::vector<std::vector<Tile>> tiles;
+	std::vector<sf::Vector2i> shapes;
 
 	UnorderedMap<sf::Vector3i, sf::Vector3i> upStairs_;
 	UnorderedMap<sf::Vector3i, sf::Vector3i> downStairs_;

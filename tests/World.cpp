@@ -212,8 +212,7 @@ TEST(World, updateDeathInterrupt) {
 
 TEST(World, isFree) {
 	auto dungeon = std::make_shared<Dungeon>();
-	dungeon->resize(1);
-	(*dungeon)[0].generateBlank({ 2, 2 });
+	dungeon->assign({ 2, 2, 1 });
 
 	dungeon->at({ 0, 0, 0 }) = Tile::EMPTY;
 	dungeon->at({ 0, 1, 0 }) = Tile::EMPTY;

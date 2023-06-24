@@ -98,7 +98,7 @@ private:
     }
 
     void drawWorld();
-    void draw(const Level& level, int z);
+    void drawLevel(int z);
     void drawAreas(int level);
 
     void drawHpBar(sf::Vector3i position, double hp, double maxHp, double colorMod = 1.0);

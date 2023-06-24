@@ -15,6 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "AliveActor.hpp"
 
+#include "geometry.hpp"
+
 AliveActor::AliveActor(double newMaxHp, double regen_, sf::Vector3i newPosition, std::shared_ptr<World> newWorld, RandomEngine* newRandomEngine) :
 	position_{ newPosition }, hp_{ newMaxHp }, maxHp_{ newMaxHp }, regen{ regen_ },
 	world_{ std::move(newWorld) }, randomEngine_{ newRandomEngine } {}

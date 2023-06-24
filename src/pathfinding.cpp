@@ -18,6 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Dungeon.hpp"
 
 #include "geometry.hpp"
+#include "assert.hpp"
 
 #include <queue>
 
@@ -32,7 +33,7 @@ namespace {
 		PathBuffer(const Dungeon& dungeon) {
 			buffer.reserve(dungeon.size());
 			for (int level = 0; level < dungeon.size(); ++level)
-				buffer.emplace_back(dungeon[level].shape());
+				buffer.emplace_back(dungeon.shape(level));
 		}
 
 		PathNode& at(sf::Vector3i position) noexcept {

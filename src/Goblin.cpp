@@ -20,6 +20,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "pathfinding.hpp"
 #include "raycast.hpp"
 #include "geometry.hpp"
+#include "assert.hpp"
 
 bool Goblin::act() {
 	updateTarget();

@@ -19,7 +19,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "RoomGenerator.hpp"
 #include "BasicRoomGenerator.hpp"
 
-#include "../Level.hpp"
 class Dungeon;
 
 #include "../random.hpp"
@@ -58,19 +57,19 @@ private:
 
     [[nodiscard]] Area randomRoomIn(const Area& area);
 
-    void leftPassage(Level& level, const Area& area, Area& room, int y);
-    void topPassage(Level& level, const Area& area, Area& room, int y);
-    void rightPassage(Level& level, const Area& area, Area& room, int y);
-    void bottomPassage(Level& level, const Area& area, Area& room, int y);
+    void leftPassage(int z, const Area& area, Area& room, int y);
+    void topPassage(int z, const Area& area, Area& room, int y);
+    void rightPassage(int z, const Area& area, Area& room, int y);
+    void bottomPassage(int z, const Area& area, Area& room, int y);
 
-    void bendedHorizontalPassage(Level& level, Area& room, int x, int y);
-    void bendedVerticalPassage(Level& level, Area& room, int x, int y);
+    void bendedHorizontalPassage(int z, Area& room, int x, int y);
+    void bendedVerticalPassage(int z, Area& room, int x, int y);
 
-    void horizontalPassageEnd(Level& level, Area& room, int x, int y);
-    void verticalPassageEnd(Level& level, Area& room, int x, int y);
+    void horizontalPassageEnd(int z, Area& room, int x, int y);
+    void verticalPassageEnd(int z, Area& room, int x, int y);
 
-    void horizontalPassage(Level& level, int left, int right, int y);
-    void verticalPassage(Level& level, int top, int bottom, int x);
+    void horizontalPassage(int z, int left, int right, int y);
+    void verticalPassage(int z, int top, int bottom, int x);
 };
 
 #endif
