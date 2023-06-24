@@ -100,35 +100,6 @@ public:
     [[nodiscard]] std::span<const sf::IntRect> areas() const noexcept {
         return areas_;
     }
-
-    /// Random tile position
-    /// @details position distribution is uniform and independent for both dimensions
-    [[nodiscard]] sf::Vector2i randomPosition(RandomEngine& engine) const {
-        return { std::uniform_int_distribution{ 0, shape().x - 1 }(engine),
-                 std::uniform_int_distribution{ 0, shape().y - 1 }(engine) };
-    }
-
-    /// Random tile position satisfying pred
-    /// @details randomPosition(engine) distrbution filtered by pred(pos, *this)
-    template <typename Pred> 
-        requires std::convertible_to<std::invoke_result_t<Pred, sf::Vector2i, const Level&>, bool>
-    [[nodiscard]] sf::Vector2i randomPosition(RandomEngine& engine, Pred&& pred) const {
-        sf::Vector2i pos;
-        do {
-            pos = randomPosition(engine);
-        } while (!std::invoke(pred, pos, *this));
-        return pos;
-    }
-
-    /// Position of random tile satisfying pred
-    /// @details randomPosition(engine) distrbution filtered by pred(tile)
-    template <typename Pred>
-        requires std::convertible_to<std::invoke_result_t<Pred, Tile>, bool>
-    [[nodiscard]] sf::Vector2i randomPosition(RandomEngine& engine, Pred&& pred) const {
-        return randomPosition(engine, [&pred](sf::Vector2i pos, const Level& level) {
-            return std::invoke(pred, level.at(pos));
-        });
-    }
 private:
     sf::Vector2i shape_;
     std::vector<Tile> tiles;

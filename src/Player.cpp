@@ -27,11 +27,9 @@ void Player::spawn() {
 
 	world().addActor(shared_from_this());
 
-	int level = 0;
-	sf::Vector2i playerPos = world().dungeon()[level].randomPosition(randomEngine(), [this, level](sf::Vector2i pos, const Level&) {
-		return world().isFree(make3D(pos, level));
-	});
-	position(make3D(playerPos, level));
+	position(world().dungeon().randomPositionAt(0, [this](sf::Vector3i pos, const Dungeon&) {
+		return world().isFree(pos);
+	}));
 }
 
 void Player::handleEvent(sf::Event event) {

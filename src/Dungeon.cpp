@@ -47,11 +47,6 @@ void Dungeon::addStairs(sf::Vector3i pos1, sf::Vector3i pos2) {
 }
 
 void Dungeon::generateUpStairs(int fromLevel) {
-	for (int i = 0; i < 3; ++i) {
-		sf::Vector2i upPos = (*this)[fromLevel - 1].randomPosition(*randomEngine, &isEmpty);
-
-		sf::Vector2i downPos = (*this)[fromLevel].randomPosition(*randomEngine, &isEmpty);
-
-		addStairs({ upPos.x, upPos.y, fromLevel - 1 }, { downPos.x, downPos.y, fromLevel });
-	}
+	for (int i = 0; i < 3; ++i)
+		addStairs(randomPositionAt(fromLevel - 1, &isEmpty), randomPositionAt(fromLevel, &isEmpty));
 }

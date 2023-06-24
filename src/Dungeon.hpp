@@ -130,16 +130,34 @@ public:
 	/// Up or down stairs are choosen automatically by z coordinate.
 	void addStairs(sf::Vector3i position1, sf::Vector3i position2);
 
+	/// @brief Random tile position
+	/// @details position distribution is uniform and independent for both dimensions
+	[[nodiscard]] sf::Vector3i randomPositionAt(int level) const {
+		return { std::uniform_int_distribution{ 0, (*this)[level].shape().x - 1 }(*randomEngine),
+				 std::uniform_int_distribution{ 0, (*this)[level].shape().y - 1 }(*randomEngine),
+		         level };
+	}
+
+	/// @brief 3D position of random tile satisfying pred
+	/// @details randomPosition(engine) distrbution filtered by pred(tile)
+	template <typename Pred>
+		requires std::convertible_to<std::invoke_result_t<Pred, Tile>, bool>
+	[[nodiscard]] sf::Vector3i randomPositionAt(int level, Pred&& pred) const {
+		return randomPositionAt(level, [&pred](sf::Vector3i pos, const Dungeon& dungeon) {
+			return std::invoke(pred, dungeon.at(pos));
+		});
+	}
+
 	/// @brief Random tile position (3D) at given level satisfying pred
 	/// @details randomPosition(engine) distrbution filtered by pred(pos, *this)
 	template <typename Pred>
-		requires std::convertible_to<std::invoke_result_t<Pred, sf::Vector3i, Dungeon&>, bool>
-	[[nodiscard]] sf::Vector3i randomPositionAt(int level, RandomEngine& engine, Pred&& pred) const {
-		sf::Vector2i pos;
+		requires std::convertible_to<std::invoke_result_t<Pred, sf::Vector3i, const Dungeon&>, bool>
+	[[nodiscard]] sf::Vector3i randomPositionAt(int level, Pred&& pred) const {
+		sf::Vector3i pos;
 		do {
-			pos = (*this)[level].randomPosition(engine);
-		} while (!std::invoke(pred, make3D(pos, level), *this));
-		return make3D(pos, level);
+			pos = randomPositionAt(level);
+		} while (!std::invoke(pred, pos, *this));
+		return pos;
 	}
 private:
 	std::vector<Level> levels;
