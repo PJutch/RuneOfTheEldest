@@ -32,19 +32,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 /// Single level of the dungeon. Basically a 2D tile grid
 class Level{
 public:
-    /// Checks if there are tiles with this x
-    [[nodiscard]] bool isValidX(int x) const noexcept {
-        return 0 <= x && x < shape().x;
-    }
-
-    /// Checks if there are tiles with this y
-    [[nodiscard]] bool isValidY(int y) const noexcept {
-        return 0 <= y && y < shape().y;
-    }
-
-    /// Checks if rect sides are >=0 and all tiles in it are exists
-    [[nodiscard]] bool isValidRect(sf::IntRect rect) const noexcept;
-
     /// Access to individual tile at (x, y)
     /// @warning Check indices by yourself
     ///       \n You may use isValidX and isValidY or shape
@@ -93,6 +80,16 @@ public:
 private:
     sf::Vector2i shape_;
     std::vector<Tile> tiles;
+
+    /// Checks if there are tiles with this x
+    [[nodiscard]] bool isValidX(int x) const noexcept {
+        return 0 <= x && x < shape().x;
+    }
+
+    /// Checks if there are tiles with this y
+    [[nodiscard]] bool isValidY(int y) const noexcept {
+        return 0 <= y && y < shape().y;
+    }
 };
 
 #endif

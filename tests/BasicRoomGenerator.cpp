@@ -15,6 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "RoomGenerator/BasicRoomGenerator.hpp"
 
+#include "Dungeon.hpp"
+
 #include "geometry.hpp"
 
 #include <gtest/gtest.h>
@@ -43,51 +45,61 @@ testing::AssertionResult hasSingleRoom(Level& level, sf::IntRect area) {
 }
 
 TEST(BasicRoomGenerator, generateRoom) {
-    Level level;
-    level.generateBlank({10, 7});
+    Dungeon dungeon;
+    dungeon[0].generateBlank({10, 7});
 
     sf::IntRect room{3, 2, 6, 5};
-    BasicRoomGenerator{}(level, Area{ room });
+    BasicRoomGenerator generator;
+    generator.dungeon(dungeon);
+    generator(0, Area{ room });
 
-    EXPECT_TRUE(hasSingleRoom(level, room));
+    EXPECT_TRUE(hasSingleRoom(dungeon[0], room));
 }
 
 TEST(BasicRoomGenerator, generateRoomNearEdge) {
-    Level level;
-    level.generateBlank({8, 7});
+    Dungeon dungeon;
+    dungeon[0].generateBlank({8, 7});
 
     sf::IntRect room{1, 2, 7, 5};
-    BasicRoomGenerator{}(level, Area{room});
+    BasicRoomGenerator generator;
+    generator.dungeon(dungeon);
+    generator(0, Area{ room });
 
-    EXPECT_TRUE(hasSingleRoom(level, room));
+    EXPECT_TRUE(hasSingleRoom(dungeon[0], room));
 }
 
 TEST(BasicRoomGenerator, generateRoom3x3) {
-    Level level;
-    level.generateBlank({7, 7});
+    Dungeon dungeon;
+    dungeon[0].generateBlank({7, 7});
 
     sf::IntRect room{3, 2, 3, 3};
-    BasicRoomGenerator{}(level, Area{room});
+    BasicRoomGenerator generator;
+    generator.dungeon(dungeon);
+    generator(0, Area{ room });
 
-    EXPECT_TRUE(hasSingleRoom(level, room));
+    EXPECT_TRUE(hasSingleRoom(dungeon[0], room));
 }
 
 TEST(BasicRoomGenerator, generateRoom2x2) {
-    Level level;
-    level.generateBlank({7, 7});
+    Dungeon dungeon;
+    dungeon[0].generateBlank({7, 7});
 
     sf::IntRect room{3, 2, 2, 2};
-    BasicRoomGenerator{}(level, Area{room});
+    BasicRoomGenerator generator;
+    generator.dungeon(dungeon);
+    generator(0, Area{ room });
 
-    EXPECT_TRUE(hasSingleRoom(level, room));
+    EXPECT_TRUE(hasSingleRoom(dungeon[0], room));
 }
 
 TEST(BasicRoomGenerator, generateRoom1x1) {
-    Level level;
-    level.generateBlank({7, 7});
+    Dungeon dungeon;
+    dungeon[0].generateBlank({7, 7});
 
     sf::IntRect room{3, 2, 1, 1};
-    BasicRoomGenerator{}(level, Area{room});
+    BasicRoomGenerator generator;
+    generator.dungeon(dungeon);
+    generator(0, Area{ room });
 
-    EXPECT_TRUE(hasSingleRoom(level, room));
+    EXPECT_TRUE(hasSingleRoom(dungeon[0], room));
 }

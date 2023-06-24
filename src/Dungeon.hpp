@@ -43,10 +43,39 @@ public:
 		return *generator_;
 	}
 
+	/// Checks if there are tiles with this z
+	[[nodiscard]] bool isValidZ(int z) const noexcept {
+		return 0 <= z && z < size();
+	}
+
+	/// Checks if there are tiles with this x
+	[[nodiscard]] bool isValidX(int x, int z) const noexcept {
+		return 0 <= x && x < (*this)[z].shape().x;
+	}
+
+	/// Checks if there are tiles with this y
+	[[nodiscard]] bool isValidY(int y, int z) const noexcept {
+		return 0 <= y && y < (*this)[z].shape().y;
+	}
+
+	/// Checks if position is valid tile position
+	[[nodiscard]] bool isValidPosition(sf::Vector3i position) const noexcept {
+		return isValidZ(position.z) && isValidX(position.x, position.z) && isValidY(position.y, position.z);
+	}
+
+	/// Checks if rect sides are >=0 and all tiles in it are exists
+	[[nodiscard]] bool isValidRect(sf::IntRect rect, int z) const noexcept {
+		return isValidX(rect.left, z) && isValidY(rect.top, z)
+			&& rect.width >= 0 && rect.height >= 0
+			&& isValidX(rect.left + rect.width - 1, z)
+			&& isValidY(rect.top + rect.height - 1, z);
+	}
+
 	/// @brief Access to individual level
 	/// @warning Check level index by yourself
 	///       \n You may use size
 	[[nodiscard]] Level& operator[] (int level) {
+		TROTE_ASSERT(isValidZ(level));
 		return levels[level];
 	}
 
@@ -54,6 +83,7 @@ public:
 	/// @warning Check level index by yourself
 	///       \n You may use size
 	[[nodiscard]] const Level& operator[] (int level) const {
+		TROTE_ASSERT(isValidZ(level));
 		return levels[level];
 	}
 
@@ -101,13 +131,6 @@ public:
 	/// Creates or deletes last levels to make size() == newSize
 	void resize(int newSize) noexcept {
 		levels.resize(newSize);
-	}
-
-	/// Checks if position is valid tile position
-	[[nodiscard]] bool isValidPosition(sf::Vector3i position) const noexcept {
-		return 0 <= position.z && position.z < size()
-			&& (*this)[position.z].isValidX(position.x)
-			&& (*this)[position.z].isValidY(position.y);
 	}
 
 	/// Returns at(position) destination if it's Tile::UP_STAIRS

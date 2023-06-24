@@ -41,21 +41,19 @@ void DungeonGenerator::processLevel(int z) {
 }
 
 void DungeonGenerator::processArea(int z, Area area) {
-    Level& level = (*dungeon_)[z];
-
-    TROTE_ASSERT(level.isValidRect(area.bounds()));
+    TROTE_ASSERT(dungeon_->isValidRect(area.bounds(), z));
     TROTE_ASSERT(area.width() >= minSize_);
     TROTE_ASSERT(area.height() >= minSize_);
 
     dungeon_->addArea(area.bounds(), z);
 
     if (!canSplit(area.width()) && !canSplit(area.height())) {
-        roomGenerator()(level, area);
+        roomGenerator()(z, area);
         return;
     }
 
     if (std::uniform_real_distribution{}(*randomEngine) > splitChance_) {
-        roomGenerator()(level, area);
+        roomGenerator()(z, area);
         return;
     }
         

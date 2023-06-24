@@ -19,6 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "RoomGenerator.hpp"
 
 #include "../Level.hpp"
+class Dungeon;
 
 #include <memory>
 
@@ -29,7 +30,7 @@ class BasicRoomGenerator : public RoomGenerator {
 public:
     BasicRoomGenerator() = default;
 
-    void operator() (Level& level, Area area) final;
+    void operator() (int z, Area area) final;
 
     /// @brief If true generates special colored tiles instead of Tile::EMPTY
     /// @details Generates Tile::ROOM in main room
@@ -37,8 +38,14 @@ public:
     void debugTiles(bool newDebugTiles = true) noexcept final {
         debugTiles_ = newDebugTiles;
     }
+
+    void dungeon(Dungeon& newDungeon) final {
+        dungeon_ = &newDungeon;
+    }
 private:
     bool debugTiles_ = false;
+
+    Dungeon* dungeon_ = nullptr;
 };
 
 #endif

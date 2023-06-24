@@ -15,10 +15,14 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "BasicRoomGenerator.hpp"
 
+#include "../Dungeon.hpp"
+
 #include "../assert.hpp"
 
-void BasicRoomGenerator::operator() (Level& level, Area area) {
-    TROTE_ASSERT(level.isValidRect(area.bounds()));
+void BasicRoomGenerator::operator() (int z, Area area) {
+    TROTE_ASSERT(dungeon_->isValidRect(area.bounds(), z));
+
+    Level& level = (*dungeon_)[z];
     
     for (int x = area.left(); x < area.right() - 1; ++ x)
         for (int y = area.top(); y < area.bottom() - 1; ++ y)

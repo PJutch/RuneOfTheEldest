@@ -15,6 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "RandomSizeRoomGenerator.hpp"
 
+#include "../Dungeon.hpp"
+
 #include "../assert.hpp"
 
 Area RandomSizeRoomGenerator::randomRoomIn(const Area& area) {
@@ -158,8 +160,10 @@ void RandomSizeRoomGenerator::verticalPassage(Level& level, int top, int bottom,
                                       : Tile::EMPTY);
 }
 
-void RandomSizeRoomGenerator::operator() (Level& level, Area area) {
-    TROTE_ASSERT(level.isValidRect(area.bounds()));
+void RandomSizeRoomGenerator::operator() (int z, Area area) {
+    TROTE_ASSERT(dungeon_->isValidRect(area.bounds(), z));
+
+    Level& level = (*dungeon_)[z];
 
     Area room = randomRoomIn(area);
 
@@ -175,5 +179,5 @@ void RandomSizeRoomGenerator::operator() (Level& level, Area area) {
     for (int x : area.bottomPassages())
         bottomPassage(level, area, room, x);
 
-    generator(level, std::move(room));
+    generator(z, std::move(room));
 }

@@ -20,6 +20,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "BasicRoomGenerator.hpp"
 
 #include "../Level.hpp"
+class Dungeon;
 
 #include "../random.hpp"
 
@@ -33,7 +34,7 @@ class RandomSizeRoomGenerator : public RoomGenerator {
 public:
     RandomSizeRoomGenerator(RandomEngine& randomEngine_) : randomEngine{&randomEngine_} {}
 
-    void operator() (Level& level, Area area) final;
+    void operator() (int z, Area area) final;
 
     /// @brief If true generates special colored tiles instead of Tile::EMPTY
     /// @details Generates Tile::PASSAGE in passages
@@ -42,12 +43,18 @@ public:
         debugTiles_ = newDebugTiles;
         generator.debugTiles(newDebugTiles);
     }
+
+    void dungeon(Dungeon& newDungeon) final {
+        dungeon_ = &newDungeon;
+        generator.dungeon(newDungeon);
+    }
 private:
     bool debugTiles_ = false;
 
     BasicRoomGenerator generator;
 
-    RandomEngine* randomEngine;
+    Dungeon* dungeon_ = nullptr; 
+    RandomEngine* randomEngine = nullptr;
 
     [[nodiscard]] Area randomRoomIn(const Area& area);
 

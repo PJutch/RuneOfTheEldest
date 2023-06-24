@@ -15,13 +15,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Level.hpp"
 
-bool Level::isValidRect(sf::IntRect rect) const noexcept {
-    return isValidX(rect.left) && isValidY(rect.top)
-        && rect.width >= 0 && rect.height >= 0
-        && isValidX(rect.left + rect.width - 1) 
-        && isValidY(rect.top + rect.height - 1);
-}
-
 void Level::generateBlank(sf::Vector2i newShape) {
     shape_ = newShape;
 

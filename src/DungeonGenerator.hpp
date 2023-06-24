@@ -55,6 +55,7 @@ public:
 
     void dungeon(Dungeon& newDungeon) {
         dungeon_ = &newDungeon;
+        roomGenerator().dungeon(newDungeon);
     }
 
     void operator() ();

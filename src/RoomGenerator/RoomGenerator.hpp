@@ -18,6 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "../Area.hpp"
 #include "../Level.hpp"
+class Dungeon;
 
 #include <SFML/Graphics.hpp>
 
@@ -29,7 +30,10 @@ public:
     virtual ~RoomGenerator() = default;
 
     ///  Generates room in the area
-    virtual void operator() (Level& level, Area area) = 0;
+    virtual void operator() (int z, Area area) = 0;
+
+    /// Passes current Dungeon instance
+    virtual void dungeon(Dungeon& dungeon) = 0;
 
     /// If true generates special colored tiles instead of Tile::EMPTY
     virtual void debugTiles(bool debugTiles_ = true) = 0;
