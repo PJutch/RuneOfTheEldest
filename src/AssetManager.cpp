@@ -23,7 +23,6 @@ AssetManager::AssetManager(LoggerFactory& loggerFactory) : logger{ loggerFactory
 
     loadTexture(tileTextureMut(Tile::EMPTY ), "floor tile" , "resources/textures/Tile/floor.png" );
     loadTexture(tileTextureMut(Tile::WALL  ), "wall tile"  , "resources/textures/Tile/wall.png"  );
-    loadTexture(tileTextureMut(Tile::UNSEEN), "unseen tile", "resources/textures/Tile/unseen.png");
 
     loadTexture(tileTextureMut(Tile::UP_STAIRS  ), "up stairs tile"  , "resources/textures/Tile/up_stairs.png"  );
     loadTexture(tileTextureMut(Tile::DOWN_STAIRS), "down stairs tile", "resources/textures/Tile/down_stairs.png");

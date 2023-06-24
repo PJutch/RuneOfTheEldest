@@ -22,7 +22,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 enum class Tile {
     EMPTY,         ///< Empty floor tile
     WALL,          ///< Impassable wall
-    UNSEEN,        ///< Not accessable for player tile
     ROOM,          ///< Debug only @see BasicRoomGenerator::debugTiles
     ROOM_ENTRANCE, ///< Debug only @see BasicRoomGenerator::debugTiles
     PASSAGE,       ///< Debug only @see RandomSizeRoomGenerator::debugTiles
@@ -37,7 +36,7 @@ const static int totalTiles = static_cast<int>(Tile::TOTAL_);
 /// @brief Tests if Tile is passable (!= Tile::WALL)
 /// @details Tile::UNSEEN is also impassable for placing player and debug dungeon generation 
 [[nodiscard]] inline bool isPassable(Tile tile) {
-    return tile != Tile::WALL && tile != Tile::UNSEEN;
+    return tile != Tile::WALL;
 }
 
 /// same as isPassable

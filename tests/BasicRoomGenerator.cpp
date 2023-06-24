@@ -34,7 +34,7 @@ testing::AssertionResult hasSingleRoom(Level& level, sf::IntRect area) {
                          << "tile at " << x << ", " << y 
                          << " should be empty but it is not";
             } else
-                if (level.at(x, y) != Tile::UNSEEN)
+                if (level.at(x, y) != Tile::WALL)
                     return testing::AssertionFailure()
                          << "tile at " << x << ", " << y 
                          << " should be unseen but it is not";

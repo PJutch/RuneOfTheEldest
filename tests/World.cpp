@@ -214,7 +214,7 @@ TEST(World, isFree) {
 	dungeon->at({ 0, 0, 0 }) = Tile::EMPTY;
 	dungeon->at({ 0, 1, 0 }) = Tile::EMPTY;
 	dungeon->at({ 1, 0, 0 }) = Tile::WALL;
-	dungeon->at({ 1, 1, 0 }) = Tile::UNSEEN;
+	dungeon->at({ 1, 1, 0 }) = Tile::WALL;
 
 	World world{ std::move(dungeon) };
 	world.addActor(std::make_shared<TestActor>(sf::Vector3i{0, 1, 0}));
@@ -222,7 +222,6 @@ TEST(World, isFree) {
 	EXPECT_TRUE(world.isFree({ 0, 0, 0 }));
 	EXPECT_FALSE(world.isFree({ 0, 1, 0 }));
 	EXPECT_FALSE(world.isFree({ 1, 0, 0 }));
-	EXPECT_FALSE(world.isFree({ 1, 1, 0 }));
 }
 
 TEST(World, makeSound) {

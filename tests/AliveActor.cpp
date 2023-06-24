@@ -149,7 +149,7 @@ auto createAliveActorTryMoveToTest() {
 	dungeon->at({ 0, 1, 0 }) = Tile::EMPTY;
 	dungeon->at({ 0, 2, 0 }) = Tile::EMPTY;
 	dungeon->at({ 1, 0, 0 }) = Tile::WALL;
-	dungeon->at({ 1, 1, 0 }) = Tile::UNSEEN;
+	dungeon->at({ 1, 1, 0 }) = Tile::WALL;
 	dungeon->at({ 1, 2, 0 }) = Tile::EMPTY;
 
 	auto world = std::make_shared<World>(std::move(dungeon));
@@ -176,14 +176,6 @@ TEST(AliveActor, tryMoveToWall) {
 
 	EXPECT_FALSE(actor->canMoveToOrAttack({ 1, 0, 0 }));
 	actor->tryMoveTo({ 1, 0, 0 });
-	EXPECT_EQ(actor->position(), (sf::Vector3i{ 0, 1, 0 }));
-}
-
-TEST(AliveActor, tryMoveToUnseen) {
-	auto [actor, other] = createAliveActorTryMoveToTest();
-
-	EXPECT_FALSE(actor->canMoveToOrAttack({ 1, 1, 0 }));
-	actor->tryMoveTo({ 1, 1, 0 });
 	EXPECT_EQ(actor->position(), (sf::Vector3i{ 0, 1, 0 }));
 }
 

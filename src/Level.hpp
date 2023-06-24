@@ -91,9 +91,6 @@ public:
     /// Shape of the new level
     void generateBlank(sf::Vector2i shape);
 
-    /// Replaces Tile::UNSEEN adjanct to Tile::EMPTY with Tile::WALL 
-    void generateWalls();
-
     /// Add bsp area. Used for debug area rendering
     void addArea(sf::IntRect area) {
         areas_.push_back(area);
