@@ -13,7 +13,7 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#include "SeenTiles.hpp"
+#include "PlayerMap.hpp"
 
 #include "World.hpp"
 #include "Player.hpp"
@@ -87,7 +87,7 @@ namespace {
     };
 }
 
-TEST(SeenTiles, tileVisibilityEmpty) {
+TEST(PlayerMap, tileVisibilityEmpty) {
     auto dungeon = std::make_shared<Dungeon>();
     dungeon->resize(1);
     (*dungeon)[0].generateBlank({ 3, 3 });
@@ -99,13 +99,13 @@ TEST(SeenTiles, tileVisibilityEmpty) {
     auto player = std::make_shared<Player>();
     player->position({ 0, 2, 0 });
 
-    SeenTiles seenTiles{ std::move(player), std::make_shared<World>(std::move(dungeon)) };
-    seenTiles.onGenerate();
-    seenTiles.update();
+    PlayerMap playerMap{ std::move(player), std::make_shared<World>(std::move(dungeon)) };
+    playerMap.onGenerate();
+    playerMap.update();
 
     for (int x = 0; x < 3; ++x)
         for (int y = 0; y < 3; ++y)
-            EXPECT_EQ(seenTiles.tileState({ x, y, 0 }), SeenTiles::TileState::VISIBLE);
+            EXPECT_EQ(playerMap.tileState({ x, y, 0 }), PlayerMap::TileState::VISIBLE);
 }
 
 namespace {
@@ -125,42 +125,42 @@ namespace {
     }
 }
 
-TEST(SeenTiles, tileVisibilityWall) {
+TEST(PlayerMap, tileVisibilityWall) {
     auto player = std::make_shared<Player>();
     player->position({ 1, 0, 0 });
 
-    SeenTiles seenTiles{ std::move(player), createWallWorld() };
-    seenTiles.onGenerate();
-    seenTiles.update();
+    PlayerMap playerMap{ std::move(player), createWallWorld() };
+    playerMap.onGenerate();
+    playerMap.update();
 
     for (int x = 0; x < 3; ++x)
-        EXPECT_EQ(seenTiles.tileState({ x, 0, 0 }), SeenTiles::TileState::VISIBLE);
+        EXPECT_EQ(playerMap.tileState({ x, 0, 0 }), PlayerMap::TileState::VISIBLE);
     for (int x = 0; x < 3; ++x)
-        EXPECT_EQ(seenTiles.tileState({ x, 1, 0 }), SeenTiles::TileState::VISIBLE);
+        EXPECT_EQ(playerMap.tileState({ x, 1, 0 }), PlayerMap::TileState::VISIBLE);
     for (int x = 0; x < 3; ++x)
-        EXPECT_EQ(seenTiles.tileState({ x, 2, 0 }), SeenTiles::TileState::UNSEEN);
+        EXPECT_EQ(playerMap.tileState({ x, 2, 0 }), PlayerMap::TileState::UNSEEN);
 }
 
-TEST(SeenTiles, tileMemorization) {
+TEST(PlayerMap, tileMemorization) {
     auto player = std::make_shared<Player>();
 
-    SeenTiles seenTiles{ player, createWallWorld() };
-    seenTiles.onGenerate();
+    PlayerMap playerMap{ player, createWallWorld() };
+    playerMap.onGenerate();
 
     player->position({ 1, 0, 0 });
-    seenTiles.update();
+    playerMap.update();
     player->position({ 1, 2, 0 });
-    seenTiles.update();
+    playerMap.update();
 
     for (int x = 0; x < 3; ++x)
-        EXPECT_EQ(seenTiles.tileState({ x, 0, 0 }), SeenTiles::TileState::MEMORIZED);
+        EXPECT_EQ(playerMap.tileState({ x, 0, 0 }), PlayerMap::TileState::MEMORIZED);
     for (int x = 0; x < 3; ++x)
-        EXPECT_EQ(seenTiles.tileState({ x, 1, 0 }), SeenTiles::TileState::VISIBLE);
+        EXPECT_EQ(playerMap.tileState({ x, 1, 0 }), PlayerMap::TileState::VISIBLE);
     for (int x = 0; x < 3; ++x)
-        EXPECT_EQ(seenTiles.tileState({ x, 2, 0 }), SeenTiles::TileState::VISIBLE);
+        EXPECT_EQ(playerMap.tileState({ x, 2, 0 }), PlayerMap::TileState::VISIBLE);
 }
 
-TEST(SeenTiles, seenActors) {
+TEST(PlayerMap, seenActors) {
     auto player = std::make_shared<Player>();
     player->position({ 1, 0, 0 });
 
@@ -168,30 +168,30 @@ TEST(SeenTiles, seenActors) {
     world->addActor(std::make_shared<TestActor>(sf::Vector3i{ 2, 0, 0 }));
     world->addActor(std::make_shared<TestActor>(sf::Vector3i{ 2, 2, 0 }));
 
-    SeenTiles seenTiles{ std::move(player), std::move(world) };
-    seenTiles.onGenerate();
-    seenTiles.update();
+    PlayerMap playerMap{ std::move(player), std::move(world) };
+    playerMap.onGenerate();
+    playerMap.update();
 
-    EXPECT_EQ(std::ssize(seenTiles.seenActors()), 1);
-    EXPECT_EQ(seenTiles.seenActors()[0]->position(), (sf::Vector3i{ 2, 0, 0 }));
+    EXPECT_EQ(std::ssize(playerMap.seenActors()), 1);
+    EXPECT_EQ(playerMap.seenActors()[0]->position(), (sf::Vector3i{ 2, 0, 0 }));
 }
 
-TEST(SeenTiles, seenActorsMemorization) {
+TEST(PlayerMap, seenActorsMemorization) {
     auto player = std::make_shared<Player>();
 
     auto world = createWallWorld();
     auto actor = std::make_shared<TestActor>(sf::Vector3i{ 2, 0, 0 });
     world->addActor(actor);
 
-    SeenTiles seenTiles{ player, std::move(world) };
-    seenTiles.onGenerate();
+    PlayerMap playerMap{ player, std::move(world) };
+    playerMap.onGenerate();
 
     player->position({ 1, 0, 0 });
-    seenTiles.update();
+    playerMap.update();
     player->position({ 1, 2, 0 });
-    seenTiles.update();
+    playerMap.update();
     actor->position({1, 0, 0});
 
-    EXPECT_EQ(std::ssize(seenTiles.seenActors()), 1);
-    EXPECT_EQ(seenTiles.seenActors()[0]->position(), (sf::Vector3i{ 2, 0, 0 }));
+    EXPECT_EQ(std::ssize(playerMap.seenActors()), 1);
+    EXPECT_EQ(playerMap.seenActors()[0]->position(), (sf::Vector3i{ 2, 0, 0 }));
 }

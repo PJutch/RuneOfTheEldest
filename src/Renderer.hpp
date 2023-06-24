@@ -19,7 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Camera/Camera.hpp"
 #include "View.hpp"
 #include "AssetManager.hpp"
-#include "SeenTiles.hpp"
+#include "PlayerMap.hpp"
 
 #include "World.hpp"
 #include "AiState.hpp"
@@ -42,7 +42,7 @@ class Renderer {
 public:
     /// Creates renderer and loads textures
     Renderer(std::shared_ptr<Camera> camera,
-             std::shared_ptr<SeenTiles> seenTiles,
+             std::shared_ptr<PlayerMap> playerMap,
              std::shared_ptr<sf::RenderWindow> window, 
              std::shared_ptr<World> world,
              std::shared_ptr<Player> player,
@@ -72,7 +72,7 @@ private:
 
     std::shared_ptr<Camera> camera;
     std::unique_ptr<AssetManager> assets;
-    std::shared_ptr<SeenTiles> seenTiles;
+    std::shared_ptr<PlayerMap> playerMap;
 
     std::shared_ptr<World> world;
     std::shared_ptr<Player> player;

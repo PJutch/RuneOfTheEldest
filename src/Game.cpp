@@ -24,7 +24,7 @@ Game::Game(std::shared_ptr<World> newWorld,
            std::shared_ptr<Player> player_,
            std::shared_ptr<sf::RenderWindow> window_,
            std::shared_ptr<Camera> camera_,
-           std::shared_ptr<SeenTiles> seenTiles_,
+           std::shared_ptr<PlayerMap> playerMap_,
            std::unique_ptr<Renderer> newRenderer,
            RandomEngine& randomEngine_,
            LoggerFactory& loggerFactory) :
@@ -32,7 +32,7 @@ Game::Game(std::shared_ptr<World> newWorld,
     player{ std::move(player_) },
     window{std::move(window_)},
     camera{std::move(camera_)},
-    seenTiles{ std::move(seenTiles_) },
+    playerMap{ std::move(playerMap_) },
     renderer_{std::move(newRenderer)},
     randomEngine{ &randomEngine_ }, 
     generationLogger{ loggerFactory.create("generation") } {}
@@ -95,5 +95,5 @@ void Game::generate() {
 
     generationLogger->info("Finished");
 
-    seenTiles->onGenerate();
+    playerMap->onGenerate();
 }

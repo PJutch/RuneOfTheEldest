@@ -21,28 +21,28 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "raycast.hpp"
 
 Renderer::Renderer(std::shared_ptr<Camera> camera,
-                   std::shared_ptr<SeenTiles> seenTiles_,
+                   std::shared_ptr<PlayerMap> playerMap_,
                    std::shared_ptr<sf::RenderWindow> window_,
                    std::shared_ptr<World> world_,
                    std::shared_ptr<Player> player_,
                    std::unique_ptr<AssetManager> assets_) :
-    camera{ std::move(camera) }, assets{ std::move(assets_) }, seenTiles{ std::move(seenTiles_) },
+    camera{ std::move(camera) }, assets{ std::move(assets_) }, playerMap{ std::move(playerMap_) },
     world{ std::move(world_) }, player{ player_ },
     window{ std::move(window_) } {}
 
 void Renderer::drawWorld() {
     draw(world->dungeon()[camera->position().level], camera->position().level);
 
-    for (const auto& actor : seenTiles->seenActors())
+    for (const auto& actor : playerMap->seenActors())
         actor->draw(*this);
 }
 
 void Renderer::draw(const Level& level, int z) {
     for (int x = 0; x < level.shape().x; ++ x)
         for (int y = 0; y < level.shape().y; ++ y)
-            if (seenTiles->tileState({x, y, z}) == SeenTiles::TileState::VISIBLE)
+            if (playerMap->tileState({x, y, z}) == PlayerMap::TileState::VISIBLE)
                 drawSprite(sf::Vector2i{ x, y }, assets->tileTexture(level.at(x, y)));
-            else if (seenTiles->tileState({ x, y, z }) == SeenTiles::TileState::MEMORIZED)
+            else if (playerMap->tileState({ x, y, z }) == PlayerMap::TileState::MEMORIZED)
                 drawSprite(sf::Vector2i{ x, y }, assets->tileTexture(level.at(x, y)), 0.5);
     
     if (renderAreas_) drawAreas(level);
@@ -163,5 +163,5 @@ void Renderer::drawText(sf::Vector2f position, const std::string& string, sf::Co
 
 void Renderer::update(sf::Time elapsedTime) {
     camera->update(elapsedTime);
-    seenTiles->update();
+    playerMap->update();
 }

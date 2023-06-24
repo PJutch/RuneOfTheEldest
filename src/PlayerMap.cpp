@@ -13,17 +13,17 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see < https://www.gnu.org/licenses/>. */
 
-#include "SeenTiles.hpp"
+#include "PlayerMap.hpp"
 
 #include "Player.hpp"
 #include "World.hpp"
 
 #include "raycast.hpp"
 
-SeenTiles::SeenTiles(std::shared_ptr<Player> player_, std::shared_ptr<World> world_) :
+PlayerMap::PlayerMap(std::shared_ptr<Player> player_, std::shared_ptr<World> world_) :
 	player{ std::move(player_) }, world{ std::move(world_) } {}
 
-void SeenTiles::onGenerate() {
+void PlayerMap::onGenerate() {
 	tileStates.clear();
 	shapes.clear();
 
@@ -37,7 +37,7 @@ void SeenTiles::onGenerate() {
 	}
 }
 
-void SeenTiles::updateTiles() {
+void PlayerMap::updateTiles() {
 	int z = player->position().z;
 	const Level& level = world->dungeon()[z];
 	for (int x = 0; x < level.shape().x; ++x)
@@ -48,7 +48,7 @@ void SeenTiles::updateTiles() {
 				tileStateMut({ x, y, z }) = TileState::MEMORIZED;
 }
 
-void SeenTiles::updateActors() {
+void PlayerMap::updateActors() {
 	std::erase_if(seenActors_, [&player = *player, &dungeon = world->dungeon()](const auto& actor) -> bool {
 		return canSee(player.position(), actor->position(), dungeon);
 	});

@@ -27,9 +27,9 @@ class World;
 #include <span>
 #include <memory>
 
-class SeenTiles {
+class PlayerMap {
 public:
-	SeenTiles(std::shared_ptr<Player> player, std::shared_ptr<World> world);
+	PlayerMap(std::shared_ptr<Player> player, std::shared_ptr<World> world);
 
 	enum class TileState {
 		UNSEEN,
