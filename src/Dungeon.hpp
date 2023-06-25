@@ -19,7 +19,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Tile.hpp"
 
 #include "Array3D.hpp"
-#include "Map.hpp"
 #include "geometry.hpp"
 
 #include <vector>
@@ -83,21 +82,6 @@ public:
 		areas_.resize(shape.z);
 	}
 
-	/// Returns at(position) destination if it's Tile::UP_STAIRS
-	[[nodiscard]] std::optional<sf::Vector3i> upStairs(sf::Vector3i position) const {
-		return getOptional(upStairs_, position);
-	}
-
-	/// Returns at(position) destination if it's Tile::DOWN_STAIRS
-	[[nodiscard]] std::optional<sf::Vector3i> downStairs(sf::Vector3i position) const {
-		return getOptional(downStairs_, position);
-	}
-
-	/// @brief Create stairs between position1 and position2
-	/// @details Sets tiles and registers stairs in maps.
-	/// Up or down stairs are choosen automatically by z coordinate.
-	void addStairs(sf::Vector3i position1, sf::Vector3i position2);
-
 	/// Add bsp area. Used for debug area rendering
 	void addArea(sf::IntRect area, int level) {
 		areas_[level].push_back(area);
@@ -109,10 +93,6 @@ public:
 	}
 private:
 	Array3D<Tile> tiles;
-
-	UnorderedMap<sf::Vector3i, sf::Vector3i> upStairs_;
-	UnorderedMap<sf::Vector3i, sf::Vector3i> downStairs_;
-
 	std::vector<std::vector<sf::IntRect>> areas_;
 };
 

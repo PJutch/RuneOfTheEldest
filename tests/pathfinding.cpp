@@ -18,71 +18,73 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <gtest/gtest.h>
 
 TEST(pathfinding, nextStepInPlace) {
-    Dungeon dungeon;
-    dungeon.assign({ 3, 3, 1 });
-    dungeon[{0, 1, 0}] = Tile::EMPTY;
+    auto dungeon = std::make_shared<Dungeon>();
+    dungeon->assign({ 3, 3, 1 });
+    (*dungeon)[{0, 1, 0}] = Tile::EMPTY;
 
-    EXPECT_EQ(nextStep(dungeon, {0, 1, 0}, {0, 1, 0}), (sf::Vector3i{0, 0, 0}));
+    EXPECT_EQ(nextStep(World{std::move(dungeon)}, {0, 1, 0}, {0, 1, 0}), (sf::Vector3i{0, 0, 0}));
 }
 
 TEST(pathfinding, nextStepFree) {
-    Dungeon dungeon;
-    dungeon.assign({ 3, 3, 1 });
+    auto dungeon = std::make_shared<Dungeon>();
+    dungeon->assign({ 3, 3, 1 });
     for (int x = 0; x < 3; ++ x)
         for (int y = 0; y < 3; ++y)
-            dungeon[{x, y, 0}] = Tile::EMPTY;
+            (*dungeon)[{x, y, 0}] = Tile::EMPTY;
 
-    EXPECT_EQ(nextStep(dungeon, { 0, 2, 0 }, { 2, 0, 0 }), (sf::Vector3i{1, -1, 0}));
+    EXPECT_EQ(nextStep(World{ std::move(dungeon) }, { 0, 2, 0 }, { 2, 0, 0 }), (sf::Vector3i{1, -1, 0}));
 }
 
 TEST(pathfinding, nextStepTurn) {
-    Dungeon dungeon;
-    dungeon.assign({ 3, 3, 1 });
-    dungeon[{0, 0, 0}] = Tile::WALL;
-    dungeon[{1, 0, 0}] = Tile::EMPTY;
-    dungeon[{2, 0, 0}] = Tile::EMPTY;
-    dungeon[{0, 1, 0}] = Tile::WALL;
-    dungeon[{1, 1, 0}] = Tile::WALL;
-    dungeon[{2, 1, 0}] = Tile::EMPTY;
-    dungeon[{0, 2, 0}] = Tile::EMPTY;
-    dungeon[{1, 2, 0}] = Tile::EMPTY;
-    dungeon[{2, 2, 0}] = Tile::EMPTY;
+    auto dungeon = std::make_shared<Dungeon>();
+    dungeon->assign({ 3, 3, 1 });
+    (*dungeon)[{0, 0, 0}] = Tile::WALL;
+    (*dungeon)[{1, 0, 0}] = Tile::EMPTY;
+    (*dungeon)[{2, 0, 0}] = Tile::EMPTY;
+    (*dungeon)[{0, 1, 0}] = Tile::WALL;
+    (*dungeon)[{1, 1, 0}] = Tile::WALL;
+    (*dungeon)[{2, 1, 0}] = Tile::EMPTY;
+    (*dungeon)[{0, 2, 0}] = Tile::EMPTY;
+    (*dungeon)[{1, 2, 0}] = Tile::EMPTY;
+    (*dungeon)[{2, 2, 0}] = Tile::EMPTY;
 
-    EXPECT_EQ(nextStep(dungeon, { 0, 2, 0 }, { 1, 0, 0 }), (sf::Vector3i{ 1,  0, 0 }));
+    EXPECT_EQ(nextStep(World{ std::move(dungeon) }, { 0, 2, 0 }, { 1, 0, 0 }), (sf::Vector3i{ 1,  0, 0 }));
 }
 
 TEST(pathfinding, nextStepDownStairs) {
-    Dungeon dungeon;
-    dungeon.assign({ 2, 2, 2 });
+    auto dungeon = std::make_shared<Dungeon>();
+    dungeon->assign({ 2, 2, 2 });
 
-    dungeon[{0, 0, 0}] = Tile::WALL;
-    dungeon[{1, 0, 0}] = Tile::WALL;
-    dungeon[{0, 1, 0}] = Tile::WALL;
-    dungeon[{1, 1, 0}] = Tile::WALL;
-    dungeon[{0, 0, 1}] = Tile::WALL;
-    dungeon[{1, 0, 1}] = Tile::WALL;
-    dungeon[{0, 1, 1}] = Tile::WALL;
-    dungeon[{1, 1, 1}] = Tile::EMPTY;
+    (*dungeon)[{0, 0, 0}] = Tile::WALL;
+    (*dungeon)[{1, 0, 0}] = Tile::WALL;
+    (*dungeon)[{0, 1, 0}] = Tile::WALL;
+    (*dungeon)[{1, 1, 0}] = Tile::WALL;
+    (*dungeon)[{0, 0, 1}] = Tile::WALL;
+    (*dungeon)[{1, 0, 1}] = Tile::WALL;
+    (*dungeon)[{0, 1, 1}] = Tile::WALL;
+    (*dungeon)[{1, 1, 1}] = Tile::EMPTY;
 
-    dungeon.addStairs({0, 1, 0}, {1, 0, 1});
+    World world{ std::move(dungeon) };
+    world.addStairs({0, 1, 0}, {1, 0, 1});
 
-    EXPECT_EQ(nextStep(dungeon, { 0, 1, 0 }, { 1, 1, 1 }), (sf::Vector3i{ 1,  -1, 1 }));
+    EXPECT_EQ(nextStep(world, { 0, 1, 0 }, { 1, 1, 1 }), (sf::Vector3i{ 1,  -1, 1 }));
 }
 
 TEST(pathfinding, nextStepUpStairs) {
-    Dungeon dungeon;
-    dungeon.assign({ 2, 2, 2 });
+    auto dungeon = std::make_shared<Dungeon>();
+    dungeon->assign({ 2, 2, 2 });
 
-    dungeon[{0, 0, 0}] = Tile::WALL;
-    dungeon[{1, 0, 0}] = Tile::WALL;
-    dungeon[{0, 1, 0}] = Tile::WALL;
-    dungeon[{1, 1, 0}] = Tile::EMPTY;
-    dungeon[{0, 0, 1}] = Tile::WALL;
-    dungeon[{1, 0, 1}] = Tile::WALL;
-    dungeon[{0, 1, 1}] = Tile::WALL;
-    dungeon[{1, 1, 1}] = Tile::WALL;
+    (*dungeon)[{0, 0, 0}] = Tile::WALL;
+    (*dungeon)[{1, 0, 0}] = Tile::WALL;
+    (*dungeon)[{0, 1, 0}] = Tile::WALL;
+    (*dungeon)[{1, 1, 0}] = Tile::EMPTY;
+    (*dungeon)[{0, 0, 1}] = Tile::WALL;
+    (*dungeon)[{1, 0, 1}] = Tile::WALL;
+    (*dungeon)[{0, 1, 1}] = Tile::WALL;
+    (*dungeon)[{1, 1, 1}] = Tile::WALL;
 
-    dungeon.addStairs({ 0, 1, 1 }, { 1, 0, 0 });
+    World world{ std::move(dungeon) };
+    world.addStairs({ 0, 1, 1 }, { 1, 0, 0 });
 
-    EXPECT_EQ(nextStep(dungeon, { 0, 1, 1 }, { 1, 1, 0 }), (sf::Vector3i{ 1,  -1, -1 }));
+    EXPECT_EQ(nextStep(world, { 0, 1, 1 }, { 1, 1, 0 }), (sf::Vector3i{ 1,  -1, -1 }));
 }

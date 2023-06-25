@@ -18,6 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Dungeon.hpp"
 #include "Actor.hpp"
+#include "Map.hpp"
 
 #include "random.hpp"
 
@@ -102,9 +103,28 @@ public:
 		return pos;
 	}
 
+	/// Returns at(position) destination if it's Tile::UP_STAIRS
+	[[nodiscard]] std::optional<sf::Vector3i> upStairs(sf::Vector3i position) const {
+		return getOptional(upStairs_, position);
+	}
+
+	/// Returns at(position) destination if it's Tile::DOWN_STAIRS
+	[[nodiscard]] std::optional<sf::Vector3i> downStairs(sf::Vector3i position) const {
+		return getOptional(downStairs_, position);
+	}
+
+	/// @brief Create stairs between position1 and position2
+	/// @details Sets tiles and registers stairs in maps.
+	/// Up or down stairs are choosen automatically by z coordinate.
+	void addStairs(sf::Vector3i position1, sf::Vector3i position2);
+
 	void generateStairs();
 private:
 	std::shared_ptr<Dungeon> dungeon_ = nullptr;
+
+	UnorderedMap<sf::Vector3i, sf::Vector3i> upStairs_;
+	UnorderedMap<sf::Vector3i, sf::Vector3i> downStairs_;
+
 	std::vector<std::shared_ptr<Actor>> actors_;
 
 	RandomEngine* randomEngine = nullptr;

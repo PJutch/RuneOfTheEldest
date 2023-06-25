@@ -15,7 +15,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "pathfinding.hpp"
 
-#include "Dungeon.hpp"
+#include "World.hpp"
 
 #include "Array3D.hpp"
 #include "geometry.hpp"
@@ -44,7 +44,9 @@ namespace {
 		}
 	};
 
-	Array3D<PathNode> findPath(const Dungeon& dungeon, sf::Vector3i from, sf::Vector3i to) {
+	Array3D<PathNode> findPath(const World& world, sf::Vector3i from, sf::Vector3i to) {
+		const Dungeon& dungeon = world.dungeon();
+
 		Array3D<PathNode> buffer;
 		buffer.assign(dungeon.shape());
 
@@ -71,10 +73,10 @@ namespace {
 					queue.emplace(update.distance + 1, nextPos, to, -direction3D);
 			}
 
-			if (auto destination = dungeon.upStairs(update.position))
+			if (auto destination = world.upStairs(update.position))
 				queue.emplace(update.distance + 1, *destination, to, update.position - *destination);
 
-			if (auto destination = dungeon.downStairs(update.position))
+			if (auto destination = world.downStairs(update.position))
 				queue.emplace(update.distance + 1, *destination, to, update.position - *destination);
 		}
 
@@ -82,8 +84,8 @@ namespace {
 	}
 }
 
-sf::Vector3i nextStep(const Dungeon& dungeon, sf::Vector3i position, sf::Vector3i target) {
-	Array3D<PathNode> path = findPath(dungeon, position, target);
+sf::Vector3i nextStep(const World& world, sf::Vector3i position, sf::Vector3i target) {
+	Array3D<PathNode> path = findPath(world, position, target);
 
 	sf::Vector3i current = target;
 	while (true) {

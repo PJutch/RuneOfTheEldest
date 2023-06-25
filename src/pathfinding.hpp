@@ -16,9 +16,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef PATHFINDING_HPP_
 #define PATHFINDING_HPP_
 
-#include "Dungeon.hpp"
+#include "World.hpp"
 
 /// Computes next move to perform to move from position to target
-sf::Vector3i nextStep(const Dungeon& dungeon, sf::Vector3i position, sf::Vector3i target);
+sf::Vector3i nextStep(const World& world, sf::Vector3i position, sf::Vector3i target);
 
 #endif

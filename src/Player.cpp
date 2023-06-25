@@ -69,11 +69,11 @@ bool Player::act() {
 }
 
 void Player::tryAscentStairs() {
-	if (std::optional<sf::Vector3i> newPos = world().dungeon().upStairs(position()))
+	if (std::optional<sf::Vector3i> newPos = world().upStairs(position()))
 		tryMoveTo(*newPos, true);
 }
 
 void Player::tryDescentStairs() {
-	if (std::optional<sf::Vector3i> newPos = world().dungeon().downStairs(position()))
+	if (std::optional<sf::Vector3i> newPos = world().downStairs(position()))
 		tryMoveTo(*newPos, true);
 }

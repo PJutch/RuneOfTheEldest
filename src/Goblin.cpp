@@ -52,16 +52,16 @@ sf::Vector3i Goblin::randomNearbyTarget() noexcept {
 }
 
 sf::Vector3i Goblin::tryFollowStairs(sf::Vector3i position) noexcept {
-	if (auto destination = world().dungeon().upStairs(position))
+	if (auto destination = world().upStairs(position))
 		return *destination;
-	else if (auto destination = world().dungeon().downStairs(position))
+	else if (auto destination = world().downStairs(position))
 		return *destination;
 	return position;
 }
 
 void Goblin::travelToTarget() noexcept {
 	wantsSwap_ = true;
-	sf::Vector3i nextStep_ = nextStep(world().dungeon(), position(), targetPosition);
+	sf::Vector3i nextStep_ = nextStep(world(), position(), targetPosition);
 	if (nextStep_.z == 0)
 		tryMoveInDirection(getXY(nextStep_), false);
 	else

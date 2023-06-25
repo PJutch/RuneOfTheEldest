@@ -62,5 +62,18 @@ void World::makeSound(Sound sound) {
 void World::generateStairs() {
 	for (int z = 1; z < dungeon().shape().z; ++z)
 		for (int i = 0; i < 3; ++i)
-			dungeon().addStairs(randomPositionAt(z - 1, &isEmpty), randomPositionAt(z, &isEmpty));
+			addStairs(randomPositionAt(z - 1, &isEmpty), randomPositionAt(z, &isEmpty));
+}
+
+void World::addStairs(sf::Vector3i pos1, sf::Vector3i pos2) {
+	if (pos1.z > pos2.z) {
+		addStairs(pos2, pos1);
+		return;
+	}
+
+	downStairs_.insert_or_assign(pos1, pos2);
+	dungeon()[pos1] = Tile::DOWN_STAIRS;
+
+	upStairs_.insert_or_assign(pos2, pos1);
+	dungeon()[pos2] = Tile::UP_STAIRS;
 }
