@@ -22,14 +22,16 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 Game::Game(std::shared_ptr<World> newWorld,
            std::shared_ptr<Player> player_,
+           std::unique_ptr<DungeonGenerator> newDungeonGenerator,
            std::shared_ptr<sf::RenderWindow> window_,
            std::shared_ptr<Camera> camera_,
            std::shared_ptr<PlayerMap> playerMap_,
            std::unique_ptr<Renderer> newRenderer,
            RandomEngine& randomEngine_,
            LoggerFactory& loggerFactory) :
-    world_{std::move(newWorld)},
+    world{std::move(newWorld)},
     player{ std::move(player_) },
+    dungeonGenerator_{std::move(newDungeonGenerator)},
     window{std::move(window_)},
     camera{std::move(camera_)},
     playerMap{ std::move(playerMap_) },
@@ -47,7 +49,7 @@ void Game::run() {
             handleEvent(event);
 
         if (player->isAlive()) {
-            world().update();
+            world->update();
 
             sf::Time elapsedTime = clock.restart();
             renderer().update(elapsedTime);
@@ -83,12 +85,18 @@ void Game::handleEvent(sf::Event event) {
 void Game::generate() {
     generationLogger->info("Started");
 
-    world().clearActors();
+    world->clearActors();
+    world->dungeon().assign({ 50, 50, 10 });
 
-    world().dungeon().generate(generationLogger);
+    generationLogger->info("Generating dungeon...");
+    dungeonGenerator().dungeon(world->dungeon());
+    dungeonGenerator()();
+
+    generationLogger->info("Generating stairs...");
+    world->dungeon().generateUpStairs();
 
     generationLogger->info("Spawning goblins...");
-    Goblin::spawnAll(world_, player, *randomEngine);
+    Goblin::spawnAll(world, player, *randomEngine);
 
     generationLogger->info("Spawning player...");
     player->spawn();

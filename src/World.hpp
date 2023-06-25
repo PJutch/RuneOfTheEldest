@@ -28,14 +28,6 @@ public:
 	World(std::shared_ptr<Dungeon> newDungeon) :
 		dungeon_{ std::move(newDungeon) } {}
 
-	[[nodiscard]] DungeonGenerator& dungeonGenerator() noexcept {
-		return dungeon().generator();
-	}
-
-	[[nodiscard]] const DungeonGenerator& dungeonGenerator() const noexcept {
-		return dungeon().generator();
-	}
-
 	[[nodiscard]] Dungeon& dungeon() noexcept {
 		return *dungeon_;
 	}

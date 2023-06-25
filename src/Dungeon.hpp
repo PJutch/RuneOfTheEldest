@@ -16,33 +16,22 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef DUNGEON_HPP_
 #define DUNGEON_HPP_
 
-#include "DungeonGenerator.hpp"
 #include "Tile.hpp"
 
 #include "Array3D.hpp"
-#include "log.hpp"
 #include "random.hpp"
 #include "Map.hpp"
 #include "geometry.hpp"
 
 #include <vector>
+#include <span>
 #include <memory>
 
 /// Dungeon consisting of multiple levels and stairs between them
 class Dungeon {
 public:
 	Dungeon() = default;
-	Dungeon(std::unique_ptr<DungeonGenerator> newGenerator, RandomEngine& randomEngine_) :
-		generator_{ std::move(newGenerator) },
-		randomEngine{ &randomEngine_ } {}
-
-	[[nodiscard]] DungeonGenerator& generator() noexcept {
-		return *generator_;
-	}
-
-	[[nodiscard]] const DungeonGenerator& generator() const noexcept {
-		return *generator_;
-	}
+	Dungeon(RandomEngine& randomEngine_) : randomEngine{ &randomEngine_ } {}
 
 	/// Checks if there are tiles with this z
 	[[nodiscard]] bool isValidZ(int z) const noexcept {
@@ -95,6 +84,7 @@ public:
 	/// Clears and creates new dungeon with given shape filled with given tile
 	void assign(sf::Vector3i shape, Tile tile = Tile::WALL) {
 		tiles.assign(shape, tile);
+		areas_.resize(shape.z);
 	}
 
 	/// Returns at(position) destination if it's Tile::UP_STAIRS
@@ -107,10 +97,8 @@ public:
 		return getOptional(downStairs_, position);
 	}
 
-	/// @brief Generates dungeon
-	/// @details Generates dungeon with DungeonGenerator, then generate walls and stairs
-	/// @param logger logger to log messages
-	void generate(std::shared_ptr<spdlog::logger> logger);
+	/// Generates stairs on all levels
+	void generateUpStairs();
 
 	/// @brief Create stairs between position1 and position2
 	/// @details Sets tiles and registers stairs in maps.
@@ -164,10 +152,7 @@ private:
 
 	std::vector<std::vector<sf::IntRect>> areas_;
 
-	std::unique_ptr<DungeonGenerator> generator_ = nullptr;
 	RandomEngine* randomEngine = nullptr;
-
-	void generateUpStairs(int fromLevel);
 };
 
 #endif

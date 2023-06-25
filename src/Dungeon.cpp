@@ -19,19 +19,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <algorithm>
 
-void Dungeon::generate(std::shared_ptr<spdlog::logger> logger) {
-	assign({ 50, 50, 10 });
-
-	logger->info("Generating dungeon...");
-	areas_.resize(shape().z);
-	generator().dungeon(*this);
-	generator()();
-
-	logger->info("Generating stairs...");
-	for (int i = 1; i < shape().z; ++ i)
-		generateUpStairs(i);
-}
-
 void Dungeon::addStairs(sf::Vector3i pos1, sf::Vector3i pos2) {
 	if (pos1.z > pos2.z) {
 		addStairs(pos2, pos1);
@@ -45,7 +32,8 @@ void Dungeon::addStairs(sf::Vector3i pos1, sf::Vector3i pos2) {
 	(*this)[pos2] = Tile::UP_STAIRS;
 }
 
-void Dungeon::generateUpStairs(int fromLevel) {
-	for (int i = 0; i < 3; ++i)
-		addStairs(randomPositionAt(fromLevel - 1, &isEmpty), randomPositionAt(fromLevel, &isEmpty));
+void Dungeon::generateUpStairs() {
+	for (int z = 1; z < shape().z; ++z)
+		for (int i = 0; i < 3; ++i)
+			addStairs(randomPositionAt(z - 1, &isEmpty), randomPositionAt(z, &isEmpty));
 }

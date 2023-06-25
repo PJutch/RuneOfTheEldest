@@ -33,20 +33,13 @@ class Game {
 public:
     Game(std::shared_ptr<World> world,
          std::shared_ptr<Player> player,
+         std::unique_ptr<DungeonGenerator> dungeonGenerator,
          std::shared_ptr<sf::RenderWindow> window,
          std::shared_ptr<Camera> camera,
          std::shared_ptr<PlayerMap> playerMap,
          std::unique_ptr<Renderer> renderer,
          RandomEngine& randomEngine,
          LoggerFactory& loggerFactory);
-
-    [[nodiscard]] World& world() noexcept {
-        return *world_;
-    }
-
-    [[nodiscard]] const World& world() const noexcept {
-        return *world_;
-    }
 
     [[nodiscard]] Renderer& renderer() noexcept {
         return *renderer_;
@@ -56,11 +49,21 @@ public:
         return *renderer_;
     }
 
+    [[nodiscard]] DungeonGenerator& dungeonGenerator() noexcept {
+        return *dungeonGenerator_;
+    }
+
+    [[nodiscard]] const DungeonGenerator& dungeonGenerator() const noexcept {
+        return *dungeonGenerator_;
+    }
+
     /// Generates world and runs game loop until exit
     void run();
 private:
-    std::shared_ptr<World> world_;
+    std::shared_ptr<World> world;
     std::shared_ptr<Player> player;
+
+    std::unique_ptr<DungeonGenerator> dungeonGenerator_;
 
     std::shared_ptr<sf::RenderWindow> window;
     std::shared_ptr<Camera> camera;

@@ -68,8 +68,8 @@ int main() {
         );
         auto game = injector.create<Game>();
 
-        game.world().dungeonGenerator().splitChance(0.9);
-        game.world().dungeonGenerator().minSize(5);
+        game.dungeonGenerator().splitChance(0.9);
+        game.dungeonGenerator().minSize(5);
         // game..world()dungeonGenerator().roomGenerator().debugTiles();
         // game.renderer().renderAreas();
 
