@@ -21,6 +21,8 @@ class World;
 
 #include "Actor.hpp"
 
+#include "Array3D.hpp"
+
 #include <SFML/System.hpp>
 
 #include <vector>
@@ -38,8 +40,7 @@ public:
 	};
 
 	[[nodiscard]] TileState tileState(sf::Vector3i position) const noexcept {
-		auto [x, y, z] = position;
-		return tileStates[z][x * shapes[z].y + y];
+		return tileStates[position];
 	}
 
 	[[nodiscard]] std::span<const std::unique_ptr<Actor::DrawMemento>> seenActors() const noexcept {
@@ -53,8 +54,7 @@ public:
 		updateActors();
 	}
 private:
-	std::vector< std::vector<TileState>> tileStates;
-	std::vector<sf::Vector2i> shapes;
+	Array3D<TileState> tileStates;
 
 	std::vector<std::unique_ptr<Actor::DrawMemento>> seenActors_;
 
@@ -63,11 +63,6 @@ private:
 
 	void updateTiles();
 	void updateActors();
-
-	TileState& tileStateMut(sf::Vector3i position) noexcept {
-		auto [x, y, z] = position;
-		return tileStates[z][x * shapes[z].y + y];
-	}
 };
 
 #endif

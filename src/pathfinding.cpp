@@ -17,6 +17,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Dungeon.hpp"
 
+#include "Array3D.hpp"
 #include "geometry.hpp"
 #include "assert.hpp"
 
@@ -24,45 +25,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace {
 	struct PathNode {
-		int distance;
-		sf::Vector3i prevOffset;
-	};
-
-	class PathBuffer {
-	public:
-		PathBuffer(const Dungeon& dungeon) {
-			buffer.reserve(dungeon.shape().z);
-			for (int level = 0; level < dungeon.shape().z; ++level)
-				buffer.emplace_back(getXY(dungeon.shape()));
-		}
-
-		PathNode& at(sf::Vector3i position) noexcept {
-			return buffer[position.z].at(getXY(position));
-		}
-
-		const PathNode& at(sf::Vector3i position) const noexcept {
-			return buffer[position.z].at(getXY(position));
-		}
-	private:
-		class LevelPathBuffer {
-		public:
-			LevelPathBuffer(sf::Vector2i shape_) : shape{ shape_ } {
-				buffer.resize(shape.x * shape.y, { std::numeric_limits<int>::max(), sf::Vector3i{0, 0, 0} });
-			}
-
-			PathNode& at(sf::Vector2i position) noexcept {
-				return buffer.at(position.x * shape.y + position.y);
-			}
-
-			const PathNode& at(sf::Vector2i position) const noexcept {
-				return buffer.at(position.x * shape.y + position.y);
-			}
-		private:
-			std::vector<PathNode> buffer;
-			sf::Vector2i shape;
-		};
-
-		std::vector<LevelPathBuffer> buffer;
+		int distance = std::numeric_limits<int>::max();
+		sf::Vector3i prevOffset{ 0, 0, 0 };
 	};
 
 	struct PathUpdate {
@@ -80,8 +44,9 @@ namespace {
 		}
 	};
 
-	PathBuffer findPath(const Dungeon& dungeon, sf::Vector3i from, sf::Vector3i to) {
-		PathBuffer buffer(dungeon);
+	Array3D<PathNode> findPath(const Dungeon& dungeon, sf::Vector3i from, sf::Vector3i to) {
+		Array3D<PathNode> buffer;
+		buffer.assign(dungeon.shape());
 
 		std::priority_queue<PathUpdate, std::vector<PathUpdate>, std::greater<>> queue;
 		queue.emplace(0, from, to, sf::Vector3i{0, 0, 0});
@@ -90,14 +55,14 @@ namespace {
 			PathUpdate update = queue.top();
 			queue.pop();
 
-			if (update.minFullDistance >= buffer.at(to).distance)
+			if (update.minFullDistance >= buffer[to].distance)
 				break;
 
-			if (update.distance >= buffer.at(update.position).distance)
+			if (update.distance >= buffer[update.position].distance)
 				continue;
 
-			buffer.at(update.position).distance = update.distance;
-			buffer.at(update.position).prevOffset = update.prevOffset;
+			buffer[update.position].distance = update.distance;
+			buffer[update.position].prevOffset = update.prevOffset;
 
 			for (sf::Vector2i direction : directions<int>) {
 				sf::Vector3i direction3D = make3D(direction, 0);
@@ -118,14 +83,14 @@ namespace {
 }
 
 sf::Vector3i nextStep(const Dungeon& dungeon, sf::Vector3i position, sf::Vector3i target) {
-	PathBuffer path = findPath(dungeon, position, target);
+	Array3D<PathNode> path = findPath(dungeon, position, target);
 
 	sf::Vector3i current = target;
 	while (true) {
-		sf::Vector3i prevOffset = path.at(current).prevOffset;
+		sf::Vector3i prevOffset = path[current].prevOffset;
 
 		if (current + prevOffset == position)
-			return -path.at(current).prevOffset;
+			return -path[current].prevOffset;
 
 		if (prevOffset == sf::Vector3i{0, 0, 0})
 			return { 0, 0, 0 };

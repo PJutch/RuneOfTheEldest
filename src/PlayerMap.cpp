@@ -24,19 +24,8 @@ PlayerMap::PlayerMap(std::shared_ptr<Player> player_, std::shared_ptr<World> wor
 	player{ std::move(player_) }, world{ std::move(world_) } {}
 
 void PlayerMap::onGenerate() {
-	tileStates.clear();
-	shapes.clear();
 	seenActors_.clear();
-
-	auto [shapeX, shapeY, shapeZ] = world->dungeon().shape();
-
-	tileStates.resize(shapeZ);
-	shapes.reserve(shapeZ);
-
-	for (int z = 0; z < shapeZ; ++z) {
-		tileStates[z].resize(shapeX * shapeY);
-		shapes.emplace_back(shapeX, shapeY);
-	}
+	tileStates.assign(world->dungeon().shape());
 }
 
 void PlayerMap::updateTiles() {
@@ -45,9 +34,9 @@ void PlayerMap::updateTiles() {
 		for (int x = 0; x < shapeX; ++x)
 			for (int y = 0; y < shapeY; ++y)
 				if (canSee(player->position(), { x, y, z }, world->dungeon()))
-					tileStateMut({ x, y, z }) = TileState::VISIBLE;
+					tileStates[{ x, y, z }] = TileState::VISIBLE;
 				else if (tileState({ x, y, z }) == TileState::VISIBLE)
-					tileStateMut({ x, y, z }) = TileState::MEMORIZED;
+					tileStates[{ x, y, z }] = TileState::MEMORIZED;
 	}
 }
 
