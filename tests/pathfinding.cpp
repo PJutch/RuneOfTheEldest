@@ -20,7 +20,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 TEST(pathfinding, nextStepInPlace) {
     Dungeon dungeon;
     dungeon.assign({ 3, 3, 1 });
-    dungeon.at(0, 1, 0) = Tile::EMPTY;
+    dungeon[{0, 1, 0}] = Tile::EMPTY;
 
     EXPECT_EQ(nextStep(dungeon, {0, 1, 0}, {0, 1, 0}), (sf::Vector3i{0, 0, 0}));
 }
@@ -30,7 +30,7 @@ TEST(pathfinding, nextStepFree) {
     dungeon.assign({ 3, 3, 1 });
     for (int x = 0; x < 3; ++ x)
         for (int y = 0; y < 3; ++y)
-            dungeon.at(x, y, 0) = Tile::EMPTY;
+            dungeon[{x, y, 0}] = Tile::EMPTY;
 
     EXPECT_EQ(nextStep(dungeon, { 0, 2, 0 }, { 2, 0, 0 }), (sf::Vector3i{1, -1, 0}));
 }
@@ -38,15 +38,15 @@ TEST(pathfinding, nextStepFree) {
 TEST(pathfinding, nextStepTurn) {
     Dungeon dungeon;
     dungeon.assign({ 3, 3, 1 });
-    dungeon.at(0, 0, 0) = Tile::WALL;
-    dungeon.at(1, 0, 0) = Tile::EMPTY;
-    dungeon.at(2, 0, 0) = Tile::EMPTY;
-    dungeon.at(0, 1, 0) = Tile::WALL;
-    dungeon.at(1, 1, 0) = Tile::WALL;
-    dungeon.at(2, 1, 0) = Tile::EMPTY;
-    dungeon.at(0, 2, 0) = Tile::EMPTY;
-    dungeon.at(1, 2, 0) = Tile::EMPTY;
-    dungeon.at(2, 2, 0) = Tile::EMPTY;
+    dungeon[{0, 0, 0}] = Tile::WALL;
+    dungeon[{1, 0, 0}] = Tile::EMPTY;
+    dungeon[{2, 0, 0}] = Tile::EMPTY;
+    dungeon[{0, 1, 0}] = Tile::WALL;
+    dungeon[{1, 1, 0}] = Tile::WALL;
+    dungeon[{2, 1, 0}] = Tile::EMPTY;
+    dungeon[{0, 2, 0}] = Tile::EMPTY;
+    dungeon[{1, 2, 0}] = Tile::EMPTY;
+    dungeon[{2, 2, 0}] = Tile::EMPTY;
 
     EXPECT_EQ(nextStep(dungeon, { 0, 2, 0 }, { 1, 0, 0 }), (sf::Vector3i{ 1,  0, 0 }));
 }
@@ -55,14 +55,14 @@ TEST(pathfinding, nextStepDownStairs) {
     Dungeon dungeon;
     dungeon.assign({ 2, 2, 2 });
 
-    dungeon.at(0, 0, 0) = Tile::WALL;
-    dungeon.at(1, 0, 0) = Tile::WALL;
-    dungeon.at(0, 1, 0) = Tile::WALL;
-    dungeon.at(1, 1, 0) = Tile::WALL;
-    dungeon.at(0, 0, 1) = Tile::WALL;
-    dungeon.at(1, 0, 1) = Tile::WALL;
-    dungeon.at(0, 1, 1) = Tile::WALL;
-    dungeon.at(1, 1, 1) = Tile::EMPTY;
+    dungeon[{0, 0, 0}] = Tile::WALL;
+    dungeon[{1, 0, 0}] = Tile::WALL;
+    dungeon[{0, 1, 0}] = Tile::WALL;
+    dungeon[{1, 1, 0}] = Tile::WALL;
+    dungeon[{0, 0, 1}] = Tile::WALL;
+    dungeon[{1, 0, 1}] = Tile::WALL;
+    dungeon[{0, 1, 1}] = Tile::WALL;
+    dungeon[{1, 1, 1}] = Tile::EMPTY;
 
     dungeon.addStairs({0, 1, 0}, {1, 0, 1});
 
@@ -73,14 +73,14 @@ TEST(pathfinding, nextStepUpStairs) {
     Dungeon dungeon;
     dungeon.assign({ 2, 2, 2 });
 
-    dungeon.at(0, 0, 0) = Tile::WALL;
-    dungeon.at(1, 0, 0) = Tile::WALL;
-    dungeon.at(0, 1, 0) = Tile::WALL;
-    dungeon.at(1, 1, 0) = Tile::EMPTY;
-    dungeon.at(0, 0, 1) = Tile::WALL;
-    dungeon.at(1, 0, 1) = Tile::WALL;
-    dungeon.at(0, 1, 1) = Tile::WALL;
-    dungeon.at(1, 1, 1) = Tile::WALL;
+    dungeon[{0, 0, 0}] = Tile::WALL;
+    dungeon[{1, 0, 0}] = Tile::WALL;
+    dungeon[{0, 1, 0}] = Tile::WALL;
+    dungeon[{1, 1, 0}] = Tile::EMPTY;
+    dungeon[{0, 0, 1}] = Tile::WALL;
+    dungeon[{1, 0, 1}] = Tile::WALL;
+    dungeon[{0, 1, 1}] = Tile::WALL;
+    dungeon[{1, 1, 1}] = Tile::WALL;
 
     dungeon.addStairs({ 0, 1, 1 }, { 1, 0, 0 });
 

@@ -31,12 +31,12 @@ testing::AssertionResult hasSingleRoom(const Dungeon& dungeon, int z, sf::IntRec
     for (int x = 0; x < dungeon.shape().x; ++ x)
         for (int y = 0; y < dungeon.shape().y; ++ y)
             if (room.contains(x, y)) {
-                if (dungeon.at(x, y, z) != Tile::EMPTY)
+                if (dungeon[{x, y, z}] != Tile::EMPTY)
                     return testing::AssertionFailure()
                          << "tile at " << x << ", " << y 
                          << " should be empty but it is not";
             } else
-                if (dungeon.at(x, y, z) != Tile::WALL)
+                if (dungeon[{x, y, z}] != Tile::WALL)
                     return testing::AssertionFailure()
                          << "tile at " << x << ", " << y 
                          << " should be unseen but it is not";

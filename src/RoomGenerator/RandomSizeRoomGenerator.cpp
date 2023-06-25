@@ -150,13 +150,13 @@ void RandomSizeRoomGenerator::verticalPassageEnd(int z, Area& room, int x, int y
 
 void RandomSizeRoomGenerator::horizontalPassage(int z, int left, int right, int y) {
     for (int x = left; x < right; ++ x)
-        dungeon_->at(x, y, z) = (debugTiles_ ? Tile::PASSAGE
+        (*dungeon_)[{x, y, z}] = (debugTiles_ ? Tile::PASSAGE
                                       : Tile::EMPTY);
 }
 
 void RandomSizeRoomGenerator::verticalPassage(int z, int top, int bottom, int x) {
     for (int y = top; y < bottom; ++ y)
-        dungeon_->at(x, y, z) = (debugTiles_ ? Tile::PASSAGE
+        (*dungeon_)[{x, y, z}] = (debugTiles_ ? Tile::PASSAGE
                                       : Tile::EMPTY);
 }
 

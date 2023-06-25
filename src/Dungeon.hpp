@@ -19,6 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "DungeonGenerator.hpp"
 #include "Tile.hpp"
 
+#include "Array3D.hpp"
 #include "log.hpp"
 #include "random.hpp"
 #include "Map.hpp"
@@ -45,22 +46,22 @@ public:
 
 	/// Checks if there are tiles with this z
 	[[nodiscard]] bool isValidZ(int z) const noexcept {
-		return 0 <= z && z < shape().z;
+		return tiles.isValidZ(z);
 	}
 
 	/// Checks if there are tiles with this x
 	[[nodiscard]] bool isValidX(int x) const noexcept {
-		return 0 <= x && x < shape().x;
+		return tiles.isValidX(x);
 	}
 
 	/// Checks if there are tiles with this y
 	[[nodiscard]] bool isValidY(int y) const noexcept {
-		return 0 <= y && y < shape().y;
+		return tiles.isValidY(y);
 	}
 
 	/// Checks if position is valid tile position
 	[[nodiscard]] bool isValidPosition(sf::Vector3i position) const noexcept {
-		return isValidZ(position.z) && isValidX(position.x) && isValidY(position.y);
+		return tiles.isValidPosition(position);
 	}
 
 	/// Checks if rect sides are >=0 and all tiles in it are exists
@@ -71,54 +72,30 @@ public:
 			&& isValidY(rect.top + rect.height - 1);
 	}
 
-	/// @brief Access to individual tile on level level at (x, y)
 	/// @warning Check all indices by yourself
-	[[nodiscard]] Tile& at(int x, int y, int z) noexcept {
-		return tiles[z * shape_.x * shape_.y + x * shape_.y + y];
+	[[nodiscard]] Tile& operator[] (sf::Vector3i position) noexcept {
+		return tiles[position];
 	}
 
-	/// @brief Access to individual tile on level level at (x, y)
 	/// @warning Check all indices by yourself
-	[[nodiscard]] const Tile& at(int x, int y, int z) const noexcept {
-		return tiles[z * shape_.x * shape_.y + x * shape_.y + y];
-	}
-
-	/// @brief Access to individual tile on level level at (x, y)
-	/// @warning Check all indices by yourself
-	[[nodiscard]] Tile& at(sf::Vector2i position, int level) noexcept {
-		return at(position.x, position.y, level);
-	}
-
-	/// @brief Access to individual tile on level level at (x, y)
-	/// @warning Check all indices by yourself
-	[[nodiscard]] const Tile& at(sf::Vector2i position, int level) const noexcept {
-		return at(position.x, position.y, level);
-	}
-
-	/// @brief Access to individual tile on level z at (x, y)
-	/// @warning Check all indices by yourself
-	[[nodiscard]] Tile& at(sf::Vector3i position) noexcept {
-		return at(position.x, position.y, position.z);
-	}
-
-	/// @brief Access to individual tile on level z at (x, y)
-	/// @warning Check all indices by yourself
-	[[nodiscard]] const Tile& at(sf::Vector3i position) const noexcept {
-		return at(position.x, position.y, position.z);
+	[[nodiscard]] const Tile& operator[] (sf::Vector3i position) const noexcept {
+		return tiles[position];
 	}
 
 	/// Dungeon sizes in all axis
 	sf::Vector3i shape() const noexcept {
-		return shape_;
+		return tiles.shape();
 	}
 
 	/// Dungeon sizes in XY axis
 	sf::IntRect horizontalBounds() const noexcept {
-		return { {0, 0}, getXY(shape()) };
+		return tiles.horizontalBounds();
 	}
 
 	/// Clears and creates new dungeon with given shape filled with given tile
-	void assign(sf::Vector3i shape, Tile tile = Tile::WALL);
+	void assign(sf::Vector3i shape, Tile tile = Tile::WALL) {
+		tiles.assign(shape, tile);
+	}
 
 	/// Returns at(position) destination if it's Tile::UP_STAIRS
 	[[nodiscard]] std::optional<sf::Vector3i> upStairs(sf::Vector3i position) const {
@@ -143,8 +120,8 @@ public:
 	/// @brief Random tile position
 	/// @details position distribution is uniform and independent for both dimensions
 	[[nodiscard]] sf::Vector3i randomPositionAt(int level) const {
-		return { std::uniform_int_distribution{ 0, shape_.x - 1 }(*randomEngine),
-				 std::uniform_int_distribution{ 0, shape_.y - 1 }(*randomEngine),
+		return { std::uniform_int_distribution{ 0, shape().x - 1}(*randomEngine),
+				 std::uniform_int_distribution{ 0, shape().y - 1}(*randomEngine),
 		         level };
 	}
 
@@ -154,7 +131,7 @@ public:
 		requires std::convertible_to<std::invoke_result_t<Pred, Tile>, bool>
 	[[nodiscard]] sf::Vector3i randomPositionAt(int level, Pred&& pred) const {
 		return randomPositionAt(level, [&pred](sf::Vector3i pos, const Dungeon& dungeon) {
-			return std::invoke(pred, dungeon.at(pos));
+			return std::invoke(pred, dungeon[pos]);
 		});
 	}
 
@@ -180,8 +157,7 @@ public:
 		return areas_[level];
 	}
 private:
-	std::vector<Tile> tiles;
-	sf::Vector3i shape_;
+	Array3D<Tile> tiles;
 
 	UnorderedMap<sf::Vector3i, sf::Vector3i> upStairs_;
 	UnorderedMap<sf::Vector3i, sf::Vector3i> downStairs_;

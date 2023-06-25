@@ -102,7 +102,7 @@ namespace {
 			for (sf::Vector2i direction : directions<int>) {
 				sf::Vector3i direction3D = make3D(direction, 0);
 				sf::Vector3i nextPos = update.position + direction3D;
-				if (dungeon.isValidPosition(nextPos) && isPassable(dungeon.at(nextPos)))
+				if (dungeon.isValidPosition(nextPos) && isPassable(dungeon[nextPos]))
 					queue.emplace(update.distance + 1, nextPos, to, -direction3D);
 			}
 

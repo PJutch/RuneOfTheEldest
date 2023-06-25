@@ -19,17 +19,11 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <algorithm>
 
-void Dungeon::assign(sf::Vector3i newShape, Tile tile) {
-	tiles.clear();
-	shape_ = newShape;
-	tiles.resize(shape_.x * shape_.y * shape_.z, tile);
-}
-
 void Dungeon::generate(std::shared_ptr<spdlog::logger> logger) {
 	assign({ 50, 50, 10 });
 
 	logger->info("Generating dungeon...");
-	areas_.resize(std::ssize(tiles));
+	areas_.resize(shape().z);
 	generator().dungeon(*this);
 	generator()();
 
@@ -45,10 +39,10 @@ void Dungeon::addStairs(sf::Vector3i pos1, sf::Vector3i pos2) {
 	}
 
 	downStairs_.insert_or_assign(pos1, pos2);
-	at(pos1) = Tile::DOWN_STAIRS;
+	(*this)[pos1] = Tile::DOWN_STAIRS;
 
 	upStairs_.insert_or_assign(pos2, pos1);
-	at(pos2) = Tile::UP_STAIRS;
+	(*this)[pos2] = Tile::UP_STAIRS;
 }
 
 void Dungeon::generateUpStairs(int fromLevel) {

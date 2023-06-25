@@ -23,7 +23,7 @@ TEST(raycast, canSeeEmpty) {
     
     for (int x = 0; x < 3; ++x)
         for (int y = 0; y < 3; ++y)
-            dungeon.at(x, y, 0) = Tile::EMPTY;
+            dungeon[{x, y, 0}] = Tile::EMPTY;
 
     EXPECT_TRUE(canSee({0, 2, 0}, {2, 1, 0}, dungeon));
 }
@@ -32,8 +32,8 @@ TEST(raycast, canSeeAdjenct) {
     Dungeon dungeon;
     dungeon.assign({ 2, 2, 1 });
 
-    dungeon.at(0, 1, 0) = Tile::EMPTY;
-    dungeon.at(1, 1, 0) = Tile::EMPTY;
+    dungeon[{0, 1, 0}] = Tile::EMPTY;
+    dungeon[{1, 1, 0}] = Tile::EMPTY;
 
     EXPECT_TRUE(canSee({ 0, 1, 0 }, { 1, 1, 0 }, dungeon));
 }
@@ -42,8 +42,8 @@ TEST(raycast, canSeeAdjenctDiagonal) {
     Dungeon dungeon;
     dungeon.assign({ 2, 2, 1 });
 
-    dungeon.at(0, 1, 0) = Tile::EMPTY;
-    dungeon.at(1, 0, 0) = Tile::EMPTY;
+    dungeon[{0, 1, 0}] = Tile::EMPTY;
+    dungeon[{1, 0, 0}] = Tile::EMPTY;
 
     EXPECT_TRUE(canSee({ 0, 1, 0 }, { 1, 0, 0 }, dungeon));
 }
@@ -52,8 +52,8 @@ TEST(raycast, canSeeBlockByWall) {
     Dungeon dungeon;
     dungeon.assign({ 3, 3, 1 });
 
-    dungeon.at(0, 2, 0) = Tile::EMPTY;
-    dungeon.at(2, 1, 0) = Tile::EMPTY;
+    dungeon[{0, 2, 0}] = Tile::EMPTY;
+    dungeon[{2, 1, 0}] = Tile::EMPTY;
 
     EXPECT_FALSE(canSee({ 0, 2, 0 }, { 2, 1, 0 }, dungeon));
 }
@@ -65,7 +65,7 @@ TEST(raycast, canSeeBlockByFloor) {
     for (int x = 0; x < 2; ++x)
         for (int y = 0; y < 2; ++y)
             for (int z = 0; z < 2; ++z)
-                dungeon.at(x, y, z) = Tile::EMPTY;
+                dungeon[{x, y, z}] = Tile::EMPTY;
 
     EXPECT_FALSE(canSee({ 0, 1, 0 }, { 1, 1, 1 }, dungeon));
 }
@@ -81,8 +81,8 @@ TEST(raycast, canSeeWall) {
 
     for (int x = 0; x < 3; ++x)
         for (int y = 0; y < 3; ++y)
-            dungeon.at(x, y, 0) = Tile::EMPTY;
-    dungeon.at({2, 1, 0}) = Tile::WALL;
+            dungeon[{x, y, 0}] = Tile::EMPTY;
+    dungeon[{ 2, 1, 0 }] = Tile::WALL;
 
     EXPECT_TRUE(canSee({ 0, 2, 0 }, { 2, 1, 0 }, dungeon));
 }

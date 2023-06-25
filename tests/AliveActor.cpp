@@ -146,12 +146,12 @@ auto createAliveActorTryMoveToTest() {
 	auto dungeon = std::make_shared<Dungeon>();
 	dungeon->assign({ 3, 3, 1 });
 
-	dungeon->at({ 0, 0, 0 }) = Tile::EMPTY;
-	dungeon->at({ 0, 1, 0 }) = Tile::EMPTY;
-	dungeon->at({ 0, 2, 0 }) = Tile::EMPTY;
-	dungeon->at({ 1, 0, 0 }) = Tile::WALL;
-	dungeon->at({ 1, 1, 0 }) = Tile::WALL;
-	dungeon->at({ 1, 2, 0 }) = Tile::EMPTY;
+	(*dungeon)[{ 0, 0, 0 }] = Tile::EMPTY;
+	(*dungeon)[{ 0, 1, 0 }] = Tile::EMPTY;
+	(*dungeon)[{ 0, 2, 0 }] = Tile::EMPTY;
+	(*dungeon)[{ 1, 0, 0 }] = Tile::WALL;
+	(*dungeon)[{ 1, 1, 0 }] = Tile::WALL;
+	(*dungeon)[{ 1, 2, 0 }] = Tile::EMPTY;
 
 	auto world = std::make_shared<World>(std::move(dungeon));
 

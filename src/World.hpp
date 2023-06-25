@@ -72,7 +72,7 @@ public:
 
 	/// Tile isPassable and have no Actors on it
 	[[nodiscard]] bool isFree(sf::Vector3i position) {
-		return isPassable(dungeon().at(position)) && !actorAt(position);
+		return isPassable(dungeon()[position]) && !actorAt(position);
 	}
 
 	void makeSound(Sound sound);

@@ -93,7 +93,7 @@ TEST(PlayerMap, tileVisibilityEmpty) {
 
     for (int x = 0; x < 3; ++x)
         for (int y = 0; y < 3; ++y)
-            dungeon->at(x, y, 0) = Tile::EMPTY;
+            (*dungeon)[{x, y, 0}] = Tile::EMPTY;
 
     auto player = std::make_shared<Player>();
     player->position({ 0, 2, 0 });
@@ -113,11 +113,11 @@ namespace {
         dungeon->assign({ 3, 3, 1 });
 
         for (int x = 0; x < 3; ++x)
-            dungeon->at(x, 0, 0) = Tile::EMPTY;
+            (*dungeon)[{x, 0, 0}] = Tile::EMPTY;
         for (int x = 0; x < 3; ++x)
-            dungeon->at(x, 1, 0) = Tile::WALL;
+            (*dungeon)[{x, 1, 0}] = Tile::WALL;
         for (int x = 0; x < 3; ++x)
-            dungeon->at(x, 2, 0) = Tile::EMPTY;
+            (*dungeon)[{x, 2, 0}] = Tile::EMPTY;
 
         return std::make_shared<World>(std::move(dungeon));
     }
