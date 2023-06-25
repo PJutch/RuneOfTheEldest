@@ -27,9 +27,7 @@ void Player::spawn() {
 
 	world().addActor(shared_from_this());
 
-	position(world().randomPositionAt(0, [this](sf::Vector3i pos, const World&) {
-		return world().isFree(pos);
-	}));
+	position(world().randomPositionAt(0, &World::isFree));
 }
 
 void Player::handleEvent(sf::Event event) {

@@ -66,7 +66,7 @@ public:
 	void update();
 
 	/// Tile isPassable and have no Actors on it
-	[[nodiscard]] bool isFree(sf::Vector3i position) {
+	[[nodiscard]] bool isFree(sf::Vector3i position) const {
 		return isPassable(dungeon()[position]) && !actorAt(position);
 	}
 
@@ -85,7 +85,7 @@ public:
 	template <typename Pred>
 		requires std::convertible_to<std::invoke_result_t<Pred, Tile>, bool>
 	[[nodiscard]] sf::Vector3i randomPositionAt(int level, Pred&& pred) const {
-		return randomPositionAt(level, [&pred](sf::Vector3i pos, const World& world) {
+		return randomPositionAt(level, [&pred](const World& world, sf::Vector3i pos) {
 			return std::invoke(pred, world.dungeon()[pos]);
 		});
 	}
@@ -93,12 +93,12 @@ public:
 	/// @brief Random tile position (3D) at given level satisfying pred
 	/// @details randomPosition(engine) distrbution filtered by pred(pos, *this)
 	template <typename Pred>
-		requires std::convertible_to<std::invoke_result_t<Pred, sf::Vector3i, const World&>, bool>
+		requires std::convertible_to<std::invoke_result_t<Pred, const World&, sf::Vector3i>, bool>
 	[[nodiscard]] sf::Vector3i randomPositionAt(int level, Pred&& pred) const {
 		sf::Vector3i pos;
 		do {
 			pos = randomPositionAt(level);
-		} while (!std::invoke(pred, pos, *this));
+		} while (!std::invoke(pred, *this, pos));
 		return pos;
 	}
 
