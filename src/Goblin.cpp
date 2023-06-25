@@ -15,7 +15,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Goblin.hpp"
 
-#include "Renderer.hpp"
+#include "render/Renderer.hpp"
 
 #include "pathfinding.hpp"
 #include "raycast.hpp"
@@ -68,7 +68,7 @@ void Goblin::travelToTarget() noexcept {
 		tryMove(nextStep_, false);
 }
 
-void Goblin::DrawMemento::draw(Renderer& renderer) const {
+void Goblin::DrawMemento::draw(render::Renderer& renderer) const {
 	renderer.draw(*this);
 }
 

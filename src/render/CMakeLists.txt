@@ -13,8 +13,8 @@
 # You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 # If not, see <https://www.gnu.org/licenses/>.
 
-add_library(Camera STATIC)
+add_library(render STATIC)
 
-target_sources(Camera PRIVATE FreeCamera.cpp SwitchableCamera.cpp)
+target_sources(render PRIVATE FreeCamera.cpp SwitchableCamera.cpp AssetManager.cpp Renderer.cpp PlayerMap.cpp)
 
-target_link_libraries(Camera PUBLIC dependencies)
+target_link_libraries(render PUBLIC dependencies)

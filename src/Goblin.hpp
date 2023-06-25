@@ -21,8 +21,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Player.hpp"
 #include "AiState.hpp"
 
-class Renderer;
-
 #include "random.hpp"
 
 #include <SFML/System.hpp>
@@ -74,7 +72,7 @@ public:
 			return aiState_;
 		}
 
-		void draw(Renderer& renderer) const final;
+		void draw(render::Renderer& renderer) const final;
 	private:
 		AiState aiState_;
 	};

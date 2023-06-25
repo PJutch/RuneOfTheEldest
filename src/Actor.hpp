@@ -18,7 +18,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Sound.hpp"
 
-class Renderer;
+namespace render {
+	class Renderer;
+}
 
 #include <SFML/System.hpp>
 
@@ -75,7 +77,7 @@ public:
 		[[nodiscard]] virtual sf::Vector3i position() const = 0;
 
 		/// Draw an actor using a renderer. Uses a visitor pattern
-		virtual void draw(Renderer& renderer) const = 0;
+		virtual void draw(render::Renderer& renderer) const = 0;
 	};
 
 	/// Returns new DrawMemento with copy of current Actor state

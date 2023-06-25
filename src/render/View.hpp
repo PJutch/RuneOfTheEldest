@@ -20,24 +20,26 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <SFML/Graphics.hpp>
 
-/// @brief creates view
-/// Top left angle is at (0, 0)
-/// @param height Height of new view
-/// @param screenSize sides of the screen. Sides of the new view are proportional to them
-template <typename T>
-[[nodiscard]] sf::View createFullscreenView(float height,
-    sf::Vector2<T> screenSize) noexcept {
-    return sf::View{ {0, 0, height * screenSize.x / screenSize.y, height} };
-}
+namespace render {
+    /// @brief creates view
+    /// Top left angle is at (0, 0)
+    /// @param height Height of new view
+    /// @param screenSize sides of the screen. Sides of the new view are proportional to them
+    template <typename T>
+    [[nodiscard]] sf::View createFullscreenView(float height,
+        sf::Vector2<T> screenSize) noexcept {
+        return sf::View{ {0, 0, height * screenSize.x / screenSize.y, height} };
+    }
 
-/// @brief creates view. Uses user-defined center
-/// @param center Center of the new view
-/// @param height Height of new view
-/// @param screenSize sides of the screen. Sides of the new view are proportional to them
-template <typename T>
-[[nodiscard]] sf::View createFullscreenView(sf::Vector2f center,
-    float height, sf::Vector2<T> screenSize) noexcept {
-    return sf::View{ center, {height * screenSize.x / screenSize.y, height} };
+    /// @brief creates view. Uses user-defined center
+    /// @param center Center of the new view
+    /// @param height Height of new view
+    /// @param screenSize sides of the screen. Sides of the new view are proportional to them
+    template <typename T>
+    [[nodiscard]] sf::View createFullscreenView(sf::Vector2f center,
+        float height, sf::Vector2<T> screenSize) noexcept {
+        return sf::View{ center, {height * screenSize.x / screenSize.y, height} };
+    }
 }
 
 #endif

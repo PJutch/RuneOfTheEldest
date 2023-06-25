@@ -20,8 +20,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "World.hpp"
 
-class Renderer;
-
 #include "geometry.hpp"
 
 #include <SFML/Window.hpp>
@@ -64,7 +62,7 @@ public:
 	public:
 		DrawMemento(const Player& player) : AliveActor::DrawMemento{ player } {}
 
-		void draw(Renderer& renderer) const final;
+		void draw(render::Renderer& renderer) const final;
 	};
 
 	[[nodiscard]] std::unique_ptr<Actor::DrawMemento> createDrawMemento() const final {

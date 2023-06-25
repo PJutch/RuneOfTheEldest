@@ -13,22 +13,35 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#include "SwitchableCamera.hpp"
+#ifndef PLAYER_LOCKED_CAMERA_HPP_
+#define PLAYER_LOCKED_CAMERA_HPP_
 
-#include "../Keyboard.hpp"
+#include "Camera.hpp"
 
-void SwitchableCamera::handleEvent(sf::Event event) {
-    if (wasKeyPressed(event, sf::Keyboard::V))
-        nextCamera();
-    else
-        currentCamera().handleEvent(event);
+#include "../Player.hpp"
+
+#include <memory>
+
+namespace render {
+    /// Camera always centered on player
+    class PlayerLockedCamera : public Camera {
+    public:
+        PlayerLockedCamera(std::shared_ptr<Player> player_) :
+            player{ std::move(player_) } {}
+
+        /// Uses player position
+        [[nodiscard]] Position position() const final {
+            return Position{ player->position() };
+        }
+
+        /// Can't move
+        void moveTo(Position) final {}
+
+        /// Ignore reset
+        void reset() final {}
+    private:
+        std::shared_ptr<Player> player;
+    };
 }
 
-void SwitchableCamera::nextCamera() noexcept {
-    Position oldPosition = currentCamera().position();
-
-    ++currentCameraIndex;
-    currentCameraIndex %= std::ssize(cameras);
-
-    currentCamera().moveTo(oldPosition);
-}
+#endif

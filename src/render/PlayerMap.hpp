@@ -19,9 +19,9 @@ If not, see < https://www.gnu.org/licenses/>. */
 class Player;
 class World;
 
-#include "Actor.hpp"
+#include "../Actor.hpp"
 
-#include "Array3D.hpp"
+#include "../Array3D.hpp"
 
 #include <SFML/System.hpp>
 
@@ -29,40 +29,42 @@ class World;
 #include <span>
 #include <memory>
 
-class PlayerMap {
-public:
-	PlayerMap(std::shared_ptr<Player> player, std::shared_ptr<World> world);
+namespace render {
+	class PlayerMap {
+	public:
+		PlayerMap(std::shared_ptr<Player> player, std::shared_ptr<World> world);
 
-	enum class TileState {
-		UNSEEN,
-		MEMORIZED,
-		VISIBLE,
+		enum class TileState {
+			UNSEEN,
+			MEMORIZED,
+			VISIBLE,
+		};
+
+		[[nodiscard]] TileState tileState(sf::Vector3i position) const noexcept {
+			return tileStates[position];
+		}
+
+		[[nodiscard]] std::span<const std::unique_ptr<Actor::DrawMemento>> seenActors() const noexcept {
+			return seenActors_;
+		}
+
+		void onGenerate();
+
+		void update() {
+			updateTiles();
+			updateActors();
+		}
+	private:
+		Array3D<TileState> tileStates;
+
+		std::vector<std::unique_ptr<Actor::DrawMemento>> seenActors_;
+
+		std::shared_ptr<Player> player;
+		std::shared_ptr<World> world;
+
+		void updateTiles();
+		void updateActors();
 	};
-
-	[[nodiscard]] TileState tileState(sf::Vector3i position) const noexcept {
-		return tileStates[position];
-	}
-
-	[[nodiscard]] std::span<const std::unique_ptr<Actor::DrawMemento>> seenActors() const noexcept {
-		return seenActors_;
-	}
-
-	void onGenerate();
-
-	void update() {
-		updateTiles();
-		updateActors();
-	}
-private:
-	Array3D<TileState> tileStates;
-
-	std::vector<std::unique_ptr<Actor::DrawMemento>> seenActors_;
-
-	std::shared_ptr<Player> player;
-	std::shared_ptr<World> world;
-
-	void updateTiles();
-	void updateActors();
-};
+}
 
 #endif

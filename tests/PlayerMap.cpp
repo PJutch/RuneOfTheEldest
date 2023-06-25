@@ -13,7 +13,7 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#include "PlayerMap.hpp"
+#include "render/PlayerMap.hpp"
 
 #include "World.hpp"
 #include "Player.hpp"
@@ -62,7 +62,7 @@ namespace {
                 return position_;
             }
 
-            void draw(Renderer& renderer) const noexcept final {}
+            void draw(render::Renderer& renderer) const noexcept final {}
         private:
             sf::Vector3i position_{ 0, 0, 0 };
         };
@@ -94,13 +94,13 @@ TEST(PlayerMap, tileVisibilityEmpty) {
     auto player = std::make_shared<Player>();
     player->position({ 0, 2, 0 });
 
-    PlayerMap playerMap{ std::move(player), std::move(world) };
+    render::PlayerMap playerMap{ std::move(player), std::move(world) };
     playerMap.onGenerate();
     playerMap.update();
 
     for (int x = 0; x < 3; ++x)
         for (int y = 0; y < 3; ++y)
-            EXPECT_EQ(playerMap.tileState({ x, y, 0 }), PlayerMap::TileState::VISIBLE);
+            EXPECT_EQ(playerMap.tileState({ x, y, 0 }), render::PlayerMap::TileState::VISIBLE);
 }
 
 namespace {
@@ -119,22 +119,22 @@ TEST(PlayerMap, tileVisibilityWall) {
     auto player = std::make_shared<Player>();
     player->position({ 1, 0, 0 });
 
-    PlayerMap playerMap{ std::move(player), createWallWorld() };
+    render::PlayerMap playerMap{ std::move(player), createWallWorld() };
     playerMap.onGenerate();
     playerMap.update();
 
     for (int x = 0; x < 3; ++x)
-        EXPECT_EQ(playerMap.tileState({ x, 0, 0 }), PlayerMap::TileState::VISIBLE);
+        EXPECT_EQ(playerMap.tileState({ x, 0, 0 }), render::PlayerMap::TileState::VISIBLE);
     for (int x = 0; x < 3; ++x)
-        EXPECT_EQ(playerMap.tileState({ x, 1, 0 }), PlayerMap::TileState::VISIBLE);
+        EXPECT_EQ(playerMap.tileState({ x, 1, 0 }), render::PlayerMap::TileState::VISIBLE);
     for (int x = 0; x < 3; ++x)
-        EXPECT_EQ(playerMap.tileState({ x, 2, 0 }), PlayerMap::TileState::UNSEEN);
+        EXPECT_EQ(playerMap.tileState({ x, 2, 0 }), render::PlayerMap::TileState::UNSEEN);
 }
 
 TEST(PlayerMap, tileMemorization) {
     auto player = std::make_shared<Player>();
 
-    PlayerMap playerMap{ player, createWallWorld() };
+    render::PlayerMap playerMap{ player, createWallWorld() };
     playerMap.onGenerate();
 
     player->position({ 1, 0, 0 });
@@ -143,11 +143,11 @@ TEST(PlayerMap, tileMemorization) {
     playerMap.update();
 
     for (int x = 0; x < 3; ++x)
-        EXPECT_EQ(playerMap.tileState({ x, 0, 0 }), PlayerMap::TileState::MEMORIZED);
+        EXPECT_EQ(playerMap.tileState({ x, 0, 0 }), render::PlayerMap::TileState::MEMORIZED);
     for (int x = 0; x < 3; ++x)
-        EXPECT_EQ(playerMap.tileState({ x, 1, 0 }), PlayerMap::TileState::VISIBLE);
+        EXPECT_EQ(playerMap.tileState({ x, 1, 0 }), render::PlayerMap::TileState::VISIBLE);
     for (int x = 0; x < 3; ++x)
-        EXPECT_EQ(playerMap.tileState({ x, 2, 0 }), PlayerMap::TileState::VISIBLE);
+        EXPECT_EQ(playerMap.tileState({ x, 2, 0 }), render::PlayerMap::TileState::VISIBLE);
 }
 
 TEST(PlayerMap, seenActors) {
@@ -158,7 +158,7 @@ TEST(PlayerMap, seenActors) {
     world->addActor(std::make_shared<TestActor>(sf::Vector3i{ 2, 0, 0 }));
     world->addActor(std::make_shared<TestActor>(sf::Vector3i{ 2, 2, 0 }));
 
-    PlayerMap playerMap{ std::move(player), std::move(world) };
+    render::PlayerMap playerMap{ std::move(player), std::move(world) };
     playerMap.onGenerate();
     playerMap.update();
 
@@ -173,7 +173,7 @@ TEST(PlayerMap, seenActorsMemorization) {
     auto actor = std::make_shared<TestActor>(sf::Vector3i{ 2, 0, 0 });
     world->addActor(actor);
 
-    PlayerMap playerMap{ player, std::move(world) };
+    render::PlayerMap playerMap{ player, std::move(world) };
     playerMap.onGenerate();
 
     player->position({ 1, 0, 0 });

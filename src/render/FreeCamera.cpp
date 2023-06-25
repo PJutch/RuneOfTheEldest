@@ -18,25 +18,28 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "../Keyboard.hpp"
 #include "../geometry.hpp"
 
-FreeCamera::FreeCamera(std::shared_ptr<World> world_) : world{ std::move(world_) } {
-    reset();
-}
+namespace render {
+    FreeCamera::FreeCamera(std::shared_ptr<World> world_) : world{ std::move(world_) } {
+        reset();
+    }
 
-void FreeCamera::update(sf::Time elapsedTime) {
-    const float cameraSpeed = 40.f;
-    float moved = cameraSpeed * elapsedTime.asSeconds();
+    void FreeCamera::update(sf::Time elapsedTime) {
+        const float cameraSpeed = 40.f;
+        float moved = cameraSpeed * elapsedTime.asSeconds();
 
-    for (int i = 1; i <= 9; ++i)
-        if (sf::Keyboard::isKeyPressed(numpad(i)))
-            move(numpadDirections<float>[i - 1] * moved);
-}
+        for (int i = 1; i <= 9; ++i)
+            if (sf::Keyboard::isKeyPressed(numpad(i)))
+                move(numpadDirections<float>[i - 1] * moved);
+    }
 
-void FreeCamera::handleEvent(sf::Event event) {
-    if (wasKeyPressed(event, sf::Keyboard::Comma) && event.key.shift) {
-        if (position().level > 0)
-            --position_.level;
-    } else if (wasKeyPressed(event, sf::Keyboard::Period) && event.key.shift) {
-        if (position().level + 1 < world->tiles().shape().z)
-            ++position_.level;
+    void FreeCamera::handleEvent(sf::Event event) {
+        if (wasKeyPressed(event, sf::Keyboard::Comma) && event.key.shift) {
+            if (position().level > 0)
+                --position_.level;
+        }
+        else if (wasKeyPressed(event, sf::Keyboard::Period) && event.key.shift) {
+            if (position().level + 1 < world->tiles().shape().z)
+                ++position_.level;
+        }
     }
 }

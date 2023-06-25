@@ -15,9 +15,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Game.hpp"
 #include "generation/RandomSizeRoomGenerator.hpp"
-#include "Camera/FreeCamera.hpp"
-#include "Camera/PlayerLockedCamera.hpp"
-#include "Camera/SwitchableCamera.hpp"
+#include "render/FreeCamera.hpp"
+#include "render/PlayerLockedCamera.hpp"
+#include "render/SwitchableCamera.hpp"
 
 #include "log.hpp"
 #include "Exception.hpp"
@@ -63,8 +63,8 @@ int main() {
             boost::di::bind<sf::RenderWindow>.to(renderWindow),
             boost::di::bind<RandomEngine>.to(randomEngine),
             boost::di::bind<generation::RoomGenerator>.to<generation::RandomSizeRoomGenerator>(),
-            boost::di::bind<Camera*[]>.to<PlayerLockedCamera, FreeCamera>(),
-            boost::di::bind<Camera>.to<SwitchableCamera>()
+            boost::di::bind<render::Camera*[]>.to<render::PlayerLockedCamera, render::FreeCamera>(),
+            boost::di::bind<render::Camera>.to<render::SwitchableCamera>()
         );
         auto game = injector.create<Game>();
 

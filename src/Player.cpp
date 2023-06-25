@@ -17,7 +17,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "World.hpp"
 
-#include "Renderer.hpp"
+#include "render/Renderer.hpp"
 
 #include "Keyboard.hpp"
 
@@ -53,7 +53,7 @@ void Player::handleEvent(sf::Event event) {
 	}
 }
 
-void Player::DrawMemento::draw(Renderer& renderer) const {
+void Player::DrawMemento::draw(render::Renderer& renderer) const {
 	renderer.draw(*this);
 }
 
