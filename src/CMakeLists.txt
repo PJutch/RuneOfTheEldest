@@ -15,8 +15,7 @@
 
 add_library(sources STATIC)
 
-target_sources(sources PRIVATE Game.cpp  "render/Renderer.cpp" Player.cpp "render/AssetManager.cpp" 
-                               Goblin.cpp AliveActor.cpp World.cpp "render/PlayerMap.cpp")
+target_sources(sources PRIVATE Game.cpp Player.cpp Goblin.cpp AliveActor.cpp World.cpp)
 
 add_subdirectory(generation)
 target_link_libraries(sources PRIVATE generation)
