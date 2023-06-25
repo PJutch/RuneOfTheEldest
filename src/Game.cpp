@@ -93,7 +93,7 @@ void Game::generate() {
     dungeonGenerator()();
 
     generationLogger->info("Generating stairs...");
-    world->generateUpStairs();
+    world->generateStairs();
 
     generationLogger->info("Spawning goblins...");
     Goblin::spawnAll(world, player, *randomEngine);

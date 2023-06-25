@@ -102,7 +102,7 @@ public:
 		return pos;
 	}
 
-	void generateUpStairs();
+	void generateStairs();
 private:
 	std::shared_ptr<Dungeon> dungeon_ = nullptr;
 	std::vector<std::shared_ptr<Actor>> actors_;
