@@ -16,11 +16,14 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef WORLD_HPP_
 #define WORLD_HPP_
 
-#include "Dungeon.hpp"
 #include "Actor.hpp"
-#include "Map.hpp"
+#include "Tile.hpp"
 
+#include "Array3D.hpp"
+#include "Map.hpp"
 #include "random.hpp"
+
+#include <SFML/Graphics.hpp>
 
 #include <queue>
 #include <span>
@@ -29,16 +32,14 @@ If not, see <https://www.gnu.org/licenses/>. */
 class World {
 public:
 	World() = default;
-	World(std::shared_ptr<Dungeon> newDungeon) : dungeon_{ std::move(newDungeon) } {}
-	World(std::shared_ptr<Dungeon> newDungeon, RandomEngine& randomEngine_) :
-		dungeon_{ std::move(newDungeon) }, randomEngine{ &randomEngine_ } {}
+	World(RandomEngine& randomEngine_) : randomEngine{ &randomEngine_ } {}
 
-	[[nodiscard]] Dungeon& dungeon() noexcept {
-		return *dungeon_;
+	[[nodiscard]] Array3D<Tile>& tiles() noexcept {
+		return tiles_;
 	}
 
-	[[nodiscard]] const Dungeon& dungeon() const noexcept {
-		return *dungeon_;
+	[[nodiscard]] const Array3D<Tile>& tiles() const noexcept {
+		return tiles_;
 	}
 
 	/// Add Actor to list
@@ -69,7 +70,7 @@ public:
 
 	/// Tile isPassable and have no Actors on it
 	[[nodiscard]] bool isFree(sf::Vector3i position) const {
-		return isPassable(dungeon()[position]) && !actorAt(position);
+		return isPassable(tiles()[position]) && !actorAt(position);
 	}
 
 	void makeSound(Sound sound);
@@ -77,8 +78,8 @@ public:
 	/// @brief Random tile position
 	/// @details position distribution is uniform and independent for both dimensions
 	[[nodiscard]] sf::Vector3i randomPositionAt(int level) const {
-		return { std::uniform_int_distribution{ 0, dungeon().shape().x - 1}(*randomEngine),
-				 std::uniform_int_distribution{ 0, dungeon().shape().y - 1}(*randomEngine),
+		return { std::uniform_int_distribution{ 0, tiles().shape().x - 1}(*randomEngine),
+				 std::uniform_int_distribution{ 0, tiles().shape().y - 1}(*randomEngine),
 				 level };
 	}
 
@@ -88,7 +89,7 @@ public:
 		requires std::convertible_to<std::invoke_result_t<Pred, Tile>, bool>
 	[[nodiscard]] sf::Vector3i randomPositionAt(int level, Pred&& pred) const {
 		return randomPositionAt(level, [&pred](const World& world, sf::Vector3i pos) {
-			return std::invoke(pred, world.dungeon()[pos]);
+			return std::invoke(pred, world.tiles()[pos]);
 		});
 	}
 
@@ -123,7 +124,7 @@ public:
 
 	/// Add bsp area. Used for debug area rendering
 	void addArea(sf::IntRect area, int level) {
-		areas_.resize(dungeon().shape().z);
+		areas_.resize(tiles().shape().z);
 		areas_[level].push_back(area);
 	}
 
@@ -132,7 +133,7 @@ public:
 		return areas_[level];
 	}
 private:
-	std::shared_ptr<Dungeon> dungeon_ = nullptr;
+	Array3D<Tile> tiles_;
 
 	UnorderedMap<sf::Vector3i, sf::Vector3i> upStairs_;
 	UnorderedMap<sf::Vector3i, sf::Vector3i> downStairs_;

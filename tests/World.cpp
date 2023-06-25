@@ -211,15 +211,12 @@ TEST(World, updateDeathInterrupt) {
 }
 
 TEST(World, isFree) {
-	auto dungeon = std::make_shared<Dungeon>();
-	dungeon->assign({ 2, 2, 1 });
+	World world;
+	world.tiles().assign({ 2, 2, 1 }, Tile::WALL);
 
-	(*dungeon)[{ 0, 0, 0 }] = Tile::EMPTY;
-	(*dungeon)[{ 0, 1, 0 }] = Tile::EMPTY;
-	(*dungeon)[{ 1, 0, 0 }] = Tile::WALL;
-	(*dungeon)[{ 1, 1, 0 }] = Tile::WALL;
+	world.tiles()[{ 0, 0, 0 }] = Tile::EMPTY;
+	world.tiles()[{ 0, 1, 0 }] = Tile::EMPTY;
 
-	World world{ std::move(dungeon) };
 	world.addActor(std::make_shared<TestActor>(sf::Vector3i{0, 1, 0}));
 
 	EXPECT_TRUE(world.isFree({ 0, 0, 0 }));

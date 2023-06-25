@@ -35,7 +35,7 @@ void AliveActor::tryMoveTo(sf::Vector3i newPosition, bool forceSwap) {
 	if (newPosition == position())
 		return;
 
-	if (isPassable(world().dungeon()[newPosition])) {
+	if (isPassable(world().tiles()[newPosition])) {
 		if (auto other = world().actorAt(newPosition)) {
 			if (other->isOnPlayerSide() == isOnPlayerSide()) {
 				if (forceSwap || other->wantsSwap()) {
@@ -57,7 +57,7 @@ void AliveActor::tryMoveTo(sf::Vector3i newPosition, bool forceSwap) {
 }
 
 bool AliveActor::canMoveToOrAttack(sf::Vector3i newPosition, bool forceSwap) const {
-	if (!isPassable(world().dungeon()[newPosition]))
+	if (!isPassable(world().tiles()[newPosition]))
 		return false;
 
 	auto other = world().actorAt(newPosition);

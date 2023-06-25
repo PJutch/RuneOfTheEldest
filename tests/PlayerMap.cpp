@@ -88,17 +88,13 @@ namespace {
 }
 
 TEST(PlayerMap, tileVisibilityEmpty) {
-    auto dungeon = std::make_shared<Dungeon>();
-    dungeon->assign({ 3, 3, 1 });
-
-    for (int x = 0; x < 3; ++x)
-        for (int y = 0; y < 3; ++y)
-            (*dungeon)[{x, y, 0}] = Tile::EMPTY;
+    auto world = std::make_shared<World>();
+    world->tiles().assign({ 3, 3, 1 }, Tile::EMPTY);
 
     auto player = std::make_shared<Player>();
     player->position({ 0, 2, 0 });
 
-    PlayerMap playerMap{ std::move(player), std::make_shared<World>(std::move(dungeon)) };
+    PlayerMap playerMap{ std::move(player), std::move(world) };
     playerMap.onGenerate();
     playerMap.update();
 
@@ -109,17 +105,13 @@ TEST(PlayerMap, tileVisibilityEmpty) {
 
 namespace {
     std::shared_ptr<World> createWallWorld() {
-        auto dungeon = std::make_shared<Dungeon>();
-        dungeon->assign({ 3, 3, 1 });
+        auto world = std::make_shared<World>();
+        world->tiles().assign({ 3, 3, 1 }, Tile::EMPTY);
 
         for (int x = 0; x < 3; ++x)
-            (*dungeon)[{x, 0, 0}] = Tile::EMPTY;
-        for (int x = 0; x < 3; ++x)
-            (*dungeon)[{x, 1, 0}] = Tile::WALL;
-        for (int x = 0; x < 3; ++x)
-            (*dungeon)[{x, 2, 0}] = Tile::EMPTY;
+            world->tiles()[{x, 1, 0}] = Tile::WALL;
 
-        return std::make_shared<World>(std::move(dungeon));
+        return std::move(world);
     }
 }
 

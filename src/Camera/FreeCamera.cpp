@@ -18,8 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "../Keyboard.hpp"
 #include "../geometry.hpp"
 
-FreeCamera::FreeCamera(std::shared_ptr<Dungeon> dungeon_) :
-        dungeon{ std::move(dungeon_) } {
+FreeCamera::FreeCamera(std::shared_ptr<World> world_) : world{ std::move(world_) } {
     reset();
 }
 
@@ -37,7 +36,7 @@ void FreeCamera::handleEvent(sf::Event event) {
         if (position().level > 0)
             --position_.level;
     } else if (wasKeyPressed(event, sf::Keyboard::Period) && event.key.shift) {
-        if (position().level + 1 < dungeon->shape().z)
+        if (position().level + 1 < world->tiles().shape().z)
             ++position_.level;
     }
 }

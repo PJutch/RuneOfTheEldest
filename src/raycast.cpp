@@ -17,7 +17,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "geometry.hpp"
 
-bool canSee(sf::Vector3i pos1, sf::Vector3i pos2, const Dungeon& dungeon) {
+bool canSee(sf::Vector3i pos1, sf::Vector3i pos2, const World& world) {
 	if (pos1 == pos2)
 		return true;
 
@@ -38,7 +38,7 @@ bool canSee(sf::Vector3i pos1, sf::Vector3i pos2, const Dungeon& dungeon) {
 		int x = pos1.x + std::round(distance * cos);
 		int y = pos1.y + std::round(distance * sin);
 
-		if (!isPassable(dungeon[{x, y, pos1.z}]))
+		if (!isPassable(world.tiles()[{x, y, pos1.z}]))
 			return false;
 	}
 

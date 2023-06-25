@@ -37,12 +37,12 @@ void Renderer::drawWorld() {
 }
 
 void Renderer::drawLevel(int z) {
-    for (int x = 0; x < world->dungeon().shape().x; ++x)
-        for (int y = 0; y < world->dungeon().shape().y; ++ y)
+    for (int x = 0; x < world->tiles().shape().x; ++x)
+        for (int y = 0; y < world->tiles().shape().y; ++ y)
             if (playerMap->tileState({x, y, z}) == PlayerMap::TileState::VISIBLE)
-                drawSprite(sf::Vector2i{ x, y }, assets->tileTexture(world->dungeon()[{x, y, z}]));
+                drawSprite(sf::Vector2i{ x, y }, assets->tileTexture(world->tiles()[{x, y, z}]));
             else if (playerMap->tileState({ x, y, z }) == PlayerMap::TileState::MEMORIZED)
-                drawSprite(sf::Vector2i{ x, y }, assets->tileTexture(world->dungeon()[{x, y, z}]), 0.5);
+                drawSprite(sf::Vector2i{ x, y }, assets->tileTexture(world->tiles()[{x, y, z}]), 0.5);
     
     if (renderAreas_) drawAreas(z);
 }
@@ -79,7 +79,7 @@ void Renderer::draw(const Player::DrawMemento& player) {
 
 void Renderer::draw(const Goblin::DrawMemento& goblin) {
     double colorMod = 1.0;
-    if (!canSee(player->position(), goblin.position(), world->dungeon()))
+    if (!canSee(player->position(), goblin.position(), *world))
         colorMod = 0.5;
 
     drawSprite(goblin.position(), assets->goblinTexture(), colorMod);

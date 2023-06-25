@@ -74,7 +74,7 @@ public:
 	}
 
 	/// Clears and creates new dungeon with given shape filled with given value
-	void assign(sf::Vector3i newShape, T value = T{}) {
+	void assign(sf::Vector3i newShape, T value) {
 		elements.clear();
 		shape_ = newShape;
 		elements.resize(shape().x * shape().y * shape().z, value);

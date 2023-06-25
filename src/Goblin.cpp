@@ -46,7 +46,7 @@ void Goblin::updateTarget() noexcept {
 
 sf::Vector3i Goblin::randomNearbyTarget() noexcept {
 	int minLevel = std::max(position().z - 1, 0);
-	int maxLevel = std::min(position().z + 1, world().dungeon().shape().z - 1);
+	int maxLevel = std::min(position().z + 1, world().tiles().shape().z - 1);
 	int targetLevel = std::uniform_int_distribution{ minLevel, maxLevel }(randomEngine());
 	return world().randomPositionAt(targetLevel, &World::isFree);
 }
@@ -79,13 +79,13 @@ void Goblin::spawnSingle(int level, std::shared_ptr<World> world, std::shared_pt
 }
 
 void Goblin::spawnAll(std::shared_ptr<World> world, std::shared_ptr<Player> player_, RandomEngine& randomEngine) {
-	for (int level = 0; level < world->dungeon().shape().z; ++level)
+	for (int level = 0; level < world->tiles().shape().z; ++level)
 		for (int i = 0; i < std::uniform_int_distribution{ 5, 20 }(randomEngine); ++i)
 			spawnSingle(level, world, player_, randomEngine);
 }
 
 bool Goblin::canSeePlayer() const noexcept {
-	return canSee(position(), player->position(), world().dungeon());
+	return canSee(position(), player->position(), world());
 }
 
 namespace {
@@ -104,7 +104,7 @@ void Goblin::handleSound(Sound sound) noexcept {
 	if (sound.position.z != position().z)
 		return;
 
-	if (canSee(position(), sound.position, world().dungeon()))
+	if (canSee(position(), sound.position, world()))
 		return;
 
 	auto [dx, dy, dz] = sound.position - position();

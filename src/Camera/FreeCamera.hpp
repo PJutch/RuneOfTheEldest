@@ -25,7 +25,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 /// Camera controlled by player
 class FreeCamera : public Camera {
 public:
-    FreeCamera(std::shared_ptr<Dungeon> dungeon_);
+    FreeCamera(std::shared_ptr<World> world);
 
     [[nodiscard]] Position position() const noexcept final {
         return position_;
@@ -54,7 +54,7 @@ public:
 private:
     Position position_;
 
-    std::shared_ptr<Dungeon> dungeon;
+    std::shared_ptr<World> world;
 
     /// Moves to (x, y) + offset at current level
     void move(sf::Vector2f offset) noexcept {

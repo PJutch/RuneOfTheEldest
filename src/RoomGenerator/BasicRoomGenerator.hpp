@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "RoomGenerator.hpp"
 
-class Dungeon;
+#include "../World.hpp"
 
 #include <memory>
 
@@ -27,7 +27,7 @@ class Dungeon;
 ///       \n Generates Tile::EMPTY for passages in right and bottom sides
 class BasicRoomGenerator : public RoomGenerator {
 public:
-    BasicRoomGenerator() = default;
+    BasicRoomGenerator(std::shared_ptr<World> world) : world{ std::move(world) } {}
 
     void operator() (int z, Area area) final;
 
@@ -37,14 +37,9 @@ public:
     void debugTiles(bool newDebugTiles = true) noexcept final {
         debugTiles_ = newDebugTiles;
     }
-
-    void dungeon(Dungeon& newDungeon) final {
-        dungeon_ = &newDungeon;
-    }
 private:
     bool debugTiles_ = false;
-
-    Dungeon* dungeon_ = nullptr;
+    std::shared_ptr<World> world = nullptr;
 };
 
 #endif

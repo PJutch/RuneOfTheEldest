@@ -21,19 +21,15 @@ If not, see <https://www.gnu.org/licenses/>. */
 DungeonGenerator::DungeonGenerator(std::unique_ptr<RoomGenerator> newRoomGenerator,
                                    std::shared_ptr<World> world_,
                                    RandomEngine& randomEngine_) :
-        roomGenerator_{std::move(newRoomGenerator)},
-        world{std::move(world_)},
-        randomEngine{&randomEngine_} {
-    roomGenerator().dungeon(world->dungeon());
-}
+    roomGenerator_{std::move(newRoomGenerator)}, world{std::move(world_)}, randomEngine{&randomEngine_} {}
 
 void DungeonGenerator::operator() () {
-    for (int level = 0; level < world->dungeon().shape().z; ++level)
+    for (int level = 0; level < world->tiles().shape().z; ++level)
         processLevel(level);
 }
 
 void DungeonGenerator::processLevel(int z) {
-    areas.emplace(shrinkTopLeft(world->dungeon().horizontalBounds(), {1, 1}));
+    areas.emplace(shrinkTopLeft(world->tiles().horizontalBounds(), {1, 1}));
     while (!areas.empty()) {
         Area area = std::move(areas.front());
         areas.pop();
@@ -43,7 +39,7 @@ void DungeonGenerator::processLevel(int z) {
 }
 
 void DungeonGenerator::processArea(int z, Area area) {
-    TROTE_ASSERT(world->dungeon().isValidRect(area.bounds()));
+    TROTE_ASSERT(world->tiles().isValidRect(area.bounds()));
     TROTE_ASSERT(area.width() >= minSize_);
     TROTE_ASSERT(area.height() >= minSize_);
 

@@ -25,15 +25,15 @@ PlayerMap::PlayerMap(std::shared_ptr<Player> player_, std::shared_ptr<World> wor
 
 void PlayerMap::onGenerate() {
 	seenActors_.clear();
-	tileStates.assign(world->dungeon().shape());
+	tileStates.assign(world->tiles().shape(), TileState::UNSEEN);
 }
 
 void PlayerMap::updateTiles() {
-	auto [shapeX, shapeY, shapeZ] = world->dungeon().shape();
+	auto [shapeX, shapeY, shapeZ] = world->tiles().shape();
 	for (int z = 0; z < shapeZ; ++z) {
 		for (int x = 0; x < shapeX; ++x)
 			for (int y = 0; y < shapeY; ++y)
-				if (canSee(player->position(), { x, y, z }, world->dungeon()))
+				if (canSee(player->position(), { x, y, z }, *world))
 					tileStates[{ x, y, z }] = TileState::VISIBLE;
 				else if (tileState({ x, y, z }) == TileState::VISIBLE)
 					tileStates[{ x, y, z }] = TileState::MEMORIZED;
@@ -41,11 +41,11 @@ void PlayerMap::updateTiles() {
 }
 
 void PlayerMap::updateActors() {
-	std::erase_if(seenActors_, [&player = *player, &dungeon = world->dungeon()](const auto& actor) -> bool {
-		return canSee(player.position(), actor->position(), dungeon);
+	std::erase_if(seenActors_, [&player = *player, &world = *world](const auto& actor) -> bool {
+		return canSee(player.position(), actor->position(), world);
 	});
 
 	for (const auto& actor : world->actors())
-		if (canSee(player->position(), actor->position(), world->dungeon()))
+		if (canSee(player->position(), actor->position(), *world))
 			seenActors_.push_back(actor->createDrawMemento());
 }

@@ -143,17 +143,11 @@ TEST(AliveActor, regenLimit) {
 }
 
 auto createAliveActorTryMoveToTest() {
-	auto dungeon = std::make_shared<Dungeon>();
-	dungeon->assign({ 3, 3, 1 });
+	auto world = std::make_shared<World>();
+	world->tiles().assign({ 3, 3, 1 }, Tile::EMPTY);
 
-	(*dungeon)[{ 0, 0, 0 }] = Tile::EMPTY;
-	(*dungeon)[{ 0, 1, 0 }] = Tile::EMPTY;
-	(*dungeon)[{ 0, 2, 0 }] = Tile::EMPTY;
-	(*dungeon)[{ 1, 0, 0 }] = Tile::WALL;
-	(*dungeon)[{ 1, 1, 0 }] = Tile::WALL;
-	(*dungeon)[{ 1, 2, 0 }] = Tile::EMPTY;
-
-	auto world = std::make_shared<World>(std::move(dungeon));
+	world->tiles()[{ 1, 0, 0 }] = Tile::WALL;
+	world->tiles()[{ 1, 1, 0 }] = Tile::WALL;
 
 	auto actor = std::make_shared<TestAliveActor>(sf::Vector3i{ 0, 1, 0 }, world);
 	auto other = std::make_shared<TestAliveActor>(sf::Vector3i{ 0, 2, 0 }, world);

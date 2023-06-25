@@ -18,71 +18,58 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <gtest/gtest.h>
 
 TEST(raycast, canSeeEmpty) {
-    Dungeon dungeon;
-    dungeon.assign({ 3, 3, 1 });
-    
-    for (int x = 0; x < 3; ++x)
-        for (int y = 0; y < 3; ++y)
-            dungeon[{x, y, 0}] = Tile::EMPTY;
+    World world;
+    world.tiles().assign({ 3, 3, 1 }, Tile::EMPTY);
 
-    EXPECT_TRUE(canSee({0, 2, 0}, {2, 1, 0}, dungeon));
+    EXPECT_TRUE(canSee({0, 2, 0}, {2, 1, 0}, world));
 }
 
 TEST(raycast, canSeeAdjenct) {
-    Dungeon dungeon;
-    dungeon.assign({ 2, 2, 1 });
+    World world;
+    world.tiles().assign({ 2, 2, 1 }, Tile::WALL);
 
-    dungeon[{0, 1, 0}] = Tile::EMPTY;
-    dungeon[{1, 1, 0}] = Tile::EMPTY;
+    world.tiles()[{0, 1, 0}] = Tile::EMPTY;
+    world.tiles()[{1, 1, 0}] = Tile::EMPTY;
 
-    EXPECT_TRUE(canSee({ 0, 1, 0 }, { 1, 1, 0 }, dungeon));
+    EXPECT_TRUE(canSee({ 0, 1, 0 }, { 1, 1, 0 }, world));
 }
 
 TEST(raycast, canSeeAdjenctDiagonal) {
-    Dungeon dungeon;
-    dungeon.assign({ 2, 2, 1 });
+    World world;
+    world.tiles().assign({ 2, 2, 1 }, Tile::WALL);
 
-    dungeon[{0, 1, 0}] = Tile::EMPTY;
-    dungeon[{1, 0, 0}] = Tile::EMPTY;
+    world.tiles()[{0, 1, 0}] = Tile::EMPTY;
+    world.tiles()[{1, 0, 0}] = Tile::EMPTY;
 
-    EXPECT_TRUE(canSee({ 0, 1, 0 }, { 1, 0, 0 }, dungeon));
+    EXPECT_TRUE(canSee({ 0, 1, 0 }, { 1, 0, 0 }, world));
 }
 
 TEST(raycast, canSeeBlockByWall) {
-    Dungeon dungeon;
-    dungeon.assign({ 3, 3, 1 });
+    World world;
+    world.tiles().assign({ 3, 3, 1 }, Tile::WALL);
 
-    dungeon[{0, 2, 0}] = Tile::EMPTY;
-    dungeon[{2, 1, 0}] = Tile::EMPTY;
+    world.tiles()[{0, 2, 0}] = Tile::EMPTY;
+    world.tiles()[{2, 1, 0}] = Tile::EMPTY;
 
-    EXPECT_FALSE(canSee({ 0, 2, 0 }, { 2, 1, 0 }, dungeon));
+    EXPECT_FALSE(canSee({ 0, 2, 0 }, { 2, 1, 0 }, world));
 }
 
 TEST(raycast, canSeeBlockByFloor) {
-    Dungeon dungeon;
-    dungeon.assign({ 2, 2, 2 });
+    World world;
+    world.tiles().assign({ 2, 2, 2 }, Tile::EMPTY);
 
-    for (int x = 0; x < 2; ++x)
-        for (int y = 0; y < 2; ++y)
-            for (int z = 0; z < 2; ++z)
-                dungeon[{x, y, z}] = Tile::EMPTY;
-
-    EXPECT_FALSE(canSee({ 0, 1, 0 }, { 1, 1, 1 }, dungeon));
+    EXPECT_FALSE(canSee({ 0, 1, 0 }, { 1, 1, 1 }, world));
 }
 
 TEST(raycast, canSeeSelf) {
-    Dungeon dungeon;
-    EXPECT_TRUE(canSee({1, 1, 1}, {1, 1, 1}, dungeon));
+    World world;
+    EXPECT_TRUE(canSee({1, 1, 1}, {1, 1, 1}, world));
 }
 
 TEST(raycast, canSeeWall) {
-    Dungeon dungeon;
-    dungeon.assign({ 3, 3, 1 });
+    World world;
+    world.tiles().assign({ 3, 3, 1 }, Tile::EMPTY);
+    world.tiles()[{ 2, 1, 0 }] = Tile::WALL;
 
-    for (int x = 0; x < 3; ++x)
-        for (int y = 0; y < 3; ++y)
-            dungeon[{x, y, 0}] = Tile::EMPTY;
-    dungeon[{ 2, 1, 0 }] = Tile::WALL;
-
-    EXPECT_TRUE(canSee({ 0, 2, 0 }, { 2, 1, 0 }, dungeon));
+    EXPECT_TRUE(canSee({ 0, 2, 0 }, { 2, 1, 0 }, world));
 }

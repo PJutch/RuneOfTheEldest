@@ -45,10 +45,8 @@ namespace {
 	};
 
 	Array3D<PathNode> findPath(const World& world, sf::Vector3i from, sf::Vector3i to) {
-		const Dungeon& dungeon = world.dungeon();
-
 		Array3D<PathNode> buffer;
-		buffer.assign(dungeon.shape());
+		buffer.assign(world.tiles().shape(), {});
 
 		std::priority_queue<PathUpdate, std::vector<PathUpdate>, std::greater<>> queue;
 		queue.emplace(0, from, to, sf::Vector3i{0, 0, 0});
@@ -69,7 +67,7 @@ namespace {
 			for (sf::Vector2i direction : directions<int>) {
 				sf::Vector3i direction3D = make3D(direction, 0);
 				sf::Vector3i nextPos = update.position + direction3D;
-				if (dungeon.isValidPosition(nextPos) && isPassable(dungeon[nextPos]))
+				if (world.tiles().isValidPosition(nextPos) && isPassable(world.tiles()[nextPos]))
 					queue.emplace(update.distance + 1, nextPos, to, -direction3D);
 			}
 

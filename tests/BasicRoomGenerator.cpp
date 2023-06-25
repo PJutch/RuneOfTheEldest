@@ -15,8 +15,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "RoomGenerator/BasicRoomGenerator.hpp"
 
-#include "Dungeon.hpp"
-
 #include "geometry.hpp"
 
 #include <gtest/gtest.h>
@@ -25,81 +23,76 @@ bool isValid(sf::IntRect rect) noexcept {
     return rect.width > 0 && rect.height > 0;
 }
 
-testing::AssertionResult hasSingleRoom(const Dungeon& dungeon, int z, sf::IntRect area) {
+testing::AssertionResult hasSingleRoom(const World& world, int z, sf::IntRect area) {
     sf::IntRect room = shrinkBottomRight(area, {1, 1});
     
-    for (int x = 0; x < dungeon.shape().x; ++ x)
-        for (int y = 0; y < dungeon.shape().y; ++ y)
+    for (int x = 0; x < world.tiles().shape().x; ++x)
+        for (int y = 0; y < world.tiles().shape().y; ++ y)
             if (room.contains(x, y)) {
-                if (dungeon[{x, y, z}] != Tile::EMPTY)
+                if (world.tiles()[{x, y, z}] != Tile::EMPTY)
                     return testing::AssertionFailure()
                          << "tile at " << x << ", " << y 
                          << " should be empty but it is not";
             } else
-                if (dungeon[{x, y, z}] != Tile::WALL)
+                if (world.tiles()[{x, y, z}] != Tile::WALL)
                     return testing::AssertionFailure()
                          << "tile at " << x << ", " << y 
-                         << " should be unseen but it is not";
+                         << " should be wall but it is not";
     
     return testing::AssertionSuccess();
 }
 
 TEST(BasicRoomGenerator, generateRoom) {
-    Dungeon dungeon;
-    dungeon.assign({ 10, 7, 1 });
+    auto world = std::make_shared<World>();
+    world->tiles().assign({ 10, 7, 1 }, Tile::WALL);
 
     sf::IntRect room{3, 2, 6, 5};
-    BasicRoomGenerator generator;
-    generator.dungeon(dungeon);
+    BasicRoomGenerator generator{ world };
     generator(0, Area{ room });
 
-    EXPECT_TRUE(hasSingleRoom(dungeon, 0, room));
+    EXPECT_TRUE(hasSingleRoom(*world, 0, room));
 }
 
 TEST(BasicRoomGenerator, generateRoomNearEdge) {
-    Dungeon dungeon;
-    dungeon.assign({ 8, 7, 1 });
+    auto world = std::make_shared<World>();
+    world->tiles().assign({ 8, 7, 1 }, Tile::WALL);
 
     sf::IntRect room{1, 2, 7, 5};
-    BasicRoomGenerator generator;
-    generator.dungeon(dungeon);
+    BasicRoomGenerator generator{ world };
     generator(0, Area{ room });
 
-    EXPECT_TRUE(hasSingleRoom(dungeon, 0, room));
+    EXPECT_TRUE(hasSingleRoom(*world, 0, room));
 }
 
 TEST(BasicRoomGenerator, generateRoom3x3) {
-    Dungeon dungeon;
-    dungeon.assign({ 7, 7, 1 });
+    auto world = std::make_shared<World>();
+    world->tiles().assign({ 7, 7, 1 }, Tile::WALL);
 
     sf::IntRect room{3, 2, 3, 3};
-    BasicRoomGenerator generator;
-    generator.dungeon(dungeon);
+    BasicRoomGenerator generator{ world };
     generator(0, Area{ room });
 
-    EXPECT_TRUE(hasSingleRoom(dungeon, 0, room));
+    EXPECT_TRUE(hasSingleRoom(*world, 0, room));
 }
 
 TEST(BasicRoomGenerator, generateRoom2x2) {
-    Dungeon dungeon;
-    dungeon.assign({ 7, 7, 1 });
+    auto world = std::make_shared<World>();
+    world->tiles().assign({ 7, 7, 1 }, Tile::WALL);
 
     sf::IntRect room{3, 2, 2, 2};
-    BasicRoomGenerator generator;
-    generator.dungeon(dungeon);
+    BasicRoomGenerator generator{ world };
     generator(0, Area{ room });
 
-    EXPECT_TRUE(hasSingleRoom(dungeon, 0, room));
+    EXPECT_TRUE(hasSingleRoom(*world, 0, room));
 }
 
 TEST(BasicRoomGenerator, generateRoom1x1) {
-    Dungeon dungeon;
-    dungeon.assign({ 7, 7, 1 });
+    auto world = std::make_shared<World>();
+    world->tiles().assign({ 7, 7, 1 }, Tile::WALL);
 
     sf::IntRect room{3, 2, 1, 1};
-    BasicRoomGenerator generator;
-    generator.dungeon(dungeon);
+    BasicRoomGenerator generator{world};
     generator(0, Area{ room });
 
-    EXPECT_TRUE(hasSingleRoom(dungeon, 0, room));
+    EXPECT_TRUE(hasSingleRoom(*world, 0, room));
 }
