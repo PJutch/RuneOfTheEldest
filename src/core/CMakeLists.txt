@@ -17,4 +17,4 @@ add_library(core STATIC)
 
 target_sources(core PRIVATE AliveActor.cpp Goblin.cpp Player.cpp World.cpp)
 
-target_link_libraries(core PUBLIC dependencies util)
+target_link_libraries(core PUBLIC dependencies util render)

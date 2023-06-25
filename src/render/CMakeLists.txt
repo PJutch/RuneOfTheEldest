@@ -17,4 +17,4 @@ add_library(render STATIC)
 
 target_sources(render PRIVATE FreeCamera.cpp SwitchableCamera.cpp AssetManager.cpp Renderer.cpp PlayerMap.cpp)
 
-target_link_libraries(render PUBLIC dependencies)
+target_link_libraries(render PUBLIC dependencies util)
