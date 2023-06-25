@@ -19,14 +19,17 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Dungeon.hpp"
 #include "Actor.hpp"
 
+#include "random.hpp"
+
 #include <queue>
 
 /// Dungeons and all objects in it
 class World {
 public:
 	World() = default;
-	World(std::shared_ptr<Dungeon> newDungeon) :
-		dungeon_{ std::move(newDungeon) } {}
+	World(std::shared_ptr<Dungeon> newDungeon) : dungeon_{ std::move(newDungeon) } {}
+	World(std::shared_ptr<Dungeon> newDungeon, RandomEngine& randomEngine_) :
+		dungeon_{ std::move(newDungeon) }, randomEngine{ &randomEngine_ } {}
 
 	[[nodiscard]] Dungeon& dungeon() noexcept {
 		return *dungeon_;
@@ -68,9 +71,43 @@ public:
 	}
 
 	void makeSound(Sound sound);
+
+	/// @brief Random tile position
+	/// @details position distribution is uniform and independent for both dimensions
+	[[nodiscard]] sf::Vector3i randomPositionAt(int level) const {
+		return { std::uniform_int_distribution{ 0, dungeon().shape().x - 1}(*randomEngine),
+				 std::uniform_int_distribution{ 0, dungeon().shape().y - 1}(*randomEngine),
+				 level };
+	}
+
+	/// @brief 3D position of random tile satisfying pred
+	/// @details randomPosition(engine) distrbution filtered by pred(tile)
+	template <typename Pred>
+		requires std::convertible_to<std::invoke_result_t<Pred, Tile>, bool>
+	[[nodiscard]] sf::Vector3i randomPositionAt(int level, Pred&& pred) const {
+		return randomPositionAt(level, [&pred](sf::Vector3i pos, const World& world) {
+			return std::invoke(pred, world.dungeon()[pos]);
+		});
+	}
+
+	/// @brief Random tile position (3D) at given level satisfying pred
+	/// @details randomPosition(engine) distrbution filtered by pred(pos, *this)
+	template <typename Pred>
+		requires std::convertible_to<std::invoke_result_t<Pred, sf::Vector3i, const World&>, bool>
+	[[nodiscard]] sf::Vector3i randomPositionAt(int level, Pred&& pred) const {
+		sf::Vector3i pos;
+		do {
+			pos = randomPositionAt(level);
+		} while (!std::invoke(pred, pos, *this));
+		return pos;
+	}
+
+	void generateUpStairs();
 private:
 	std::shared_ptr<Dungeon> dungeon_ = nullptr;
 	std::vector<std::shared_ptr<Actor>> actors_;
+
+	RandomEngine* randomEngine = nullptr;
 
 	void pushActor() {
 		std::ranges::push_heap(actors_, std::greater<>{}, [](std::shared_ptr<Actor>& actor) {

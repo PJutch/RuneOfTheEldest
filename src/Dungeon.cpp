@@ -31,9 +31,3 @@ void Dungeon::addStairs(sf::Vector3i pos1, sf::Vector3i pos2) {
 	upStairs_.insert_or_assign(pos2, pos1);
 	(*this)[pos2] = Tile::UP_STAIRS;
 }
-
-void Dungeon::generateUpStairs() {
-	for (int z = 1; z < shape().z; ++z)
-		for (int i = 0; i < 3; ++i)
-			addStairs(randomPositionAt(z - 1, &isEmpty), randomPositionAt(z, &isEmpty));
-}

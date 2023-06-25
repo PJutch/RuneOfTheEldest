@@ -19,7 +19,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Tile.hpp"
 
 #include "Array3D.hpp"
-#include "random.hpp"
 #include "Map.hpp"
 #include "geometry.hpp"
 
@@ -30,9 +29,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 /// Dungeon consisting of multiple levels and stairs between them
 class Dungeon {
 public:
-	Dungeon() = default;
-	Dungeon(RandomEngine& randomEngine_) : randomEngine{ &randomEngine_ } {}
-
 	/// Checks if there are tiles with this z
 	[[nodiscard]] bool isValidZ(int z) const noexcept {
 		return tiles.isValidZ(z);
@@ -97,43 +93,10 @@ public:
 		return getOptional(downStairs_, position);
 	}
 
-	/// Generates stairs on all levels
-	void generateUpStairs();
-
 	/// @brief Create stairs between position1 and position2
 	/// @details Sets tiles and registers stairs in maps.
 	/// Up or down stairs are choosen automatically by z coordinate.
 	void addStairs(sf::Vector3i position1, sf::Vector3i position2);
-
-	/// @brief Random tile position
-	/// @details position distribution is uniform and independent for both dimensions
-	[[nodiscard]] sf::Vector3i randomPositionAt(int level) const {
-		return { std::uniform_int_distribution{ 0, shape().x - 1}(*randomEngine),
-				 std::uniform_int_distribution{ 0, shape().y - 1}(*randomEngine),
-		         level };
-	}
-
-	/// @brief 3D position of random tile satisfying pred
-	/// @details randomPosition(engine) distrbution filtered by pred(tile)
-	template <typename Pred>
-		requires std::convertible_to<std::invoke_result_t<Pred, Tile>, bool>
-	[[nodiscard]] sf::Vector3i randomPositionAt(int level, Pred&& pred) const {
-		return randomPositionAt(level, [&pred](sf::Vector3i pos, const Dungeon& dungeon) {
-			return std::invoke(pred, dungeon[pos]);
-		});
-	}
-
-	/// @brief Random tile position (3D) at given level satisfying pred
-	/// @details randomPosition(engine) distrbution filtered by pred(pos, *this)
-	template <typename Pred>
-		requires std::convertible_to<std::invoke_result_t<Pred, sf::Vector3i, const Dungeon&>, bool>
-	[[nodiscard]] sf::Vector3i randomPositionAt(int level, Pred&& pred) const {
-		sf::Vector3i pos;
-		do {
-			pos = randomPositionAt(level);
-		} while (!std::invoke(pred, pos, *this));
-		return pos;
-	}
 
 	/// Add bsp area. Used for debug area rendering
 	void addArea(sf::IntRect area, int level) {
@@ -151,8 +114,6 @@ private:
 	UnorderedMap<sf::Vector3i, sf::Vector3i> downStairs_;
 
 	std::vector<std::vector<sf::IntRect>> areas_;
-
-	RandomEngine* randomEngine = nullptr;
 };
 
 #endif

@@ -58,3 +58,9 @@ void World::makeSound(Sound sound) {
 	for (auto actor : actors())
 		actor->handleSound(sound);
 }
+
+void World::generateUpStairs() {
+	for (int z = 1; z < dungeon().shape().z; ++z)
+		for (int i = 0; i < 3; ++i)
+			dungeon().addStairs(randomPositionAt(z - 1, &isEmpty), randomPositionAt(z, &isEmpty));
+}
