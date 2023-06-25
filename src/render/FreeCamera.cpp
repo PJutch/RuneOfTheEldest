@@ -19,7 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "../util/geometry.hpp"
 
 namespace render {
-    FreeCamera::FreeCamera(std::shared_ptr<World> world_) : world{ std::move(world_) } {
+    FreeCamera::FreeCamera(std::shared_ptr<core::World> world_) : world{ std::move(world_) } {
         reset();
     }
 

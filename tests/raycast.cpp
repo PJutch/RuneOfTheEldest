@@ -18,14 +18,14 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <gtest/gtest.h>
 
 TEST(raycast, canSeeEmpty) {
-    World world;
+    core::World world;
     world.tiles().assign({ 3, 3, 1 }, Tile::EMPTY);
 
     EXPECT_TRUE(util::canSee({0, 2, 0}, {2, 1, 0}, world));
 }
 
 TEST(raycast, canSeeAdjenct) {
-    World world;
+    core::World world;
     world.tiles().assign({ 2, 2, 1 }, Tile::WALL);
 
     world.tiles()[{0, 1, 0}] = Tile::EMPTY;
@@ -35,7 +35,7 @@ TEST(raycast, canSeeAdjenct) {
 }
 
 TEST(raycast, canSeeAdjenctDiagonal) {
-    World world;
+    core::World world;
     world.tiles().assign({ 2, 2, 1 }, Tile::WALL);
 
     world.tiles()[{0, 1, 0}] = Tile::EMPTY;
@@ -45,7 +45,7 @@ TEST(raycast, canSeeAdjenctDiagonal) {
 }
 
 TEST(raycast, canSeeBlockByWall) {
-    World world;
+    core::World world;
     world.tiles().assign({ 3, 3, 1 }, Tile::WALL);
 
     world.tiles()[{0, 2, 0}] = Tile::EMPTY;
@@ -55,19 +55,19 @@ TEST(raycast, canSeeBlockByWall) {
 }
 
 TEST(raycast, canSeeBlockByFloor) {
-    World world;
+    core::World world;
     world.tiles().assign({ 2, 2, 2 }, Tile::EMPTY);
 
     EXPECT_FALSE(util::canSee({ 0, 1, 0 }, { 1, 1, 1 }, world));
 }
 
 TEST(raycast, canSeeSelf) {
-    World world;
+    core::World world;
     EXPECT_TRUE(util::canSee({1, 1, 1}, {1, 1, 1}, world));
 }
 
 TEST(raycast, canSeeWall) {
-    World world;
+    core::World world;
     world.tiles().assign({ 3, 3, 1 }, Tile::EMPTY);
     world.tiles()[{ 2, 1, 0 }] = Tile::WALL;
 

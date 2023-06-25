@@ -15,8 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Renderer.hpp"
 
-#include "../Player.hpp"
-#include "../Goblin.hpp"
+#include "../core/Player.hpp"
+#include "../core/Goblin.hpp"
 
 #include "../util/raycast.hpp"
 
@@ -24,8 +24,8 @@ namespace render {
     Renderer::Renderer(std::shared_ptr<Camera> camera,
         std::shared_ptr<PlayerMap> playerMap_,
         std::shared_ptr<sf::RenderWindow> window_,
-        std::shared_ptr<World> world_,
-        std::shared_ptr<Player> player_,
+        std::shared_ptr<core::World> world_,
+        std::shared_ptr<core::Player> player_,
         std::unique_ptr<AssetManager> assets_) :
         camera{ std::move(camera) }, assets{ std::move(assets_) }, playerMap{ std::move(playerMap_) },
         world{ std::move(world_) }, player{ player_ },
@@ -73,12 +73,12 @@ namespace render {
         window->draw(rectShape);
     }
 
-    void Renderer::draw(const Player::DrawMemento& player) {
+    void Renderer::draw(const core::Player::DrawMemento& player) {
         drawSprite(player.position(), assets->playerTexture());
         drawHpBar(player.position(), player.hp(), player.maxHp());
     }
 
-    void Renderer::draw(const Goblin::DrawMemento& goblin) {
+    void Renderer::draw(const core::Goblin::DrawMemento& goblin) {
         double colorMod = 1.0;
         if (!util::canSee(player->position(), goblin.position(), *world))
             colorMod = 0.5;

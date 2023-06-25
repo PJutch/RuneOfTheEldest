@@ -15,15 +15,15 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "render/PlayerMap.hpp"
 
-#include "World.hpp"
-#include "Player.hpp"
+#include "core/World.hpp"
+#include "core/Player.hpp"
 
 #include <gtest/gtest.h>
 
 #include <memory>
 
 namespace { 
-    class TestActor : public Actor {
+    class TestActor : public core::Actor {
     public:
         TestActor() = default;
         TestActor(sf::Vector3i newPosition) noexcept : position_{ newPosition }{}
@@ -81,17 +81,17 @@ namespace {
 
         void handleSwap() noexcept final {}
 
-        void handleSound(Sound sound) noexcept final {}
+        void handleSound(core::Sound sound) noexcept final {}
     private:
         sf::Vector3i position_{ 0, 0, 0 };
     };
 }
 
 TEST(PlayerMap, tileVisibilityEmpty) {
-    auto world = std::make_shared<World>();
+    auto world = std::make_shared<core::World>();
     world->tiles().assign({ 3, 3, 1 }, Tile::EMPTY);
 
-    auto player = std::make_shared<Player>();
+    auto player = std::make_shared<core::Player>();
     player->position({ 0, 2, 0 });
 
     render::PlayerMap playerMap{ std::move(player), std::move(world) };
@@ -104,8 +104,8 @@ TEST(PlayerMap, tileVisibilityEmpty) {
 }
 
 namespace {
-    std::shared_ptr<World> createWallWorld() {
-        auto world = std::make_shared<World>();
+    std::shared_ptr<core::World> createWallWorld() {
+        auto world = std::make_shared<core::World>();
         world->tiles().assign({ 3, 3, 1 }, Tile::EMPTY);
 
         for (int x = 0; x < 3; ++x)
@@ -116,7 +116,7 @@ namespace {
 }
 
 TEST(PlayerMap, tileVisibilityWall) {
-    auto player = std::make_shared<Player>();
+    auto player = std::make_shared<core::Player>();
     player->position({ 1, 0, 0 });
 
     render::PlayerMap playerMap{ std::move(player), createWallWorld() };
@@ -132,7 +132,7 @@ TEST(PlayerMap, tileVisibilityWall) {
 }
 
 TEST(PlayerMap, tileMemorization) {
-    auto player = std::make_shared<Player>();
+    auto player = std::make_shared<core::Player>();
 
     render::PlayerMap playerMap{ player, createWallWorld() };
     playerMap.onGenerate();
@@ -151,7 +151,7 @@ TEST(PlayerMap, tileMemorization) {
 }
 
 TEST(PlayerMap, seenActors) {
-    auto player = std::make_shared<Player>();
+    auto player = std::make_shared<core::Player>();
     player->position({ 1, 0, 0 });
 
     auto world = createWallWorld();
@@ -167,7 +167,7 @@ TEST(PlayerMap, seenActors) {
 }
 
 TEST(PlayerMap, seenActorsMemorization) {
-    auto player = std::make_shared<Player>();
+    auto player = std::make_shared<core::Player>();
 
     auto world = createWallWorld();
     auto actor = std::make_shared<TestActor>(sf::Vector3i{ 2, 0, 0 });

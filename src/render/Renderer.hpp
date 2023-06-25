@@ -21,10 +21,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "AssetManager.hpp"
 #include "PlayerMap.hpp"
 
-#include "../World.hpp"
-#include "../AiState.hpp"
-#include "../Player.hpp"
-#include "../Goblin.hpp"
+#include "../core/World.hpp"
+#include "../core/AiState.hpp"
+#include "../core/Player.hpp"
+#include "../core/Goblin.hpp"
 
 #include "../util/geometry.hpp"
 #include "../util/log.hpp"
@@ -45,8 +45,8 @@ namespace render {
         Renderer(std::shared_ptr<Camera> camera,
             std::shared_ptr<PlayerMap> playerMap,
             std::shared_ptr<sf::RenderWindow> window,
-            std::shared_ptr<World> world,
-            std::shared_ptr<Player> player,
+            std::shared_ptr<core::World> world,
+            std::shared_ptr<core::Player> player,
             std::unique_ptr<AssetManager> assets);
 
         /// If true bsp areas created by dungeon generation are rendered
@@ -61,10 +61,10 @@ namespace render {
         void draw();
 
         /// Renders player
-        void draw(const Player::DrawMemento& player);
+        void draw(const core::Player::DrawMemento& player);
 
         /// Renders goblin
-        void draw(const Goblin::DrawMemento& goblin);
+        void draw(const core::Goblin::DrawMemento& goblin);
 
         /// Renders "You died screen"
         void drawDeathScreen();
@@ -75,8 +75,8 @@ namespace render {
         std::unique_ptr<AssetManager> assets;
         std::shared_ptr<PlayerMap> playerMap;
 
-        std::shared_ptr<World> world;
-        std::shared_ptr<Player> player;
+        std::shared_ptr<core::World> world;
+        std::shared_ptr<core::Player> player;
 
         std::shared_ptr<sf::RenderWindow> window;
 

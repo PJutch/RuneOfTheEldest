@@ -15,13 +15,13 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Game.hpp"
 
-#include "Player.hpp"
-#include "Goblin.hpp"
+#include "core/Player.hpp"
+#include "core/Goblin.hpp"
 
 #include "util/Keyboard.hpp"
 
-Game::Game(std::shared_ptr<World> newWorld,
-           std::shared_ptr<Player> player_,
+Game::Game(std::shared_ptr<core::World> newWorld,
+           std::shared_ptr<core::Player> player_,
            std::unique_ptr<generation::DungeonGenerator> newDungeonGenerator,
            std::shared_ptr<sf::RenderWindow> window_,
            std::shared_ptr<render::Camera> camera_,
@@ -95,7 +95,7 @@ void Game::generate() {
     world->generateStairs();
 
     generationLogger->info("Spawning goblins...");
-    Goblin::spawnAll(world, player, *randomEngine);
+    core::Goblin::spawnAll(world, player, *randomEngine);
 
     generationLogger->info("Spawning player...");
     player->spawn();

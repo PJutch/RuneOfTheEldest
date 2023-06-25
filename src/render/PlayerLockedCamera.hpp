@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Camera.hpp"
 
-#include "../Player.hpp"
+#include "../core/Player.hpp"
 
 #include <memory>
 
@@ -26,7 +26,7 @@ namespace render {
     /// Camera always centered on player
     class PlayerLockedCamera : public Camera {
     public:
-        PlayerLockedCamera(std::shared_ptr<Player> player_) :
+        PlayerLockedCamera(std::shared_ptr<core::Player> player_) :
             player{ std::move(player_) } {}
 
         /// Uses player position
@@ -40,7 +40,7 @@ namespace render {
         /// Ignore reset
         void reset() final {}
     private:
-        std::shared_ptr<Player> player;
+        std::shared_ptr<core::Player> player;
     };
 }
 

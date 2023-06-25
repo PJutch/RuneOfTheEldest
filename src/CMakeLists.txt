@@ -13,17 +13,16 @@
 # You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 # If not, see <https://www.gnu.org/licenses/>.
 
-add_library(sources STATIC)
-
-target_sources(sources PRIVATE Game.cpp Player.cpp Goblin.cpp AliveActor.cpp World.cpp)
+add_library(sources INTERFACE)
 
 add_subdirectory(generation)
-target_link_libraries(sources PRIVATE generation)
+target_link_libraries(sources INTERFACE generation)
 
 add_subdirectory(render)
-target_link_libraries(sources PRIVATE render)
+target_link_libraries(sources INTERFACE render)
 
 add_subdirectory(util)
-target_link_libraries(sources PRIVATE util)
+target_link_libraries(sources INTERFACE util)
 
-target_link_libraries(sources PUBLIC dependencies)
+add_subdirectory(core)
+target_link_libraries(sources INTERFACE core)

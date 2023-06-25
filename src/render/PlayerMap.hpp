@@ -16,10 +16,12 @@ If not, see < https://www.gnu.org/licenses/>. */
 #ifndef SEEN_TILES_HPP_
 #define SEEN_TILES_HPP_
 
-class Player;
-class World;
+namespace core {
+	class Player;
+	class World;
+}
 
-#include "../Actor.hpp"
+#include "../core/Actor.hpp"
 
 #include "../util/Array3D.hpp"
 
@@ -32,7 +34,7 @@ class World;
 namespace render {
 	class PlayerMap {
 	public:
-		PlayerMap(std::shared_ptr<Player> player, std::shared_ptr<World> world);
+		PlayerMap(std::shared_ptr<core::Player> player, std::shared_ptr<core::World> world);
 
 		enum class TileState {
 			UNSEEN,
@@ -44,7 +46,7 @@ namespace render {
 			return tileStates[position];
 		}
 
-		[[nodiscard]] std::span<const std::unique_ptr<Actor::DrawMemento>> seenActors() const noexcept {
+		[[nodiscard]] std::span<const std::unique_ptr<core::Actor::DrawMemento>> seenActors() const noexcept {
 			return seenActors_;
 		}
 
@@ -57,10 +59,10 @@ namespace render {
 	private:
 		util::Array3D<TileState> tileStates;
 
-		std::vector<std::unique_ptr<Actor::DrawMemento>> seenActors_;
+		std::vector<std::unique_ptr<core::Actor::DrawMemento>> seenActors_;
 
-		std::shared_ptr<Player> player;
-		std::shared_ptr<World> world;
+		std::shared_ptr<core::Player> player;
+		std::shared_ptr<core::World> world;
 
 		void updateTiles();
 		void updateActors();

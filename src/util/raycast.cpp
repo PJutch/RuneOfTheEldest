@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "geometry.hpp"
 
 namespace util {
-	bool canSee(sf::Vector3i pos1, sf::Vector3i pos2, const World& world) {
+	bool canSee(sf::Vector3i pos1, sf::Vector3i pos2, const core::World& world) {
 		if (pos1 == pos2)
 			return true;
 

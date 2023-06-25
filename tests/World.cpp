@@ -13,13 +13,13 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#include "World.hpp"
-#include "Actor.hpp"
+#include "core/World.hpp"
+#include "core/Actor.hpp"
 
 #include <gtest/gtest.h>
 
 namespace {
-	class TestActor : public Actor {
+	class TestActor : public core::Actor {
 	public:
 		TestActor() = default;
 		TestActor(sf::Vector3i newPosition, int newId = -1) noexcept :
@@ -77,11 +77,11 @@ namespace {
 
 		void handleSwap() noexcept final {}
 
-		void handleSound(Sound sound) noexcept final {
+		void handleSound(core::Sound sound) noexcept final {
 			lastSound_ = sound;
 		}
 
-		Sound lastSound() const noexcept {
+		core::Sound lastSound() const noexcept {
 			return lastSound_;
 		}
 	private:
@@ -97,12 +97,12 @@ namespace {
 		int dieAfter = std::numeric_limits<int>::max();
 		bool interruptOnDelete = false;
 
-		Sound lastSound_{};
+		core::Sound lastSound_{};
 	};
 }
 
 TEST(World, emptyActors) {
-	World world;
+	core::World world;
 	EXPECT_TRUE(world.actors().empty());
 }
 
@@ -110,7 +110,7 @@ TEST(World, addActor) {
 	auto actor1 = std::make_shared<TestActor>(sf::Vector3i{ 0, 0, 0 });
 	auto actor2 = std::make_shared<TestActor>(sf::Vector3i{ 2, 3, 4 });
 
-	World world;
+	core::World world;
 	world.addActor(actor1);
 	world.addActor(actor2);
 
@@ -123,7 +123,7 @@ TEST(World, actorAt) {
 	auto actor1 = std::make_shared<TestActor>(sf::Vector3i{ 0, 0, 0 });
 	auto actor2 = std::make_shared<TestActor>(sf::Vector3i{ 2, 3, 4 });
 
-	World world;
+	core::World world;
 	world.addActor(actor1);
 	world.addActor(actor2);
 
@@ -131,7 +131,7 @@ TEST(World, actorAt) {
 }
 
 TEST(World, actorAtNull) {
-	World world;
+	core::World world;
 	world.addActor(std::make_shared<TestActor>(sf::Vector3i{ 0, 0, 0 }));
 	world.addActor(std::make_shared<TestActor>(sf::Vector3i{ 2, 3, 4 }));
 
@@ -141,7 +141,7 @@ TEST(World, actorAtNull) {
 TEST(World, update) {
 	std::vector<int> log;
 
-	World world;
+	core::World world;
 	world.addActor(std::make_shared<TestActor>(0, 2, 0,  &log));
 	world.addActor(std::make_shared<TestActor>(7, 2, 1, &log, 7));
 
@@ -158,7 +158,7 @@ TEST(World, update) {
 TEST(World, updateMany) {
 	std::vector<int> log;
 
-	World world;
+	core::World world;
 	world.addActor(std::make_shared<TestActor>(0, 2, 0, &log));
 	world.addActor(std::make_shared<TestActor>(0, 2, 1, &log));
 	world.addActor(std::make_shared<TestActor>(0, 2, 2, &log));
@@ -177,7 +177,7 @@ TEST(World, updateMany) {
 
 TEST(World, updateEmpty) {
 	std::vector<int> log;
-	World world;
+	core::World world;
 	world.update();
 	ASSERT_EQ(log.size(), 0);
 }
@@ -185,7 +185,7 @@ TEST(World, updateEmpty) {
 TEST(World, updateDeath) {
 	std::vector<int> log;
 
-	World world;
+	core::World world;
 	world.addActor(std::make_shared<TestActor>(0, 2, 0, &log));
 	world.addActor(std::make_shared<TestActor>(0, 2, 1, &log, std::numeric_limits<int>::max(), 3));
 	world.addActor(std::make_shared<TestActor>(7, 2, 4, &log, 7));
@@ -201,7 +201,7 @@ TEST(World, updateDeath) {
 TEST(World, updateDeathInterrupt) {
 	std::vector<int> log;
 
-	World world;
+	core::World world;
 	world.addActor(std::make_shared<TestActor>(0, 2, 0, &log));
 	world.addActor(std::make_shared<TestActor>(0, 2, 1, &log, std::numeric_limits<int>::max(), 3, true));
 
@@ -211,7 +211,7 @@ TEST(World, updateDeathInterrupt) {
 }
 
 TEST(World, isFree) {
-	World world;
+	core::World world;
 	world.tiles().assign({ 2, 2, 1 }, Tile::WALL);
 
 	world.tiles()[{ 0, 0, 0 }] = Tile::EMPTY;
@@ -225,13 +225,13 @@ TEST(World, isFree) {
 }
 
 TEST(World, makeSound) {
-	World world;
+	core::World world;
 	auto actor1 = std::make_shared<TestActor>();
 	auto actor2 = std::make_shared<TestActor>();
 	world.addActor(actor1);
 	world.addActor(actor2);
 
-	Sound sound{ Sound::Type::ATTACK, true, {1, 0, 1} };
+	core::Sound sound{ core::Sound::Type::ATTACK, true, {1, 0, 1} };
 	world.makeSound(sound);
 
 	EXPECT_EQ(actor1->lastSound(), sound);

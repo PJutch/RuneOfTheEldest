@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <gtest/gtest.h>
 
 TEST(pathfinding, nextStepInPlace) {
-    World world;
+    core::World world;
     world.tiles().assign({ 3, 3, 1 }, Tile::WALL);
     world.tiles()[{0, 1, 0}] = Tile::EMPTY;
 
@@ -26,14 +26,14 @@ TEST(pathfinding, nextStepInPlace) {
 }
 
 TEST(pathfinding, nextStepFree) {
-    World world;
+    core::World world;
     world.tiles().assign({ 3, 3, 1 }, Tile::EMPTY);
 
     EXPECT_EQ(util::nextStep(world, { 0, 2, 0 }, { 2, 0, 0 }), (sf::Vector3i{1, -1, 0}));
 }
 
 TEST(pathfinding, nextStepTurn) {
-    World world;
+    core::World world;
     world.tiles().assign({ 3, 3, 1 }, Tile::EMPTY);
     world.tiles()[{0, 0, 0}] = Tile::WALL;
     world.tiles()[{0, 1, 0}] = Tile::WALL;
@@ -43,7 +43,7 @@ TEST(pathfinding, nextStepTurn) {
 }
 
 TEST(pathfinding, nextStepDownStairs) {
-    World world;
+    core::World world;
     world.tiles().assign({ 2, 2, 2 }, Tile::WALL);
     world.tiles()[{1, 1, 1}] = Tile::EMPTY;
     world.addStairs({0, 1, 0}, {1, 0, 1});
@@ -52,7 +52,7 @@ TEST(pathfinding, nextStepDownStairs) {
 }
 
 TEST(pathfinding, nextStepUpStairs) {
-    World world;
+    core::World world;
     world.tiles().assign({ 2, 2, 2 }, Tile::WALL);
     world.tiles()[{1, 1, 0}] = Tile::EMPTY;
     world.addStairs({ 0, 1, 1 }, { 1, 0, 0 });

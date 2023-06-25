@@ -15,7 +15,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "pathfinding.hpp"
 
-#include "../World.hpp"
+#include "../core/World.hpp"
 
 #include "Array3D.hpp"
 #include "geometry.hpp"
@@ -44,7 +44,7 @@ namespace {
 		}
 	};
 
-	util::Array3D<PathNode> findPath(const World& world, sf::Vector3i from, sf::Vector3i to) {
+	util::Array3D<PathNode> findPath(const core::World& world, sf::Vector3i from, sf::Vector3i to) {
 		util::Array3D<PathNode> buffer;
 		buffer.assign(world.tiles().shape(), {});
 
@@ -83,7 +83,7 @@ namespace {
 }
 
 namespace util {
-	sf::Vector3i nextStep(const World& world, sf::Vector3i position, sf::Vector3i target) {
+	sf::Vector3i nextStep(const core::World& world, sf::Vector3i position, sf::Vector3i target) {
 		util::Array3D<PathNode> path = findPath(world, position, target);
 
 		sf::Vector3i current = target;

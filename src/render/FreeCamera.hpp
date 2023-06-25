@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Camera.hpp"
 
-#include "../World.hpp"
+#include "../core/World.hpp"
 
 #include <memory>
 
@@ -26,7 +26,7 @@ namespace render {
     /// Camera controlled by player
     class FreeCamera : public Camera {
     public:
-        FreeCamera(std::shared_ptr<World> world);
+        FreeCamera(std::shared_ptr<core::World> world);
 
         [[nodiscard]] Position position() const noexcept final {
             return position_;
@@ -55,7 +55,7 @@ namespace render {
     private:
         Position position_;
 
-        std::shared_ptr<World> world;
+        std::shared_ptr<core::World> world;
 
         /// Moves to (x, y) + offset at current level
         void move(sf::Vector2f offset) noexcept {

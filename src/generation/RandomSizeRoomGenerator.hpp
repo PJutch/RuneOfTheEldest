@@ -19,7 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "RoomGenerator.hpp"
 #include "BasicRoomGenerator.hpp"
 
-#include "../World.hpp"
+#include "../core/World.hpp"
 
 #include "../util/random.hpp"
 
@@ -32,7 +32,7 @@ namespace generation {
     ///       \n Passages are grid aligned and turn <= 2 times
     class RandomSizeRoomGenerator : public RoomGenerator {
     public:
-        RandomSizeRoomGenerator(BasicRoomGenerator generator_, std::shared_ptr<World> world, util::RandomEngine& randomEngine_) :
+        RandomSizeRoomGenerator(BasicRoomGenerator generator_, std::shared_ptr<core::World> world, util::RandomEngine& randomEngine_) :
             generator{ std::move(generator_) }, world{ std::move(world) }, randomEngine{ &randomEngine_ } {}
 
         void operator() (int z, Area area) final;
@@ -49,7 +49,7 @@ namespace generation {
 
         BasicRoomGenerator generator;
 
-        std::shared_ptr<World> world = nullptr;
+        std::shared_ptr<core::World> world = nullptr;
         util::RandomEngine* randomEngine = nullptr;
 
         [[nodiscard]] Area randomRoomIn(const Area& area);

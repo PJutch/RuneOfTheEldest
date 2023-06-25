@@ -18,17 +18,19 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <SFML/System.hpp>
 
-struct Sound {
-	enum class Type {
-		WALK,
-		ATTACK,
+namespace core {
+	struct Sound {
+		enum class Type {
+			WALK,
+			ATTACK,
+		};
+
+		Type type;
+		bool isSourceOnPlayerSide;
+		sf::Vector3i position;
+
+		friend bool operator == (const Sound&, const Sound&) = default;
 	};
-
-	Type type;
-	bool isSourceOnPlayerSide;
-	sf::Vector3i position;
-
-	friend bool operator == (const Sound&, const Sound&) = default;
-};
+}
 
 #endif

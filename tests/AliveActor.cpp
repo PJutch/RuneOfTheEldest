@@ -13,17 +13,17 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#include "AliveActor.hpp"
+#include "core/AliveActor.hpp"
 
 #include <gtest/gtest.h>
 
-class TestAliveActor : public AliveActor {
+class TestAliveActor : public core::AliveActor {
 public:
-	TestAliveActor(double newMaxHp, double regen_, sf::Vector3i newPosition, std::shared_ptr<World> newWorld = nullptr) :
+	TestAliveActor(double newMaxHp, double regen_, sf::Vector3i newPosition, std::shared_ptr<core::World> newWorld = nullptr) :
 		AliveActor{ newMaxHp, regen_, newPosition, std::move(newWorld), nullptr } {}
-	TestAliveActor(double newMaxHp, double regen_, std::shared_ptr<World> newWorld = nullptr) :
+	TestAliveActor(double newMaxHp, double regen_, std::shared_ptr<core::World> newWorld = nullptr) :
 		AliveActor{ newMaxHp, regen_, std::move(newWorld), nullptr } {}
-	TestAliveActor(sf::Vector3i newPosition, std::shared_ptr<World> newWorld = nullptr) :
+	TestAliveActor(sf::Vector3i newPosition, std::shared_ptr<core::World> newWorld = nullptr) :
 		AliveActor{ 1.0, 0.0, newPosition, std::move(newWorld), nullptr } {}
 
 	void nextTurn(int newNextTurn) noexcept {
@@ -92,7 +92,7 @@ public:
 		return hadSwapped_;
 	}
 
-	void handleSound(Sound sound) noexcept final {}
+	void handleSound(core::Sound sound) noexcept final {}
 private:
 	bool wantsSwap_ = true;
 	bool hadSwapped_ = false;
@@ -143,7 +143,7 @@ TEST(AliveActor, regenLimit) {
 }
 
 auto createAliveActorTryMoveToTest() {
-	auto world = std::make_shared<World>();
+	auto world = std::make_shared<core::World>();
 	world->tiles().assign({ 3, 3, 1 }, Tile::EMPTY);
 
 	world->tiles()[{ 1, 0, 0 }] = Tile::WALL;

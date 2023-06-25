@@ -20,7 +20,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace generation {
     DungeonGenerator::DungeonGenerator(std::unique_ptr<RoomGenerator> newRoomGenerator,
-        std::shared_ptr<World> world_,
+        std::shared_ptr <core::World> world_,
         util::RandomEngine& randomEngine_) :
         roomGenerator_{ std::move(newRoomGenerator) }, world{ std::move(world_) }, randomEngine{ &randomEngine_ } {}
 

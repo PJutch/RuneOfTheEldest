@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "RoomGenerator.hpp"
 
-#include "../World.hpp"
+#include "../core/World.hpp"
 
 #include <memory>
 
@@ -28,7 +28,7 @@ namespace generation {
     ///       \n Generates Tile::EMPTY for passages in right and bottom sides
     class BasicRoomGenerator : public RoomGenerator {
     public:
-        BasicRoomGenerator(std::shared_ptr<World> world) : world{ std::move(world) } {}
+        BasicRoomGenerator(std::shared_ptr<core::World> world) : world{ std::move(world) } {}
 
         void operator() (int z, Area area) final;
 
@@ -40,7 +40,7 @@ namespace generation {
         }
     private:
         bool debugTiles_ = false;
-        std::shared_ptr<World> world = nullptr;
+        std::shared_ptr<core::World> world = nullptr;
     };
 }
 

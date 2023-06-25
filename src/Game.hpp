@@ -31,8 +31,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 /// Integrates all subsystems
 class Game {
 public:
-    Game(std::shared_ptr<World> world,
-         std::shared_ptr<Player> player,
+    Game(std::shared_ptr<core::World> world,
+         std::shared_ptr<core::Player> player,
          std::unique_ptr<generation::DungeonGenerator> dungeonGenerator,
          std::shared_ptr<sf::RenderWindow> window,
          std::shared_ptr<render::Camera> camera,
@@ -60,8 +60,8 @@ public:
     /// Generates world and runs game loop until exit
     void run();
 private:
-    std::shared_ptr<World> world;
-    std::shared_ptr<Player> player;
+    std::shared_ptr<core::World> world;
+    std::shared_ptr<core::Player> player;
 
     std::unique_ptr<generation::DungeonGenerator> dungeonGenerator_;
 
