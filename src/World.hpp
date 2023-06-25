@@ -22,7 +22,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <queue>
 
 /// Dungeons and all objects in it
-class World : public std::enable_shared_from_this<World> {
+class World {
 public:
 	World() = default;
 	World(std::shared_ptr<Dungeon> newDungeon) :
