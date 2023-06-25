@@ -15,11 +15,11 @@
 
 add_library(sources STATIC)
 
-target_sources(sources PRIVATE Game.cpp  Renderer.cpp Area.cpp DungeonGenerator.cpp Player.cpp AssetManager.cpp 
-                                Goblin.cpp AliveActor.cpp World.cpp pathfinding.cpp raycast.cpp "PlayerMap.cpp")
+target_sources(sources PRIVATE Game.cpp  Renderer.cpp Player.cpp AssetManager.cpp 
+                               Goblin.cpp AliveActor.cpp World.cpp pathfinding.cpp raycast.cpp PlayerMap.cpp)
 
-add_subdirectory(RoomGenerator)
-target_link_libraries(sources PRIVATE RoomGenerator)
+add_subdirectory(generation)
+target_link_libraries(sources PRIVATE generation)
 
 add_subdirectory(Camera)
 target_link_libraries(sources PRIVATE Camera)

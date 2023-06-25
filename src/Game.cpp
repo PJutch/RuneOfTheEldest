@@ -22,7 +22,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 Game::Game(std::shared_ptr<World> newWorld,
            std::shared_ptr<Player> player_,
-           std::unique_ptr<DungeonGenerator> newDungeonGenerator,
+           std::unique_ptr<generation::DungeonGenerator> newDungeonGenerator,
            std::shared_ptr<sf::RenderWindow> window_,
            std::shared_ptr<Camera> camera_,
            std::shared_ptr<PlayerMap> playerMap_,

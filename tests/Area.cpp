@@ -13,22 +13,22 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 If not, see <https://www.gnu.org/licenses/>. */
 
-#include "Area.hpp"
+#include "generation/Area.hpp"
 
 #include <gtest/gtest.h>
 
 TEST(Area, right) {
-    int right = Area{{2, 3, 7, 4}}.right();
+    int right = generation::Area{{2, 3, 7, 4}}.right();
     EXPECT_EQ(right, 9);
 }
 
 TEST(Area, bottom) {
-    int bottom = Area{{2, 3, 7, 4}}.bottom();
+    int bottom = generation::Area{{2, 3, 7, 4}}.bottom();
     EXPECT_EQ(bottom, 7);
 }
 
 TEST(Area, splitX) {
-    auto [area1, area2] = Area{{1, 2, 5, 3}}.splitX(3);
+    auto [area1, area2] = generation::Area{{1, 2, 5, 3}}.splitX(3);
 
     EXPECT_EQ(area1.left(), 1);
     EXPECT_EQ(area1.top(), 2);
@@ -42,7 +42,7 @@ TEST(Area, splitX) {
 }
 
 TEST(Area, splitY) {
-    auto [area1, area2] = Area{{1, 2, 5, 3}}.splitY(3);
+    auto [area1, area2] = generation::Area{{1, 2, 5, 3}}.splitY(3);
 
     EXPECT_EQ(area1.left(), 1);
     EXPECT_EQ(area1.top(), 2);
@@ -56,7 +56,7 @@ TEST(Area, splitY) {
 }
 
 TEST(Area, splitXHorizontalPassages) {
-    Area area{{1, 2, 5, 3}};
+    generation::Area area{{1, 2, 5, 3}};
     area.addLeftPassage(3);
     area.addRightPassage(4);
 
@@ -72,7 +72,7 @@ TEST(Area, splitXHorizontalPassages) {
 }
 
 TEST(Area, splitXVerticalPassages) {
-    Area area{{1, 2, 5, 3}};
+    generation::Area area{{1, 2, 5, 3}};
     area.addTopPassage(2);
     area.addTopPassage(5);
     area.addBottomPassage(2);
@@ -92,7 +92,7 @@ TEST(Area, splitXVerticalPassages) {
 }
 
 TEST(Area, splitYHorizontalPassages) {
-    Area area{{1, 2, 5, 3}};
+    generation::Area area{{1, 2, 5, 3}};
     area.addLeftPassage(3);
     area.addLeftPassage(6);
     area.addRightPassage(4);
@@ -112,7 +112,7 @@ TEST(Area, splitYHorizontalPassages) {
 }
 
 TEST(Area, splitYVerticalPassages) {
-    Area area{{1, 2, 3, 5}};
+    generation::Area area{{1, 2, 3, 5}};
     area.addTopPassage(2);
     area.addBottomPassage(3);
 

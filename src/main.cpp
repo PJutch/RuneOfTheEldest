@@ -14,7 +14,7 @@ You should have received a copy of the GNU General Public License along with the
 If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Game.hpp"
-#include "RoomGenerator/RandomSizeRoomGenerator.hpp"
+#include "generation/RandomSizeRoomGenerator.hpp"
 #include "Camera/FreeCamera.hpp"
 #include "Camera/PlayerLockedCamera.hpp"
 #include "Camera/SwitchableCamera.hpp"
@@ -62,7 +62,7 @@ int main() {
             boost::di::bind<sf::VideoMode>.to(videoMode),
             boost::di::bind<sf::RenderWindow>.to(renderWindow),
             boost::di::bind<RandomEngine>.to(randomEngine),
-            boost::di::bind<RoomGenerator>.to<RandomSizeRoomGenerator>(),
+            boost::di::bind<generation::RoomGenerator>.to<generation::RandomSizeRoomGenerator>(),
             boost::di::bind<Camera*[]>.to<PlayerLockedCamera, FreeCamera>(),
             boost::di::bind<Camera>.to<SwitchableCamera>()
         );
@@ -70,7 +70,7 @@ int main() {
 
         game.dungeonGenerator().splitChance(0.9);
         game.dungeonGenerator().minSize(5);
-        // game..world()dungeonGenerator().roomGenerator().debugTiles();
+        // game.dungeonGenerator().roomGenerator().debugTiles();
         // game.renderer().renderAreas();
 
         logger->info("Loading complete");

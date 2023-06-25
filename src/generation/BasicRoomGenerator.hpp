@@ -22,24 +22,26 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <memory>
 
-/// @brief Generates room in the area
-/// @details Room occupies all area except right and bottom sides
-///       \n Generates Tile::EMPTY for passages in right and bottom sides
-class BasicRoomGenerator : public RoomGenerator {
-public:
-    BasicRoomGenerator(std::shared_ptr<World> world) : world{ std::move(world) } {}
+namespace generation {
+    /// @brief Generates room in the area
+    /// @details Room occupies all area except right and bottom sides
+    ///       \n Generates Tile::EMPTY for passages in right and bottom sides
+    class BasicRoomGenerator : public RoomGenerator {
+    public:
+        BasicRoomGenerator(std::shared_ptr<World> world) : world{ std::move(world) } {}
 
-    void operator() (int z, Area area) final;
+        void operator() (int z, Area area) final;
 
-    /// @brief If true generates special colored tiles instead of Tile::EMPTY
-    /// @details Generates Tile::ROOM in main room
-    ///       \n Generates Tile::ROOM_ENTRANCE for passage entrance
-    void debugTiles(bool newDebugTiles = true) noexcept final {
-        debugTiles_ = newDebugTiles;
-    }
-private:
-    bool debugTiles_ = false;
-    std::shared_ptr<World> world = nullptr;
-};
+        /// @brief If true generates special colored tiles instead of Tile::EMPTY
+        /// @details Generates Tile::ROOM in main room
+        ///       \n Generates Tile::ROOM_ENTRANCE for passage entrance
+        void debugTiles(bool newDebugTiles = true) noexcept final {
+            debugTiles_ = newDebugTiles;
+        }
+    private:
+        bool debugTiles_ = false;
+        std::shared_ptr<World> world = nullptr;
+    };
+}
 
 #endif

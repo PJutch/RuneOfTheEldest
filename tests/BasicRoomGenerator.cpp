@@ -13,7 +13,7 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 If not, see <https://www.gnu.org/licenses/>. */
 
-#include "RoomGenerator/BasicRoomGenerator.hpp"
+#include "generation/BasicRoomGenerator.hpp"
 
 #include "geometry.hpp"
 
@@ -47,8 +47,8 @@ TEST(BasicRoomGenerator, generateRoom) {
     world->tiles().assign({ 10, 7, 1 }, Tile::WALL);
 
     sf::IntRect room{3, 2, 6, 5};
-    BasicRoomGenerator generator{ world };
-    generator(0, Area{ room });
+    generation::BasicRoomGenerator generator{ world };
+    generator(0, generation::Area{ room });
 
     EXPECT_TRUE(hasSingleRoom(*world, 0, room));
 }
@@ -58,8 +58,8 @@ TEST(BasicRoomGenerator, generateRoomNearEdge) {
     world->tiles().assign({ 8, 7, 1 }, Tile::WALL);
 
     sf::IntRect room{1, 2, 7, 5};
-    BasicRoomGenerator generator{ world };
-    generator(0, Area{ room });
+    generation::BasicRoomGenerator generator{ world };
+    generator(0, generation::Area{ room });
 
     EXPECT_TRUE(hasSingleRoom(*world, 0, room));
 }
@@ -69,8 +69,8 @@ TEST(BasicRoomGenerator, generateRoom3x3) {
     world->tiles().assign({ 7, 7, 1 }, Tile::WALL);
 
     sf::IntRect room{3, 2, 3, 3};
-    BasicRoomGenerator generator{ world };
-    generator(0, Area{ room });
+    generation::BasicRoomGenerator generator{ world };
+    generator(0, generation::Area{ room });
 
     EXPECT_TRUE(hasSingleRoom(*world, 0, room));
 }
@@ -80,8 +80,8 @@ TEST(BasicRoomGenerator, generateRoom2x2) {
     world->tiles().assign({ 7, 7, 1 }, Tile::WALL);
 
     sf::IntRect room{3, 2, 2, 2};
-    BasicRoomGenerator generator{ world };
-    generator(0, Area{ room });
+    generation::BasicRoomGenerator generator{ world };
+    generator(0, generation::Area{ room });
 
     EXPECT_TRUE(hasSingleRoom(*world, 0, room));
 }
@@ -91,8 +91,8 @@ TEST(BasicRoomGenerator, generateRoom1x1) {
     world->tiles().assign({ 7, 7, 1 }, Tile::WALL);
 
     sf::IntRect room{3, 2, 1, 1};
-    BasicRoomGenerator generator{world};
-    generator(0, Area{ room });
+    generation::BasicRoomGenerator generator{world};
+    generator(0, generation::Area{ room });
 
     EXPECT_TRUE(hasSingleRoom(*world, 0, room));
 }

@@ -16,22 +16,24 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef ROOM_GENERATOR_HPP_
 #define ROOM_GENERATOR_HPP_
 
-#include "../Area.hpp"
+#include "Area.hpp"
 
 #include <SFML/Graphics.hpp>
 
 #include <memory>
 
-/// Interface for room generators
-class RoomGenerator {
-public:
-    virtual ~RoomGenerator() = default;
+namespace generation {
+    /// Interface for room generators
+    class RoomGenerator {
+    public:
+        virtual ~RoomGenerator() = default;
 
-    ///  Generates room in the area
-    virtual void operator() (int z, Area area) = 0;
+        ///  Generates room in the area
+        virtual void operator() (int z, Area area) = 0;
 
-    /// If true generates special colored tiles instead of Tile::EMPTY
-    virtual void debugTiles(bool debugTiles_ = true) = 0;
-};
+        /// If true generates special colored tiles instead of Tile::EMPTY
+        virtual void debugTiles(bool debugTiles_ = true) = 0;
+    };
+}
 
 #endif

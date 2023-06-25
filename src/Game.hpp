@@ -17,7 +17,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define GAME_HPP_
 
 #include "Renderer.hpp"
-#include "DungeonGenerator.hpp"
+#include "generation/DungeonGenerator.hpp"
 
 #include "random.hpp"
 #include "log.hpp"
@@ -33,7 +33,7 @@ class Game {
 public:
     Game(std::shared_ptr<World> world,
          std::shared_ptr<Player> player,
-         std::unique_ptr<DungeonGenerator> dungeonGenerator,
+         std::unique_ptr<generation::DungeonGenerator> dungeonGenerator,
          std::shared_ptr<sf::RenderWindow> window,
          std::shared_ptr<Camera> camera,
          std::shared_ptr<PlayerMap> playerMap,
@@ -49,11 +49,11 @@ public:
         return *renderer_;
     }
 
-    [[nodiscard]] DungeonGenerator& dungeonGenerator() noexcept {
+    [[nodiscard]] generation::DungeonGenerator& dungeonGenerator() noexcept {
         return *dungeonGenerator_;
     }
 
-    [[nodiscard]] const DungeonGenerator& dungeonGenerator() const noexcept {
+    [[nodiscard]] const generation::DungeonGenerator& dungeonGenerator() const noexcept {
         return *dungeonGenerator_;
     }
 
@@ -63,7 +63,7 @@ private:
     std::shared_ptr<World> world;
     std::shared_ptr<Player> player;
 
-    std::unique_ptr<DungeonGenerator> dungeonGenerator_;
+    std::unique_ptr<generation::DungeonGenerator> dungeonGenerator_;
 
     std::shared_ptr<sf::RenderWindow> window;
     std::shared_ptr<Camera> camera;
