@@ -21,7 +21,7 @@ class World;
 
 #include "../Actor.hpp"
 
-#include "../Array3D.hpp"
+#include "../util/Array3D.hpp"
 
 #include <SFML/System.hpp>
 
@@ -55,7 +55,7 @@ namespace render {
 			updateActors();
 		}
 	private:
-		Array3D<TileState> tileStates;
+		util::Array3D<TileState> tileStates;
 
 		std::vector<std::unique_ptr<Actor::DrawMemento>> seenActors_;
 

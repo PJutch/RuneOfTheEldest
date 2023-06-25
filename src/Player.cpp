@@ -19,7 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "render/Renderer.hpp"
 
-#include "Keyboard.hpp"
+#include "util/Keyboard.hpp"
 
 void Player::spawn() {
 	nextTurn(0);
@@ -44,10 +44,10 @@ void Player::handleEvent(sf::Event event) {
 			if (event.key.shift)
 				tryDescentStairs();
 			return;
-		} else if (isNumpad(event.key.code))
+		} else if (util::isNumpad(event.key.code))
 			for (int i = 1; i <= 9; ++i)
-				if (sf::Keyboard::isKeyPressed(numpad(i))) {
-					tryMove(numpadDirections<int>[i - 1], true);
+				if (sf::Keyboard::isKeyPressed(util::numpad(i))) {
+					tryMove(util::numpadDirections<int>[i - 1], true);
 					return;
 				}
 	}

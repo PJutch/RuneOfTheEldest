@@ -19,8 +19,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "render/Renderer.hpp"
 #include "generation/DungeonGenerator.hpp"
 
-#include "random.hpp"
-#include "log.hpp"
+#include "util/random.hpp"
+#include "util/log.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
@@ -38,8 +38,8 @@ public:
          std::shared_ptr<render::Camera> camera,
          std::shared_ptr<render::PlayerMap> playerMap,
          std::unique_ptr<render::Renderer> renderer,
-         RandomEngine& randomEngine,
-         LoggerFactory& loggerFactory);
+         util::RandomEngine& randomEngine,
+         util::LoggerFactory& loggerFactory);
 
     [[nodiscard]] render::Renderer& renderer() noexcept {
         return *renderer_;
@@ -70,7 +70,7 @@ private:
     std::shared_ptr<render::PlayerMap> playerMap;
     std::unique_ptr<render::Renderer> renderer_;
 
-    RandomEngine* randomEngine;
+    util::RandomEngine* randomEngine;
     std::shared_ptr<spdlog::logger> generationLogger;
 
     void handleEvent(sf::Event event);

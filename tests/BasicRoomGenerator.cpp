@@ -15,7 +15,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "generation/BasicRoomGenerator.hpp"
 
-#include "geometry.hpp"
+#include "util/geometry.hpp"
 
 #include <gtest/gtest.h>
 
@@ -24,7 +24,7 @@ bool isValid(sf::IntRect rect) noexcept {
 }
 
 testing::AssertionResult hasSingleRoom(const World& world, int z, sf::IntRect area) {
-    sf::IntRect room = shrinkBottomRight(area, {1, 1});
+    sf::IntRect room = util::shrinkBottomRight(area, {1, 1});
     
     for (int x = 0; x < world.tiles().shape().x; ++x)
         for (int y = 0; y < world.tiles().shape().y; ++ y)

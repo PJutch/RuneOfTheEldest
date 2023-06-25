@@ -26,8 +26,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "../Player.hpp"
 #include "../Goblin.hpp"
 
-#include "../geometry.hpp"
-#include "../log.hpp"
+#include "../util/geometry.hpp"
+#include "../util/log.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>

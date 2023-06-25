@@ -15,13 +15,13 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "AliveActor.hpp"
 
-#include "geometry.hpp"
+#include "util/geometry.hpp"
 
-AliveActor::AliveActor(double newMaxHp, double regen_, sf::Vector3i newPosition, std::shared_ptr<World> newWorld, RandomEngine* newRandomEngine) :
+AliveActor::AliveActor(double newMaxHp, double regen_, sf::Vector3i newPosition, std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine) :
 	position_{ newPosition }, hp_{ newMaxHp }, maxHp_{ newMaxHp }, regen{ regen_ },
 	world_{ std::move(newWorld) }, randomEngine_{ newRandomEngine } {}
 
-AliveActor::AliveActor(double newMaxHp, double regen_, std::shared_ptr<World> newWorld, RandomEngine* newRandomEngine) :
+AliveActor::AliveActor(double newMaxHp, double regen_, std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine) :
 	AliveActor{ newMaxHp, regen_, {0, 0, 0}, std::move(newWorld), newRandomEngine } {}
 
 void AliveActor::wait(int time) noexcept {
@@ -81,24 +81,24 @@ void AliveActor::tryMoveInDirection(sf::Vector2i direction, bool forceSwap) {
 
 	bool preferLeft = std::uniform_int_distribution<int>{ 0, 1 }(randomEngine()) == 1;
 	if (preferLeft) {
-		if (canMoveToOrAttack(turnDirection45Left(direction), forceSwap)) {
-			tryMove(turnDirection45Left(direction), forceSwap);
+		if (canMoveToOrAttack(util::turnDirection45Left(direction), forceSwap)) {
+			tryMove(util::turnDirection45Left(direction), forceSwap);
 			return;
 		}
 
-		if (canMoveToOrAttack(turnDirection45Right(direction), forceSwap)) {
-			tryMove(turnDirection45Right(direction), forceSwap);
+		if (canMoveToOrAttack(util::turnDirection45Right(direction), forceSwap)) {
+			tryMove(util::turnDirection45Right(direction), forceSwap);
 			return;
 		}
 	}
 	else {
-		if (canMoveToOrAttack(turnDirection45Right(direction), forceSwap)) {
-			tryMove(turnDirection45Right(direction), forceSwap);
+		if (canMoveToOrAttack(util::turnDirection45Right(direction), forceSwap)) {
+			tryMove(util::turnDirection45Right(direction), forceSwap);
 			return;
 		}
 
-		if (canMoveToOrAttack(turnDirection45Left(direction), forceSwap)) {
-			tryMove(turnDirection45Left(direction), forceSwap);
+		if (canMoveToOrAttack(util::turnDirection45Left(direction), forceSwap)) {
+			tryMove(util::turnDirection45Left(direction), forceSwap);
 			return;
 		}
 	}

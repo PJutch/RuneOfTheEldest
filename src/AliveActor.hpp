@@ -20,7 +20,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "World.hpp"
 
-#include "geometry.hpp"
+#include "util/geometry.hpp"
 
 /// Base for all Actors with hp and position in world
 class AliveActor : public Actor {
@@ -55,8 +55,8 @@ public:
 		return maxHp_;
 	}
 protected:
-	AliveActor(double newMaxHp, double regen_, sf::Vector3i newPosition, std::shared_ptr<World> newWorld, RandomEngine* newRandomEngine);
-	AliveActor(double newMaxHp, double regen_, std::shared_ptr<World> newWorld, RandomEngine* newRandomEngine);
+	AliveActor(double newMaxHp, double regen_, sf::Vector3i newPosition, std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine);
+	AliveActor(double newMaxHp, double regen_, std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine);
 
 	[[nodiscard]] World& world() noexcept {
 		return *world_;
@@ -66,7 +66,7 @@ protected:
 		return *world_;
 	}
 
-	[[nodiscard]] RandomEngine& randomEngine() noexcept {
+	[[nodiscard]] util::RandomEngine& randomEngine() noexcept {
 		return *randomEngine_;
 	}
 
@@ -91,7 +91,7 @@ protected:
 	/// @brief Checks if can move to position + offset or swap with Actor there
     /// @param forceSwap Forces swap even if other Actor doesn't want it
 	[[nodiscard]] bool canMoveToOrAttack(sf::Vector2i offset, bool forceSwap) const {
-		return canMoveToOrAttack(position() + make3D(offset, 0), forceSwap);
+		return canMoveToOrAttack(position() + util::make3D(offset, 0), forceSwap);
 	}
 
 	/// @brief Changes position if newPosition isn't occupied
@@ -101,7 +101,7 @@ protected:
 	/// @brief Changes position if newPosition isn't occupied
 	/// @param forceSwap Forces swap even if other Actor doesn't want it
 	void tryMoveTo(sf::Vector2i newPosition, bool forceSwap) {
-		tryMoveTo(make3D(newPosition, position().z), forceSwap);
+		tryMoveTo(util::make3D(newPosition, position().z), forceSwap);
 	}
 
 	/// @brief Changes position if position + offset isn't occupied
@@ -113,7 +113,7 @@ protected:
 	/// @brief Changes position if position + offset isn't occupied
 	/// @param forceSwap Forces swap even if other Actor doesn't want it
 	void tryMove(sf::Vector2i offset, bool forceSwap) {
-		tryMoveTo(getXY(position()) + offset, forceSwap);
+		tryMoveTo(util::getXY(position()) + offset, forceSwap);
 	}
 
 	/// @brief Tries to move in given direction or 45 degrees left or right
@@ -157,7 +157,7 @@ private:
 	double regen;
 
 	std::shared_ptr<World> world_;
-	RandomEngine* randomEngine_;
+	util::RandomEngine* randomEngine_;
 };
 
 #endif

@@ -15,7 +15,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "BasicRoomGenerator.hpp"
 
-#include "../assert.hpp"
+#include "../util/assert.hpp"
 
 namespace generation {
     void BasicRoomGenerator::operator() (int z, Area area) {

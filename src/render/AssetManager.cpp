@@ -19,7 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <filesystem>
 
 namespace render {
-    AssetManager::AssetManager(LoggerFactory& loggerFactory) : logger{ loggerFactory.create("assets") } {
+    AssetManager::AssetManager(util::LoggerFactory& loggerFactory) : logger{ loggerFactory.create("assets") } {
         logger->info("Loading...");
 
         loadTexture(tileTextureMut(Tile::EMPTY), "floor tile", "resources/textures/Tile/floor.png");

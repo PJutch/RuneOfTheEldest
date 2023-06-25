@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "../Player.hpp"
 #include "../Goblin.hpp"
 
-#include "../raycast.hpp"
+#include "../util/raycast.hpp"
 
 namespace render {
     Renderer::Renderer(std::shared_ptr<Camera> camera,
@@ -80,7 +80,7 @@ namespace render {
 
     void Renderer::draw(const Goblin::DrawMemento& goblin) {
         double colorMod = 1.0;
-        if (!canSee(player->position(), goblin.position(), *world))
+        if (!util::canSee(player->position(), goblin.position(), *world))
             colorMod = 0.5;
 
         drawSprite(goblin.position(), assets->goblinTexture(), colorMod);
@@ -92,7 +92,7 @@ namespace render {
         if (camera->position().level != position.z)
             return;
 
-        drawSprite(getXY(position), texture, colorMod);
+        drawSprite(util::getXY(position), texture, colorMod);
     }
 
     void Renderer::drawSprite(sf::Vector2i position, const sf::Texture& texture, double colorMod) {
@@ -116,7 +116,7 @@ namespace render {
         float width = hpFraction * assets->tileSize().x;
         float height = 2.f;
 
-        sf::Vector2f screenPos = toScreen(getXY(position));
+        sf::Vector2f screenPos = toScreen(util::getXY(position));
         float top = screenPos.x;
         float left = screenPos.y + assets->tileSize().y - height;
 

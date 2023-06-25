@@ -21,7 +21,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "../World.hpp"
 
-#include "../random.hpp"
+#include "../util/random.hpp"
 
 #include <SFML/Graphics.hpp>
 
@@ -34,7 +34,7 @@ namespace generation {
     public:
         DungeonGenerator(std::unique_ptr<RoomGenerator> roomGenerator,
             std::shared_ptr<World> world,
-            RandomEngine& randomEngine);
+            util::RandomEngine& randomEngine);
 
         /// Minimum size of the room
         void minSize(int newMinSize) noexcept {
@@ -64,7 +64,7 @@ namespace generation {
         std::queue<Area> areas;
 
         std::shared_ptr<World> world = nullptr;
-        RandomEngine* randomEngine;
+        util::RandomEngine* randomEngine;
 
         void processLevel(int level);
         void processArea(int level, Area area);

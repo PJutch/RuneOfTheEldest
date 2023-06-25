@@ -18,7 +18,7 @@ If not, see < https://www.gnu.org/licenses/>. */
 #include "../Player.hpp"
 #include "../World.hpp"
 
-#include "../raycast.hpp"
+#include "../util/raycast.hpp"
 
 namespace render {
 	PlayerMap::PlayerMap(std::shared_ptr<Player> player_, std::shared_ptr<World> world_) :
@@ -34,7 +34,7 @@ namespace render {
 		for (int z = 0; z < shapeZ; ++z) {
 			for (int x = 0; x < shapeX; ++x)
 				for (int y = 0; y < shapeY; ++y)
-					if (canSee(player->position(), { x, y, z }, *world))
+					if (util::canSee(player->position(), { x, y, z }, *world))
 						tileStates[{ x, y, z }] = TileState::VISIBLE;
 					else if (tileState({ x, y, z }) == TileState::VISIBLE)
 						tileStates[{ x, y, z }] = TileState::MEMORIZED;
@@ -43,11 +43,11 @@ namespace render {
 
 	void PlayerMap::updateActors() {
 		std::erase_if(seenActors_, [&player = *player, &world = *world](const auto& actor) -> bool {
-			return canSee(player.position(), actor->position(), world);
+			return util::canSee(player.position(), actor->position(), world);
 		});
 
 		for (const auto& actor : world->actors())
-			if (canSee(player->position(), actor->position(), *world))
+			if (util::canSee(player->position(), actor->position(), *world))
 				seenActors_.push_back(actor->createDrawMemento());
 	}
 }

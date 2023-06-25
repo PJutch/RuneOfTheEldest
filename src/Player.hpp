@@ -20,7 +20,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "World.hpp"
 
-#include "geometry.hpp"
+#include "util/geometry.hpp"
 
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
@@ -28,7 +28,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 /// Player character
 class Player : public AliveActor, public std::enable_shared_from_this<Player> {
 public:
-	Player(std::shared_ptr<World> world_, RandomEngine& randomEngine_) : 
+	Player(std::shared_ptr<World> world_, util::RandomEngine& randomEngine_) : 
 		AliveActor{ 10, 0.1, std::move(world_), &randomEngine_ } {}
 	Player() : AliveActor{ 10, 0.1, nullptr, nullptr } {}
 

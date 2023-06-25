@@ -21,7 +21,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Player.hpp"
 #include "AiState.hpp"
 
-#include "random.hpp"
+#include "util/random.hpp"
 
 #include <SFML/System.hpp>
 
@@ -31,14 +31,14 @@ If not, see <https://www.gnu.org/licenses/>. */
 /// Goblin enemy
 class Goblin : public AliveActor {
 public:
-	Goblin(sf::Vector3i newPosition, std::shared_ptr<World> world_, std::shared_ptr<Player> player_, RandomEngine& randomEngine_) :
+	Goblin(sf::Vector3i newPosition, std::shared_ptr<World> world_, std::shared_ptr<Player> player_, util::RandomEngine& randomEngine_) :
 		AliveActor{ 3, 0.1, newPosition, std::move(world_), &randomEngine_ }, player{ player_ }, targetPosition{ newPosition } {}
 
 	/// Randomly moves goblin
 	bool act() final;
 
-	static void spawnSingle(int level, std::shared_ptr<World> world, std::shared_ptr<Player> player_, RandomEngine& randomEngine);
-	static void spawnAll(std::shared_ptr<World> world, std::shared_ptr<Player> player_, RandomEngine& randomEngine);
+	static void spawnSingle(int level, std::shared_ptr<World> world, std::shared_ptr<Player> player_, util::RandomEngine& randomEngine);
+	static void spawnAll(std::shared_ptr<World> world, std::shared_ptr<Player> player_, util::RandomEngine& randomEngine);
 
 	[[nodiscard]] bool shouldInterruptOnDelete() const final {
 		return false;

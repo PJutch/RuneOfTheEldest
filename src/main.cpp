@@ -19,9 +19,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "render/PlayerLockedCamera.hpp"
 #include "render/SwitchableCamera.hpp"
 
-#include "log.hpp"
-#include "Exception.hpp"
-#include "random.hpp"
+#include "util/log.hpp"
+#include "util/Exception.hpp"
+#include "util/random.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
@@ -37,8 +37,8 @@ sf::String createSfString(std::string_view string) {
 }
 
 int main() {
-    auto logModule_ = logModule();
-    auto loggerFactory = logModule_.create<LoggerFactory>();
+    auto logModule_ = util::logModule();
+    auto loggerFactory = logModule_.create<util::LoggerFactory>();
     auto logger = loggerFactory.create("main");   
 
     try {
@@ -52,16 +52,16 @@ int main() {
         );
         renderWindow->setVerticalSyncEnabled(true);
 
-        SeedT seed = std::random_device{}();
-        RandomEngine randomEngine{seed};
+        util::SeedT seed = std::random_device{}();
+        util::RandomEngine randomEngine{seed};
         logger->info("Random seed is {}", seed);
 
         auto injector = boost::di::make_injector(
             std::move(logModule_),
-            boost::di::bind<LoggerFactory>.to(loggerFactory),
+            boost::di::bind<util::LoggerFactory>.to(loggerFactory),
             boost::di::bind<sf::VideoMode>.to(videoMode),
             boost::di::bind<sf::RenderWindow>.to(renderWindow),
-            boost::di::bind<RandomEngine>.to(randomEngine),
+            boost::di::bind<util::RandomEngine>.to(randomEngine),
             boost::di::bind<generation::RoomGenerator>.to<generation::RandomSizeRoomGenerator>(),
             boost::di::bind<render::Camera*[]>.to<render::PlayerLockedCamera, render::FreeCamera>(),
             boost::di::bind<render::Camera>.to<render::SwitchableCamera>()
@@ -76,7 +76,7 @@ int main() {
         logger->info("Loading complete");
         game.run();
         logger->info("Exiting...");
-    } catch (const TracableException& e) {
+    } catch (const util::TracableException& e) {
         logger->critical("Error occured: {}\nStacktrace:\n{}", 
                          e.what(), e.stacktrace());
     } catch (const std::exception& e) {

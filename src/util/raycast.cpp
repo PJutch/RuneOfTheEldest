@@ -17,30 +17,32 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "geometry.hpp"
 
-bool canSee(sf::Vector3i pos1, sf::Vector3i pos2, const World& world) {
-	if (pos1 == pos2)
-		return true;
+namespace util {
+	bool canSee(sf::Vector3i pos1, sf::Vector3i pos2, const World& world) {
+		if (pos1 == pos2)
+			return true;
 
-	if (pos1.z != pos2.z)
-		return false;
-
-	double distance_ = distance(getXY(pos1), getXY(pos2));
-
-	// sin and cos of angle between pos2 - pos1 and x axis
-	double cos = (pos2.x - pos1.x) / distance_;
-	double sin = (pos2.y - pos1.y) / distance_;
-
-	double wholeDistance;
-	double offset = std::modf(distance_, &wholeDistance) / 2 + 1; // offset to make checked positions simmetrical
-
-	// checks points on line from pos1 to pos2 with step 1
-	for (double distance = offset; distance <= distance_ - offset; ++distance) {
-		int x = pos1.x + std::round(distance * cos);
-		int y = pos1.y + std::round(distance * sin);
-
-		if (!isPassable(world.tiles()[{x, y, pos1.z}]))
+		if (pos1.z != pos2.z)
 			return false;
-	}
 
-	return true;
+		double distance_ = util::distance(util::getXY(pos1), util::getXY(pos2));
+
+		// sin and cos of angle between pos2 - pos1 and x axis
+		double cos = (pos2.x - pos1.x) / distance_;
+		double sin = (pos2.y - pos1.y) / distance_;
+
+		double wholeDistance;
+		double offset = std::modf(distance_, &wholeDistance) / 2 + 1; // offset to make checked positions simmetrical
+
+		// checks points on line from pos1 to pos2 with step 1
+		for (double distance = offset; distance <= distance_ - offset; ++distance) {
+			int x = pos1.x + std::round(distance * cos);
+			int y = pos1.y + std::round(distance * sin);
+
+			if (!isPassable(world.tiles()[{x, y, pos1.z}]))
+				return false;
+		}
+
+		return true;
+	}
 }

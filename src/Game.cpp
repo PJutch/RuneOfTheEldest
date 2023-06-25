@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Player.hpp"
 #include "Goblin.hpp"
 
-#include "Keyboard.hpp"
+#include "util/Keyboard.hpp"
 
 Game::Game(std::shared_ptr<World> newWorld,
            std::shared_ptr<Player> player_,
@@ -27,8 +27,8 @@ Game::Game(std::shared_ptr<World> newWorld,
            std::shared_ptr<render::Camera> camera_,
            std::shared_ptr<render::PlayerMap> playerMap_,
            std::unique_ptr<render::Renderer> newRenderer,
-           RandomEngine& randomEngine_,
-           LoggerFactory& loggerFactory) :
+           util::RandomEngine& randomEngine_,
+           util::LoggerFactory& loggerFactory) :
     world{std::move(newWorld)},
     player{ std::move(player_) },
     dungeonGenerator_{std::move(newDungeonGenerator)},
@@ -62,7 +62,7 @@ void Game::run() {
 
 void Game::handleEvent(sf::Event event) {
     if (event.type == sf::Event::Closed
-     || wasKeyPressed(event, sf::Keyboard::Escape)) {
+     || util::wasKeyPressed(event, sf::Keyboard::Escape)) {
         window->close();
         return;
     }

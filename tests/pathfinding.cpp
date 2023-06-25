@@ -13,7 +13,7 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#include "pathfinding.hpp"
+#include "util/pathfinding.hpp"
 
 #include <gtest/gtest.h>
 
@@ -22,14 +22,14 @@ TEST(pathfinding, nextStepInPlace) {
     world.tiles().assign({ 3, 3, 1 }, Tile::WALL);
     world.tiles()[{0, 1, 0}] = Tile::EMPTY;
 
-    EXPECT_EQ(nextStep(world, {0, 1, 0}, {0, 1, 0}), (sf::Vector3i{0, 0, 0}));
+    EXPECT_EQ(util::nextStep(world, {0, 1, 0}, {0, 1, 0}), (sf::Vector3i{0, 0, 0}));
 }
 
 TEST(pathfinding, nextStepFree) {
     World world;
     world.tiles().assign({ 3, 3, 1 }, Tile::EMPTY);
 
-    EXPECT_EQ(nextStep(world, { 0, 2, 0 }, { 2, 0, 0 }), (sf::Vector3i{1, -1, 0}));
+    EXPECT_EQ(util::nextStep(world, { 0, 2, 0 }, { 2, 0, 0 }), (sf::Vector3i{1, -1, 0}));
 }
 
 TEST(pathfinding, nextStepTurn) {
@@ -39,7 +39,7 @@ TEST(pathfinding, nextStepTurn) {
     world.tiles()[{0, 1, 0}] = Tile::WALL;
     world.tiles()[{1, 1, 0}] = Tile::WALL;
 
-    EXPECT_EQ(nextStep(world, { 0, 2, 0 }, { 1, 0, 0 }), (sf::Vector3i{ 1,  0, 0 }));
+    EXPECT_EQ(util::nextStep(world, { 0, 2, 0 }, { 1, 0, 0 }), (sf::Vector3i{ 1,  0, 0 }));
 }
 
 TEST(pathfinding, nextStepDownStairs) {
@@ -48,7 +48,7 @@ TEST(pathfinding, nextStepDownStairs) {
     world.tiles()[{1, 1, 1}] = Tile::EMPTY;
     world.addStairs({0, 1, 0}, {1, 0, 1});
 
-    EXPECT_EQ(nextStep(world, { 0, 1, 0 }, { 1, 1, 1 }), (sf::Vector3i{ 1,  -1, 1 }));
+    EXPECT_EQ(util::nextStep(world, { 0, 1, 0 }, { 1, 1, 1 }), (sf::Vector3i{ 1,  -1, 1 }));
 }
 
 TEST(pathfinding, nextStepUpStairs) {
@@ -57,5 +57,5 @@ TEST(pathfinding, nextStepUpStairs) {
     world.tiles()[{1, 1, 0}] = Tile::EMPTY;
     world.addStairs({ 0, 1, 1 }, { 1, 0, 0 });
 
-    EXPECT_EQ(nextStep(world, { 0, 1, 1 }, { 1, 1, 0 }), (sf::Vector3i{ 1,  -1, -1 }));
+    EXPECT_EQ(util::nextStep(world, { 0, 1, 1 }, { 1, 1, 0 }), (sf::Vector3i{ 1,  -1, -1 }));
 }

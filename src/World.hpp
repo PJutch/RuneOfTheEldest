@@ -19,9 +19,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Actor.hpp"
 #include "Tile.hpp"
 
-#include "Array3D.hpp"
-#include "Map.hpp"
-#include "random.hpp"
+#include "util/Array3D.hpp"
+#include "util/Map.hpp"
+#include "util/random.hpp"
 
 #include <SFML/Graphics.hpp>
 
@@ -32,13 +32,13 @@ If not, see <https://www.gnu.org/licenses/>. */
 class World {
 public:
 	World() = default;
-	World(RandomEngine& randomEngine_) : randomEngine{ &randomEngine_ } {}
+	World(util::RandomEngine& randomEngine_) : randomEngine{ &randomEngine_ } {}
 
-	[[nodiscard]] Array3D<Tile>& tiles() noexcept {
+	[[nodiscard]] util::Array3D<Tile>& tiles() noexcept {
 		return tiles_;
 	}
 
-	[[nodiscard]] const Array3D<Tile>& tiles() const noexcept {
+	[[nodiscard]] const util::Array3D<Tile>& tiles() const noexcept {
 		return tiles_;
 	}
 
@@ -107,12 +107,12 @@ public:
 
 	/// Returns at(position) destination if it's Tile::UP_STAIRS
 	[[nodiscard]] std::optional<sf::Vector3i> upStairs(sf::Vector3i position) const {
-		return getOptional(upStairs_, position);
+		return util::getOptional(upStairs_, position);
 	}
 
 	/// Returns at(position) destination if it's Tile::DOWN_STAIRS
 	[[nodiscard]] std::optional<sf::Vector3i> downStairs(sf::Vector3i position) const {
-		return getOptional(downStairs_, position);
+		return util::getOptional(downStairs_, position);
 	}
 
 	/// @brief Create stairs between position1 and position2
@@ -133,16 +133,16 @@ public:
 		return areas_[level];
 	}
 private:
-	Array3D<Tile> tiles_;
+	util::Array3D<Tile> tiles_;
 
-	UnorderedMap<sf::Vector3i, sf::Vector3i> upStairs_;
-	UnorderedMap<sf::Vector3i, sf::Vector3i> downStairs_;
+	util::UnorderedMap<sf::Vector3i, sf::Vector3i> upStairs_;
+	util::UnorderedMap<sf::Vector3i, sf::Vector3i> downStairs_;
 
 	std::vector<std::vector<sf::IntRect>> areas_;
 
 	std::vector<std::shared_ptr<Actor>> actors_;
 
-	RandomEngine* randomEngine = nullptr;
+	util::RandomEngine* randomEngine = nullptr;
 
 	void pushActor() {
 		std::ranges::push_heap(actors_, std::greater<>{}, [](std::shared_ptr<Actor>& actor) {

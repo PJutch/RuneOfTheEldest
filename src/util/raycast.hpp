@@ -16,11 +16,13 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef RAYCAST_HPP_
 #define RAYCAST_HPP_
 
-#include "World.hpp"
+#include "../World.hpp"
 
 #include <SFML/System.hpp>
 
-/// Checks if position1 and position2 are visible from each other
-bool canSee(sf::Vector3i position1, sf::Vector3i position2, const World& dungeon);
+namespace util {
+	/// Checks if position1 and position2 are visible from each other
+	bool canSee(sf::Vector3i position1, sf::Vector3i position2, const World& dungeon);
+}
 
 #endif

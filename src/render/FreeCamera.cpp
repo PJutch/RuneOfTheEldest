@@ -15,8 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "FreeCamera.hpp"
 
-#include "../Keyboard.hpp"
-#include "../geometry.hpp"
+#include "../util/Keyboard.hpp"
+#include "../util/geometry.hpp"
 
 namespace render {
     FreeCamera::FreeCamera(std::shared_ptr<World> world_) : world{ std::move(world_) } {
@@ -28,16 +28,16 @@ namespace render {
         float moved = cameraSpeed * elapsedTime.asSeconds();
 
         for (int i = 1; i <= 9; ++i)
-            if (sf::Keyboard::isKeyPressed(numpad(i)))
-                move(numpadDirections<float>[i - 1] * moved);
+            if (sf::Keyboard::isKeyPressed(util::numpad(i)))
+                move(util::numpadDirections<float>[i - 1] * moved);
     }
 
     void FreeCamera::handleEvent(sf::Event event) {
-        if (wasKeyPressed(event, sf::Keyboard::Comma) && event.key.shift) {
+        if (util::wasKeyPressed(event, sf::Keyboard::Comma) && event.key.shift) {
             if (position().level > 0)
                 --position_.level;
         }
-        else if (wasKeyPressed(event, sf::Keyboard::Period) && event.key.shift) {
+        else if (util::wasKeyPressed(event, sf::Keyboard::Period) && event.key.shift) {
             if (position().level + 1 < world->tiles().shape().z)
                 ++position_.level;
         }

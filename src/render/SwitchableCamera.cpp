@@ -15,11 +15,11 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "SwitchableCamera.hpp"
 
-#include "../Keyboard.hpp"
+#include "../util/Keyboard.hpp"
 
 namespace render {
     void SwitchableCamera::handleEvent(sf::Event event) {
-        if (wasKeyPressed(event, sf::Keyboard::V))
+        if (util::wasKeyPressed(event, sf::Keyboard::V))
             nextCamera();
         else
             currentCamera().handleEvent(event);

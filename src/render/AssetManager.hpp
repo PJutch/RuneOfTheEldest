@@ -19,8 +19,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "../Tile.hpp"
 #include "../AiState.hpp"
 
-#include "../log.hpp"
-#include "../Exception.hpp"
+#include "../util/log.hpp"
+#include "../util/Exception.hpp"
 
 #include <SFML/Graphics.hpp>
 
@@ -29,8 +29,8 @@ namespace render {
 	class AssetManager {
 	public:
 		/// Error while loading some asset
-		class LoadError : public RuntimeError {
-			using RuntimeError::RuntimeError;
+		class LoadError : public util::RuntimeError {
+			using util::RuntimeError::RuntimeError;
 		};
 
 		/// Error while loading texture
@@ -45,7 +45,7 @@ namespace render {
 
 		/// @brief creates AssetManager and loads textures
 		/// @throws AssetManager::TextureLoadError
-		AssetManager(LoggerFactory& loggerFactory);
+		AssetManager(util::LoggerFactory& loggerFactory);
 
 		/// Gets texture for given tile
 		[[nodiscard]] const sf::Texture& tileTexture(Tile tile) const noexcept {

@@ -20,10 +20,12 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <random>
 
-/// default random engine
-using RandomEngine = std::mt19937_64;
+namespace util {
+	/// default random engine
+	using RandomEngine = std::mt19937_64;
 
-/// default seed type
-using SeedT = RandomEngine::result_type;
+	/// default seed type
+	using SeedT = RandomEngine::result_type;
+}
 
 #endif

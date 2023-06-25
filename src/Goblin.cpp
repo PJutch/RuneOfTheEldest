@@ -17,10 +17,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "render/Renderer.hpp"
 
-#include "pathfinding.hpp"
-#include "raycast.hpp"
-#include "geometry.hpp"
-#include "assert.hpp"
+#include "util/pathfinding.hpp"
+#include "util/raycast.hpp"
+#include "util/geometry.hpp"
+#include "util/assert.hpp"
 
 bool Goblin::act() {
 	updateTarget();
@@ -61,9 +61,9 @@ sf::Vector3i Goblin::tryFollowStairs(sf::Vector3i position) noexcept {
 
 void Goblin::travelToTarget() noexcept {
 	wantsSwap_ = true;
-	sf::Vector3i nextStep_ = nextStep(world(), position(), targetPosition);
+	sf::Vector3i nextStep_ = util::nextStep(world(), position(), targetPosition);
 	if (nextStep_.z == 0)
-		tryMoveInDirection(getXY(nextStep_), false);
+		tryMoveInDirection(util::getXY(nextStep_), false);
 	else
 		tryMove(nextStep_, false);
 }
@@ -72,20 +72,20 @@ void Goblin::DrawMemento::draw(render::Renderer& renderer) const {
 	renderer.draw(*this);
 }
 
-void Goblin::spawnSingle(int level, std::shared_ptr<World> world, std::shared_ptr<Player> player_, RandomEngine& randomEngine) {
+void Goblin::spawnSingle(int level, std::shared_ptr<World> world, std::shared_ptr<Player> player_, util::RandomEngine& randomEngine) {
 	sf::Vector3i position = world->randomPositionAt(level, &World::isFree);
 
 	world->addActor(std::make_shared<Goblin>(position, world, std::move(player_), randomEngine));
 }
 
-void Goblin::spawnAll(std::shared_ptr<World> world, std::shared_ptr<Player> player_, RandomEngine& randomEngine) {
+void Goblin::spawnAll(std::shared_ptr<World> world, std::shared_ptr<Player> player_, util::RandomEngine& randomEngine) {
 	for (int level = 0; level < world->tiles().shape().z; ++level)
 		for (int i = 0; i < std::uniform_int_distribution{ 5, 20 }(randomEngine); ++i)
 			spawnSingle(level, world, player_, randomEngine);
 }
 
 bool Goblin::canSeePlayer() const noexcept {
-	return canSee(position(), player->position(), world());
+	return util::canSee(position(), player->position(), world());
 }
 
 namespace {
@@ -104,7 +104,7 @@ void Goblin::handleSound(Sound sound) noexcept {
 	if (sound.position.z != position().z)
 		return;
 
-	if (canSee(position(), sound.position, world()))
+	if (util::canSee(position(), sound.position, world()))
 		return;
 
 	auto [dx, dy, dz] = sound.position - position();

@@ -13,7 +13,7 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#include "Keyboard.hpp"
+#include "util/Keyboard.hpp"
 
 #include <gtest/gtest.h>
 
@@ -21,35 +21,35 @@ TEST(Keyboard, wasKeyPressedThisKey) {
     sf::Event event{ sf::Event::KeyPressed };
     event.key = sf::Event::KeyEvent{ sf::Keyboard::D, sf::Keyboard::Scancode::D };
 
-    EXPECT_TRUE(wasKeyPressed(event, sf::Keyboard::D));
+    EXPECT_TRUE(util::wasKeyPressed(event, sf::Keyboard::D));
 }
 
 TEST(Keyboard, wasKeyPressedOtherKey) {
     sf::Event event{ sf::Event::KeyPressed };
     event.key = sf::Event::KeyEvent{ sf::Keyboard::C, sf::Keyboard::Scancode::C };
 
-    EXPECT_FALSE(wasKeyPressed(event, sf::Keyboard::D));
+    EXPECT_FALSE(util::wasKeyPressed(event, sf::Keyboard::D));
 }
 
 TEST(Keyboard, wasKeyPressedNotKey) {
     sf::Event event{ sf::Event::MouseMoved };
     event.mouseMove = sf::Event::MouseMoveEvent{ 10, 15 };
 
-    EXPECT_FALSE(wasKeyPressed(event, sf::Keyboard::D));
+    EXPECT_FALSE(util::wasKeyPressed(event, sf::Keyboard::D));
 }
 
 TEST(Keyboard, numpad) {
-    EXPECT_EQ(numpad(5), sf::Keyboard::Numpad5);
+    EXPECT_EQ(util::numpad(5), sf::Keyboard::Numpad5);
 }
 
 TEST(Keyboard, fromNumpad) {
-    EXPECT_EQ(fromNumpad(sf::Keyboard::Numpad5), 5);
+    EXPECT_EQ(util::fromNumpad(sf::Keyboard::Numpad5), 5);
 }
 
 TEST(Keyboard, isNumpadTrue) {
-    EXPECT_TRUE(isNumpad(sf::Keyboard::Numpad5));
+    EXPECT_TRUE(util::isNumpad(sf::Keyboard::Numpad5));
 }
 
 TEST(Keyboard, isNumpadFalse) {
-    EXPECT_FALSE(isNumpad(sf::Keyboard::G));
+    EXPECT_FALSE(util::isNumpad(sf::Keyboard::G));
 }

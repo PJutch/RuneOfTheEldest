@@ -15,7 +15,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "pathfinding.hpp"
 
-#include "World.hpp"
+#include "../World.hpp"
 
 #include "Array3D.hpp"
 #include "geometry.hpp"
@@ -31,7 +31,7 @@ namespace {
 
 	struct PathUpdate {
 		PathUpdate(int distance_, sf::Vector3i position_, sf::Vector3i target, sf::Vector3i prevOffset_) noexcept :
-			distance{ distance_ }, minFullDistance{ distance_ + uniformDistance(position_, target) },
+			distance{ distance_ }, minFullDistance{ distance_ + util::uniformDistance(position_, target) },
 			position{ position_ }, prevOffset{ prevOffset_ } {}
 
 		int distance;
@@ -44,8 +44,8 @@ namespace {
 		}
 	};
 
-	Array3D<PathNode> findPath(const World& world, sf::Vector3i from, sf::Vector3i to) {
-		Array3D<PathNode> buffer;
+	util::Array3D<PathNode> findPath(const World& world, sf::Vector3i from, sf::Vector3i to) {
+		util::Array3D<PathNode> buffer;
 		buffer.assign(world.tiles().shape(), {});
 
 		std::priority_queue<PathUpdate, std::vector<PathUpdate>, std::greater<>> queue;
@@ -64,8 +64,8 @@ namespace {
 			buffer[update.position].distance = update.distance;
 			buffer[update.position].prevOffset = update.prevOffset;
 
-			for (sf::Vector2i direction : directions<int>) {
-				sf::Vector3i direction3D = make3D(direction, 0);
+			for (sf::Vector2i direction : util::directions<int>) {
+				sf::Vector3i direction3D = util::make3D(direction, 0);
 				sf::Vector3i nextPos = update.position + direction3D;
 				if (world.tiles().isValidPosition(nextPos) && isPassable(world.tiles()[nextPos]))
 					queue.emplace(update.distance + 1, nextPos, to, -direction3D);
@@ -82,21 +82,23 @@ namespace {
 	}
 }
 
-sf::Vector3i nextStep(const World& world, sf::Vector3i position, sf::Vector3i target) {
-	Array3D<PathNode> path = findPath(world, position, target);
+namespace util {
+	sf::Vector3i nextStep(const World& world, sf::Vector3i position, sf::Vector3i target) {
+		util::Array3D<PathNode> path = findPath(world, position, target);
 
-	sf::Vector3i current = target;
-	while (true) {
-		sf::Vector3i prevOffset = path[current].prevOffset;
+		sf::Vector3i current = target;
+		while (true) {
+			sf::Vector3i prevOffset = path[current].prevOffset;
 
-		if (current + prevOffset == position)
-			return -path[current].prevOffset;
+			if (current + prevOffset == position)
+				return -path[current].prevOffset;
 
-		if (prevOffset == sf::Vector3i{0, 0, 0})
-			return { 0, 0, 0 };
+			if (prevOffset == sf::Vector3i{0, 0, 0})
+				return { 0, 0, 0 };
 
-		current += prevOffset;
+			current += prevOffset;
+		}
+
+		TROTE_ASSERT(false, "unreachable");
 	}
-
-	TROTE_ASSERT(false, "unreachable");
 }
