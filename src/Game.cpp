@@ -89,7 +89,6 @@ void Game::generate() {
     world->dungeon().assign({ 50, 50, 10 });
 
     generationLogger->info("Generating dungeon...");
-    dungeonGenerator().dungeon(world->dungeon());
     dungeonGenerator()();
 
     generationLogger->info("Generating stairs...");

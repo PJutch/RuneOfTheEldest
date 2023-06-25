@@ -48,7 +48,7 @@ void Renderer::drawLevel(int z) {
 }
 
 void Renderer::drawAreas(int z) {
-    for (sf::IntRect area : world->dungeon().areas(z))
+    for (sf::IntRect area : world->areas(z))
         drawInWorldRect(area, sf::Color::Transparent, 
                                 sf::Color::Green, 1.0);
 }

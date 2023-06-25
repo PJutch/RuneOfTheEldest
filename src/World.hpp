@@ -23,6 +23,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "random.hpp"
 
 #include <queue>
+#include <span>
 
 /// Dungeons and all objects in it
 class World {
@@ -119,11 +120,24 @@ public:
 	void addStairs(sf::Vector3i position1, sf::Vector3i position2);
 
 	void generateStairs();
+
+	/// Add bsp area. Used for debug area rendering
+	void addArea(sf::IntRect area, int level) {
+		areas_.resize(dungeon().shape().z);
+		areas_[level].push_back(area);
+	}
+
+	/// Get all bsp areas. Used for debug area rendering
+	[[nodiscard]] std::span<const sf::IntRect> areas(int level) const noexcept {
+		return areas_[level];
+	}
 private:
 	std::shared_ptr<Dungeon> dungeon_ = nullptr;
 
 	UnorderedMap<sf::Vector3i, sf::Vector3i> upStairs_;
 	UnorderedMap<sf::Vector3i, sf::Vector3i> downStairs_;
+
+	std::vector<std::vector<sf::IntRect>> areas_;
 
 	std::vector<std::shared_ptr<Actor>> actors_;
 

@@ -19,11 +19,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Tile.hpp"
 
 #include "Array3D.hpp"
-#include "geometry.hpp"
-
-#include <vector>
-#include <span>
-#include <memory>
 
 /// Dungeon consisting of multiple levels and stairs between them
 class Dungeon {
@@ -79,21 +74,9 @@ public:
 	/// Clears and creates new dungeon with given shape filled with given tile
 	void assign(sf::Vector3i shape, Tile tile = Tile::WALL) {
 		tiles.assign(shape, tile);
-		areas_.resize(shape.z);
-	}
-
-	/// Add bsp area. Used for debug area rendering
-	void addArea(sf::IntRect area, int level) {
-		areas_[level].push_back(area);
-	}
-
-	/// Get all bsp areas. Used for debug area rendering
-	[[nodiscard]] std::span<const sf::IntRect> areas(int level) const noexcept {
-		return areas_[level];
 	}
 private:
 	Array3D<Tile> tiles;
-	std::vector<std::vector<sf::IntRect>> areas_;
 };
 
 #endif
