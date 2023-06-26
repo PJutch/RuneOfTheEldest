@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "RoomGenerator.hpp"
 
-#include "../core/World.hpp"
+#include "core/World.hpp"
 
 #include <memory>
 

@@ -21,9 +21,9 @@ namespace core {
 	class World;
 }
 
-#include "../core/Actor.hpp"
+#include "core/Actor.hpp"
 
-#include "../util/Array3D.hpp"
+#include "util/Array3D.hpp"
 
 #include <SFML/System.hpp>
 

@@ -15,8 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "DungeonGenerator.hpp"
 
-#include "../util/assert.hpp"
-#include "../util/geometry.hpp"
+#include "util/assert.hpp"
+#include "util/geometry.hpp"
 
 namespace generation {
     DungeonGenerator::DungeonGenerator(std::unique_ptr<RoomGenerator> newRoomGenerator,

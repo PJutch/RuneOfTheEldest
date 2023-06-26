@@ -16,11 +16,11 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef ASSET_MANAGER_HPP_
 #define ASSET_MANAGER_HPP_
 
-#include "../core/Tile.hpp"
-#include "../core/AiState.hpp"
+#include "core/Tile.hpp"
+#include "core/AiState.hpp"
 
-#include "../util/log.hpp"
-#include "../util/Exception.hpp"
+#include "util/log.hpp"
+#include "util/Exception.hpp"
 
 #include <SFML/Graphics.hpp>
 

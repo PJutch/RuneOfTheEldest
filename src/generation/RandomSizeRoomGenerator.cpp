@@ -15,7 +15,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "RandomSizeRoomGenerator.hpp"
 
-#include "../util/assert.hpp"
+#include "util/assert.hpp"
 
 namespace generation {
     Area RandomSizeRoomGenerator::randomRoomIn(const Area& area) {

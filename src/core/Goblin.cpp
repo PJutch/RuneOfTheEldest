@@ -15,12 +15,12 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Goblin.hpp"
 
-#include "../render/Renderer.hpp"
+#include "render/Renderer.hpp"
 
-#include "../util/pathfinding.hpp"
-#include "../util/raycast.hpp"
-#include "../util/geometry.hpp"
-#include "../util/assert.hpp"
+#include "util/pathfinding.hpp"
+#include "util/raycast.hpp"
+#include "util/geometry.hpp"
+#include "util/assert.hpp"
 
 namespace core {
 	bool Goblin::act() {

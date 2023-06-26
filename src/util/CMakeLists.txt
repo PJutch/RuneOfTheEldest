@@ -17,4 +17,5 @@ add_library(util STATIC)
 
 target_sources(util PRIVATE pathfinding.cpp raycast.cpp)
 
+target_include_directories(util PRIVATE ..)
 target_link_libraries(util PUBLIC dependencies)

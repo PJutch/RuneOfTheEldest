@@ -20,7 +20,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "World.hpp"
 
-#include "../util/geometry.hpp"
+#include "util/geometry.hpp"
 
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>

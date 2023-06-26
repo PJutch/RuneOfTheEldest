@@ -17,9 +17,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "World.hpp"
 
-#include "..//render/Renderer.hpp"
+#include "render/Renderer.hpp"
 
-#include "../util/Keyboard.hpp"
+#include "util/Keyboard.hpp"
 
 namespace core {
 	void Player::spawn() {

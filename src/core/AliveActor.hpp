@@ -20,7 +20,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "World.hpp"
 
-#include "../util/geometry.hpp"
+#include "util/geometry.hpp"
 
 namespace core {
 	/// Base for all Actors with hp and position in world

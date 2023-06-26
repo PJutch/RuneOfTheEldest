@@ -15,10 +15,10 @@ If not, see < https://www.gnu.org/licenses/>. */
 
 #include "PlayerMap.hpp"
 
-#include "../core/Player.hpp"
-#include "../core/World.hpp"
+#include "core/Player.hpp"
+#include "core/World.hpp"
 
-#include "../util/raycast.hpp"
+#include "util/raycast.hpp"
 
 namespace render {
 	PlayerMap::PlayerMap(std::shared_ptr<core::Player> player_, std::shared_ptr<core::World> world_) :

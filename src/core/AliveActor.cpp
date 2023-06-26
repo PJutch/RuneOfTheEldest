@@ -15,7 +15,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "AliveActor.hpp"
 
-#include "../util/geometry.hpp"
+#include "util/geometry.hpp"
 
 namespace core {
 	AliveActor::AliveActor(double newMaxHp, double regen_, sf::Vector3i newPosition, std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine) :

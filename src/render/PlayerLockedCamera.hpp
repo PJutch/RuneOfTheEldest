@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Camera.hpp"
 
-#include "../core/Player.hpp"
+#include "core/Player.hpp"
 
 #include <memory>
 

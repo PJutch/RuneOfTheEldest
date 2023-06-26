@@ -20,4 +20,5 @@ target_sources(generation PRIVATE BasicRoomGenerator.cpp
                                   DungeonGenerator.cpp
                                   Area.cpp)
 
+target_include_directories(generation PRIVATE ..)
 target_link_libraries(generation PUBLIC dependencies)

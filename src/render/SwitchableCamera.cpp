@@ -15,7 +15,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "SwitchableCamera.hpp"
 
-#include "../util/Keyboard.hpp"
+#include "util/Keyboard.hpp"
 
 namespace render {
     void SwitchableCamera::handleEvent(sf::Event event) {

@@ -15,10 +15,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Renderer.hpp"
 
-#include "../core/Player.hpp"
-#include "../core/Goblin.hpp"
+#include "core/Player.hpp"
+#include "core/Goblin.hpp"
 
-#include "../util/raycast.hpp"
+#include "util/raycast.hpp"
 
 namespace render {
     Renderer::Renderer(std::shared_ptr<Camera> camera,

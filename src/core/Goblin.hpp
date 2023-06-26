@@ -21,7 +21,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Player.hpp"
 #include "AiState.hpp"
 
-#include "../util/random.hpp"
+#include "util/random.hpp"
 
 #include <SFML/System.hpp>
 

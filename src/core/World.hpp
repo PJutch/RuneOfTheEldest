@@ -19,9 +19,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Actor.hpp"
 #include "Tile.hpp"
 
-#include "../util/Array3D.hpp"
-#include "../util/Map.hpp"
-#include "../util/random.hpp"
+#include "util/Array3D.hpp"
+#include "util/Map.hpp"
+#include "util/random.hpp"
 
 #include <SFML/Graphics.hpp>
 
