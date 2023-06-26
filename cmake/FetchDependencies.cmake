@@ -22,3 +22,5 @@ include(cmake/FetchGoogleTest.cmake)
 include(cmake/FetchSpdlog.cmake)
 include(cmake/FetchBoost.cmake)
 include(cmake/FetchSFML.cmake)
+
+target_link_libraries(test_dependencies INTERFACE dependencies)

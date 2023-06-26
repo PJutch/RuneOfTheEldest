@@ -32,7 +32,7 @@ include(cmake/FetchDependencies.cmake)
 add_subdirectory(src)
 
 add_executable(TheRuneOfTheEldest src/main.cpp src/Game.cpp)
-target_link_libraries(TheRuneOfTheEldest sources)
+target_link_libraries(TheRuneOfTheEldest sources dependencies)
 
 add_subdirectory(tests)
 

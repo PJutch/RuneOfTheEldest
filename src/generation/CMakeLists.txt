@@ -21,4 +21,4 @@ target_sources(generation PRIVATE BasicRoomGenerator.cpp
                                   Area.cpp)
 
 target_include_directories(generation PRIVATE ..)
-target_link_libraries(generation PUBLIC dependencies)
+target_link_libraries(generation PRIVATE dependencies)
