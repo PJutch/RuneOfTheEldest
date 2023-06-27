@@ -24,8 +24,6 @@ Game::Game(std::shared_ptr<core::World> newWorld,
            std::shared_ptr<core::Player> player_,
            std::unique_ptr<generation::DungeonGenerator> newDungeonGenerator,
            std::shared_ptr<sf::RenderWindow> window_,
-           std::shared_ptr<render::Camera> camera_,
-           std::shared_ptr<render::PlayerMap> playerMap_,
            std::unique_ptr<render::Renderer> newRenderer,
            util::RandomEngine& randomEngine_,
            util::LoggerFactory& loggerFactory) :
@@ -33,8 +31,6 @@ Game::Game(std::shared_ptr<core::World> newWorld,
     player{ std::move(player_) },
     dungeonGenerator_{std::move(newDungeonGenerator)},
     window{std::move(window_)},
-    camera{std::move(camera_)},
-    playerMap{ std::move(playerMap_) },
     renderer_{std::move(newRenderer)},
     randomEngine{ &randomEngine_ }, 
     generationLogger{ loggerFactory.create("generation") } {}
@@ -67,19 +63,17 @@ void Game::handleEvent(sf::Event event) {
         return;
     }
 
-    if (!player->isAlive()) {
+    if (!player->isAlive())
         if (event.type == sf::Event::KeyPressed
          || event.type == sf::Event::MouseButtonPressed) {
-            camera->reset();
             generate();
             return;
         }
-    }
        
-    camera->handleEvent(event);
+    if (renderer().handleEvent(event))
+        return;
 
-    if (!camera->shouldStealControl())
-        player->handleEvent(event);
+    player->handleEvent(event);
 }
 
 void Game::generate() {
@@ -102,5 +96,5 @@ void Game::generate() {
 
     generationLogger->info("Finished");
 
-    playerMap->onGenerate();
+    renderer().onGenerate();
 }

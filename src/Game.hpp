@@ -35,8 +35,6 @@ public:
          std::shared_ptr<core::Player> player,
          std::unique_ptr<generation::DungeonGenerator> dungeonGenerator,
          std::shared_ptr<sf::RenderWindow> window,
-         std::shared_ptr<render::Camera> camera,
-         std::shared_ptr<render::PlayerMap> playerMap,
          std::unique_ptr<render::Renderer> renderer,
          util::RandomEngine& randomEngine,
          util::LoggerFactory& loggerFactory);
@@ -66,8 +64,6 @@ private:
     std::unique_ptr<generation::DungeonGenerator> dungeonGenerator_;
 
     std::shared_ptr<sf::RenderWindow> window;
-    std::shared_ptr<render::Camera> camera;
-    std::shared_ptr<render::PlayerMap> playerMap;
     std::unique_ptr<render::Renderer> renderer_;
 
     util::RandomEngine* randomEngine;

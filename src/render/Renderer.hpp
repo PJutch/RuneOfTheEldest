@@ -54,8 +54,21 @@ namespace render {
             renderAreas_ = newRenderAreas;
         }
 
+        /// @brief Passes input Event to Renderer components such as Camera
+        /// @returns true if Event shouldn't be passed to other objects
+        bool handleEvent(sf::Event event) {
+            camera->handleEvent(event);
+            return camera->shouldStealControl();
+        }
+
         /// Updates Renderer components such as Camera
         void update(sf::Time elapsedTime);
+
+        /// Notifies Renderer components such as PlayerMap about world generation
+        void onGenerate() {
+            playerMap->onGenerate();
+            camera->reset();
+        }
 
         /// Renders game world
         void draw();
