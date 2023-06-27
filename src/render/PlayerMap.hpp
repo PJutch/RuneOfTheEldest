@@ -46,7 +46,7 @@ namespace render {
 			return tileStates[position];
 		}
 
-		[[nodiscard]] std::span<const std::unique_ptr<core::Actor::DrawMemento>> seenActors() const noexcept {
+		[[nodiscard]] std::span<const core::Actor::DrawMemento> seenActors() const noexcept {
 			return seenActors_;
 		}
 
@@ -59,7 +59,7 @@ namespace render {
 	private:
 		util::Array3D<TileState> tileStates;
 
-		std::vector<std::unique_ptr<core::Actor::DrawMemento>> seenActors_;
+		std::vector<core::Actor::DrawMemento> seenActors_;
 
 		std::shared_ptr<core::Player> player;
 		std::shared_ptr<core::World> world;

@@ -72,27 +72,8 @@ namespace core {
 
 		void handleSound(Sound sound) noexcept final;
 
-		class DrawMemento : public AliveActor::DrawMemento {
-		public:
-			DrawMemento(const Goblin& goblin) : 
-				AliveActor::DrawMemento{ goblin }, texture_{ &goblin.assets->goblinTexture() }, aiState_{ goblin.aiState() } {}
-
-			/// Gets the saved AI state
-			AiState aiState() const noexcept {
-				return aiState_;
-			}
-
-			// Gets Actor texture
-			const sf::Texture& texture() const final {
-				return *texture_;
-			}
-		private:
-			AiState aiState_;
-			const sf::Texture* texture_;
-		};
-
-		[[nodiscard]] std::unique_ptr<Actor::DrawMemento> createDrawMemento() const final {
-			return std::make_unique<DrawMemento>(*this);
+		[[nodiscard]] Actor::DrawMemento createDrawMemento() const final {
+			return { position(), hp(), maxHp(), aiState(), &assets->goblinTexture() };
 		}
 	private:
 		std::shared_ptr<Player> player;

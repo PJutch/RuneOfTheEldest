@@ -54,39 +54,8 @@ namespace {
 
         void beDamaged(double damage) noexcept final {}
 
-        class DrawMemento : public Actor::DrawMemento {
-        public:
-            DrawMemento(const TestActor& actor) : position_{ actor.position() } {}
-
-            [[nodiscard]] sf::Vector3i position() const noexcept final {
-                return position_;
-            }
-
-            [[nodiscard]] double hp() const noexcept final {
-                return 0.0;
-            }
-
-            /// Gets saved Actor max HP
-            [[nodiscard]] virtual double maxHp() const noexcept final {
-                return 0.0;
-            }
-
-            /// Gets saved Actor AI state
-            [[nodiscard]] virtual AiState aiState() const noexcept final {
-                return AiState::NONE;
-            }
-
-            // Gets Actor texture
-            virtual const sf::Texture& texture() const noexcept final {
-                return texture_;
-            }
-        private:
-            sf::Vector3i position_{ 0, 0, 0 };
-            sf::Texture texture_;
-        };
-
-        std::unique_ptr<Actor::DrawMemento> createDrawMemento() const noexcept final {
-            return std::make_unique<DrawMemento>(*this);
+        Actor::DrawMemento createDrawMemento() const noexcept final {
+            return { position() };
         }
 
         [[nodiscard]] bool isOnPlayerSide() const final {
@@ -181,7 +150,7 @@ TEST(PlayerMap, seenActors) {
     playerMap.update();
 
     EXPECT_EQ(std::ssize(playerMap.seenActors()), 1);
-    EXPECT_EQ(playerMap.seenActors()[0]->position(), (sf::Vector3i{ 2, 0, 0 }));
+    EXPECT_EQ(playerMap.seenActors()[0].position, (sf::Vector3i{ 2, 0, 0 }));
 }
 
 TEST(PlayerMap, seenActorsMemorization) {
@@ -201,5 +170,5 @@ TEST(PlayerMap, seenActorsMemorization) {
     actor->position({1, 0, 0});
 
     EXPECT_EQ(std::ssize(playerMap.seenActors()), 1);
-    EXPECT_EQ(playerMap.seenActors()[0]->position(), (sf::Vector3i{ 2, 0, 0 }));
+    EXPECT_EQ(playerMap.seenActors()[0].position, (sf::Vector3i{ 2, 0, 0 }));
 }

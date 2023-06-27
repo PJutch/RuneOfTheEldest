@@ -42,8 +42,8 @@ namespace render {
 	}
 
 	void PlayerMap::updateActors() {
-		std::erase_if(seenActors_, [&player = *player, &world = *world](const auto& actor) -> bool {
-			return util::canSee(player.position(), actor->position(), world);
+		std::erase_if(seenActors_, [&player = *player, &world = *world](auto actor) -> bool {
+			return util::canSee(player.position(), actor.position, world);
 		});
 
 		for (const auto& actor : world->actors())

@@ -61,26 +61,8 @@ namespace core {
 
 		void handleSound(Sound) noexcept final {}
 
-		class DrawMemento : public AliveActor::DrawMemento {
-		public:
-			DrawMemento(const Player& player) : 
-				AliveActor::DrawMemento{ player }, texture_{&player.assets->playerTexture()} {}
-
-			/// Gets saved Actor AI state
-			[[nodiscard]] virtual AiState aiState() const noexcept final {
-				return AiState::NONE;
-			}
-
-			// Gets Actor texture
-			const sf::Texture& texture() const final {
-				return *texture_;
-			}
-		private:
-			const sf::Texture* texture_;
-		};
-
-		[[nodiscard]] std::unique_ptr<Actor::DrawMemento> createDrawMemento() const final {
-			return std::make_unique<DrawMemento>(*this);
+		[[nodiscard]] Actor::DrawMemento createDrawMemento() const final {
+			return { position(), hp(), maxHp(), AiState::NONE, &assets->playerTexture() };
 		}
 	private:
 		enum class State {

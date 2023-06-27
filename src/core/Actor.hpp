@@ -71,29 +71,17 @@ namespace core {
 		/// called when Actor hears a sound
 		virtual void handleSound(Sound sound) = 0;
 
-		/// @brief Saves seen Actor state and draws it.
-		/// @warning Saved state shouldn't change
-		/// @warning Should be usable after deleting Actor
-		class DrawMemento {
-		public:
-			/// Gets saved Actor position
-			[[nodiscard]] virtual sf::Vector3i position() const = 0;
-
-			/// Gets saved Actor HP
-			[[nodiscard]] virtual double hp() const = 0;
-
-			/// Gets saved Actor max HP
-			[[nodiscard]] virtual double maxHp() const = 0;
-
-			/// Gets saved Actor AI state
-			[[nodiscard]] virtual AiState aiState() const = 0;
-
-			// Gets Actor texture
-			virtual const sf::Texture& texture() const = 0;
+		/// Saves seen Actor state to draw it.
+		struct DrawMemento {
+			sf::Vector3i position;
+			double hp;
+			double maxHp;
+			AiState aiState;
+			const sf::Texture* texture;
 		};
 
 		/// Returns new DrawMemento with copy of current Actor state
-		[[nodiscard]] virtual std::unique_ptr<DrawMemento> createDrawMemento() const = 0;
+		[[nodiscard]] virtual DrawMemento createDrawMemento() const = 0;
 	};
 }
 

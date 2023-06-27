@@ -33,8 +33,8 @@ namespace render {
 
     void Renderer::drawWorld() {
         drawLevel(camera->position().level);
-        for (const auto& actor : playerMap->seenActors())
-            draw(*actor);
+        for (auto actor : playerMap->seenActors())
+            draw(actor);
     }
 
     void Renderer::drawLevel(int z) {
@@ -54,14 +54,14 @@ namespace render {
                 sf::Color::Green, 1.0);
     }
 
-    void Renderer::draw(const core::Actor::DrawMemento& actor) {
+    void Renderer::draw(core::Actor::DrawMemento actor) {
         double colorMod = 1.0;
-        if (!util::canSee(player->position(), actor.position(), *world))
+        if (!util::canSee(player->position(), actor.position, *world))
             colorMod = 0.5;
 
-        drawSprite(actor.position(), actor.texture(), colorMod);
-        drawHpBar(actor.position(), actor.hp(), actor.maxHp(), colorMod);
-        drawSprite(actor.position(), assets()->aiStateIcon(actor.aiState()), colorMod);
+        drawSprite(actor.position, *actor.texture, colorMod);
+        drawHpBar(actor.position, actor.hp, actor.maxHp, colorMod);
+        drawSprite(actor.position, assets()->aiStateIcon(actor.aiState), colorMod);
     }
 
     void Renderer::drawInWorldRect(sf::IntRect rect,

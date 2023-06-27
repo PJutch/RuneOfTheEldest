@@ -59,8 +59,8 @@ namespace {
 
 		void beDamaged(double damage) noexcept final {}
 
-		std::unique_ptr<Actor::DrawMemento> createDrawMemento() const noexcept final {
-			return nullptr;
+		Actor::DrawMemento createDrawMemento() const noexcept final {
+			return {};
 		}
 
 		int id() const noexcept {

@@ -113,7 +113,7 @@ namespace render {
         void drawLevel(int z);
         void drawAreas(int level);
 
-        void draw(const core::Actor::DrawMemento& actor);
+        void draw(core::Actor::DrawMemento actor);
 
         void drawHpBar(sf::Vector3i position, double hp, double maxHp, double colorMod = 1.0);
 
