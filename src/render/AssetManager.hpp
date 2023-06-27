@@ -22,7 +22,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/log.hpp"
 #include "util/Exception.hpp"
 
-#include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/Image.hpp>
+#include <SFML/Graphics/Font.hpp>
 
 namespace render {
 	/// Loads and manages textures

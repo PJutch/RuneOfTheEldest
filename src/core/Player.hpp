@@ -24,8 +24,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "util/geometry.hpp"
 
-#include <SFML/Window.hpp>
-#include <SFML/System.hpp>
+#include <SFML/Window/Event.hpp>
 
 namespace core {
 	/// Player character

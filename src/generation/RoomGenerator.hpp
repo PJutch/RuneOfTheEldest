@@ -18,8 +18,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Area.hpp"
 
-#include <SFML/Graphics.hpp>
-
 #include <memory>
 
 namespace generation {

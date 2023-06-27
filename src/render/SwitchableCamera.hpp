@@ -18,7 +18,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Camera.hpp"
 
-#include <SFML/Window.hpp>
+#include <SFML/Window/Event.hpp>
+#include <SFML/System/Time.hpp>
 
 #include <vector>
 #include <memory>

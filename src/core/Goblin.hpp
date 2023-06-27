@@ -23,7 +23,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "util/random.hpp"
 
-#include <SFML/System.hpp>
+#include <SFML/System/Vector3.hpp>
 
 #include <array>
 #include <memory>

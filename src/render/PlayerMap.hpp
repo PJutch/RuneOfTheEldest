@@ -25,7 +25,7 @@ namespace core {
 
 #include "util/Array3D.hpp"
 
-#include <SFML/System.hpp>
+#include <SFML/System/Vector3.hpp>
 
 #include <vector>
 #include <span>

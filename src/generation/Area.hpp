@@ -16,8 +16,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef AREA_HPP_
 #define AREA_HPP_
 
-#include <SFML/Graphics.hpp>
-#include <SFML/System.hpp>
+#include <SFML/Graphics/Rect.hpp>
 
 #include <utility>
 #include <vector>

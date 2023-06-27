@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "../core/World.hpp"
 
-#include <SFML/System.hpp>
+#include <SFML/System/Vector3.hpp>
 
 namespace util {
 	/// Checks if position1 and position2 are visible from each other

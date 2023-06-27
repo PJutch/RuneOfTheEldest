@@ -20,6 +20,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "util/raycast.hpp"
 
+#include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Text.hpp>
+
 namespace render {
     Renderer::Renderer(std::shared_ptr<Camera> camera,
         std::shared_ptr<PlayerMap> playerMap_,

@@ -18,7 +18,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 /// @file event.hpp Utilities for sf::Keyboard
 
-#include <SFML/Window.hpp>
+#include <SFML/Window/Event.hpp>
+#include <SFML/Window/Keyboard.hpp>
 
 namespace util {
     /// Checks if event is KeyPressed event for key key

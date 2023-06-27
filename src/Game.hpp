@@ -22,9 +22,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/random.hpp"
 #include "util/log.hpp"
 
-#include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
-#include <SFML/System.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Window/Event.hpp>
 
 #include <memory>
 

@@ -23,8 +23,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "util/random.hpp"
 
-#include <SFML/Graphics.hpp>
-
 #include <queue>
 #include <functional>
 

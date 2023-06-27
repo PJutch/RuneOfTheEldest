@@ -16,8 +16,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef CAMERA_HPP_
 #define CAMERA_HPP_
 
-#include <SFML/Window.hpp>
-#include <SFML/System.hpp>
+#include <SFML/Window/Event.hpp>
+#include <SFML/System/Time.hpp>
+#include <SFML/System/Vector3.hpp>
+#include <SFML/System/Vector2.hpp>
 
 namespace render {
     /// Interface for cameras. Determines point of view

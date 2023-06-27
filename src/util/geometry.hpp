@@ -18,8 +18,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 /// @file geometry.hpp Geometry related utilities
 
-#include <SFML/Graphics.hpp>
-#include <SFML/System.hpp>
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/System/Vector2.hpp>
+#include <SFML/System/Vector3.hpp>
 
 #include <array>
 #include <type_traits>

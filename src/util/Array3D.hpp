@@ -18,8 +18,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "geometry.hpp"
 
-#include <SFML/Graphics.hpp>
-
 namespace util {
 	template <typename T>
 	class Array3D {

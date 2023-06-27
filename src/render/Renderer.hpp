@@ -29,9 +29,13 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/geometry.hpp"
 #include "util/log.hpp"
 
-#include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
-#include <SFML/System.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/Graphics/Color.hpp>
+#include <SFML/Window/Event.hpp>
+#include <SFML/System/Time.hpp>
+#include <SFML/System/Vector2.hpp>
+#include <SFML/System/Vector3.hpp>
 
 #include <array>
 #include <string_view>

@@ -18,7 +18,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 /// @file View.hpp Utilities for sf::View creation
 
-#include <SFML/Graphics.hpp>
+#include <SFML/Graphics/View.hpp>
+#include <SFML/System/Vector2.hpp>
 
 namespace render {
     /// @brief creates view

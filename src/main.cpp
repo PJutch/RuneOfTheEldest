@@ -23,9 +23,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/Exception.hpp"
 #include "util/random.hpp"
 
-#include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
-#include <SFML/System.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Window/VideoMode.hpp>
+#include <SFML/Window/WindowStyle.hpp>
+#include <SFML/System/String.hpp>
 
 #include <boost/di.hpp>
 

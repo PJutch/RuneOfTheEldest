@@ -16,7 +16,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef SOUND_HPP_
 #define SOUND_HPP_
 
-#include <SFML/System.hpp>
+#include <SFML/System/Vector3.hpp>
 
 namespace core {
 	struct Sound {

@@ -23,8 +23,8 @@ namespace render {
 	class Renderer;
 }
 
-#include <SFML/Graphics.hpp>
-#include <SFML/System.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/System/Vector3.hpp>
 
 #include <memory>
 
