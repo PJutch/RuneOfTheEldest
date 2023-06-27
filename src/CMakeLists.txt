@@ -26,3 +26,5 @@ target_link_libraries(sources INTERFACE util)
 
 add_subdirectory(core)
 target_link_libraries(sources INTERFACE core)
+
+target_include_directories(sources INTERFACE .)

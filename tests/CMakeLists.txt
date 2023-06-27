@@ -19,7 +19,6 @@ add_executable(tests geometry.cpp BasicRoomGenerator.cpp Area.cpp View.cpp Map.c
                      World.cpp AliveActor.cpp Keyboard.cpp pathfinding.cpp raycast.cpp PlayerMap.cpp)
 
 target_link_libraries(tests test_dependencies sources)
-target_include_directories(tests PRIVATE ../src)
 
 include(GoogleTest)
 gtest_discover_tests(tests)
