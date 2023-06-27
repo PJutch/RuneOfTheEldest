@@ -15,6 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "FreeCamera.hpp"
 
+#include <core/World.hpp>
+
 #include "util/Keyboard.hpp"
 #include "util/geometry.hpp"
 

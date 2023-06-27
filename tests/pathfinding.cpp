@@ -15,6 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "util/pathfinding.hpp"
 
+#include "core/World.hpp"
+
 #include <gtest/gtest.h>
 
 TEST(pathfinding, nextStepInPlace) {

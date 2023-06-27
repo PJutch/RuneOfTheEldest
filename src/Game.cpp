@@ -15,6 +15,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Game.hpp"
 
+#include "render/Renderer.hpp"
+#include "generation/DungeonGenerator.hpp"
+
+#include "core/World.hpp"
 #include "core/Player.hpp"
 #include "core/Goblin.hpp"
 

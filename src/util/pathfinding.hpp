@@ -16,7 +16,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef PATHFINDING_HPP_
 #define PATHFINDING_HPP_
 
-#include "../core/World.hpp"
+#include "core/fwd.hpp"
+
+#include <SFML/System/Vector3.hpp>
 
 namespace util {
 	/// Computes next move to perform to move from position to target

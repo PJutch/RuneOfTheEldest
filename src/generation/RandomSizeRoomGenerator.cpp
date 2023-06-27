@@ -15,6 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "RandomSizeRoomGenerator.hpp"
 
+#include "core/World.hpp"
+
 #include "util/assert.hpp"
 
 namespace generation {

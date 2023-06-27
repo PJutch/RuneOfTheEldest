@@ -15,6 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "raycast.hpp"
 
+#include "core/World.hpp"
+
 #include "geometry.hpp"
 
 namespace util {

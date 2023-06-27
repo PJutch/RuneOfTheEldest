@@ -21,10 +21,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "AssetManager.hpp"
 #include "PlayerMap.hpp"
 
-#include "core/World.hpp"
+#include "core/fwd.hpp"
 #include "core/AiState.hpp"
-#include "core/Player.hpp"
-#include "core/Goblin.hpp"
 
 #include "util/geometry.hpp"
 #include "util/log.hpp"

@@ -15,7 +15,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "pathfinding.hpp"
 
-#include "../core/World.hpp"
+#include "core/World.hpp"
 
 #include "Array3D.hpp"
 #include "geometry.hpp"

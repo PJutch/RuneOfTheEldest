@@ -15,6 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Goblin.hpp"
 
+#include "Player.hpp"
+
 #include "util/pathfinding.hpp"
 #include "util/raycast.hpp"
 #include "util/geometry.hpp"

@@ -16,8 +16,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef GAME_HPP_
 #define GAME_HPP_
 
-#include "render/Renderer.hpp"
-#include "generation/DungeonGenerator.hpp"
+#include "core/fwd.hpp"
+#include "render/fwd.hpp"
+#include "generation/fwd.hpp"
 
 #include "util/random.hpp"
 #include "util/log.hpp"

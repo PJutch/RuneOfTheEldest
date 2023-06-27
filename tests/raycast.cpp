@@ -15,6 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "util/raycast.hpp"
 
+#include "core/World.hpp"
+
 #include <gtest/gtest.h>
 
 TEST(raycast, canSeeEmpty) {

@@ -19,7 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "RoomGenerator.hpp"
 #include "BasicRoomGenerator.hpp"
 
-#include "core/World.hpp"
+#include "core/fwd.hpp"
 
 #include "util/random.hpp"
 

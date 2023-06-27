@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Camera.hpp"
 
-#include "core/World.hpp"
+#include "core/fwd.hpp"
 
 #include <memory>
 

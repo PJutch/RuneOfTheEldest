@@ -15,6 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "BasicRoomGenerator.hpp"
 
+#include "core/World.hpp"
+
 #include "util/assert.hpp"
 
 namespace generation {

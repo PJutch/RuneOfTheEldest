@@ -14,7 +14,11 @@ You should have received a copy of the GNU General Public License along with the
 If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Game.hpp"
+
 #include "generation/RandomSizeRoomGenerator.hpp"
+#include "generation/DungeonGenerator.hpp"
+
+#include "render/Renderer.hpp"
 #include "render/FreeCamera.hpp"
 #include "render/PlayerLockedCamera.hpp"
 #include "render/SwitchableCamera.hpp"

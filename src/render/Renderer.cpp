@@ -16,7 +16,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Renderer.hpp"
 
 #include "core/Player.hpp"
-#include "core/Goblin.hpp"
 
 #include "util/raycast.hpp"
 

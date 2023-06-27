@@ -16,11 +16,7 @@ If not, see < https://www.gnu.org/licenses/>. */
 #ifndef SEEN_TILES_HPP_
 #define SEEN_TILES_HPP_
 
-namespace core {
-	class Player;
-	class World;
-}
-
+#include "core/fwd.hpp"
 #include "core/Actor.hpp"
 
 #include "util/Array3D.hpp"

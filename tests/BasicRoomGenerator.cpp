@@ -15,6 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "generation/BasicRoomGenerator.hpp"
 
+#include "core/World.hpp"
+
 #include "util/geometry.hpp"
 
 #include <gtest/gtest.h>

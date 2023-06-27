@@ -13,16 +13,13 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef RAYCAST_HPP_
-#define RAYCAST_HPP_
+#ifndef RENDER_FWD_HPP_
+#define RENDER_FWD_HPP_
 
-#include "core/fwd.hpp"
+/// @file fwd.hpp Forward declarations for render classes
 
-#include <SFML/System/Vector3.hpp>
-
-namespace util {
-	/// Checks if position1 and position2 are visible from each other
-	bool canSee(sf::Vector3i position1, sf::Vector3i position2, const core::World& dungeon);
+namespace render {
+	class Renderer;
 }
 
 #endif

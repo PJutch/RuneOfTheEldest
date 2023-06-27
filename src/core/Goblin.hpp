@@ -18,8 +18,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "AliveActor.hpp"
 
-#include "Player.hpp"
+#include "fwd.hpp"
 #include "AiState.hpp"
+
+#include "render/AssetManager.hpp"
 
 #include "util/random.hpp"
 
