@@ -131,17 +131,17 @@ namespace core {
 				position_{ actor.position() }, hp_{ actor.hp() }, maxHp_{ actor.maxHp() } {}
 
 			/// Gets the saved position
-			[[nodiscard]] sf::Vector3i position() const noexcept {
+			[[nodiscard]] sf::Vector3i position() const noexcept final {
 				return position_;
 			}
 
 			/// Gets the saved HP
-			[[nodiscard]] double hp() const noexcept {
+			[[nodiscard]] double hp() const noexcept final {
 				return hp_;
 			}
 
 			/// Gets the saved max HP
-			[[nodiscard]] double maxHp() const noexcept {
+			[[nodiscard]] double maxHp() const noexcept final {
 				return maxHp_;
 			}
 		private:

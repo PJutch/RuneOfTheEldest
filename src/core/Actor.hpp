@@ -17,11 +17,13 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define ACTOR_HPP_
 
 #include "Sound.hpp"
+#include "AiState.hpp"
 
 namespace render {
 	class Renderer;
 }
 
+#include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 
 #include <memory>
@@ -77,8 +79,17 @@ namespace core {
 			/// Gets saved Actor position
 			[[nodiscard]] virtual sf::Vector3i position() const = 0;
 
-			/// Draw an actor using a renderer. Uses a visitor pattern
-			virtual void draw(render::Renderer& renderer) const = 0;
+			/// Gets saved Actor HP
+			[[nodiscard]] virtual double hp() const = 0;
+
+			/// Gets saved Actor max HP
+			[[nodiscard]] virtual double maxHp() const = 0;
+
+			/// Gets saved Actor AI state
+			[[nodiscard]] virtual AiState aiState() const = 0;
+
+			// Gets Actor texture
+			virtual const sf::Texture& texture() const = 0;
 		};
 
 		/// Returns new DrawMemento with copy of current Actor state

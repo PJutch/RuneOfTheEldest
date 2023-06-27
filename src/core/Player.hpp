@@ -20,6 +20,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "World.hpp"
 
+#include "render/AssetManager.hpp"
+
 #include "util/geometry.hpp"
 
 #include <SFML/Window.hpp>
@@ -29,8 +31,8 @@ namespace core {
 	/// Player character
 	class Player : public AliveActor, public std::enable_shared_from_this<Player> {
 	public:
-		Player(std::shared_ptr<World> world_, util::RandomEngine& randomEngine_) :
-			AliveActor{ 10, 0.1, std::move(world_), &randomEngine_ } {}
+		Player(std::shared_ptr<World> world_, std::shared_ptr<render::AssetManager> assets_, util::RandomEngine& randomEngine_) :
+			AliveActor{ 10, 0.1, std::move(world_), &randomEngine_ }, assets{ std::move(assets_) } {}
 		Player() : AliveActor{ 10, 0.1, nullptr, nullptr } {}
 
 		void spawn();
@@ -61,9 +63,20 @@ namespace core {
 
 		class DrawMemento : public AliveActor::DrawMemento {
 		public:
-			DrawMemento(const Player& player) : AliveActor::DrawMemento{ player } {}
+			DrawMemento(const Player& player) : 
+				AliveActor::DrawMemento{ player }, texture_{&player.assets->playerTexture()} {}
 
-			void draw(render::Renderer& renderer) const final;
+			/// Gets saved Actor AI state
+			[[nodiscard]] virtual AiState aiState() const noexcept final {
+				return AiState::NONE;
+			}
+
+			// Gets Actor texture
+			const sf::Texture& texture() const final {
+				return *texture_;
+			}
+		private:
+			const sf::Texture* texture_;
 		};
 
 		[[nodiscard]] std::unique_ptr<Actor::DrawMemento> createDrawMemento() const final {
@@ -76,6 +89,8 @@ namespace core {
 			ENDED_TURN
 		};
 		State state = State::WAITING_TURN;
+
+		std::shared_ptr<render::AssetManager> assets = nullptr;
 
 		void tryAscentStairs();
 		void tryDescentStairs();

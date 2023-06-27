@@ -26,24 +26,24 @@ namespace render {
         std::shared_ptr<sf::RenderWindow> window_,
         std::shared_ptr<core::World> world_,
         std::shared_ptr<core::Player> player_,
-        std::unique_ptr<AssetManager> assets_) :
-        camera{ std::move(camera) }, assets{ std::move(assets_) }, playerMap{ std::move(playerMap_) },
+        std::shared_ptr<AssetManager> assets_) :
+        camera{ std::move(camera) }, assets_{ std::move(assets_) }, playerMap{ std::move(playerMap_) },
         world{ std::move(world_) }, player{ player_ },
         window{ std::move(window_) } {}
 
     void Renderer::drawWorld() {
         drawLevel(camera->position().level);
         for (const auto& actor : playerMap->seenActors())
-            actor->draw(*this);
+            draw(*actor);
     }
 
     void Renderer::drawLevel(int z) {
         for (int x = 0; x < world->tiles().shape().x; ++x)
             for (int y = 0; y < world->tiles().shape().y; ++y)
                 if (playerMap->tileState({ x, y, z }) == PlayerMap::TileState::VISIBLE)
-                    drawSprite(sf::Vector2i{ x, y }, assets->tileTexture(world->tiles()[{x, y, z}]));
+                    drawSprite(sf::Vector2i{ x, y }, assets()->tileTexture(world->tiles()[{x, y, z}]));
                 else if (playerMap->tileState({ x, y, z }) == PlayerMap::TileState::MEMORIZED)
-                    drawSprite(sf::Vector2i{ x, y }, assets->tileTexture(world->tiles()[{x, y, z}]), 0.5);
+                    drawSprite(sf::Vector2i{ x, y }, assets()->tileTexture(world->tiles()[{x, y, z}]), 0.5);
 
         if (renderAreas_) drawAreas(z);
     }
@@ -52,6 +52,16 @@ namespace render {
         for (sf::IntRect area : world->areas(z))
             drawInWorldRect(area, sf::Color::Transparent,
                 sf::Color::Green, 1.0);
+    }
+
+    void Renderer::draw(const core::Actor::DrawMemento& actor) {
+        double colorMod = 1.0;
+        if (!util::canSee(player->position(), actor.position(), *world))
+            colorMod = 0.5;
+
+        drawSprite(actor.position(), actor.texture(), colorMod);
+        drawHpBar(actor.position(), actor.hp(), actor.maxHp(), colorMod);
+        drawSprite(actor.position(), assets()->aiStateIcon(actor.aiState()), colorMod);
     }
 
     void Renderer::drawInWorldRect(sf::IntRect rect,
@@ -71,21 +81,6 @@ namespace render {
         rectShape.setOutlineThickness(outlineThickness);
 
         window->draw(rectShape);
-    }
-
-    void Renderer::draw(const core::Player::DrawMemento& player) {
-        drawSprite(player.position(), assets->playerTexture());
-        drawHpBar(player.position(), player.hp(), player.maxHp());
-    }
-
-    void Renderer::draw(const core::Goblin::DrawMemento& goblin) {
-        double colorMod = 1.0;
-        if (!util::canSee(player->position(), goblin.position(), *world))
-            colorMod = 0.5;
-
-        drawSprite(goblin.position(), assets->goblinTexture(), colorMod);
-        drawHpBar(goblin.position(), goblin.hp(), goblin.maxHp(), colorMod);
-        drawSprite(goblin.position(), assets->aiStateIcon(goblin.aiState()), colorMod);
     }
 
     void Renderer::drawSprite(sf::Vector3i position, const sf::Texture& texture, double colorMod) {
@@ -113,12 +108,12 @@ namespace render {
         float hpFraction = static_cast<float>(hp) / maxHp;
         sf::Color color((1 - hpFraction) * colorMod * 255, hpFraction * colorMod * 255, 0);
 
-        float width = hpFraction * assets->tileSize().x;
+        float width = hpFraction * assets()->tileSize().x;
         float height = 2.f;
 
         sf::Vector2f screenPos = toScreen(util::getXY(position));
         float top = screenPos.x;
-        float left = screenPos.y + assets->tileSize().y - height;
+        float left = screenPos.y + assets()->tileSize().y - height;
 
         drawRect({ top, left, width, height }, color);
     }
@@ -150,7 +145,7 @@ namespace render {
     void Renderer::drawText(sf::Vector2f position, const std::string& string, sf::Color color, int characterSize) {
         sf::Text text;
         text.setString(string);
-        text.setFont(assets->font());
+        text.setFont(assets()->font());
         text.setColor(color);
         text.setCharacterSize(characterSize);
 

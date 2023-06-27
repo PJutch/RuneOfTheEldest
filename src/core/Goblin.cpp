@@ -15,8 +15,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Goblin.hpp"
 
-#include "render/Renderer.hpp"
-
 #include "util/pathfinding.hpp"
 #include "util/raycast.hpp"
 #include "util/geometry.hpp"
@@ -72,20 +70,11 @@ namespace core {
 			tryMove(nextStep_, false);
 	}
 
-	void Goblin::DrawMemento::draw(render::Renderer& renderer) const {
-		renderer.draw(*this);
-	}
-
-	void Goblin::spawnSingle(int level, std::shared_ptr<World> world, std::shared_ptr<Player> player_, util::RandomEngine& randomEngine) {
-		sf::Vector3i position = world->randomPositionAt(level, &World::isFree);
-
-		world->addActor(std::make_shared<Goblin>(position, world, std::move(player_), randomEngine));
-	}
-
-	void Goblin::spawnAll(std::shared_ptr<World> world, std::shared_ptr<Player> player_, util::RandomEngine& randomEngine) {
+	void Goblin::spawnAll(std::shared_ptr<World> world, std::shared_ptr<Player> player_, 
+		                  std::shared_ptr<render::AssetManager> assets_, util::RandomEngine& randomEngine) {
 		for (int level = 0; level < world->tiles().shape().z; ++level)
 			for (int i = 0; i < std::uniform_int_distribution{ 5, 20 }(randomEngine); ++i)
-				spawnSingle(level, world, player_, randomEngine);
+				spawnSingle(level, world, player_, assets_, randomEngine);
 	}
 
 	bool Goblin::canSeePlayer() const noexcept {

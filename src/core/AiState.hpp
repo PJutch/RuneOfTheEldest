@@ -18,9 +18,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 /// State of Enemy AI
 enum class AiState {
-	INACTIVE,  ///< Hasn't seen player before
-	SEEKING,   ///< Has seen player but can't see it currently
-	ATTACKING, ///< Can see player
+	NONE,       ///< Controlled by player
+	INACTIVE,   ///< Hasn't seen player before
+	SEEKING,    ///< Has seen player but can't see it currently
+	ATTACKING,  ///< Can see player
 	TOTAL_      ///< Technical enumerator. Should always be last
 };
 

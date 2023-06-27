@@ -17,8 +17,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "World.hpp"
 
-#include "render/Renderer.hpp"
-
 #include "util/Keyboard.hpp"
 
 namespace core {
@@ -54,10 +52,6 @@ namespace core {
 						return;
 					}
 		}
-	}
-
-	void Player::DrawMemento::draw(render::Renderer& renderer) const {
-		renderer.draw(*this);
 	}
 
 	bool Player::act() {

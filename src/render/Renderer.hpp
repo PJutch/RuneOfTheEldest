@@ -47,7 +47,7 @@ namespace render {
             std::shared_ptr<sf::RenderWindow> window,
             std::shared_ptr<core::World> world,
             std::shared_ptr<core::Player> player,
-            std::unique_ptr<AssetManager> assets);
+            std::shared_ptr<AssetManager> assets);
 
         /// If true bsp areas created by dungeon generation are rendered
         void renderAreas(bool newRenderAreas = true) noexcept {
@@ -73,19 +73,17 @@ namespace render {
         /// Renders game world
         void draw();
 
-        /// Renders player
-        void draw(const core::Player::DrawMemento& player);
-
-        /// Renders goblin
-        void draw(const core::Goblin::DrawMemento& goblin);
-
         /// Renders "You died screen"
         void drawDeathScreen();
+
+        std::shared_ptr<AssetManager> assets() const noexcept {
+            return assets_;
+        }
     private:
         bool renderAreas_ = false;
 
         std::shared_ptr<Camera> camera;
-        std::unique_ptr<AssetManager> assets;
+        std::shared_ptr<AssetManager> assets_;
         std::shared_ptr<PlayerMap> playerMap;
 
         std::shared_ptr<core::World> world;
@@ -102,7 +100,7 @@ namespace render {
         }
 
         [[nodiscard]] sf::Vector2f toScreen(float worldX, float worldY) const noexcept {
-            auto [tileX, tileY] = assets->tileSize();
+            auto [tileX, tileY] = assets()->tileSize();
             return { worldX * tileX, worldY * tileY };
         }
 
@@ -114,6 +112,8 @@ namespace render {
         void drawWorld();
         void drawLevel(int z);
         void drawAreas(int level);
+
+        void draw(const core::Actor::DrawMemento& actor);
 
         void drawHpBar(sf::Vector3i position, double hp, double maxHp, double colorMod = 1.0);
 

@@ -32,14 +32,22 @@ namespace core {
 	/// Goblin enemy
 	class Goblin : public AliveActor {
 	public:
-		Goblin(sf::Vector3i newPosition, std::shared_ptr<World> world_, std::shared_ptr<Player> player_, util::RandomEngine& randomEngine_) :
-			AliveActor{ 3, 0.1, newPosition, std::move(world_), &randomEngine_ }, player{ player_ }, targetPosition{ newPosition } {}
+		Goblin(sf::Vector3i newPosition, std::shared_ptr<World> world_, std::shared_ptr<Player> player_, 
+			   std::shared_ptr<render::AssetManager> assets_, util::RandomEngine& randomEngine_) :
+			AliveActor{ 3, 0.1, newPosition, std::move(world_), &randomEngine_ }, player{ player_ }, targetPosition{ newPosition }, 
+			assets{ std::move(assets_) } {}
 
 		/// Randomly moves goblin
 		bool act() final;
 
-		static void spawnSingle(int level, std::shared_ptr<World> world, std::shared_ptr<Player> player_, util::RandomEngine& randomEngine);
-		static void spawnAll(std::shared_ptr<World> world, std::shared_ptr<Player> player_, util::RandomEngine& randomEngine);
+		static void spawnSingle(int level, std::shared_ptr<World> world, std::shared_ptr<Player> player_,
+								std::shared_ptr<render::AssetManager> assets_, util::RandomEngine& randomEngine) {
+			sf::Vector3i position = world->randomPositionAt(level, &World::isFree);
+			world->addActor(std::make_shared<Goblin>(position, world, std::move(player_), std::move(assets_), randomEngine));
+		}
+
+		static void spawnAll(std::shared_ptr<World> world, std::shared_ptr<Player> player_, 
+			                 std::shared_ptr<render::AssetManager> assets_, util::RandomEngine& randomEngine);
 
 		[[nodiscard]] bool shouldInterruptOnDelete() const final {
 			return false;
@@ -66,16 +74,21 @@ namespace core {
 
 		class DrawMemento : public AliveActor::DrawMemento {
 		public:
-			DrawMemento(const Goblin& goblin) : AliveActor::DrawMemento{ goblin }, aiState_{ goblin.aiState() } {}
+			DrawMemento(const Goblin& goblin) : 
+				AliveActor::DrawMemento{ goblin }, texture_{ &goblin.assets->goblinTexture() }, aiState_{ goblin.aiState() } {}
 
 			/// Gets the saved AI state
 			AiState aiState() const noexcept {
 				return aiState_;
 			}
 
-			void draw(render::Renderer& renderer) const final;
+			// Gets Actor texture
+			const sf::Texture& texture() const final {
+				return *texture_;
+			}
 		private:
 			AiState aiState_;
+			const sf::Texture* texture_;
 		};
 
 		[[nodiscard]] std::unique_ptr<Actor::DrawMemento> createDrawMemento() const final {
@@ -88,6 +101,8 @@ namespace core {
 		sf::Vector3i targetPosition;
 		double targetPriority = 0.01;
 		AiState aiState_ = AiState::INACTIVE;
+
+		std::shared_ptr<render::AssetManager> assets = nullptr;
 
 		void attack(Actor& actor) final {
 			actor.beDamaged(1);

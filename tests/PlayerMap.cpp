@@ -62,9 +62,27 @@ namespace {
                 return position_;
             }
 
-            void draw(render::Renderer& renderer) const noexcept final {}
+            [[nodiscard]] double hp() const noexcept final {
+                return 0.0;
+            }
+
+            /// Gets saved Actor max HP
+            [[nodiscard]] virtual double maxHp() const noexcept final {
+                return 0.0;
+            }
+
+            /// Gets saved Actor AI state
+            [[nodiscard]] virtual AiState aiState() const noexcept final {
+                return AiState::NONE;
+            }
+
+            // Gets Actor texture
+            virtual const sf::Texture& texture() const noexcept final {
+                return texture_;
+            }
         private:
             sf::Vector3i position_{ 0, 0, 0 };
+            sf::Texture texture_;
         };
 
         std::unique_ptr<Actor::DrawMemento> createDrawMemento() const noexcept final {

@@ -89,7 +89,7 @@ void Game::generate() {
     world->generateStairs();
 
     generationLogger->info("Spawning goblins...");
-    core::Goblin::spawnAll(world, player, *randomEngine);
+    core::Goblin::spawnAll(world, player, renderer().assets(), *randomEngine);
 
     generationLogger->info("Spawning player...");
     player->spawn();
