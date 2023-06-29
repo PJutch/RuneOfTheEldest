@@ -47,12 +47,12 @@ namespace core {
 		}
 
 		/// Gets Actor HP
-		[[nodiscard]] double hp() const noexcept {
+		[[nodiscard]] double hp() const noexcept final {
 			return hp_;
 		}
 
 		/// Gets max possible HP
-		[[nodiscard]] double maxHp() const noexcept {
+		[[nodiscard]] double maxHp() const noexcept final {
 			return maxHp_;
 		}
 	protected:

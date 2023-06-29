@@ -38,11 +38,20 @@ namespace render {
 			VISIBLE,
 		};
 
+		/// Saves seen Actor state to draw it.
+		struct SeenActor {
+			sf::Vector3i position;
+			double hp;
+			double maxHp;
+			AiState aiState;
+			const sf::Texture* texture;
+		};
+
 		[[nodiscard]] TileState tileState(sf::Vector3i position) const noexcept {
 			return tileStates[position];
 		}
 
-		[[nodiscard]] std::span<const core::Actor::DrawMemento> seenActors() const noexcept {
+		[[nodiscard]] std::span<const SeenActor> seenActors() const noexcept {
 			return seenActors_;
 		}
 
@@ -55,7 +64,7 @@ namespace render {
 	private:
 		util::Array3D<TileState> tileStates;
 
-		std::vector<core::Actor::DrawMemento> seenActors_;
+		std::vector<SeenActor> seenActors_;
 
 		std::shared_ptr<core::Player> player;
 		std::shared_ptr<core::World> world;

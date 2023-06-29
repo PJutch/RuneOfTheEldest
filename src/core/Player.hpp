@@ -60,8 +60,12 @@ namespace core {
 
 		void handleSound(Sound) noexcept final {}
 
-		[[nodiscard]] Actor::DrawMemento createDrawMemento() const final {
-			return { position(), hp(), maxHp(), AiState::NONE, &assets->playerTexture() };
+		AiState aiState() const noexcept final {
+			return AiState::NONE;
+		}
+
+		const sf::Texture& texture() const final {
+			return assets->playerTexture();
 		}
 	private:
 		enum class State {

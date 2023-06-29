@@ -68,15 +68,15 @@ namespace core {
 		}
 
 		/// Gets Goblin's AI state
-		AiState aiState() const noexcept {
+		AiState aiState() const noexcept final {
 			return aiState_;
 		}
 
-		void handleSound(Sound sound) noexcept final;
-
-		[[nodiscard]] Actor::DrawMemento createDrawMemento() const final {
-			return { position(), hp(), maxHp(), aiState(), &assets->goblinTexture() };
+		const sf::Texture& texture() const final {
+			return assets->goblinTexture();
 		}
+
+		void handleSound(Sound sound) noexcept final;
 	private:
 		std::shared_ptr<Player> player;
 		bool wantsSwap_ = true;

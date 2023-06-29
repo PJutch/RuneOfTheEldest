@@ -59,8 +59,21 @@ namespace {
 
 		void beDamaged(double damage) noexcept final {}
 
-		Actor::DrawMemento createDrawMemento() const noexcept final {
-			return {};
+		AiState aiState() const noexcept final {
+			return AiState::NONE;
+		}
+
+		const sf::Texture& texture() const final {
+			const static sf::Texture texture_;
+			return texture_;
+		}
+
+		[[nodiscard]] double hp() const noexcept final {
+			return 0;
+		}
+
+		[[nodiscard]] double maxHp() const noexcept final {
+			return 0;
 		}
 
 		int id() const noexcept {

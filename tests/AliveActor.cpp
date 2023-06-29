@@ -68,8 +68,12 @@ public:
 		return false;
 	}
 
-	Actor::DrawMemento createDrawMemento() const noexcept final {
-		return {};
+	AiState aiState() const noexcept final {
+		return AiState::NONE;
+	}
+
+	const sf::Texture& texture() const final {
+		return texture_;
 	}
 
 	[[nodiscard]] bool isOnPlayerSide() const noexcept final {
@@ -96,6 +100,7 @@ public:
 private:
 	bool wantsSwap_ = true;
 	bool hadSwapped_ = false;
+	sf::Texture texture_;
 };
 
 TEST(AliveActor, initialHp) {

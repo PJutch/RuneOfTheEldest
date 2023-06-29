@@ -57,7 +57,7 @@ namespace render {
                 sf::Color::Green, 1.0);
     }
 
-    void Renderer::draw(core::Actor::DrawMemento actor) {
+    void Renderer::draw(PlayerMap::SeenActor actor) {
         double colorMod = 1.0;
         if (!util::canSee(player->position(), actor.position, *world))
             colorMod = 0.5;

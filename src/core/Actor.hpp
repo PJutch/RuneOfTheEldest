@@ -71,17 +71,15 @@ namespace core {
 		/// called when Actor hears a sound
 		virtual void handleSound(Sound sound) = 0;
 
-		/// Saves seen Actor state to draw it.
-		struct DrawMemento {
-			sf::Vector3i position;
-			double hp;
-			double maxHp;
-			AiState aiState;
-			const sf::Texture* texture;
-		};
+		/// Gets Actor HP
+		[[nodiscard]] virtual double hp() const = 0;
 
-		/// Returns new DrawMemento with copy of current Actor state
-		[[nodiscard]] virtual DrawMemento createDrawMemento() const = 0;
+		/// Gets max possible HP
+		[[nodiscard]] virtual double maxHp() const = 0;
+
+		virtual AiState aiState() const = 0;
+
+		virtual const sf::Texture& texture() const = 0;
 	};
 }
 
