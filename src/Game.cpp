@@ -20,7 +20,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "core/World.hpp"
 #include "core/Player.hpp"
-#include "core/Goblin.hpp"
+#include "core/Enemy.hpp"
 
 #include "util/Keyboard.hpp"
 
@@ -92,8 +92,8 @@ void Game::generate() {
     generationLogger->info("Generating stairs...");
     world->generateStairs();
 
-    generationLogger->info("Spawning goblins...");
-    core::Goblin::spawnAll(world, player, renderer().assets(), *randomEngine);
+    generationLogger->info("Spawning enemies...");
+    core::Enemy::spawnAll(world, player, renderer().assets(), *randomEngine);
 
     generationLogger->info("Spawning player...");
     player->spawn();

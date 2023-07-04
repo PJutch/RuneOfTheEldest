@@ -13,8 +13,8 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef GOBLIN_HPP_
-#define GOBLIN_HPP_
+#ifndef ENEMY_HPP_
+#define ENEMY_HPP_
 
 #include "AliveActor.hpp"
 
@@ -31,25 +31,25 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <memory>
 
 namespace core {
-	/// Goblin enemy
-	class Goblin : public AliveActor {
+	/// Customizable enemy
+	class Enemy : public AliveActor {
 	public:
-		Goblin(sf::Vector3i newPosition, std::shared_ptr<World> world_, std::shared_ptr<Player> player_, 
-			   std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine_) :
-			AliveActor{ 3, 0.1, assets->goblinTexture(), newPosition, std::move(world_), &randomEngine_ }, 
+		Enemy(sf::Vector3i newPosition, const sf::Texture& texture, std::shared_ptr<World> world_, 
+			  std::shared_ptr<Player> player_, util::RandomEngine& randomEngine_) :
+			AliveActor{ 3, 0.1, texture, newPosition, std::move(world_), &randomEngine_ },
 			player{ player_ }, targetPosition{ newPosition } {}
 
 		/// Randomly moves goblin
 		bool act() final;
 
-		static void spawnSingle(int level, std::shared_ptr<World> world, std::shared_ptr<Player> player_,
-								std::shared_ptr<render::AssetManager> assets_, util::RandomEngine& randomEngine) {
+		static void spawnSingle(int level, const sf::Texture& texture, std::shared_ptr<World> world,
+			                    std::shared_ptr<Player> player, util::RandomEngine& randomEngine) {
 			sf::Vector3i position = world->randomPositionAt(level, &World::isFree);
-			world->addActor(std::make_shared<Goblin>(position, world, std::move(player_), std::move(assets_), randomEngine));
+			world->addActor(std::make_shared<Enemy>(position, texture, world, std::move(player), randomEngine));
 		}
 
-		static void spawnAll(std::shared_ptr<World> world, std::shared_ptr<Player> player_, 
-			                 std::shared_ptr<render::AssetManager> assets_, util::RandomEngine& randomEngine);
+		static void spawnAll(std::shared_ptr<World> world, std::shared_ptr<Player> player, 
+			                 std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine);
 
 		[[nodiscard]] bool shouldInterruptOnDelete() const final {
 			return false;

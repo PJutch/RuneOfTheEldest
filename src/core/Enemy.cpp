@@ -13,7 +13,7 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#include "Goblin.hpp"
+#include "Enemy.hpp"
 
 #include "Player.hpp"
 
@@ -23,14 +23,14 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/assert.hpp"
 
 namespace core {
-	bool Goblin::act() {
+	bool Enemy::act() {
 		updateTarget();
 		travelToTarget();
 		wait(1);
 		return true;
 	}
 
-	void Goblin::updateTarget() noexcept {
+	void Enemy::updateTarget() noexcept {
 		if (canSeePlayer()) {
 			targetPosition = player->position();
 			aiState_ = AiState::ATTACKING;
@@ -48,14 +48,14 @@ namespace core {
 			targetPriority *= 0.9;
 	}
 
-	sf::Vector3i Goblin::randomNearbyTarget() noexcept {
+	sf::Vector3i Enemy::randomNearbyTarget() noexcept {
 		int minLevel = std::max(position().z - 1, 0);
 		int maxLevel = std::min(position().z + 1, world().tiles().shape().z - 1);
 		int targetLevel = std::uniform_int_distribution{ minLevel, maxLevel }(randomEngine());
 		return world().randomPositionAt(targetLevel, &World::isFree);
 	}
 
-	sf::Vector3i Goblin::tryFollowStairs(sf::Vector3i position) noexcept {
+	sf::Vector3i Enemy::tryFollowStairs(sf::Vector3i position) noexcept {
 		if (auto destination = world().upStairs(position))
 			return *destination;
 		else if (auto destination = world().downStairs(position))
@@ -63,7 +63,7 @@ namespace core {
 		return position;
 	}
 
-	void Goblin::travelToTarget() noexcept {
+	void Enemy::travelToTarget() noexcept {
 		wantsSwap_ = true;
 		sf::Vector3i nextStep_ = util::nextStep(world(), position(), targetPosition);
 		if (nextStep_.z == 0)
@@ -72,14 +72,14 @@ namespace core {
 			tryMove(nextStep_, false);
 	}
 
-	void Goblin::spawnAll(std::shared_ptr<World> world, std::shared_ptr<Player> player_, 
-		                  std::shared_ptr<render::AssetManager> assets_, util::RandomEngine& randomEngine) {
+	void Enemy::spawnAll(std::shared_ptr<World> world, std::shared_ptr<Player> player_,
+		                  std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine) {
 		for (int level = 0; level < world->tiles().shape().z; ++level)
 			for (int i = 0; i < std::uniform_int_distribution{ 5, 20 }(randomEngine); ++i)
-				spawnSingle(level, world, player_, assets_, randomEngine);
+				spawnSingle(level, assets->goblinTexture(), world, player_, randomEngine);
 	}
 
-	bool Goblin::canSeePlayer() const noexcept {
+	bool Enemy::canSeePlayer() const noexcept {
 		return util::canSee(position(), player->position(), world());
 	}
 
@@ -95,7 +95,7 @@ namespace core {
 		}
 	}
 
-	void Goblin::handleSound(Sound sound) noexcept {
+	void Enemy::handleSound(Sound sound) noexcept {
 		if (sound.position.z != position().z)
 			return;
 
