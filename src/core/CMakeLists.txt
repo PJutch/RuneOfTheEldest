@@ -15,7 +15,7 @@
 
 add_library(core STATIC)
 
-target_sources(core PRIVATE AliveActor.cpp Enemy.cpp Player.cpp World.cpp)
+target_sources(core PRIVATE AliveActor.cpp Enemy.cpp Player.cpp World.cpp EnemySpawner.cpp)
 
 target_include_directories(core PRIVATE ..)
 target_link_libraries(core PRIVATE dependencies util render)

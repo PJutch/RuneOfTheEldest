@@ -34,10 +34,8 @@ namespace core {
 	/// Customizable enemy
 	class Enemy : public AliveActor {
 	public:
-		Enemy(sf::Vector3i newPosition, const sf::Texture& texture, std::shared_ptr<World> world_, 
-			  std::shared_ptr<Player> player_, util::RandomEngine& randomEngine_) :
-			AliveActor{ 3, 0.1, texture, newPosition, std::move(world_), &randomEngine_ },
-			player{ player_ }, targetPosition{ newPosition } {}
+		Enemy(sf::Vector3i newPosition, const sf::Texture& texture, std::shared_ptr<World> world_,
+			  std::shared_ptr<Player> player_, util::RandomEngine& randomEngine_);
 
 		/// Randomly moves goblin
 		bool act() final;
@@ -47,9 +45,6 @@ namespace core {
 			sf::Vector3i position = world->randomPositionAt(level, &World::isFree);
 			world->addActor(std::make_shared<Enemy>(position, texture, world, std::move(player), randomEngine));
 		}
-
-		static void spawnAll(std::shared_ptr<World> world, std::shared_ptr<Player> player, 
-			                 std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine);
 
 		[[nodiscard]] bool shouldInterruptOnDelete() const final {
 			return false;

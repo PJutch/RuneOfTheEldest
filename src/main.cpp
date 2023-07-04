@@ -15,6 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Game.hpp"
 
+#include "core/EnemySpawner.hpp"
+
 #include "generation/RandomSizeRoomGenerator.hpp"
 #include "generation/DungeonGenerator.hpp"
 

@@ -13,15 +13,29 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef CORE_FWD_HPP_
-#define CORE_FWD_HPP_
+#ifndef ENEMY_SPAWNER_HPP_
+#define ENEMY_SPAWNER_HPP_
 
-/// @file fwd.hpp Forward declarations for core classes
+#include "World.hpp"
+#include "Player.hpp"
+
+#include "render/AssetManager.hpp"
+
+#include "util/random.hpp"
 
 namespace core {
-	class World;
-	class Player;
-	class EnemySpawner;
+	class EnemySpawner {
+	public:
+		EnemySpawner(std::shared_ptr<World> world_, std::shared_ptr<Player> player_,
+			         std::shared_ptr<render::AssetManager> assets_, util::RandomEngine& randomEngine_);
+
+		void spawn();
+	private:
+		std::shared_ptr<World> world;
+		std::shared_ptr<Player> player;
+		std::shared_ptr<render::AssetManager> assets;
+		util::RandomEngine* randomEngine;
+	};
 }
 
 #endif

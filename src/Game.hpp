@@ -33,10 +33,10 @@ class Game {
 public:
     Game(std::shared_ptr<core::World> world,
          std::shared_ptr<core::Player> player,
+         std::unique_ptr<core::EnemySpawner> enemySpawner,
          std::unique_ptr<generation::DungeonGenerator> dungeonGenerator,
          std::shared_ptr<sf::RenderWindow> window,
          std::unique_ptr<render::Renderer> renderer,
-         util::RandomEngine& randomEngine,
          util::LoggerFactory& loggerFactory);
 
     [[nodiscard]] render::Renderer& renderer() noexcept {
@@ -60,13 +60,13 @@ public:
 private:
     std::shared_ptr<core::World> world;
     std::shared_ptr<core::Player> player;
+    std::unique_ptr<core::EnemySpawner> enemySpawner;
 
     std::unique_ptr<generation::DungeonGenerator> dungeonGenerator_;
 
     std::shared_ptr<sf::RenderWindow> window;
     std::unique_ptr<render::Renderer> renderer_;
 
-    util::RandomEngine* randomEngine;
     std::shared_ptr<spdlog::logger> generationLogger;
 
     void handleEvent(sf::Event event);

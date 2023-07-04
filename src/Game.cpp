@@ -20,23 +20,23 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "core/World.hpp"
 #include "core/Player.hpp"
-#include "core/Enemy.hpp"
+#include "core/EnemySpawner.hpp"
 
 #include "util/Keyboard.hpp"
 
 Game::Game(std::shared_ptr<core::World> newWorld,
            std::shared_ptr<core::Player> player_,
+           std::unique_ptr<core::EnemySpawner> enemySpawner_,
            std::unique_ptr<generation::DungeonGenerator> newDungeonGenerator,
            std::shared_ptr<sf::RenderWindow> window_,
            std::unique_ptr<render::Renderer> newRenderer,
-           util::RandomEngine& randomEngine_,
            util::LoggerFactory& loggerFactory) :
     world{std::move(newWorld)},
     player{ std::move(player_) },
+    enemySpawner{std::move(enemySpawner_)},
     dungeonGenerator_{std::move(newDungeonGenerator)},
     window{std::move(window_)},
     renderer_{std::move(newRenderer)},
-    randomEngine{ &randomEngine_ }, 
     generationLogger{ loggerFactory.create("generation") } {}
 
 void Game::run() {
@@ -93,7 +93,7 @@ void Game::generate() {
     world->generateStairs();
 
     generationLogger->info("Spawning enemies...");
-    core::Enemy::spawnAll(world, player, renderer().assets(), *randomEngine);
+    enemySpawner->spawn();
 
     generationLogger->info("Spawning player...");
     player->spawn();

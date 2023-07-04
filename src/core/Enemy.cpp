@@ -23,6 +23,11 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/assert.hpp"
 
 namespace core {
+	Enemy::Enemy(sf::Vector3i newPosition, const sf::Texture& texture, std::shared_ptr<World> world_,
+		std::shared_ptr<Player> player_, util::RandomEngine& randomEngine_) :
+		AliveActor{ 3, 0.1, texture, newPosition, std::move(world_), &randomEngine_ },
+		player{ player_ }, targetPosition{ newPosition } {}
+
 	bool Enemy::act() {
 		updateTarget();
 		travelToTarget();
@@ -70,13 +75,6 @@ namespace core {
 			tryMoveInDirection(util::getXY(nextStep_), false);
 		else
 			tryMove(nextStep_, false);
-	}
-
-	void Enemy::spawnAll(std::shared_ptr<World> world, std::shared_ptr<Player> player_,
-		                  std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine) {
-		for (int level = 0; level < world->tiles().shape().z; ++level)
-			for (int i = 0; i < std::uniform_int_distribution{ 5, 20 }(randomEngine); ++i)
-				spawnSingle(level, assets->goblinTexture(), world, player_, randomEngine);
 	}
 
 	bool Enemy::canSeePlayer() const noexcept {

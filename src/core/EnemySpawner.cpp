@@ -13,15 +13,18 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef CORE_FWD_HPP_
-#define CORE_FWD_HPP_
+#include "EnemySpawner.hpp"
 
-/// @file fwd.hpp Forward declarations for core classes
+#include "Enemy.hpp"
 
 namespace core {
-	class World;
-	class Player;
-	class EnemySpawner;
-}
+	EnemySpawner::EnemySpawner(std::shared_ptr<World> world_, std::shared_ptr<Player> player_,
+							   std::shared_ptr<render::AssetManager> assets_, util::RandomEngine& randomEngine_) :
+		world{ std::move(world_) }, player{ std::move(player_) }, assets{ std::move(assets_) }, randomEngine{ &randomEngine_ } {}
 
-#endif
+	void EnemySpawner::spawn() {
+		for (int level = 0; level < world->tiles().shape().z; ++level)
+			for (int i = 0; i < std::uniform_int_distribution{ 5, 20 }(*randomEngine); ++i)
+				Enemy::spawnSingle(level, assets->goblinTexture(), world, player, *randomEngine);
+	}
+}
