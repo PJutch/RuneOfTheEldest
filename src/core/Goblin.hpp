@@ -35,9 +35,9 @@ namespace core {
 	class Goblin : public AliveActor {
 	public:
 		Goblin(sf::Vector3i newPosition, std::shared_ptr<World> world_, std::shared_ptr<Player> player_, 
-			   std::shared_ptr<render::AssetManager> assets_, util::RandomEngine& randomEngine_) :
-			AliveActor{ 3, 0.1, newPosition, std::move(world_), &randomEngine_ }, player{ player_ }, targetPosition{ newPosition }, 
-			assets{ std::move(assets_) } {}
+			   std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine_) :
+			AliveActor{ 3, 0.1, assets->goblinTexture(), newPosition, std::move(world_), &randomEngine_ }, 
+			player{ player_ }, targetPosition{ newPosition } {}
 
 		/// Randomly moves goblin
 		bool act() final;
@@ -72,10 +72,6 @@ namespace core {
 			return aiState_;
 		}
 
-		const sf::Texture& texture() const final {
-			return assets->goblinTexture();
-		}
-
 		void handleSound(Sound sound) noexcept final;
 	private:
 		std::shared_ptr<Player> player;
@@ -84,8 +80,6 @@ namespace core {
 		sf::Vector3i targetPosition;
 		double targetPriority = 0.01;
 		AiState aiState_ = AiState::INACTIVE;
-
-		std::shared_ptr<render::AssetManager> assets = nullptr;
 
 		void attack(Actor& actor) final {
 			actor.beDamaged(1);

@@ -20,11 +20,11 @@ If not, see <https://www.gnu.org/licenses/>. */
 class TestAliveActor : public core::AliveActor {
 public:
 	TestAliveActor(double newMaxHp, double regen_, sf::Vector3i newPosition, std::shared_ptr<core::World> newWorld = nullptr) :
-		AliveActor{ newMaxHp, regen_, newPosition, std::move(newWorld), nullptr } {}
+		AliveActor{ newMaxHp, regen_, texture_, newPosition, std::move(newWorld), nullptr } {}
 	TestAliveActor(double newMaxHp, double regen_, std::shared_ptr<core::World> newWorld = nullptr) :
-		AliveActor{ newMaxHp, regen_, std::move(newWorld), nullptr } {}
+		AliveActor{ newMaxHp, regen_, texture_, std::move(newWorld), nullptr } {}
 	TestAliveActor(sf::Vector3i newPosition, std::shared_ptr<core::World> newWorld = nullptr) :
-		AliveActor{ 1.0, 0.0, newPosition, std::move(newWorld), nullptr } {}
+		AliveActor{ 1.0, 0.0, texture_, newPosition, std::move(newWorld), nullptr } {}
 
 	void nextTurn(int newNextTurn) noexcept {
 		AliveActor::nextTurn(newNextTurn);
@@ -70,10 +70,6 @@ public:
 
 	AiState aiState() const noexcept final {
 		return AiState::NONE;
-	}
-
-	const sf::Texture& texture() const final {
-		return texture_;
 	}
 
 	[[nodiscard]] bool isOnPlayerSide() const noexcept final {

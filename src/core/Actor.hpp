@@ -79,7 +79,7 @@ namespace core {
 
 		virtual AiState aiState() const = 0;
 
-		virtual const sf::Texture& texture() const = 0;
+		[[nodiscard]] virtual const sf::Texture& texture() const = 0;
 	};
 }
 

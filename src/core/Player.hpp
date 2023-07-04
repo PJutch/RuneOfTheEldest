@@ -30,9 +30,9 @@ namespace core {
 	/// Player character
 	class Player : public AliveActor, public std::enable_shared_from_this<Player> {
 	public:
-		Player(std::shared_ptr<World> world_, std::shared_ptr<render::AssetManager> assets_, util::RandomEngine& randomEngine_) :
-			AliveActor{ 10, 0.1, std::move(world_), &randomEngine_ }, assets{ std::move(assets_) } {}
-		Player() : AliveActor{ 10, 0.1, nullptr, nullptr } {}
+		Player(std::shared_ptr<World> world_, std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine_) :
+			AliveActor{ 10, 0.1, assets->playerTexture(), std::move(world_), &randomEngine_ } {}
+		Player() = default;
 
 		void spawn();
 
@@ -63,10 +63,6 @@ namespace core {
 		AiState aiState() const noexcept final {
 			return AiState::NONE;
 		}
-
-		const sf::Texture& texture() const final {
-			return assets->playerTexture();
-		}
 	private:
 		enum class State {
 			WAITING_TURN,
@@ -74,8 +70,6 @@ namespace core {
 			ENDED_TURN
 		};
 		State state = State::WAITING_TURN;
-
-		std::shared_ptr<render::AssetManager> assets = nullptr;
 
 		void tryAscentStairs();
 		void tryDescentStairs();

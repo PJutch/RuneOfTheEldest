@@ -55,9 +55,16 @@ namespace core {
 		[[nodiscard]] double maxHp() const noexcept final {
 			return maxHp_;
 		}
+
+		[[nodiscard]] const sf::Texture& texture() const noexcept final {
+			return *texture_;
+		}
 	protected:
-		AliveActor(double newMaxHp, double regen_, sf::Vector3i newPosition, std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine);
-		AliveActor(double newMaxHp, double regen_, std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine);
+		AliveActor() = default;
+		AliveActor(double newMaxHp, double regen_, const sf::Texture& texture, sf::Vector3i newPosition, 
+			       std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine);
+		AliveActor(double newMaxHp, double regen_, const sf::Texture& texture, 
+			       std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine);
 
 		[[nodiscard]] World& world() noexcept {
 			return *world_;
@@ -131,6 +138,8 @@ namespace core {
 		double hp_;
 		double maxHp_;
 		double regen;
+
+		const sf::Texture* texture_;
 
 		std::shared_ptr<World> world_;
 		util::RandomEngine* randomEngine_;
