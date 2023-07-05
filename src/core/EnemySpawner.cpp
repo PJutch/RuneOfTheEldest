@@ -21,7 +21,7 @@ namespace core {
 	EnemySpawner::EnemySpawner(std::shared_ptr<World> world_, std::shared_ptr<Player> player_,
 							   std::shared_ptr<render::AssetManager> assets_, util::RandomEngine& randomEngine_) :
 			world{ std::move(world_) }, player{ std::move(player_) }, assets{ std::move(assets_) }, randomEngine{ &randomEngine_ } {
-		enemyData.emplace_back(3.0, 0.1, &assets->goblinTexture(), 5, 20);
+		enemyData.emplace_back(3.0, 0.1, &assets->texture("resources/textures/goblin.png"), 5, 20);
 	}
 
 	void EnemySpawner::spawn() {

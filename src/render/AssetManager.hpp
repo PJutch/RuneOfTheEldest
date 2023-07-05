@@ -26,6 +26,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/Font.hpp>
 
+#include <filesystem>
+#include <unordered_map>
+
 namespace render {
 	/// Loads and manages textures
 	class AssetManager {
@@ -49,6 +52,10 @@ namespace render {
 		/// @throws AssetManager::TextureLoadError
 		AssetManager(util::LoggerFactory& loggerFactory);
 
+		/// @brief Gets texture from given file
+		/// @details Loads texture from given file and caches it
+		[[nodiscard]] const sf::Texture& texture(const std::filesystem::path& path) const noexcept;
+
 		/// Gets texture for given tile
 		[[nodiscard]] const sf::Texture& tileTexture(Tile tile) const noexcept {
 			return tileTextures[static_cast<int>(tile)];
@@ -57,11 +64,6 @@ namespace render {
 		/// Gets player texture
 		[[nodiscard]] const sf::Texture& playerTexture() const noexcept {
 			return playerTexture_;
-		}
-
-		/// Gets goblin texture
-		[[nodiscard]] const sf::Texture& goblinTexture() const noexcept {
-			return goblinTexture_;
 		}
 
 		/// Gets icon for given AiState
@@ -79,11 +81,12 @@ namespace render {
 			return tileSize_;
 		}
 	private:
+		mutable std::unordered_map<std::filesystem::path, sf::Texture> textureCache;
+
 		inline const static sf::Vector2i tileSize_{ 16, 16 };
 		std::array<sf::Texture, totalTiles> tileTextures;
 
 		sf::Texture playerTexture_;
-		sf::Texture goblinTexture_;
 
 		std::array<sf::Texture, totalAiStates> aiStateIcons;
 
@@ -106,7 +109,7 @@ namespace render {
 			texture.loadFromImage(image);
 		}
 
-		void loadTexture(sf::Texture& texture, std::string_view name,
+		void loadTexture(sf::Texture& texture, std::string_view logMessage,
 			const std::filesystem::path& file) const;
 	};
 }

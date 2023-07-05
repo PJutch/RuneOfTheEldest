@@ -22,24 +22,22 @@ namespace render {
     AssetManager::AssetManager(util::LoggerFactory& loggerFactory) : logger{ loggerFactory.create("assets") } {
         logger->info("Loading...");
 
-        loadTexture(tileTextureMut(Tile::EMPTY), "floor tile", "resources/textures/Tile/floor.png");
-        loadTexture(tileTextureMut(Tile::WALL), "wall tile", "resources/textures/Tile/wall.png");
+        loadTexture(tileTextureMut(Tile::EMPTY), "floor tile texture", "resources/textures/Tile/floor.png");
+        loadTexture(tileTextureMut(Tile::WALL), "wall tile texture", "resources/textures/Tile/wall.png");
 
-        loadTexture(tileTextureMut(Tile::UP_STAIRS), "up stairs tile", "resources/textures/Tile/up_stairs.png");
-        loadTexture(tileTextureMut(Tile::DOWN_STAIRS), "down stairs tile", "resources/textures/Tile/down_stairs.png");
+        loadTexture(tileTextureMut(Tile::UP_STAIRS), "up stairs tile texture", "resources/textures/Tile/up_stairs.png");
+        loadTexture(tileTextureMut(Tile::DOWN_STAIRS), "down stairs tile texture", "resources/textures/Tile/down_stairs.png");
 
-        loadTexture(playerTexture_, "player", "resources/textures/player.png");
-
-        loadTexture(goblinTexture_, "goblin", "resources/textures/goblin.png");
+        loadTexture(playerTexture_, "player texture", "resources/textures/player.png");
 
         logger->info("Creating debug tile textures...");
         fillTexture(tileTextureMut(Tile::ROOM), tileSize(), sf::Color::Red);
         fillTexture(tileTextureMut(Tile::ROOM_ENTRANCE), tileSize(), sf::Color::Magenta);
         fillTexture(tileTextureMut(Tile::PASSAGE), tileSize(), sf::Color::Blue);
 
-        loadTexture(aiStateIconMut(AiState::INACTIVE), "incative AI state", "resources/textures/AiState/sleeping.png");
-        loadTexture(aiStateIconMut(AiState::SEEKING), "seeking AI state", "resources/textures/AiState/confused.png");
-        loadTexture(aiStateIconMut(AiState::ATTACKING), "attacking AI state", "resources/textures/AiState/angry.png");
+        loadTexture(aiStateIconMut(AiState::INACTIVE), "incative AI state icon", "resources/textures/AiState/sleeping.png");
+        loadTexture(aiStateIconMut(AiState::SEEKING), "seeking AI state icon", "resources/textures/AiState/confused.png");
+        loadTexture(aiStateIconMut(AiState::ATTACKING), "attacking AI state icon", "resources/textures/AiState/angry.png");
 
         logger->info("Loading font...");
         if (!font_.loadFromFile("resources/fonts/Roboto/Roboto-Medium.ttf"))
@@ -48,9 +46,17 @@ namespace render {
         logger->info("Finished loading...");
     }
 
+    [[nodiscard]] const sf::Texture& AssetManager::texture(const std::filesystem::path& path) const noexcept {
+        if (auto iter = textureCache.find(path); iter != textureCache.end())
+            return iter->second;
+
+        loadTexture(textureCache[path], std::format("texture from {}", path.generic_string()), path);
+        return textureCache[path];
+    }
+
     void AssetManager::loadTexture(sf::Texture& texture, std::string_view name, const std::filesystem::path& path) const {
-        logger->info("Loading {} texture...", name);
+        logger->info("Loading {} ...", name);
         if (!texture.loadFromFile(path.generic_string()))
-            throw TextureLoadError{ std::format("Unable to load {} texture", name) };
+            throw TextureLoadError{ std::format("Unable to load {}", name) };
     }
 }
