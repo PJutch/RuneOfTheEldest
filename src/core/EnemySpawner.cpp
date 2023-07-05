@@ -17,11 +17,26 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Enemy.hpp"
 
+#include "util/parse.hpp"
+#include "util/filesystem.hpp"
+
 namespace core {
 	EnemySpawner::EnemySpawner(std::shared_ptr<World> world_, std::shared_ptr<Player> player_,
 							   std::shared_ptr<render::AssetManager> assets_, util::RandomEngine& randomEngine_) :
 			world{ std::move(world_) }, player{ std::move(player_) }, assets{ std::move(assets_) }, randomEngine{ &randomEngine_ } {
-		enemyData.emplace_back(3.0, 0.1, &assets->texture("resources/textures/goblin.png"), 5, 20);
+		util::forEachFile("resources/enemies/", [this](std::ifstream& file) {
+			enemyData.emplace_back();
+			util::forEachStrippedLine(file, [this](std::string_view line, int lineIndex) {
+				switch (lineIndex) {
+				case 0: enemyData.back().hp = util::parseReal<double>(line); break;
+				case 1: enemyData.back().regen = util::parseReal<double>(line); break;
+				case 2: enemyData.back().texture = &assets->texture(line); break;
+				case 3: enemyData.back().minOnLevel = util::parseInt<int>(line); break;
+				case 4: enemyData.back().maxOnLevel = util::parseInt<int>(line); break;
+				default: break;
+				}
+			});
+		});
 	}
 
 	void EnemySpawner::spawn() {

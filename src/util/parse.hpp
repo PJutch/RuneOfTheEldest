@@ -19,8 +19,11 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Exception.hpp"
 
 #include <format>
+#include <iostream>
 #include <algorithm>
+#include <string>
 #include <string_view>
+#include <concepts>
 #include <cctype>
 
 namespace util {
@@ -151,6 +154,21 @@ namespace util {
 			result *= std::pow(10, parseInt<ResultT>({ std::next(nextPart), s.end() }));
 
 		return result;
+	}
+
+	template <typename Callback> requires std::invocable<Callback, const std::string_view&, int>
+	void forEachStrippedLine(std::istream& is, Callback&& callback) {
+		std::string line;
+		int index = 0;
+		while (std::getline(is, line))
+			callback(strip(line), index ++);
+	}
+
+	template <typename Callback> requires std::invocable<Callback, const std::string_view&>
+	void forEachStrippedLine(std::istream& is, Callback&& callback) {
+		forEachStrippedLine(is, [&callback](const std::string_view& line, int index) {
+			callback(line);
+		});
 	}
 }
 
