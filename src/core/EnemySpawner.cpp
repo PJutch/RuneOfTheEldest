@@ -19,23 +19,41 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "util/parse.hpp"
 #include "util/filesystem.hpp"
+#include "util/Map.hpp"
 
 namespace core {
+	std::string EnemySpawner::unknownParamsMessage(std::unordered_map<std::string, std::string> params) {
+		std::string message = "Unknown params: ";
+		for (auto [name, value] : params)
+			message += std::format("\"{}\" ", name);
+		return message;
+	}
+
 	EnemySpawner::EnemySpawner(std::shared_ptr<World> world_, std::shared_ptr<Player> player_,
 							   std::shared_ptr<render::AssetManager> assets_, util::RandomEngine& randomEngine_) :
 			world{ std::move(world_) }, player{ std::move(player_) }, assets{ std::move(assets_) }, randomEngine{ &randomEngine_ } {
 		util::forEachFile("resources/enemies/", [this](std::ifstream& file) {
+			auto params = util::parseMapping(file);
+			
 			enemyData.emplace_back();
-			util::forEachStrippedLine(file, [this](std::string_view line, int lineIndex) {
-				switch (lineIndex) {
-				case 0: enemyData.back().hp = util::parseReal<double>(line); break;
-				case 1: enemyData.back().regen = util::parseReal<double>(line); break;
-				case 2: enemyData.back().texture = &assets->texture(line); break;
-				case 3: enemyData.back().minOnLevel = util::parseInt<int>(line); break;
-				case 4: enemyData.back().maxOnLevel = util::parseInt<int>(line); break;
-				default: break;
-				}
+			processParam(params, "hp", [this](std::string_view value) {
+				enemyData.back().hp = util::parseReal<double>(value);
 			});
+			processParam(params, "regen", [this](std::string_view value) {
+				enemyData.back().regen = util::parseReal<double>(value);
+			});
+			processParam(params, "texture", [this](std::string_view value) {
+				enemyData.back().texture = &assets->texture(value);
+			});
+			processParam(params, "minOnLevel", [this](std::string_view value) {
+				enemyData.back().minOnLevel = util::parseInt<int>(value);
+			});
+			processParam(params, "maxOnLevel", [this](std::string_view value) {
+				enemyData.back().maxOnLevel = util::parseInt<int>(value);
+			});
+
+			if (!params.empty())
+				throw UnknownParamsError{ params };
 		});
 	}
 

@@ -22,6 +22,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "render/AssetManager.hpp"
 
 #include "util/random.hpp"
+#include "util/Map.hpp"
 
 namespace core {
 	class EnemySpawner {
@@ -46,6 +47,34 @@ namespace core {
 			int maxOnLevel;
 		};
 		std::vector<EnemyData> enemyData;
+
+		class LoadError : public util::RuntimeError {
+		public:
+			LoadError(const std::string& message, util::Stacktrace currentStacktrace = {}) noexcept :
+				RuntimeError{ message, std::move(currentStacktrace) } {}
+		};
+
+		class NoValueError : public LoadError {
+		public:
+			NoValueError(std::string_view name, util::Stacktrace currentStacktrace = {}) noexcept :
+				LoadError{ std::format("Value for required param {} is not given", name), std::move(currentStacktrace)} {}
+		};
+
+		static std::string unknownParamsMessage(std::unordered_map<std::string, std::string> params);
+
+		class UnknownParamsError : public LoadError {
+		public:
+			UnknownParamsError(std::unordered_map<std::string, std::string> params, util::Stacktrace currentStacktrace = {}) noexcept :
+				LoadError{ unknownParamsMessage(params), std::move(currentStacktrace)} {}
+		};
+
+		template <typename Callback>
+		static void processParam(std::unordered_map<std::string, std::string>& params, const std::string& name, Callback&& callback) {
+			if (auto value = util::getAndErase(params, name))
+				callback(*value);
+			else
+				throw NoValueError{ name };
+		}
 	};
 }
 

@@ -52,6 +52,17 @@ namespace util {
         return iter->second;
     }
 
+    template <typename Map, typename Key>
+    [[nodiscard]] std::optional<typename Map::mapped_type> getAndErase(Map& map, const Key& key) {
+        typename Map::const_iterator iter = map.find(key);
+        if (iter == map.end())
+            return std::nullopt;
+
+        auto value = std::move(iter->second);
+        map.erase(iter);
+        return value;
+    }
+
     template <typename Key, typename Mapped>
         requires std::invocable<boost::hash<Key>, Key>
     using UnorderedMap = std::unordered_map<Key, Mapped, boost::hash<Key>>;
