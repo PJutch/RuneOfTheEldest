@@ -20,22 +20,28 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <fstream>
 
 namespace util {
+	/// Shortcut for directory_iterator
 	using DirIter = std::filesystem::directory_iterator;
+	/// Shortcut for directory_entry
+	using DirEntry = std::filesystem::directory_entry;
 
-	template <typename Callback> requires std::invocable<Callback, const std::filesystem::directory_entry&>
+	/// Calls callback with each directory in given directory
+	template <typename Callback> requires std::invocable<Callback, const DirEntry&>
 	void forEachEntry(const std::filesystem::path& path, Callback&& callback) {
-		for (std::filesystem::directory_iterator iter{ path }; iter != std::filesystem::directory_iterator{}; ++iter)
+		for (DirIter iter{ path }; iter != DirIter{}; ++iter)
 			callback(*iter);
 	}
 
-	template <typename Callback> requires std::invocable<Callback, const std::filesystem::directory_entry&>
+	/// Calls callback with each file entry in given directory
+	template <typename Callback> requires std::invocable<Callback, const DirEntry&>
 	void forEachFile(const std::filesystem::path& path, Callback&& callback) {
-		forEachEntry(path, [&callback](const std::filesystem::directory_entry& entry) {
+		forEachEntry(path, [&callback](const DirEntry& entry) {
 			if (entry.is_regular_file())
 				callback(entry);
 		});
 	}
 
+	/// Calls callback with each file stream in given directory
 	template <typename Callback> requires std::invocable<Callback, std::ifstream&>
 	void forEachFile(const std::filesystem::path& path, Callback&& callback) {
 		forEachFile(path, [&callback](const std::filesystem::path& filePath) {

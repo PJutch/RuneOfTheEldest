@@ -15,7 +15,11 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "util/parse.hpp"
 
+#include "util/assert.hpp"
+
 #include <gtest/gtest.h>
+
+#include <sstream>
 
 TEST(parse, isSpace) {
 	EXPECT_TRUE(util::isSpace(' '));
@@ -73,3 +77,22 @@ TEST(parse, parseReal) {
 	EXPECT_THROW(util::parseReal<double>("1e"), util::EmptyStringError);
 }
 
+TEST(parse, forEachStrippedLine) {
+	std::istringstream stream{"a\n  b \n c\n"};
+	util::forEachStrippedLine(stream, [](std::string_view line, int lineIndex) {
+		using namespace std::literals;
+		switch (lineIndex) {
+		case 0: TROTE_ASSERT(line == "a"sv); break;
+		case 1: TROTE_ASSERT(line == "b"sv); break;
+		case 2: TROTE_ASSERT(line == "c"sv); break;
+		default: TROTE_ASSERT(false, "there shouldn't be more lines"); break;
+		}
+	});
+}
+
+TEST(parse, forEachStrippedLineEmpty) {
+	std::istringstream stream{ "" };
+	util::forEachStrippedLine(stream, [](std::string_view line, int lineIndex) {
+		TROTE_ASSERT(false, "there shouldn't be more lines");
+	});
+}

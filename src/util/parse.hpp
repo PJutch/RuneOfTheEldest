@@ -156,6 +156,7 @@ namespace util {
 		return result;
 	}
 
+	/// Strips each line in is and passes it to the callback with line index
 	template <typename Callback> requires std::invocable<Callback, const std::string_view&, int>
 	void forEachStrippedLine(std::istream& is, Callback&& callback) {
 		std::string line;
@@ -164,6 +165,7 @@ namespace util {
 			callback(strip(line), index ++);
 	}
 
+	/// Strips each line in is and passes it to the callback
 	template <typename Callback> requires std::invocable<Callback, const std::string_view&>
 	void forEachStrippedLine(std::istream& is, Callback&& callback) {
 		forEachStrippedLine(is, [&callback](const std::string_view& line, int index) {
