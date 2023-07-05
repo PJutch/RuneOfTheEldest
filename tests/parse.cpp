@@ -96,3 +96,23 @@ TEST(parse, forEachStrippedLineEmpty) {
 		TROTE_ASSERT(false, "there shouldn't be more lines");
 	});
 }
+
+TEST(parse, parseKeyValuePair) {
+	using namespace std::literals;
+	EXPECT_EQ(util::parseKeyValuePair("ab cde"), (std::pair{"ab"sv, "cde"sv}));
+	EXPECT_EQ(util::parseKeyValuePair("ab  cde"), (std::pair{ "ab"sv, "cde"sv }));
+	EXPECT_EQ(util::parseKeyValuePair("ab cde fg"), (std::pair{ "ab"sv, "cde fg"sv }));
+	EXPECT_THROW(util::parseKeyValuePair(""), util::EmptyStringError);
+	EXPECT_THROW(util::parseKeyValuePair("ab "), util::NoValueError);
+}
+
+TEST(parse, parseMapping) {
+	std::istringstream stream{ "ab  cde \n fg hi" };
+	using namespace std::literals;
+	EXPECT_EQ(util::parseMapping(stream), (std::unordered_map{ std::pair{"ab"s, "cde"s}, std::pair{"fg"s, "hi"s} }));
+}
+
+TEST(parse, parseMappingEmpty) {
+	std::istringstream stream{ "" };
+	EXPECT_TRUE(util::parseMapping(stream).empty());
+}

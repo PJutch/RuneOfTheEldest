@@ -17,6 +17,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define PARSE_HPP_
 
 #include "Exception.hpp"
+#include "Map.hpp"
 
 #include <format>
 #include <iostream>
@@ -157,7 +158,7 @@ namespace util {
 	}
 
 	/// Strips each line in is and passes it to the callback with line index
-	template <typename Callback> requires std::invocable<Callback, const std::string_view&, int>
+	template <typename Callback> requires std::invocable<Callback, std::string_view, int>
 	void forEachStrippedLine(std::istream& is, Callback&& callback) {
 		std::string line;
 		int index = 0;
@@ -166,11 +167,46 @@ namespace util {
 	}
 
 	/// Strips each line in is and passes it to the callback
-	template <typename Callback> requires std::invocable<Callback, const std::string_view&>
+	template <typename Callback> requires std::invocable<Callback, std::string_view>
 	void forEachStrippedLine(std::istream& is, Callback&& callback) {
-		forEachStrippedLine(is, [&callback](const std::string_view& line, int index) {
+		forEachStrippedLine(is, [&callback](std::string_view line, int index) {
 			callback(line);
 		});
+	}
+
+	/// Value not given
+	class NoValueError : public ParseError {
+	public:
+		NoValueError(std::string_view key, std::string_view parsed, Stacktrace currentStacktrace = {}) noexcept :
+			ParseError{ std::format("No value given for key \"{}\"", key), parsed, std::move(currentStacktrace) } {}
+	};
+
+	/// @brief Splits string into key and value
+	/// @details Key is part before first space.
+	/// Values is part after first continuous space block.
+	/// Returns subview of the given view.
+	std::pair<std::string_view, std::string_view> parseKeyValuePair(std::string_view s) {
+		if (s.empty())
+			throw EmptyStringError{ s };
+
+		auto keyEnd = std::ranges::find_if(s.begin(), s.end(), isSpace);
+		std::string_view key{ s.begin(), keyEnd };
+
+		auto valueStart = std::ranges::find_if_not(keyEnd, s.end(), isSpace);
+		if (valueStart == s.end())
+			throw NoValueError{ key, s };
+		std::string_view value{ valueStart, s.end()};
+
+		return { key, value };
+	}
+
+	/// Parses whole stream as key-value pairs
+	std::unordered_map<std::string, std::string> parseMapping(std::istream& is) {
+		std::unordered_map<std::string, std::string> result;
+		forEachStrippedLine(is, [&result](std::string_view line) {
+			result.insert(parseKeyValuePair(line));
+		});
+		return result;
 	}
 }
 
