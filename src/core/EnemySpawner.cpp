@@ -25,6 +25,6 @@ namespace core {
 	void EnemySpawner::spawn() {
 		for (int level = 0; level < world->tiles().shape().z; ++level)
 			for (int i = 0; i < std::uniform_int_distribution{ 5, 20 }(*randomEngine); ++i)
-				Enemy::spawnSingle(level, assets->goblinTexture(), world, player, *randomEngine);
+				Enemy::spawnSingle(level, 3, 0.1, assets->goblinTexture(), world, player, *randomEngine);
 	}
 }
