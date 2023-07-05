@@ -20,11 +20,14 @@ If not, see <https://www.gnu.org/licenses/>. */
 namespace core {
 	EnemySpawner::EnemySpawner(std::shared_ptr<World> world_, std::shared_ptr<Player> player_,
 							   std::shared_ptr<render::AssetManager> assets_, util::RandomEngine& randomEngine_) :
-		world{ std::move(world_) }, player{ std::move(player_) }, assets{ std::move(assets_) }, randomEngine{ &randomEngine_ } {}
+			world{ std::move(world_) }, player{ std::move(player_) }, assets{ std::move(assets_) }, randomEngine{ &randomEngine_ } {
+		enemyData.emplace_back(3.0, 0.1, &assets->goblinTexture(), 5, 20);
+	}
 
 	void EnemySpawner::spawn() {
 		for (int level = 0; level < world->tiles().shape().z; ++level)
-			for (int i = 0; i < std::uniform_int_distribution{ 5, 20 }(*randomEngine); ++i)
-				Enemy::spawnSingle(level, 3, 0.1, assets->goblinTexture(), world, player, *randomEngine);
+			for (const EnemyData& enemyData : enemyData)
+				for (int i = 0; i < std::uniform_int_distribution{ enemyData.minOnLevel, enemyData.maxOnLevel }(*randomEngine); ++i)
+					Enemy::spawnSingle(level, enemyData.hp, enemyData.regen, *enemyData.texture, world, player, *randomEngine);
 	}
 }

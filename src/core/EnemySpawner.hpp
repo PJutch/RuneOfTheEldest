@@ -35,6 +35,17 @@ namespace core {
 		std::shared_ptr<Player> player;
 		std::shared_ptr<render::AssetManager> assets;
 		util::RandomEngine* randomEngine;
+
+		struct EnemyData {
+			double hp;
+			double regen;
+
+			const sf::Texture* texture;
+
+			int minOnLevel;
+			int maxOnLevel;
+		};
+		std::vector<EnemyData> enemyData;
 	};
 }
 
