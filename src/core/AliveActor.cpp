@@ -26,7 +26,7 @@ namespace core {
 	AliveActor::AliveActor(Stats stats_, std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine) :
 		AliveActor{ stats_, {0, 0, 0}, std::move(newWorld), newRandomEngine } {}
 
-	void AliveActor::wait(int time) noexcept {
+	void AliveActor::wait(double time) noexcept {
 		nextTurn_ += time;
 
 		hp_ += stats.regen * time;

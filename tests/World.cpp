@@ -24,9 +24,9 @@ namespace {
 		TestActor() = default;
 		TestActor(sf::Vector3i newPosition, int newId = -1) noexcept :
 			position_{ newPosition }, id_{ newId } {}
-		TestActor(int firstTurn, int turnDelay_, int newId = -1, std::vector<int>* log_ = nullptr,
-			int waitAfter_ = std::numeric_limits<int>::max(),
-			int dieAfter_ = std::numeric_limits<int>::max(), bool shouldInterruptOnDelete_ = false) noexcept :
+		TestActor(double firstTurn, double turnDelay_, int newId = -1, std::vector<int>* log_ = nullptr,
+			double waitAfter_ = std::numeric_limits<int>::max(),
+			double dieAfter_ = std::numeric_limits<int>::max(), bool shouldInterruptOnDelete_ = false) noexcept :
 			nextTurn_{ firstTurn }, turnDelay{ turnDelay_ }, id_{ newId }, log{ log_ },
 			waitAfter{ waitAfter_ }, dieAfter{ dieAfter_ }, interruptOnDelete{ shouldInterruptOnDelete_ } {}
 
@@ -45,7 +45,7 @@ namespace {
 			return nextTurn_ <= waitAfter;
 		}
 
-		int nextTurn() const noexcept final {
+		double nextTurn() const noexcept final {
 			return nextTurn_;
 		}
 
@@ -97,16 +97,16 @@ namespace {
 			return lastSound_;
 		}
 	private:
-		int nextTurn_ = 0;
-		int turnDelay = 0;
+		double nextTurn_ = 0;
+		double turnDelay = 0;
 		sf::Vector3i position_{ 0, 0, 0 };
 
 		int id_ = -1;
 
 		std::vector<int>* log = nullptr;
 
-		int waitAfter = std::numeric_limits<int>::max();
-		int dieAfter = std::numeric_limits<int>::max();
+		double waitAfter = std::numeric_limits<int>::max();
+		double dieAfter = std::numeric_limits<int>::max();
 		bool interruptOnDelete = false;
 
 		core::Sound lastSound_{};

@@ -42,7 +42,7 @@ namespace {
             return true;
         }
 
-        int nextTurn() const noexcept final {
+        double nextTurn() const noexcept final {
             return 0;
         }
 

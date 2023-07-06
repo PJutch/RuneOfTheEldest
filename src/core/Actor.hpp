@@ -48,7 +48,7 @@ namespace core {
 
 		/// @brief Gets time when actor's next turn begins
 		/// @warning Returned time should change only in Actor's turn
-		[[nodiscard]] virtual int nextTurn() const = 0;
+		[[nodiscard]] virtual double nextTurn() const = 0;
 
 		/// Checks if Actor should be removed
 		[[nodiscard]] virtual bool isAlive() const = 0;

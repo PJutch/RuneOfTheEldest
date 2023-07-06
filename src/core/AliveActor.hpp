@@ -31,7 +31,7 @@ namespace core {
 			double maxHp;
 			double regen;
 			double damage;
-			int turnDelay;
+			double turnDelay;
 			const sf::Texture* texture;
 		};
 
@@ -43,7 +43,7 @@ namespace core {
 			position_ = newPosition;
 		}
 
-		[[nodiscard]] int nextTurn() const noexcept final {
+		[[nodiscard]] double nextTurn() const noexcept final {
 			return nextTurn_;
 		}
 
@@ -86,12 +86,12 @@ namespace core {
 		}
 
 		/// Sets next turn time
-		void nextTurn(int newNextTurn) noexcept {
+		void nextTurn(double newNextTurn) noexcept {
 			nextTurn_ = newNextTurn;
 		}
 
 		/// Dealys next Actor turn and applies over time effects
-		void wait(int time) noexcept;
+		void wait(double time) noexcept;
 
 		/// @brief Checks if can move to newPosition or swap with Actor there
 		/// @param forceSwap Forces swap even if other Actor doesn't want it
@@ -143,7 +143,7 @@ namespace core {
 	private:
 		Stats stats;
 
-		int nextTurn_ = 0;
+		double nextTurn_ = 0;
 		sf::Vector3i position_;
 		double hp_;
 

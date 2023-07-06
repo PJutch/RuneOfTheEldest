@@ -74,7 +74,7 @@ namespace core {
 				enemyData.back().stats.damage = util::parseReal(value);
 			});
 			processParam(params, "turnDelay", [this](std::string_view value) {
-				enemyData.back().stats.turnDelay = util::parseUint(value);
+				enemyData.back().stats.turnDelay = util::parseReal(value);
 			});
 			processParam(params, "texture", [this, &assets](std::string_view value) {
 				enemyData.back().stats.texture = &assets->texture(value);
