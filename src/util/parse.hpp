@@ -84,7 +84,7 @@ namespace util {
 	/// @warning Expects that all chars in s represents the number (no trailing spaices and etc.)
 	/// @throws EmptyStringError when s is empty
 	/// @throws NotADigitError if encountered nondigit char
-	template <typename ResultT>
+	template <typename ResultT = int>
 	ResultT parseUint(std::string_view s) {
 		if (s.empty())
 			throw EmptyStringError{s};
@@ -106,7 +106,7 @@ namespace util {
 	/// @warning Expects that all chars in s represents the number (no trailing spaices and etc.)
 	/// @throws EmptyStringError when s is empty
 	/// @throws NotADigitError if encountered wrong char
-	template <typename ResultT>
+	template <typename ResultT = int>
 	ResultT parseInt(std::string_view s) {
 		if (s.empty())
 			throw EmptyStringError{s};
@@ -125,7 +125,7 @@ namespace util {
 	/// @warning Expects that all chars in s represents the number (no trailing spaices and etc.)
 	/// @throws EmptyStringError when s is empty
 	/// @throws NotADigitError if encountered wrong char
-	template <typename ResultT>
+	template <typename ResultT = double>
 	ResultT parseReal(std::string_view s) {
 		if (s.empty())
 			throw EmptyStringError{ s };

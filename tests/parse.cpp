@@ -45,36 +45,36 @@ TEST(parse, strip) {
 }
 
 TEST(parse, parseUint) {
-	EXPECT_EQ(util::parseUint<int>("34"), 34);
-	EXPECT_THROW(util::parseUint<int>(""), util::EmptyStringError);
-	EXPECT_THROW(util::parseUint<int>("f"), util::NotADigitError);
+	EXPECT_EQ(util::parseUint("34"), 34);
+	EXPECT_THROW(util::parseUint(""), util::EmptyStringError);
+	EXPECT_THROW(util::parseUint("f"), util::NotADigitError);
 }
 
 TEST(parse, parseInt) {
-	EXPECT_EQ(util::parseInt<int>("34"), 34);
-	EXPECT_EQ(util::parseInt<int>("+34"), 34);
-	EXPECT_EQ(util::parseInt<int>("-15"), -15);
-	EXPECT_THROW(util::parseInt<int>(""), util::EmptyStringError);
-	EXPECT_THROW(util::parseInt<int>("f"), util::NotADigitError);
+	EXPECT_EQ(util::parseInt("34"), 34);
+	EXPECT_EQ(util::parseInt("+34"), 34);
+	EXPECT_EQ(util::parseInt("-15"), -15);
+	EXPECT_THROW(util::parseInt(""), util::EmptyStringError);
+	EXPECT_THROW(util::parseInt("f"), util::NotADigitError);
 }
 
 TEST(parse, parseReal) {
-	EXPECT_EQ(util::parseReal<double>("34"), 34);
-	EXPECT_EQ(util::parseReal<double>("+34"), 34);
-	EXPECT_EQ(util::parseReal<double>("-15"), -15);
-	EXPECT_EQ(util::parseReal<double>("12.7"), 12.7);
-	EXPECT_EQ(util::parseReal<double>("+12.7"), 12.7);
-	EXPECT_EQ(util::parseReal<double>("-12.7"), -12.7);
-	EXPECT_EQ(util::parseReal<double>(".5"), 0.5);
-	EXPECT_EQ(util::parseReal<double>("0.01"), 0.01);
-	EXPECT_EQ(util::parseReal<double>("1e3"), 1000);
-	EXPECT_EQ(util::parseReal<double>("1e-3"), 0.001);
-	EXPECT_EQ(util::parseReal<double>("1E3"), 1000);
-	EXPECT_EQ(util::parseReal<double>("1.2e1"), 12);
-	EXPECT_THROW(util::parseReal<double>(""), util::EmptyStringError);
-	EXPECT_THROW(util::parseReal<double>("f"), util::NotADigitError);
-	EXPECT_THROW(util::parseReal<double>("1.+"), util::NotADigitError);
-	EXPECT_THROW(util::parseReal<double>("1e"), util::EmptyStringError);
+	EXPECT_EQ(util::parseReal("34"), 34);
+	EXPECT_EQ(util::parseReal("+34"), 34);
+	EXPECT_EQ(util::parseReal("-15"), -15);
+	EXPECT_EQ(util::parseReal("12.7"), 12.7);
+	EXPECT_EQ(util::parseReal("+12.7"), 12.7);
+	EXPECT_EQ(util::parseReal("-12.7"), -12.7);
+	EXPECT_EQ(util::parseReal(".5"), 0.5);
+	EXPECT_EQ(util::parseReal("0.01"), 0.01);
+	EXPECT_EQ(util::parseReal("1e3"), 1000);
+	EXPECT_EQ(util::parseReal("1e-3"), 0.001);
+	EXPECT_EQ(util::parseReal("1E3"), 1000);
+	EXPECT_EQ(util::parseReal("1.2e1"), 12);
+	EXPECT_THROW(util::parseReal(""), util::EmptyStringError);
+	EXPECT_THROW(util::parseReal("f"), util::NotADigitError);
+	EXPECT_THROW(util::parseReal("1.+"), util::NotADigitError);
+	EXPECT_THROW(util::parseReal("1e"), util::EmptyStringError);
 }
 
 TEST(parse, forEachStrippedLine) {
@@ -137,4 +137,10 @@ TEST(parse, parseMapping) {
 TEST(parse, parseMappingEmpty) {
 	std::istringstream stream{ "" };
 	EXPECT_TRUE(util::parseMapping(stream).empty());
+}
+
+TEST(parse, parseMappingComments) {
+	std::istringstream stream{ "ab  cde  # ??\n# bla-bla \n fg hi" };
+	using namespace std::literals;
+	EXPECT_EQ(util::parseMapping(stream), (std::unordered_map{ std::pair{"ab"s, "cde"s}, std::pair{"fg"s, "hi"s} }));
 }

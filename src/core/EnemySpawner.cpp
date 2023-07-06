@@ -65,25 +65,25 @@ namespace core {
 			
 			enemyData.emplace_back();
 			processParam(params, "hp", [this](std::string_view value) {
-				enemyData.back().stats.maxHp = util::parseReal<double>(value);
+				enemyData.back().stats.maxHp = util::parseReal(value);
 			});
 			processParam(params, "regen", [this](std::string_view value) {
-				enemyData.back().stats.regen = util::parseReal<double>(value);
+				enemyData.back().stats.regen = util::parseReal(value);
 			});
 			processParam(params, "damage", [this](std::string_view value) {
-				enemyData.back().stats.damage = util::parseReal<double>(value);
+				enemyData.back().stats.damage = util::parseReal(value);
 			});
 			processParam(params, "turnDelay", [this](std::string_view value) {
-				enemyData.back().stats.turnDelay = util::parseUint<int>(value);
+				enemyData.back().stats.turnDelay = util::parseUint(value);
 			});
 			processParam(params, "texture", [this, &assets](std::string_view value) {
 				enemyData.back().stats.texture = &assets->texture(value);
 			});
 			processParam(params, "minOnLevel", [this](std::string_view value) {
-				enemyData.back().minOnLevel = util::parseUint<int>(value);
+				enemyData.back().minOnLevel = util::parseUint(value);
 			});
 			processParam(params, "maxOnLevel", [this](std::string_view value) {
-				enemyData.back().maxOnLevel = util::parseUint<int>(value);
+				enemyData.back().maxOnLevel = util::parseUint(value);
 			});
 
 			if (!params.empty())
