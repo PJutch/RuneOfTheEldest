@@ -63,9 +63,8 @@ namespace {
 			return AiState::NONE;
 		}
 
-		const sf::Texture& texture() const final {
-			const static sf::Texture texture_;
-			return texture_;
+		const sf::Texture* texture() const final {
+			return nullptr;
 		}
 
 		[[nodiscard]] double hp() const noexcept final {

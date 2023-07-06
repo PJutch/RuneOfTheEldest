@@ -65,8 +65,8 @@ namespace core {
 			return stats.maxHp;
 		}
 
-		[[nodiscard]] const sf::Texture& texture() const noexcept final {
-			return *stats.texture;
+		[[nodiscard]] const sf::Texture* texture() const noexcept final {
+			return stats.texture;
 		}
 	protected:
 		AliveActor() = default;

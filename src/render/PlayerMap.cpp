@@ -48,6 +48,6 @@ namespace render {
 
 		for (const auto& actor : world->actors())
 			if (util::canSee(player->position(), actor->position(), *world))
-				seenActors_.emplace_back(actor->position(), actor->hp(), actor->maxHp(), actor->aiState(), &actor->texture() );
+				seenActors_.emplace_back(actor->position(), actor->hp(), actor->maxHp(), actor->aiState(), actor->texture() );
 	}
 }

@@ -18,6 +18,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "core/World.hpp"
 #include "core/Player.hpp"
 
+#include "util/assert.hpp"
+
 #include <gtest/gtest.h>
 
 #include <memory>
@@ -58,9 +60,8 @@ namespace {
             return AiState::NONE;
         }
 
-        const sf::Texture& texture() const final {
-            const static sf::Texture texture_;
-            return texture_;
+        const sf::Texture* texture() const final {
+            return nullptr;
         }
 
         [[nodiscard]] double hp() const noexcept final {
