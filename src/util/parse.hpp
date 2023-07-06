@@ -50,6 +50,14 @@ namespace util {
 		return { begin, end };
 	}
 
+	/// @brief Strip comment from line
+	/// @details Removes all chars after '#'.
+	/// Returns subview of input view
+	std::string_view stripComment(std::string_view s) noexcept {
+		auto commentBegin = std::ranges::find(s, '#');
+		return { s.begin(), commentBegin };
+	}
+
 	/// Error while parsing smth
 	class ParseError : public RuntimeError {
 	public:
@@ -157,13 +165,17 @@ namespace util {
 		return result;
 	}
 
-	/// Strips each line in is and passes it to the callback with line index
+	/// @brief Iterates over stripped line from is
+	/// @details Comments and spaces are stripped.
+	/// Empty lines are ignored.
+	/// Rest is passed to callback with the line number (skipped lines aren't counted).
 	template <typename Callback> requires std::invocable<Callback, std::string_view, int>
 	void forEachStrippedLine(std::istream& is, Callback&& callback) {
 		std::string line;
 		int index = 0;
 		while (std::getline(is, line))
-			callback(strip(line), index ++);
+			if (std::string_view meaningful = strip(stripComment(line)); !meaningful.empty())
+				callback(meaningful, index++);
 	}
 
 	/// Strips each line in is and passes it to the callback

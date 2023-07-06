@@ -91,6 +91,28 @@ TEST(parse, forEachStrippedLine) {
 }
 
 TEST(parse, forEachStrippedLineEmpty) {
+	std::istringstream stream{ "a\n\n  " };
+	util::forEachStrippedLine(stream, [](std::string_view line, int lineIndex) {
+		using namespace std::literals;
+		switch (lineIndex) {
+		case 0: TROTE_ASSERT(line == "a"sv); break;
+		default: TROTE_ASSERT(false, "there shouldn't be more lines"); break;
+		}
+	});
+}
+
+TEST(parse, forEachStrippedLineComments) {
+	std::istringstream stream{ "a # b\n # cde " };
+	util::forEachStrippedLine(stream, [](std::string_view line, int lineIndex) {
+		using namespace std::literals;
+		switch (lineIndex) {
+		case 0: TROTE_ASSERT(line == "a"sv); break;
+		default: TROTE_ASSERT(false, "there shouldn't be more lines"); break;
+		}
+	});
+}
+
+TEST(parse, forEachStrippedLineNone) {
 	std::istringstream stream{ "" };
 	util::forEachStrippedLine(stream, [](std::string_view line, int lineIndex) {
 		TROTE_ASSERT(false, "there shouldn't be more lines");
