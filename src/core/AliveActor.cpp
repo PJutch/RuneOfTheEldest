@@ -18,14 +18,14 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/geometry.hpp"
 
 namespace core {
-	AliveActor::AliveActor(double newMaxHp, double regen_, const sf::Texture& texture, sf::Vector3i newPosition, 
+	AliveActor::AliveActor(double newMaxHp, double regen_, double damage_, const sf::Texture& texture, sf::Vector3i newPosition,
 		                   std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine) :
-		position_{ newPosition }, hp_{ newMaxHp }, maxHp_{ newMaxHp }, regen{ regen_ }, texture_{&texture},
+		position_{ newPosition }, hp_{ newMaxHp }, maxHp_{ newMaxHp }, regen{ regen_ }, damage{ damage_ }, texture_ {&texture},
 		world_{ std::move(newWorld) }, randomEngine_{ newRandomEngine } {}
 
-	AliveActor::AliveActor(double newMaxHp, double regen_, const sf::Texture& texture, 
+	AliveActor::AliveActor(double newMaxHp, double regen_, double damage_, const sf::Texture& texture,
 		                   std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine) :
-		AliveActor{ newMaxHp, regen_, texture, {0, 0, 0}, std::move(newWorld), newRandomEngine } {}
+		AliveActor{ newMaxHp, regen_, damage_, texture, {0, 0, 0}, std::move(newWorld), newRandomEngine } {}
 
 	void AliveActor::wait(int time) noexcept {
 		nextTurn_ += time;
@@ -44,12 +44,13 @@ namespace core {
 		auto other = world().actorAt(newPosition);
 		if (!other) {
 			position(newPosition);
-			moveSucceed();
+			world().makeSound({ Sound::Type::WALK, true, position() });
 			return true;
 		}
 
 		if (other->isOnPlayerSide() != isOnPlayerSide()) {
-			attack(*other);
+			other->beDamaged(damage);
+			world().makeSound({ Sound::Type::ATTACK, false, position() });
 			return true;
 		}
 
@@ -62,7 +63,7 @@ namespace core {
 
 		handleSwap();
 		other->handleSwap();
-		moveSucceed();
+		world().makeSound({ Sound::Type::WALK, true, position() });
 		return true;
 	}
 

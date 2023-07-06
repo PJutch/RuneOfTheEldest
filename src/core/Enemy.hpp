@@ -76,13 +76,7 @@ namespace core {
 		double targetPriority = 0.01;
 		AiState aiState_ = AiState::INACTIVE;
 
-		double damage;
 		int turnDelay;
-
-		void attack(Actor& actor) final {
-			actor.beDamaged(damage);
-			world().makeSound({ Sound::Type::ATTACK, false, position() });
-		}
 
 		bool canSeePlayer() const noexcept;
 
@@ -91,10 +85,6 @@ namespace core {
 		sf::Vector3i tryFollowStairs(sf::Vector3i position) noexcept;
 
 		void travelToTarget() noexcept;
-
-		void moveSucceed() final {
-			world().makeSound({ Sound::Type::WALK, false, position() });
-		}
 	};
 }
 

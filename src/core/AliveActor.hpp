@@ -61,9 +61,9 @@ namespace core {
 		}
 	protected:
 		AliveActor() = default;
-		AliveActor(double newMaxHp, double regen_, const sf::Texture& texture, sf::Vector3i newPosition, 
+		AliveActor(double newMaxHp, double regen_, double damage, const sf::Texture& texture, sf::Vector3i newPosition, 
 			       std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine);
-		AliveActor(double newMaxHp, double regen_, const sf::Texture& texture, 
+		AliveActor(double newMaxHp, double regen_, double damage, const sf::Texture& texture,
 			       std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine);
 
 		[[nodiscard]] World& world() noexcept {
@@ -85,12 +85,6 @@ namespace core {
 
 		/// Dealys next Actor turn and applies over time effects
 		void wait(int time) noexcept;
-
-		/// Attacks other Actor
-		virtual void attack(Actor& actor) = 0;
-
-		/// Callled after successful move
-		virtual void moveSucceed() {}
 
 		/// @brief Checks if can move to newPosition or swap with Actor there
 		/// @param forceSwap Forces swap even if other Actor doesn't want it
@@ -142,6 +136,7 @@ namespace core {
 		double hp_;
 		double maxHp_;
 		double regen;
+		double damage;
 
 		const sf::Texture* texture_;
 

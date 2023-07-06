@@ -19,12 +19,12 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 class TestAliveActor : public core::AliveActor {
 public:
-	TestAliveActor(double newMaxHp, double regen_, sf::Vector3i newPosition, std::shared_ptr<core::World> newWorld = nullptr) :
-		AliveActor{ newMaxHp, regen_, texture_, newPosition, std::move(newWorld), nullptr } {}
-	TestAliveActor(double newMaxHp, double regen_, std::shared_ptr<core::World> newWorld = nullptr) :
-		AliveActor{ newMaxHp, regen_, texture_, std::move(newWorld), nullptr } {}
+	TestAliveActor(double newMaxHp, double regen_, double damage, sf::Vector3i newPosition, std::shared_ptr<core::World> newWorld = nullptr) :
+		AliveActor{ newMaxHp, regen_, damage, texture_, newPosition, std::move(newWorld), nullptr } {}
+	TestAliveActor(double newMaxHp, double regen_, double damage, std::shared_ptr<core::World> newWorld = nullptr) :
+		AliveActor{ newMaxHp, regen_, damage, texture_, std::move(newWorld), nullptr } {}
 	TestAliveActor(sf::Vector3i newPosition, std::shared_ptr<core::World> newWorld = nullptr) :
-		AliveActor{ 1.0, 0.0, texture_, newPosition, std::move(newWorld), nullptr } {}
+		AliveActor{ 1.0, 0.0, 0.0, texture_, newPosition, std::move(newWorld), nullptr } {}
 
 	void nextTurn(int newNextTurn) noexcept {
 		AliveActor::nextTurn(newNextTurn);
@@ -33,10 +33,6 @@ public:
 	void wait(int time) noexcept {
 		AliveActor::wait(time);
 	}
-
-	virtual void attack(Actor& actor) {}
-
-	virtual void moveSucceed() {}
 
 	bool canMoveToOrAttack(sf::Vector3i newPosition, bool forceSwap = false) const {
 		return AliveActor::canMoveToOrAttack(newPosition, forceSwap);
@@ -100,14 +96,14 @@ private:
 };
 
 TEST(AliveActor, initialHp) {
-	TestAliveActor actor{5.0, 1.0};
+	TestAliveActor actor{5.0, 1.0, 1.0};
 
 	EXPECT_TRUE(actor.isAlive());
 	EXPECT_EQ(actor.hp(), 5);
 }
 
 TEST(AliveActor, beDamaged) {
-	TestAliveActor actor{ 5.0, 1.0 };
+	TestAliveActor actor{ 5.0, 1.0, 1.0 };
 
 	actor.beDamaged(3);
 
@@ -116,7 +112,7 @@ TEST(AliveActor, beDamaged) {
 }
 
 TEST(AliveActor, beDamagedLethal) {
-	TestAliveActor actor{ 5.0, 1.0 };
+	TestAliveActor actor{ 5.0, 1.0, 1.0 };
 
 	actor.beDamaged(7);
 
@@ -124,7 +120,7 @@ TEST(AliveActor, beDamagedLethal) {
 }
 
 TEST(AliveActor, regen) {
-	TestAliveActor actor{ 5.0, 1.0 };
+	TestAliveActor actor{ 5.0, 1.0, 1.0 };
 
 	actor.beDamaged(3);
 	actor.wait(2);
@@ -134,7 +130,7 @@ TEST(AliveActor, regen) {
 }
 
 TEST(AliveActor, regenLimit) {
-	TestAliveActor actor{ 5.0, 1.0 };
+	TestAliveActor actor{ 5.0, 1.0, 1.0 };
 
 	actor.beDamaged(3);
 	actor.wait(7);

@@ -38,17 +38,19 @@ namespace core {
 				endTurn();
 			else if (event.key.code == sf::Keyboard::Comma) {
 				if (event.key.shift)
-					tryAscentStairs();
+					if (tryAscentStairs())
+						endTurn();
 			}
 			else if (event.key.code == sf::Keyboard::Period) {
 				if (event.key.shift)
-					tryDescentStairs();
-				return;
+					if (tryDescentStairs())
+						endTurn();
 			}
 			else if (util::isNumpad(event.key.code))
 				for (int i = 1; i <= 9; ++i)
 					if (sf::Keyboard::isKeyPressed(util::numpad(i))) {
-						tryMove(util::numpadDirections<int>[i - 1], true);
+						if (tryMove(util::numpadDirections<int>[i - 1], true))
+							endTurn();
 						return;
 					}
 		}
@@ -65,13 +67,15 @@ namespace core {
 		return false;
 	}
 
-	void Player::tryAscentStairs() {
+	bool Player::tryAscentStairs() {
 		if (std::optional<sf::Vector3i> newPos = world().upStairs(position()))
-			tryMoveTo(*newPos, true);
+			return tryMoveTo(*newPos, true);
+		return false;
 	}
 
-	void Player::tryDescentStairs() {
+	bool Player::tryDescentStairs() {
 		if (std::optional<sf::Vector3i> newPos = world().downStairs(position()))
-			tryMoveTo(*newPos, true);
+			return tryMoveTo(*newPos, true);
+		return false;
 	}
 }
