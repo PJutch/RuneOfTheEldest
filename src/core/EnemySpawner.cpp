@@ -22,17 +22,45 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/Map.hpp"
 
 namespace core {
-	std::string EnemySpawner::unknownParamsMessage(std::unordered_map<std::string, std::string> params) {
-		std::string message = "Unknown params: ";
-		for (auto [name, value] : params)
-			message += std::format("\"{}\" ", name);
-		return message;
+	namespace {
+		class LoadError : public util::RuntimeError {
+		public:
+			LoadError(const std::string& message, util::Stacktrace currentStacktrace = {}) noexcept :
+				RuntimeError{ message, std::move(currentStacktrace) } {}
+		};
+
+		class NoValueError : public LoadError {
+		public:
+			NoValueError(std::string_view name, util::Stacktrace currentStacktrace = {}) noexcept :
+				LoadError{ std::format("Value for required param {} is not given", name), std::move(currentStacktrace) } {}
+		};
+
+		std::string unknownParamsMessage(std::unordered_map<std::string, std::string> params) {
+			std::string message = "Unknown params: ";
+			for (auto [name, value] : params)
+				message += std::format("\"{}\" ", name);
+			return message;
+		}
+
+		class UnknownParamsError : public LoadError {
+		public:
+			UnknownParamsError(std::unordered_map<std::string, std::string> params, util::Stacktrace currentStacktrace = {}) noexcept :
+				LoadError{ unknownParamsMessage(params), std::move(currentStacktrace) } {}
+		};
+
+		template <typename Callback>
+		void processParam(std::unordered_map<std::string, std::string>& params, const std::string& name, Callback&& callback) {
+			if (auto value = util::getAndErase(params, name))
+				callback(*value);
+			else
+				throw NoValueError{ name };
+		}
 	}
 
 	EnemySpawner::EnemySpawner(std::shared_ptr<World> world_, std::shared_ptr<Player> player_,
-							   std::shared_ptr<render::AssetManager> assets_, util::RandomEngine& randomEngine_) :
-			world{ std::move(world_) }, player{ std::move(player_) }, assets{ std::move(assets_) }, randomEngine{ &randomEngine_ } {
-		util::forEachFile("resources/enemies/", [this](std::ifstream& file) {
+							   std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine_) :
+			world{ std::move(world_) }, player{ std::move(player_) }, randomEngine{ &randomEngine_ } {
+		util::forEachFile("resources/enemies/", [this, &assets](std::ifstream& file) {
 			auto params = util::parseMapping(file);
 			
 			enemyData.emplace_back();
@@ -42,7 +70,7 @@ namespace core {
 			processParam(params, "regen", [this](std::string_view value) {
 				enemyData.back().regen = util::parseReal<double>(value);
 			});
-			processParam(params, "texture", [this](std::string_view value) {
+			processParam(params, "texture", [this, &assets](std::string_view value) {
 				enemyData.back().texture = &assets->texture(value);
 			});
 			processParam(params, "minOnLevel", [this](std::string_view value) {
