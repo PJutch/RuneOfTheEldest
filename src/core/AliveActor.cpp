@@ -43,13 +43,13 @@ namespace core {
 		auto other = world().actorAt(newPosition);
 		if (!other) {
 			position(newPosition);
-			world().makeSound({ Sound::Type::WALK, true, position() });
+			world().makeSound({ Sound::Type::WALK, isOnPlayerSide(), position() });
 			return true;
 		}
 
 		if (other->isOnPlayerSide() != isOnPlayerSide()) {
 			other->beDamaged(stats.damage);
-			world().makeSound({ Sound::Type::ATTACK, false, position() });
+			world().makeSound({ Sound::Type::ATTACK, isOnPlayerSide(), position()});
 			return true;
 		}
 
@@ -62,7 +62,7 @@ namespace core {
 
 		handleSwap();
 		other->handleSwap();
-		world().makeSound({ Sound::Type::WALK, true, position() });
+		world().makeSound({ Sound::Type::WALK, isOnPlayerSide(), position() });
 		return true;
 	}
 
