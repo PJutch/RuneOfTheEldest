@@ -31,7 +31,7 @@ namespace core {
 	class Player : public AliveActor, public std::enable_shared_from_this<Player> {
 	public:
 		Player(std::shared_ptr<World> world_, std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine_) :
-			AliveActor{ {.maxHp = 10, .regen = 0.1, .damage = 1, .turnDelay = 1, .texture = &assets->playerTexture()},
+			AliveActor{ {.maxHp = 10, .regen = 0.1, .damage = 2, .turnDelay = 1, .texture = &assets->playerTexture()},
 			            std::move(world_), &randomEngine_ } {}
 		Player() = default;
 
