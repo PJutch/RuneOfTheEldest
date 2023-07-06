@@ -34,16 +34,16 @@ namespace core {
 	/// Customizable enemy
 	class Enemy : public AliveActor {
 	public:
-		Enemy(sf::Vector3i newPosition, double maxHp, double regen, double damage, int turnDelay, const sf::Texture& texture, 
+		Enemy(sf::Vector3i newPosition, AliveActor::Stats stats,
 			  std::shared_ptr<World> world_, std::shared_ptr<Player> player_, util::RandomEngine& randomEngine_);
 
 		/// Randomly moves goblin
 		bool act() final;
 
-		static void spawnSingle(int level, double maxHp, double regen, double damage, int turnDelay, const sf::Texture& texture, 
+		static void spawnSingle(int level, AliveActor::Stats stats,
 			                    std::shared_ptr<World> world, std::shared_ptr<Player> player, util::RandomEngine& randomEngine) {
 			sf::Vector3i position = world->randomPositionAt(level, &World::isFree);
-			world->addActor(std::make_shared<Enemy>(position, maxHp, regen, damage, turnDelay, texture, world, std::move(player), randomEngine));
+			world->addActor(std::make_shared<Enemy>(position, stats, world, std::move(player), randomEngine));
 		}
 
 		[[nodiscard]] bool shouldInterruptOnDelete() const final {

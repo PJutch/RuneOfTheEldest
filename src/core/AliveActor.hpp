@@ -26,6 +26,15 @@ namespace core {
 	/// Base for all Actors with hp and position in world
 	class AliveActor : public Actor {
 	public:
+		/// Immutable params of the Actor
+		struct Stats {
+			double maxHp;
+			double regen;
+			double damage;
+			int turnDelay;
+			const sf::Texture* texture;
+		};
+
 		[[nodiscard]] sf::Vector3i position() const noexcept final {
 			return position_;
 		}
@@ -53,18 +62,16 @@ namespace core {
 
 		/// Gets max possible HP
 		[[nodiscard]] double maxHp() const noexcept final {
-			return maxHp_;
+			return stats.maxHp;
 		}
 
 		[[nodiscard]] const sf::Texture& texture() const noexcept final {
-			return *texture_;
+			return *stats.texture;
 		}
 	protected:
 		AliveActor() = default;
-		AliveActor(double newMaxHp, double regen_, double damage, int turnDelay, const sf::Texture& texture, sf::Vector3i newPosition, 
-			       std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine);
-		AliveActor(double newMaxHp, double regen_, double damage, int turnDelay, const sf::Texture& texture,
-			       std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine);
+		AliveActor(Stats stats, sf::Vector3i newPosition, std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine);
+		AliveActor(Stats stats, std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine);
 
 		[[nodiscard]] World& world() noexcept {
 			return *world_;
@@ -131,19 +138,14 @@ namespace core {
 		}
 
 		void endTurn() noexcept {
-			wait(turnDelay);
+			wait(stats.turnDelay);
 		}
 	private:
+		Stats stats;
+
 		int nextTurn_ = 0;
 		sf::Vector3i position_;
-
 		double hp_;
-		double maxHp_;
-		double regen;
-		double damage;
-		int turnDelay;
-
-		const sf::Texture* texture_;
 
 		std::shared_ptr<World> world_;
 		util::RandomEngine* randomEngine_;

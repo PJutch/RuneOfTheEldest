@@ -23,9 +23,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/assert.hpp"
 
 namespace core {
-	Enemy::Enemy(sf::Vector3i newPosition, double maxHp_, double regen, double damage, int turnDelay_, const sf::Texture& texture, 
+	Enemy::Enemy(sf::Vector3i newPosition, AliveActor::Stats stats,
 		std::shared_ptr<World> world_, std::shared_ptr<Player> player_, util::RandomEngine& randomEngine_) :
-		AliveActor{ maxHp_, regen, damage, turnDelay_, texture, newPosition, std::move(world_), &randomEngine_ },
+		AliveActor{ stats, newPosition, std::move(world_), &randomEngine_ },
 		player{ player_ }, targetPosition{ newPosition } {}
 
 	bool Enemy::act() {

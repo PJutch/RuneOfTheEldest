@@ -65,19 +65,19 @@ namespace core {
 			
 			enemyData.emplace_back();
 			processParam(params, "hp", [this](std::string_view value) {
-				enemyData.back().hp = util::parseReal<double>(value);
+				enemyData.back().stats.maxHp = util::parseReal<double>(value);
 			});
 			processParam(params, "regen", [this](std::string_view value) {
-				enemyData.back().regen = util::parseReal<double>(value);
+				enemyData.back().stats.regen = util::parseReal<double>(value);
 			});
 			processParam(params, "damage", [this](std::string_view value) {
-				enemyData.back().damage = util::parseReal<double>(value);
+				enemyData.back().stats.damage = util::parseReal<double>(value);
 			});
 			processParam(params, "turnDelay", [this](std::string_view value) {
-				enemyData.back().turnDelay = util::parseUint<int>(value);
+				enemyData.back().stats.turnDelay = util::parseUint<int>(value);
 			});
 			processParam(params, "texture", [this, &assets](std::string_view value) {
-				enemyData.back().texture = &assets->texture(value);
+				enemyData.back().stats.texture = &assets->texture(value);
 			});
 			processParam(params, "minOnLevel", [this](std::string_view value) {
 				enemyData.back().minOnLevel = util::parseUint<int>(value);
@@ -95,7 +95,6 @@ namespace core {
 		for (int level = 0; level < world->tiles().shape().z; ++level)
 			for (const EnemyData& enemyData : enemyData)
 				for (int i = 0; i < std::uniform_int_distribution{ enemyData.minOnLevel, enemyData.maxOnLevel }(*randomEngine); ++i)
-					Enemy::spawnSingle(level, enemyData.hp, enemyData.regen, enemyData.damage, enemyData.turnDelay, *enemyData.texture, 
-						               world, player, *randomEngine);
+					Enemy::spawnSingle(level, enemyData.stats, world, player, *randomEngine);
 	}
 }

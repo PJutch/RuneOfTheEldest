@@ -37,12 +37,7 @@ namespace core {
 		util::RandomEngine* randomEngine;
 
 		struct EnemyData {
-			double hp;
-			double regen;
-			double damage;
-			int turnDelay;
-
-			const sf::Texture* texture;
+			AliveActor::Stats stats;
 
 			int minOnLevel;
 			int maxOnLevel;
