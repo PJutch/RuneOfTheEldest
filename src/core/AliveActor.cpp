@@ -34,27 +34,27 @@ namespace core {
 		hp(std::min(hp(), maxHp()));
 	}
 
-	void AliveActor::tryMoveTo(sf::Vector3i newPosition, bool forceSwap) {
+	bool AliveActor::tryMoveTo(sf::Vector3i newPosition, bool forceSwap) {
 		if (newPosition == position())
-			return;
+			return false;
 
 		if (!isPassable(world().tiles()[newPosition]))
-			return;
+			return false;
 
 		auto other = world().actorAt(newPosition);
 		if (!other) {
 			position(newPosition);
 			moveSucceed();
-			return;
+			return true;
 		}
 
 		if (other->isOnPlayerSide() != isOnPlayerSide()) {
 			attack(*other);
-			return;
+			return true;
 		}
 
 		if (!other->wantsSwap() && !forceSwap)
-			return;
+			return false;
 
 		sf::Vector3i oldPosition = position();
 		position(other->position());
@@ -63,7 +63,7 @@ namespace core {
 		handleSwap();
 		other->handleSwap();
 		moveSucceed();
-			
+		return true;
 	}
 
 	bool AliveActor::canMoveToOrAttack(sf::Vector3i newPosition, bool forceSwap) const {
@@ -81,32 +81,16 @@ namespace core {
 	}
 
 	void AliveActor::tryMoveInDirection(sf::Vector2i direction, bool forceSwap) {
-		if (canMoveToOrAttack(direction, forceSwap)) {
-			tryMove(direction, forceSwap);
+		if (tryMove(direction, forceSwap))
 			return;
-		}
 
 		bool preferLeft = std::uniform_int_distribution<int>{ 0, 1 }(randomEngine()) == 1;
 		if (preferLeft) {
-			if (canMoveToOrAttack(util::turnDirection45Left(direction), forceSwap)) {
-				tryMove(util::turnDirection45Left(direction), forceSwap);
-				return;
-			}
-
-			if (canMoveToOrAttack(util::turnDirection45Right(direction), forceSwap)) {
-				tryMove(util::turnDirection45Right(direction), forceSwap);
-				return;
-			}
+			if (tryMove(util::turnDirection45Left (direction), forceSwap)) return;
+			if (tryMove(util::turnDirection45Right(direction), forceSwap)) return;
 		} else {
-			if (canMoveToOrAttack(util::turnDirection45Right(direction), forceSwap)) {
-				tryMove(util::turnDirection45Right(direction), forceSwap);
-				return;
-			}
-
-			if (canMoveToOrAttack(util::turnDirection45Left(direction), forceSwap)) {
-				tryMove(util::turnDirection45Left(direction), forceSwap);
-				return;
-			}
+			if (tryMove(util::turnDirection45Right(direction), forceSwap)) return;
+			if (tryMove(util::turnDirection45Left (direction), forceSwap)) return;
 		}
 	}
 }

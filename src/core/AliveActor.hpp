@@ -102,26 +102,30 @@ namespace core {
 			return canMoveToOrAttack(position() + util::make3D(offset, 0), forceSwap);
 		}
 
-		/// @brief Changes position if newPosition isn't occupied
+		/// @brief Changes position if newPosition isn't occupied or attacks Actor there
 		/// @param forceSwap Forces swap even if other Actor doesn't want it
-		void tryMoveTo(sf::Vector3i newPosition, bool forceSwap);
+		/// @returns true if moved or attacked
+		bool tryMoveTo(sf::Vector3i newPosition, bool forceSwap);
 
-		/// @brief Changes position if newPosition isn't occupied
+		/// @brief Changes position if newPosition isn't occupied or attacks Actor there
 		/// @param forceSwap Forces swap even if other Actor doesn't want it
-		void tryMoveTo(sf::Vector2i newPosition, bool forceSwap) {
-			tryMoveTo(util::make3D(newPosition, position().z), forceSwap);
+		/// @returns true if moved or attacked
+		bool tryMoveTo(sf::Vector2i newPosition, bool forceSwap) {
+			return tryMoveTo(util::make3D(newPosition, position().z), forceSwap);
 		}
 
-		/// @brief Changes position if position + offset isn't occupied
+		/// @brief Changes position if position + offset isn't occupied or attacks Actor there
 		/// @param forceSwap Forces swap even if other Actor doesn't want it
-		void tryMove(sf::Vector3i offset, bool forceSwap) {
-			tryMoveTo(position() + offset, forceSwap);
+		/// @returns true if moved or attacked
+		bool tryMove(sf::Vector3i offset, bool forceSwap) {
+			return tryMoveTo(position() + offset, forceSwap);
 		}
 
-		/// @brief Changes position if position + offset isn't occupied
+		/// @brief Changes position if position + offset isn't occupied or attacks Actor there
 		/// @param forceSwap Forces swap even if other Actor doesn't want it
-		void tryMove(sf::Vector2i offset, bool forceSwap) {
-			tryMoveTo(util::getXY(position()) + offset, forceSwap);
+		/// @returns true if moved or attacked
+		bool tryMove(sf::Vector2i offset, bool forceSwap) {
+			return tryMoveTo(util::getXY(position()) + offset, forceSwap);
 		}
 
 		/// @brief Tries to move in given direction or 45 degrees left or right
