@@ -18,6 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "core/Player.hpp"
 
 #include "util/raycast.hpp"
+#include "util/geometry.hpp"
 
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -35,49 +36,53 @@ namespace render {
         window{ std::move(window_) } {}
 
     void Renderer::drawWorld() {
-        drawLevel(camera->position().level);
+        for (int x = 0; x < world->tiles().shape().x; ++x)
+            for (int y = 0; y < world->tiles().shape().y; ++y)
+                drawTile({ x, y, camera->position().level });
+
+        if (renderAreas_) 
+            drawAreas(camera->position().level);
+
         for (auto actor : playerMap->seenActors())
             draw(actor);
     }
 
-    void Renderer::drawLevel(int z) {
-        for (int x = 0; x < world->tiles().shape().x; ++x)
-            for (int y = 0; y < world->tiles().shape().y; ++y)
-                if (playerMap->tileState({ x, y, z }) == PlayerMap::TileState::VISIBLE)
-                    drawSprite(sf::Vector2i{ x, y }, assets()->tileTexture(world->tiles()[{x, y, z}]));
-                else if (playerMap->tileState({ x, y, z }) == PlayerMap::TileState::MEMORIZED)
-                    drawSprite(sf::Vector2i{ x, y }, assets()->tileTexture(world->tiles()[{x, y, z}]), 0.5);
+    void Renderer::drawTile(sf::Vector3i position) {
+        const sf::Texture& texture = assets()->tileTexture(world->tiles()[position]);
+        sf::Vector2f screenPos = toScreen(util::getXY(position));
 
-        if (renderAreas_) drawAreas(z);
+        switch (playerMap->tileState(position)) {
+        case PlayerMap::TileState::VISIBLE: drawSprite(screenPos, { 0, 0 }, texture); break;
+        case PlayerMap::TileState::MEMORIZED: drawSprite(screenPos, { 0, 0 }, texture, 0.5); break;
+        }
     }
 
     void Renderer::drawAreas(int z) {
         for (sf::IntRect area : world->areas(z))
-            drawInWorldRect(area, sf::Color::Transparent,
-                sf::Color::Green, 1.0);
+            drawInWorldRect(area, sf::Color::Transparent, sf::Color::Green, 1.0);
     }
 
     void Renderer::draw(PlayerMap::SeenActor actor) {
-        double colorMod = 1.0;
-        if (!util::canSee(player->position(), actor.position, *world))
-            colorMod = 0.5;
+        double colorMod = util::canSee(player->position(), actor.position, *world) ? 1.0 : 0.5;
 
-        drawSprite(actor.position, *actor.texture, colorMod);
-        drawHpBar(actor.position, actor.hp, actor.maxHp, colorMod);
-        drawSprite(actor.position, assets()->aiStateIcon(actor.aiState), colorMod);
+        if (actor.position.z != camera->position().level)
+            return;
+
+        sf::Vector2f spriteSize = util::geometry_cast<float>(actor.texture->getSize());
+        sf::Vector2f tileSize = util::geometry_cast<float>(assets()->tileSize());
+        sf::Vector2f aiStateIconSize = util::geometry_cast<float>(assets()->aiStateIcon(actor.aiState).getSize());
+        sf::Vector2f maxHpBarSize{ spriteSize.x, 2.f };
+
+        sf::Vector2f topLeft = toScreen(util::getXY(actor.position)) + util::bottomMiddle(tileSize) - util::bottomMiddle(spriteSize);
+
+        drawSprite(topLeft, { 0, 0 }, *actor.texture, colorMod);
+        drawHpBar(topLeft + util::bottomLeft(spriteSize), util::bottomLeft(maxHpBarSize), actor.hp, actor.maxHp, maxHpBarSize, colorMod);
+        drawSprite(topLeft + util::topRight(spriteSize), util::topRight(aiStateIconSize), assets()->aiStateIcon(actor.aiState), colorMod);
     }
 
-    void Renderer::drawInWorldRect(sf::IntRect rect,
-        sf::Color fillColor, sf::Color outlineColor, float outlineThickness) {
-        auto [left, top] = toScreen(rect.left, rect.top);
-        auto [width, height] = toScreen(rect.width, rect.height);
-        drawRect({ left, top, width, height }, fillColor, outlineColor, outlineThickness);
-    }
-
-    void Renderer::drawRect(sf::FloatRect rect,
-        sf::Color fillColor, sf::Color outlineColor, float outlineThickness) {
-        sf::RectangleShape rectShape{ {rect.width, rect.height} };
-        rectShape.setPosition(rect.left, rect.top);
+    void Renderer::drawInWorldRect(sf::IntRect rect, sf::Color fillColor, sf::Color outlineColor, float outlineThickness) {
+        sf::RectangleShape rectShape{ toScreen(rect.width, rect.height) };
+        rectShape.setPosition(toScreen(rect.left, rect.top));
 
         rectShape.setFillColor(fillColor);
         rectShape.setOutlineColor(outlineColor);
@@ -86,43 +91,33 @@ namespace render {
         window->draw(rectShape);
     }
 
-    void Renderer::drawSprite(sf::Vector3i position, const sf::Texture& texture, double colorMod) {
-        if (camera->position().level != position.z)
-            return;
-
-        drawSprite(util::getXY(position), texture, colorMod);
-    }
-
-    void Renderer::drawSprite(sf::Vector2i position, const sf::Texture& texture, double colorMod) {
+    void Renderer::drawSprite(sf::Vector2f screenPosition, sf::Vector2f origin, const sf::Texture& texture, double colorMod) {
         sf::Sprite sprite;
         sprite.setTexture(texture);
 
         sf::Uint8 spriteColor = colorMod * 255;
         sprite.setColor({ spriteColor , spriteColor , spriteColor });
 
-        auto [sizeX, sizeY] = texture.getSize();
-        sprite.setOrigin(sizeX / 2.f, sizeY);
-        auto [tileX, tileY] = assets()->tileSize();
-        sprite.setPosition(toScreen(position) + sf::Vector2f(tileX / 2.f, tileY));
+        sprite.setPosition(screenPosition);
+        sprite.setOrigin(origin);
 
         window->draw(sprite);
     }
 
-    void Renderer::drawHpBar(sf::Vector3i position, double hp, double maxHp, double colorMod) {
-        if (camera->position().level != position.z)
-            return;
-
+    void Renderer::drawHpBar(sf::Vector2f screenPosition, sf::Vector2f origin, 
+                             double hp, double maxHp, sf::Vector2f maxSize, double colorMod) {
         float hpFraction = static_cast<float>(hp) / maxHp;
         sf::Color color((1 - hpFraction) * colorMod * 255, hpFraction * colorMod * 255, 0);
 
-        float width = hpFraction * assets()->tileSize().x;
-        float height = 2.f;
+        sf::Vector2f size{ hpFraction * maxSize.x, maxSize.y };
 
-        sf::Vector2f screenPos = toScreen(util::getXY(position));
-        float top = screenPos.x;
-        float left = screenPos.y + assets()->tileSize().y - height;
+        sf::RectangleShape rectShape{ size };
+        rectShape.setPosition(screenPosition);
+        rectShape.setOrigin(origin);
 
-        drawRect({ top, left, width, height }, color);
+        rectShape.setFillColor(color);
+
+        window->draw(rectShape);
     }
 
     void Renderer::draw() {

@@ -112,22 +112,12 @@ namespace render {
         }
 
         void drawWorld();
-        void drawLevel(int z);
         void drawAreas(int level);
-
+        void drawTile(sf::Vector3i position);
         void draw(PlayerMap::SeenActor actor);
 
-        void drawHpBar(sf::Vector3i position, double hp, double maxHp, double colorMod = 1.0);
-
-        void drawSprite(sf::Vector3i position, const sf::Texture& texture, double colorMod = 1.0);
-        void drawSprite(sf::Vector2i position, const sf::Texture& texture, double colorMod = 1.0);
-
-        void drawRect(sf::FloatRect rect,
-            sf::Color fillColor, sf::Color outlineColor, float outlineThickness);
-
-        void drawRect(sf::FloatRect rect, sf::Color color) {
-            drawRect(rect, color, sf::Color::Transparent, 0.0f);
-        }
+        void drawHpBar(sf::Vector2f screenPosition, sf::Vector2f origin, double hp, double maxHp, sf::Vector2f maxSize, double colorMod = 1.0);
+        void drawSprite(sf::Vector2f screenPosition, sf::Vector2f origin, const sf::Texture& texture, double colorMod = 1.0);
 
         void drawInWorldRect(sf::IntRect rect,
             sf::Color fillColor, sf::Color outlineColor, float outlineThickness);

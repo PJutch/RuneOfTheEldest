@@ -68,11 +68,29 @@ namespace util {
         return { xy.x, xy.y, z };
     }
 
-    /// Add x and y components from 3D vector
+    /// Gets x and y components from 3D vector
     /// @returns result as new 2D vector
     template <typename T>
     [[nodiscard]] sf::Vector2<T> getXY(sf::Vector3<T> vec) noexcept {
         return { vec.x, vec.y };
+    }
+
+    /// Gets relative position of bottom middle of the rect with given size 
+    template <typename T>
+    [[nodiscard]] sf::Vector2<T> bottomMiddle(sf::Vector2<T> size) noexcept {
+        return { size.x / static_cast<T>(2), size.y};
+    }
+
+    /// Gets relative position of bottom left corner of the rect with given size 
+    template <typename T>
+    [[nodiscard]] sf::Vector2<T> bottomLeft(sf::Vector2<T> size) noexcept {
+        return { T{}, size.y };
+    }
+
+    /// Gets relative position of top right corner of the rect with given size 
+    template <typename T>
+    [[nodiscard]] sf::Vector2<T> topRight(sf::Vector2<T> size) noexcept {
+        return { size.x, T{} };
     }
 }
 
