@@ -39,6 +39,8 @@ namespace core {
 		struct EnemyData {
 			double hp;
 			double regen;
+			double damage;
+			int turnDelay;
 
 			const sf::Texture* texture;
 

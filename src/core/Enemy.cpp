@@ -23,15 +23,15 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/assert.hpp"
 
 namespace core {
-	Enemy::Enemy(sf::Vector3i newPosition, double maxHp_, double regen_, const sf::Texture& texture, std::shared_ptr<World> world_,
-		std::shared_ptr<Player> player_, util::RandomEngine& randomEngine_) :
+	Enemy::Enemy(sf::Vector3i newPosition, double maxHp_, double regen_, double damage_, int turnDelay_, const sf::Texture& texture, 
+		std::shared_ptr<World> world_, std::shared_ptr<Player> player_, util::RandomEngine& randomEngine_) :
 		AliveActor{ maxHp_, regen_, texture, newPosition, std::move(world_), &randomEngine_ },
-		player{ player_ }, targetPosition{ newPosition } {}
+		player{ player_ }, targetPosition{ newPosition }, damage{ damage_ }, turnDelay{turnDelay_} {}
 
 	bool Enemy::act() {
 		updateTarget();
 		travelToTarget();
-		wait(1);
+		wait(turnDelay);
 		return true;
 	}
 

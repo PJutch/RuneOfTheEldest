@@ -32,7 +32,7 @@ namespace core {
 		class NoValueError : public LoadError {
 		public:
 			NoValueError(std::string_view name, util::Stacktrace currentStacktrace = {}) noexcept :
-				LoadError{ std::format("Value for required param {} is not given", name), std::move(currentStacktrace) } {}
+				LoadError{ std::format("Value for required param \"{}\" is not given", name), std::move(currentStacktrace) } {}
 		};
 
 		std::string unknownParamsMessage(std::unordered_map<std::string, std::string> params) {
@@ -70,14 +70,20 @@ namespace core {
 			processParam(params, "regen", [this](std::string_view value) {
 				enemyData.back().regen = util::parseReal<double>(value);
 			});
+			processParam(params, "damage", [this](std::string_view value) {
+				enemyData.back().damage = util::parseReal<double>(value);
+			});
+			processParam(params, "turnDelay", [this](std::string_view value) {
+				enemyData.back().turnDelay = util::parseUint<int>(value);
+			});
 			processParam(params, "texture", [this, &assets](std::string_view value) {
 				enemyData.back().texture = &assets->texture(value);
 			});
 			processParam(params, "minOnLevel", [this](std::string_view value) {
-				enemyData.back().minOnLevel = util::parseInt<int>(value);
+				enemyData.back().minOnLevel = util::parseUint<int>(value);
 			});
 			processParam(params, "maxOnLevel", [this](std::string_view value) {
-				enemyData.back().maxOnLevel = util::parseInt<int>(value);
+				enemyData.back().maxOnLevel = util::parseUint<int>(value);
 			});
 
 			if (!params.empty())
@@ -89,6 +95,7 @@ namespace core {
 		for (int level = 0; level < world->tiles().shape().z; ++level)
 			for (const EnemyData& enemyData : enemyData)
 				for (int i = 0; i < std::uniform_int_distribution{ enemyData.minOnLevel, enemyData.maxOnLevel }(*randomEngine); ++i)
-					Enemy::spawnSingle(level, enemyData.hp, enemyData.regen, *enemyData.texture, world, player, *randomEngine);
+					Enemy::spawnSingle(level, enemyData.hp, enemyData.regen, enemyData.damage, enemyData.turnDelay, *enemyData.texture, 
+						               world, player, *randomEngine);
 	}
 }
