@@ -96,10 +96,14 @@ namespace render {
     void Renderer::drawSprite(sf::Vector2i position, const sf::Texture& texture, double colorMod) {
         sf::Sprite sprite;
         sprite.setTexture(texture);
-        sprite.setPosition(toScreen(position));
 
         sf::Uint8 spriteColor = colorMod * 255;
         sprite.setColor({ spriteColor , spriteColor , spriteColor });
+
+        auto [sizeX, sizeY] = texture.getSize();
+        sprite.setOrigin(sizeX / 2.f, sizeY);
+        auto [tileX, tileY] = assets()->tileSize();
+        sprite.setPosition(toScreen(position) + sf::Vector2f(tileX / 2.f, tileY));
 
         window->draw(sprite);
     }
