@@ -61,9 +61,9 @@ namespace core {
 		}
 	protected:
 		AliveActor() = default;
-		AliveActor(double newMaxHp, double regen_, double damage, const sf::Texture& texture, sf::Vector3i newPosition, 
+		AliveActor(double newMaxHp, double regen_, double damage, int turnDelay, const sf::Texture& texture, sf::Vector3i newPosition, 
 			       std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine);
-		AliveActor(double newMaxHp, double regen_, double damage, const sf::Texture& texture,
+		AliveActor(double newMaxHp, double regen_, double damage, int turnDelay, const sf::Texture& texture,
 			       std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine);
 
 		[[nodiscard]] World& world() noexcept {
@@ -129,6 +129,10 @@ namespace core {
 		void hp(double newHp) noexcept {
 			hp_ = newHp;
 		}
+
+		void endTurn() noexcept {
+			wait(turnDelay);
+		}
 	private:
 		int nextTurn_ = 0;
 		sf::Vector3i position_;
@@ -137,6 +141,7 @@ namespace core {
 		double maxHp_;
 		double regen;
 		double damage;
+		int turnDelay;
 
 		const sf::Texture* texture_;
 

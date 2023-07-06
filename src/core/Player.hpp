@@ -31,7 +31,7 @@ namespace core {
 	class Player : public AliveActor, public std::enable_shared_from_this<Player> {
 	public:
 		Player(std::shared_ptr<World> world_, std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine_) :
-			AliveActor{ 10, 0.1, 1, assets->playerTexture(), std::move(world_), &randomEngine_ } {}
+			AliveActor{ 10, 0.1, 1, 1, assets->playerTexture(), std::move(world_), &randomEngine_ } {}
 		Player() = default;
 
 		void spawn();
@@ -76,7 +76,7 @@ namespace core {
 
 		void endTurn() noexcept {
 			state = State::ENDED_TURN;
-			wait(1);
+			AliveActor::endTurn();
 		}
 	};
 }

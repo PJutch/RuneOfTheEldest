@@ -18,14 +18,15 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/geometry.hpp"
 
 namespace core {
-	AliveActor::AliveActor(double newMaxHp, double regen_, double damage_, const sf::Texture& texture, sf::Vector3i newPosition,
+	AliveActor::AliveActor(double newMaxHp, double regen_, double damage_, int turnDelay_, const sf::Texture& texture, sf::Vector3i newPosition,
 		                   std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine) :
-		position_{ newPosition }, hp_{ newMaxHp }, maxHp_{ newMaxHp }, regen{ regen_ }, damage{ damage_ }, texture_ {&texture},
+		position_{ newPosition }, hp_{ newMaxHp }, maxHp_{ newMaxHp }, regen{ regen_ }, 
+		damage{ damage_ }, turnDelay{ turnDelay_ }, texture_ {&texture},
 		world_{ std::move(newWorld) }, randomEngine_{ newRandomEngine } {}
 
-	AliveActor::AliveActor(double newMaxHp, double regen_, double damage_, const sf::Texture& texture,
+	AliveActor::AliveActor(double newMaxHp, double regen_, double damage_, int turnDelay_, const sf::Texture& texture,
 		                   std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine) :
-		AliveActor{ newMaxHp, regen_, damage_, texture, {0, 0, 0}, std::move(newWorld), newRandomEngine } {}
+		AliveActor{ newMaxHp, regen_, damage_, turnDelay_, texture, {0, 0, 0}, std::move(newWorld), newRandomEngine } {}
 
 	void AliveActor::wait(int time) noexcept {
 		nextTurn_ += time;

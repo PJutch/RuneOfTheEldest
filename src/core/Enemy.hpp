@@ -76,8 +76,6 @@ namespace core {
 		double targetPriority = 0.01;
 		AiState aiState_ = AiState::INACTIVE;
 
-		int turnDelay;
-
 		bool canSeePlayer() const noexcept;
 
 		void updateTarget() noexcept;

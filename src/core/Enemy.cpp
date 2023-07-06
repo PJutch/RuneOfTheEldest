@@ -25,13 +25,13 @@ If not, see <https://www.gnu.org/licenses/>. */
 namespace core {
 	Enemy::Enemy(sf::Vector3i newPosition, double maxHp_, double regen, double damage, int turnDelay_, const sf::Texture& texture, 
 		std::shared_ptr<World> world_, std::shared_ptr<Player> player_, util::RandomEngine& randomEngine_) :
-		AliveActor{ maxHp_, regen, damage, texture, newPosition, std::move(world_), &randomEngine_ },
-		player{ player_ }, targetPosition{ newPosition }, turnDelay{turnDelay_} {}
+		AliveActor{ maxHp_, regen, damage, turnDelay_, texture, newPosition, std::move(world_), &randomEngine_ },
+		player{ player_ }, targetPosition{ newPosition } {}
 
 	bool Enemy::act() {
 		updateTarget();
 		travelToTarget();
-		wait(turnDelay);
+		endTurn();
 		return true;
 	}
 

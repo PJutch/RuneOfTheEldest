@@ -19,12 +19,12 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 class TestAliveActor : public core::AliveActor {
 public:
-	TestAliveActor(double newMaxHp, double regen_, double damage, sf::Vector3i newPosition, std::shared_ptr<core::World> newWorld = nullptr) :
-		AliveActor{ newMaxHp, regen_, damage, texture_, newPosition, std::move(newWorld), nullptr } {}
-	TestAliveActor(double newMaxHp, double regen_, double damage, std::shared_ptr<core::World> newWorld = nullptr) :
-		AliveActor{ newMaxHp, regen_, damage, texture_, std::move(newWorld), nullptr } {}
+	TestAliveActor(double newMaxHp, double regen_, double damage, int turnDelay, sf::Vector3i newPosition, std::shared_ptr<core::World> newWorld = nullptr) :
+		AliveActor{ newMaxHp, regen_, damage, turnDelay, texture_, newPosition, std::move(newWorld), nullptr } {}
+	TestAliveActor(double newMaxHp, double regen_, double damage, int turnDelay = 1, std::shared_ptr<core::World> newWorld = nullptr) :
+		AliveActor{ newMaxHp, regen_, damage, turnDelay, texture_, std::move(newWorld), nullptr } {}
 	TestAliveActor(sf::Vector3i newPosition, std::shared_ptr<core::World> newWorld = nullptr) :
-		AliveActor{ 1.0, 0.0, 0.0, texture_, newPosition, std::move(newWorld), nullptr } {}
+		AliveActor{ 1.0, 0.0, 0.0, 1, texture_, newPosition, std::move(newWorld), nullptr } {}
 
 	void nextTurn(int newNextTurn) noexcept {
 		AliveActor::nextTurn(newNextTurn);
