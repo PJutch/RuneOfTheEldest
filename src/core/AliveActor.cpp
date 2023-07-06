@@ -38,27 +38,32 @@ namespace core {
 		if (newPosition == position())
 			return;
 
-		if (isPassable(world().tiles()[newPosition])) {
-			if (auto other = world().actorAt(newPosition)) {
-				if (other->isOnPlayerSide() == isOnPlayerSide()) {
-					if (forceSwap || other->wantsSwap()) {
-						sf::Vector3i oldPosition = position();
-						position(other->position());
-						other->position(oldPosition);
+		if (!isPassable(world().tiles()[newPosition]))
+			return;
 
-						handleSwap();
-						other->handleSwap();
-						moveSucceed();
-					}
-				}
-				else
-					attack(*other);
-			}
-			else {
-				position(newPosition);
-				moveSucceed();
-			}
+		auto other = world().actorAt(newPosition);
+		if (!other) {
+			position(newPosition);
+			moveSucceed();
+			return;
 		}
+
+		if (other->isOnPlayerSide() != isOnPlayerSide()) {
+			attack(*other);
+			return;
+		}
+
+		if (!other->wantsSwap() && !forceSwap)
+			return;
+
+		sf::Vector3i oldPosition = position();
+		position(other->position());
+		other->position(oldPosition);
+
+		handleSwap();
+		other->handleSwap();
+		moveSucceed();
+			
 	}
 
 	bool AliveActor::canMoveToOrAttack(sf::Vector3i newPosition, bool forceSwap) const {
@@ -72,10 +77,7 @@ namespace core {
 		if (other->isOnPlayerSide() != isOnPlayerSide())
 			return true;
 
-		if (forceSwap || other->wantsSwap())
-			return true;
-		else
-			return false;
+		return forceSwap || other->wantsSwap();
 	}
 
 	void AliveActor::tryMoveInDirection(sf::Vector2i direction, bool forceSwap) {
@@ -95,8 +97,7 @@ namespace core {
 				tryMove(util::turnDirection45Right(direction), forceSwap);
 				return;
 			}
-		}
-		else {
+		} else {
 			if (canMoveToOrAttack(util::turnDirection45Right(direction), forceSwap)) {
 				tryMove(util::turnDirection45Right(direction), forceSwap);
 				return;
