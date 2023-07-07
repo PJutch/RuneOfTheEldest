@@ -134,6 +134,18 @@ namespace core {
 		[[nodiscard]] std::span<const sf::IntRect> areas(int level) const noexcept {
 			return areas_[level];
 		}
+
+		void player(std::shared_ptr<Actor> newPlayer) noexcept {
+			player_ = std::move(newPlayer);
+		}
+
+		const Actor& player() const noexcept {
+			return *player_;
+		}
+
+		Actor& player() noexcept {
+			return *player_;
+		}
 	private:
 		util::Array3D<Tile> tiles_;
 
@@ -143,6 +155,7 @@ namespace core {
 		std::vector<std::vector<sf::IntRect>> areas_;
 
 		std::vector<std::shared_ptr<Actor>> actors_;
+		std::shared_ptr<Actor> player_;
 
 		util::RandomEngine* randomEngine = nullptr;
 

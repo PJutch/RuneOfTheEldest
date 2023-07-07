@@ -17,7 +17,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define ENEMY_SPAWNER_HPP_
 
 #include "World.hpp"
-#include "Player.hpp"
+#include "AliveActor.hpp"
 
 #include "render/AssetManager.hpp"
 
@@ -27,13 +27,11 @@ If not, see <https://www.gnu.org/licenses/>. */
 namespace core {
 	class EnemySpawner {
 	public:
-		EnemySpawner(std::shared_ptr<World> world_, std::shared_ptr<Player> player_,
-			         std::shared_ptr<render::AssetManager> assets_, util::RandomEngine& randomEngine_);
+		EnemySpawner(std::shared_ptr<World> world, std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine);
 
 		void spawn();
 	private:
 		std::shared_ptr<World> world;
-		std::shared_ptr<Player> player;
 		util::RandomEngine* randomEngine;
 
 		struct EnemyData {
@@ -43,6 +41,7 @@ namespace core {
 			int maxOnLevel;
 		};
 		std::vector<EnemyData> enemyData;
+		AliveActor::Stats playerData;
 	};
 }
 

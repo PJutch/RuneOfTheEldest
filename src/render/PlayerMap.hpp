@@ -30,7 +30,7 @@ If not, see < https://www.gnu.org/licenses/>. */
 namespace render {
 	class PlayerMap {
 	public:
-		PlayerMap(std::shared_ptr<core::Player> player, std::shared_ptr<core::World> world);
+		PlayerMap(std::shared_ptr<core::World> world);
 
 		enum class TileState {
 			UNSEEN,
@@ -66,7 +66,6 @@ namespace render {
 
 		std::vector<SeenActor> seenActors_;
 
-		std::shared_ptr<core::Player> player;
 		std::shared_ptr<core::World> world;
 
 		void updateTiles();

@@ -17,6 +17,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "AliveActor.hpp"
 #include "EnemyAi.hpp"
+#include "PlayerController.hpp"
 
 #include "util/parse.hpp"
 #include "util/filesystem.hpp"
@@ -58,9 +59,9 @@ namespace core {
 		}
 	}
 
-	EnemySpawner::EnemySpawner(std::shared_ptr<World> world_, std::shared_ptr<Player> player_,
-							   std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine_) :
-			world{ std::move(world_) }, player{ std::move(player_) }, randomEngine{ &randomEngine_ } {
+	EnemySpawner::EnemySpawner(std::shared_ptr<World> world_, std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine_) :
+			world{ std::move(world_) }, randomEngine{&randomEngine_},
+			playerData{ .maxHp = 10, .regen = 0.1, .damage = 2, .turnDelay = 1, .texture = &assets->playerTexture() } {
 		util::forEachFile("resources/enemies/", [this, &assets](std::ifstream& file) {
 			auto params = util::parseMapping(file);
 			
@@ -98,8 +99,13 @@ namespace core {
 				for (int i = 0; i < std::uniform_int_distribution{ enemyData.minOnLevel, enemyData.maxOnLevel }(*randomEngine); ++i) {
 					sf::Vector3i position = world->randomPositionAt(level, &World::isFree);
 					auto enemy = std::make_shared<AliveActor>(enemyData.stats, position, world, randomEngine);
-					enemy->controller(std::make_unique<EnemyAi>(enemy, player));
+					enemy->controller(std::make_unique<EnemyAi>(enemy));
 					world->addActor(std::move(enemy));
 				}
+
+		auto player = std::make_shared<AliveActor>(playerData, world->randomPositionAt(0, &World::isFree), world, randomEngine);
+		player->controller(std::make_unique<PlayerController>(player));
+		world->player(player);
+		world->addActor(std::move(player));
 	}
 }

@@ -16,7 +16,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "EnemyAi.hpp"
 
 #include "AliveActor.hpp"
-#include "Player.hpp"
 
 #include "util/pathfinding.hpp"
 #include "util/raycast.hpp"
@@ -24,8 +23,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/assert.hpp"
 
 namespace core {
-	EnemyAi::EnemyAi(std::weak_ptr<AliveActor> newEnemy_, std::shared_ptr<Player> player_) :
-		enemy_{ std::move(newEnemy_) }, player{ std::move(player_) }, targetPosition{ enemy_.lock()->position() } {}
+	EnemyAi::EnemyAi(std::weak_ptr<AliveActor> newEnemy_) : 
+		enemy_{ std::move(newEnemy_) }, targetPosition{ enemy_.lock()->position() } {}
 
 	bool EnemyAi::act() {
 		updateTarget();
@@ -35,14 +34,15 @@ namespace core {
 	}
 
 	void EnemyAi::updateTarget() noexcept {
+		auto enemy = enemy_.lock();
 		if (canSeePlayer()) {
-			targetPosition = player->position();
+			targetPosition = enemy->world().player().position();
 			state_ = AiState::ATTACKING;
 			targetPriority = 1.;
 		} else if (aiState() == AiState::ATTACKING) {
 			targetPosition = tryFollowStairs(targetPosition);
 			state_ = AiState::SEEKING;
-		} else if (aiState() == AiState::SEEKING && enemy_.lock()->position() == targetPosition) {
+		} else if (aiState() == AiState::SEEKING && enemy->position() == targetPosition) {
 			targetPosition = randomNearbyTarget();
 			targetPriority = 0.01;
 		} else
@@ -81,7 +81,7 @@ namespace core {
 
 	bool EnemyAi::canSeePlayer() const noexcept {
 		auto enemy = enemy_.lock();
-		return util::canSee(enemy->position(), player->position(), enemy->world());
+		return util::canSee(enemy->position(), enemy->world().player().position(), enemy->world());
 	}
 
 	namespace {

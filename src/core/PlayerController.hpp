@@ -31,7 +31,7 @@ namespace core {
 	/// Controlled by player Actor
 	class PlayerController : public Controller {
 	public:
-		PlayerController(std::weak_ptr<Player> player_) : player{ std::move(player_) } {}
+		PlayerController(std::weak_ptr<AliveActor> player_) : player{ std::move(player_) } {}
 
 		/// Waits for player input
 		bool act() final;
@@ -61,7 +61,7 @@ namespace core {
 			return AiState::NONE;
 		}
 	private:
-		std::weak_ptr<Player> player;
+		std::weak_ptr<AliveActor> player;
 
 		enum class State {
 			WAITING_TURN,

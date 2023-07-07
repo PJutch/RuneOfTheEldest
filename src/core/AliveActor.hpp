@@ -44,11 +44,11 @@ namespace core {
 			controller_ = std::move(newController);
 		}
 
-		Controller& controller() noexcept {
+		Controller& controller() noexcept final {
 			return *controller_;
 		}
 
-		const Controller& controller() const noexcept {
+		const Controller& controller() const noexcept final {
 			return *controller_;
 		}
 

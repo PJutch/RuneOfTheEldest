@@ -15,7 +15,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Renderer.hpp"
 
-#include "core/Player.hpp"
+#include "core/World.hpp"
 
 #include "util/raycast.hpp"
 #include "util/geometry.hpp"
@@ -29,10 +29,9 @@ namespace render {
         std::shared_ptr<PlayerMap> playerMap_,
         std::shared_ptr<sf::RenderWindow> window_,
         std::shared_ptr<core::World> world_,
-        std::shared_ptr<core::Player> player_,
         std::shared_ptr<AssetManager> assets_) :
         camera{ std::move(camera) }, assets_{ std::move(assets_) }, playerMap{ std::move(playerMap_) },
-        world{ std::move(world_) }, player{ player_ },
+        world{ std::move(world_) },
         window{ std::move(window_) } {}
 
     void Renderer::drawWorld() {
@@ -63,7 +62,7 @@ namespace render {
     }
 
     void Renderer::draw(PlayerMap::SeenActor actor) {
-        double colorMod = util::canSee(player->position(), actor.position, *world) ? 1.0 : 0.5;
+        double colorMod = util::canSee(world->player().position(), actor.position, *world) ? 1.0 : 0.5;
 
         if (actor.position.z != camera->position().level)
             return;

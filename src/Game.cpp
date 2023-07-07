@@ -19,28 +19,22 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "generation/DungeonGenerator.hpp"
 
 #include "core/World.hpp"
-#include "core/Player.hpp"
 #include "core/EnemySpawner.hpp"
 
 #include "util/Keyboard.hpp"
 
 Game::Game(std::shared_ptr<core::World> newWorld,
-           std::shared_ptr<core::Player> player_,
-           std::unique_ptr<core::PlayerController> playerController_,
            std::unique_ptr<core::EnemySpawner> enemySpawner_,
            std::unique_ptr<generation::DungeonGenerator> newDungeonGenerator,
            std::shared_ptr<sf::RenderWindow> window_,
            std::unique_ptr<render::Renderer> newRenderer,
            util::LoggerFactory& loggerFactory) :
         world{std::move(newWorld)},
-        player{ std::move(player_) },
         enemySpawner{std::move(enemySpawner_)},
         dungeonGenerator_{std::move(newDungeonGenerator)},
         window{std::move(window_)},
         renderer_{std::move(newRenderer)},
-        generationLogger{ loggerFactory.create("generation") } {
-    player->controller(std::move(playerController_));
-}
+        generationLogger{ loggerFactory.create("generation") } {}
 
 void Game::run() {
     generate();
@@ -51,7 +45,7 @@ void Game::run() {
         while (window->pollEvent(event))
             handleEvent(event);
 
-        if (player->isAlive()) {
+        if (world->player().isAlive()) {
             world->update();
 
             sf::Time elapsedTime = clock.restart();
@@ -70,7 +64,7 @@ void Game::handleEvent(sf::Event event) {
         return;
     }
 
-    if (!player->isAlive())
+    if (!world->player().isAlive())
         if (event.type == sf::Event::KeyPressed
          || event.type == sf::Event::MouseButtonPressed) {
             generate();
@@ -80,7 +74,7 @@ void Game::handleEvent(sf::Event event) {
     if (renderer().handleEvent(event))
         return;
 
-    player->controller().handleEvent(event);
+    world->player().controller().handleEvent(event);
 }
 
 void Game::generate() {
@@ -97,9 +91,6 @@ void Game::generate() {
 
     generationLogger->info("Spawning enemies...");
     enemySpawner->spawn();
-
-    generationLogger->info("Spawning player...");
-    player->spawn();
 
     generationLogger->info("Finished");
 

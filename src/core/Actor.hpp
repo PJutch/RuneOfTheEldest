@@ -18,6 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Sound.hpp"
 #include "AiState.hpp"
+#include "fwd.hpp"
 
 namespace render {
 	class Renderer;
@@ -77,9 +78,12 @@ namespace core {
 		/// Gets max possible HP
 		[[nodiscard]] virtual double maxHp() const = 0;
 
-		virtual AiState aiState() const = 0;
+		[[nodiscard]] virtual AiState aiState() const = 0;
 
 		[[nodiscard]] virtual const sf::Texture* texture() const = 0;
+
+		[[nodiscard]] virtual Controller& controller() = 0;
+		[[nodiscard]] virtual const Controller& controller() const = 0;
 	};
 }
 

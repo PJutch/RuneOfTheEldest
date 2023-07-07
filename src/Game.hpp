@@ -32,8 +32,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 class Game {
 public:
     Game(std::shared_ptr<core::World> world,
-         std::shared_ptr<core::Player> player,
-         std::unique_ptr<core::PlayerController> playerController,
          std::unique_ptr<core::EnemySpawner> enemySpawner,
          std::unique_ptr<generation::DungeonGenerator> dungeonGenerator,
          std::shared_ptr<sf::RenderWindow> window,
@@ -60,7 +58,6 @@ public:
     void run();
 private:
     std::shared_ptr<core::World> world;
-    std::shared_ptr<core::Player> player;
     std::unique_ptr<core::EnemySpawner> enemySpawner;
 
     std::unique_ptr<generation::DungeonGenerator> dungeonGenerator_;

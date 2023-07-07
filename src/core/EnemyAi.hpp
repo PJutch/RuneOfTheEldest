@@ -34,7 +34,7 @@ namespace core {
 	/// AI controlling enemy
 	class EnemyAi : public Controller {
 	public:
-		EnemyAi(std::weak_ptr<AliveActor> newEnemy_, std::shared_ptr<Player> player_);
+		EnemyAi(std::weak_ptr<AliveActor> newEnemy_);
 
 		bool act() final;
 
@@ -63,7 +63,6 @@ namespace core {
 		void handleSound(Sound sound) noexcept final;
 	private:
 		std::weak_ptr<AliveActor> enemy_;
-		std::shared_ptr<Player> player;
 
 		bool wantsSwap_ = true;
 		sf::Vector3i targetPosition;
