@@ -13,8 +13,9 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#include "Enemy.hpp"
+#include "EnemyAi.hpp"
 
+#include "Enemy.hpp"
 #include "Player.hpp"
 
 #include "util/pathfinding.hpp"
@@ -23,62 +24,64 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/assert.hpp"
 
 namespace core {
-	Enemy::Enemy(sf::Vector3i newPosition, AliveActor::Stats stats,
-		std::shared_ptr<World> world_, std::shared_ptr<Player> player_, util::RandomEngine& randomEngine_) :
-		AliveActor{ stats, newPosition, std::move(world_), &randomEngine_ },
-		player{ player_ }, targetPosition{ newPosition } {}
+	EnemyAi::EnemyAi(std::weak_ptr<Enemy> newEnemy_, std::shared_ptr<Player> player_) :
+		enemy_{ std::move(newEnemy_) }, player{ std::move(player_) }, targetPosition{ enemy_.lock()->position() } {}
 
-	bool Enemy::act() {
+	bool EnemyAi::act() {
 		updateTarget();
 		travelToTarget();
-		endTurn();
+		enemy_.lock()->endTurn();
 		return true;
 	}
 
-	void Enemy::updateTarget() noexcept {
+	void EnemyAi::updateTarget() noexcept {
 		if (canSeePlayer()) {
 			targetPosition = player->position();
-			aiState_ = AiState::ATTACKING;
+			state_ = AiState::ATTACKING;
 			targetPriority = 1.;
-		}
-		else if (aiState_ == AiState::ATTACKING) {
+		} else if (state() == AiState::ATTACKING) {
 			targetPosition = tryFollowStairs(targetPosition);
-			aiState_ = AiState::SEEKING;
-		}
-		else if (aiState_ == AiState::SEEKING && position() == targetPosition) {
+			state_ = AiState::SEEKING;
+		} else if (state() == AiState::SEEKING && enemy_.lock()->position() == targetPosition) {
 			targetPosition = randomNearbyTarget();
 			targetPriority = 0.01;
-		}
-		else
+		} else
 			targetPriority *= 0.9;
 	}
 
-	sf::Vector3i Enemy::randomNearbyTarget() noexcept {
-		int minLevel = std::max(position().z - 1, 0);
-		int maxLevel = std::min(position().z + 1, world().tiles().shape().z - 1);
-		int targetLevel = std::uniform_int_distribution{ minLevel, maxLevel }(randomEngine());
-		return world().randomPositionAt(targetLevel, &World::isFree);
+	sf::Vector3i EnemyAi::randomNearbyTarget() noexcept {
+		auto enemy = enemy_.lock();
+
+		int minLevel = std::max(enemy->position().z - 1, 0);
+		int maxLevel = std::min(enemy->position().z + 1, enemy->world().tiles().shape().z - 1);
+		int targetLevel = std::uniform_int_distribution{ minLevel, maxLevel }(enemy->randomEngine());
+		return enemy->world().randomPositionAt(targetLevel, &World::isFree);
 	}
 
-	sf::Vector3i Enemy::tryFollowStairs(sf::Vector3i position) noexcept {
-		if (auto destination = world().upStairs(position))
+	sf::Vector3i EnemyAi::tryFollowStairs(sf::Vector3i position) noexcept {
+		auto enemy = enemy_.lock();
+
+		if (auto destination = enemy->world().upStairs(position))
 			return *destination;
-		else if (auto destination = world().downStairs(position))
+		else if (auto destination = enemy->world().downStairs(position))
 			return *destination;
 		return position;
 	}
 
-	void Enemy::travelToTarget() noexcept {
+	void EnemyAi::travelToTarget() noexcept {
+		auto enemy = enemy_.lock();
+
 		wantsSwap_ = true;
-		sf::Vector3i nextStep_ = util::nextStep(world(), position(), targetPosition);
+		sf::Vector3i nextStep_ = util::nextStep(enemy->world(), enemy->position(), targetPosition);
 		if (nextStep_.z == 0)
-			tryMoveInDirection(util::getXY(nextStep_), false);
+			enemy->tryMoveInDirection(util::getXY(nextStep_), false);
 		else
-			tryMove(nextStep_, false);
+			enemy->tryMove(nextStep_, false);
 	}
 
-	bool Enemy::canSeePlayer() const noexcept {
-		return util::canSee(position(), player->position(), world());
+	bool EnemyAi::canSeePlayer() const noexcept {
+		auto enemy = enemy_.lock();
+		return util::canSee(enemy->position(), player->position(), enemy->world());
 	}
 
 	namespace {
@@ -93,21 +96,23 @@ namespace core {
 		}
 	}
 
-	void Enemy::handleSound(Sound sound) noexcept {
-		if (sound.position.z != position().z)
+	void EnemyAi::handleSound(Sound sound) noexcept {
+		auto enemy = enemy_.lock();
+
+		if (sound.position.z != enemy->position().z)
 			return;
 
-		if (util::canSee(position(), sound.position, world()))
+		if (util::canSee(enemy->position(), sound.position, enemy->world()))
 			return;
 
-		auto [dx, dy, dz] = sound.position - position();
+		auto [dx, dy, dz] = sound.position - enemy->position();
 		double distance = dx * dx + dy * dy;
 
 		double priority = basicPriority(sound) / distance;
 		if (priority > targetPriority) {
 			targetPosition = sound.position;
 			targetPriority = priority;
-			aiState_ = AiState::SEEKING;
+			state_ = AiState::SEEKING;
 		}
 	}
 }

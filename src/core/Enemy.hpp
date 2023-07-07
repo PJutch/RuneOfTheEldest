@@ -17,6 +17,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define ENEMY_HPP_
 
 #include "AliveActor.hpp"
+#include "EnemyAI.hpp"
 
 #include "fwd.hpp"
 #include "AiState.hpp"
@@ -34,49 +35,64 @@ namespace core {
 	/// Customizable enemy
 	class Enemy : public AliveActor {
 	public:
-		Enemy(sf::Vector3i newPosition, AliveActor::Stats stats,
-			  std::shared_ptr<World> world_, std::shared_ptr<Player> player_, util::RandomEngine& randomEngine_);
+		using AliveActor::AliveActor;
 
-		/// Randomly moves goblin
-		bool act() final;
+		void ai(std::unique_ptr<EnemyAi> newAi) {
+			ai_ = std::move(newAi);
+		}
+
+		bool act() final {
+			return ai_->act();
+		}
 
 		[[nodiscard]] bool shouldInterruptOnDelete() const final {
-			return false;
+			return ai_->shouldInterruptOnDelete();
 		}
 
 		[[nodiscard]] bool isOnPlayerSide() const final {
-			return false;
+			return ai_->isOnPlayerSide();
 		}
 
 		[[nodiscard]] bool wantsSwap() const noexcept final {
-			return wantsSwap_;
+			return ai_->wantsSwap();
 		}
 
 		void handleSwap() noexcept final {
-			wantsSwap_ = false;
+			ai_->handleSwap();
 		}
 
 		/// Gets Goblin's AI state
 		AiState aiState() const noexcept final {
-			return aiState_;
+			return ai_->state();
 		}
 
-		void handleSound(Sound sound) noexcept final;
+		void handleSound(Sound sound) noexcept final {
+			ai_->handleSound(sound);
+		}
+
+		const World& world() const noexcept {
+			return AliveActor::world();
+		}
+
+		util::RandomEngine& randomEngine() noexcept {
+			return AliveActor::randomEngine();
+		}
+
+		bool tryMove(sf::Vector3i offset, bool forceSwap) {
+			return AliveActor::tryMove(offset, forceSwap);
+		}
+
+		void tryMoveInDirection(sf::Vector2i direction, bool forceSwap) {
+			AliveActor::tryMoveInDirection(direction, forceSwap);
+		}
+
+		void endTurn() {
+			AliveActor::endTurn();
+		}
 	private:
+		std::unique_ptr<EnemyAi> ai_;
+
 		std::shared_ptr<Player> player;
-		bool wantsSwap_ = true;
-
-		sf::Vector3i targetPosition;
-		double targetPriority = 0.01;
-		AiState aiState_ = AiState::INACTIVE;
-
-		bool canSeePlayer() const noexcept;
-
-		void updateTarget() noexcept;
-		sf::Vector3i randomNearbyTarget() noexcept;
-		sf::Vector3i tryFollowStairs(sf::Vector3i position) noexcept;
-
-		void travelToTarget() noexcept;
 	};
 }
 

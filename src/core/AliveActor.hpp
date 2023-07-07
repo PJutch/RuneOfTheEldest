@@ -35,6 +35,10 @@ namespace core {
 			const sf::Texture* texture;
 		};
 
+		AliveActor() = default;
+		AliveActor(Stats stats, sf::Vector3i newPosition, std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine);
+		AliveActor(Stats stats, std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine);
+
 		[[nodiscard]] sf::Vector3i position() const noexcept final {
 			return position_;
 		}
@@ -69,10 +73,6 @@ namespace core {
 			return stats.texture;
 		}
 	protected:
-		AliveActor() = default;
-		AliveActor(Stats stats, sf::Vector3i newPosition, std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine);
-		AliveActor(Stats stats, std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine);
-
 		[[nodiscard]] World& world() noexcept {
 			return *world_;
 		}
