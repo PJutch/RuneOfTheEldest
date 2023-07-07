@@ -13,12 +13,12 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef PLAYER_HPP_
-#define PLAYER_HPP_
+#ifndef PLAYER_CONTROLLER_HPP_
+#define PLAYER_CONTROLLER_HPP_
 
-#include "AliveActor.hpp"
-#include "PlayerController.hpp"
+#include "Controller.hpp"
 
+#include "fwd.hpp"
 #include "World.hpp"
 
 #include "render/AssetManager.hpp"
@@ -28,16 +28,41 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <SFML/Window/Event.hpp>
 
 namespace core {
-	/// Player character
-	class Player : public AliveActor, public std::enable_shared_from_this<Player> {
+	/// Controlled by player Actor
+	class PlayerController : public Controller {
 	public:
-		Player(std::shared_ptr<World> world_, std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine_) :
-			AliveActor{ {.maxHp = 10, .regen = 0.1, .damage = 2, .turnDelay = 1, .texture = &assets->playerTexture()},
-			            std::move(world_), &randomEngine_ } {}
-		Player() = default;
+		PlayerController(std::weak_ptr<Player> player_) : player{ std::move(player_) } {}
 
-		void spawn();
+		/// Waits for player input
+		bool act() final;
+
+		/// Notifies about events
+		/// @details moves on WSAD
+		///      \n try to ascent/descent stairs by <>
+		void handleEvent(sf::Event event) final;
+
+		[[nodiscard]] bool shouldInterruptOnDelete() const final {
+			return true;
+		}
+
+		[[nodiscard]] bool isOnPlayerSide() const final {
+			return true;
+		}
+
+		[[nodiscard]] bool wantsSwap() const noexcept final {
+			return false;
+		}
+
+		void handleSwap() noexcept final {}
+
+		void handleSound(Sound) noexcept final {}
+
+		AiState aiState() const noexcept final {
+			return AiState::NONE;
+		}
 	private:
+		std::weak_ptr<Player> player;
+
 		enum class State {
 			WAITING_TURN,
 			WAITING_INPUT,
@@ -47,6 +72,8 @@ namespace core {
 
 		bool tryAscentStairs();
 		bool tryDescentStairs();
+
+		void endTurn() noexcept;
 	};
 }
 

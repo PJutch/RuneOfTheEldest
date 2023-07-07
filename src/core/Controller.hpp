@@ -13,40 +13,33 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef PLAYER_HPP_
-#define PLAYER_HPP_
+#ifndef CONTROLLER_HPP_
+#define CONTROLLER_HPP_
 
-#include "AliveActor.hpp"
-#include "PlayerController.hpp"
-
-#include "World.hpp"
-
-#include "render/AssetManager.hpp"
-
-#include "util/geometry.hpp"
+#include "AiState.hpp"
+#include "Sound.hpp"
 
 #include <SFML/Window/Event.hpp>
 
 namespace core {
-	/// Player character
-	class Player : public AliveActor, public std::enable_shared_from_this<Player> {
+	/// Controlls Actor actions
+	class Controller {
 	public:
-		Player(std::shared_ptr<World> world_, std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine_) :
-			AliveActor{ {.maxHp = 10, .regen = 0.1, .damage = 2, .turnDelay = 1, .texture = &assets->playerTexture()},
-			            std::move(world_), &randomEngine_ } {}
-		Player() = default;
+		virtual bool act() = 0;
 
-		void spawn();
-	private:
-		enum class State {
-			WAITING_TURN,
-			WAITING_INPUT,
-			ENDED_TURN
-		};
-		State state = State::WAITING_TURN;
+		virtual void handleEvent(sf::Event event) = 0;
 
-		bool tryAscentStairs();
-		bool tryDescentStairs();
+		[[nodiscard]] virtual bool shouldInterruptOnDelete() const = 0;
+
+		[[nodiscard]] virtual bool isOnPlayerSide() const = 0;
+
+		[[nodiscard]] virtual bool wantsSwap() const noexcept = 0;
+
+		virtual void handleSwap() noexcept = 0;
+
+		virtual void handleSound(Sound sound) noexcept = 0;
+
+		virtual AiState aiState() const noexcept = 0;
 	};
 }
 

@@ -19,6 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "fwd.hpp"
 #include "AiState.hpp"
 #include "Sound.hpp"
+#include "Controller.hpp"
 
 #include "render/AssetManager.hpp"
 
@@ -31,35 +32,37 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace core {
 	/// AI controlling enemy
-	class EnemyAi {
+	class EnemyAi : public Controller {
 	public:
-		EnemyAi(std::weak_ptr<Enemy> newEnemy_, std::shared_ptr<Player> player_);
+		EnemyAi(std::weak_ptr<AliveActor> newEnemy_, std::shared_ptr<Player> player_);
 
-		bool act();
+		bool act() final;
 
-		[[nodiscard]] bool shouldInterruptOnDelete() const {
+		void handleEvent(sf::Event event) noexcept final {}
+
+		[[nodiscard]] bool shouldInterruptOnDelete() const final {
 			return false;
 		}
 
-		[[nodiscard]] bool isOnPlayerSide() const {
+		[[nodiscard]] bool isOnPlayerSide() const final {
 			return false;
 		}
 
-		[[nodiscard]] bool wantsSwap() const noexcept {
+		[[nodiscard]] bool wantsSwap() const noexcept final {
 			return wantsSwap_;
 		}
 
-		void handleSwap() noexcept {
+		void handleSwap() noexcept final {
 			wantsSwap_ = false;
 		}
 
-		AiState state() const noexcept {
+		AiState aiState() const noexcept final {
 			return state_;
 		}
 
-		void handleSound(Sound sound) noexcept;
+		void handleSound(Sound sound) noexcept final;
 	private:
-		std::weak_ptr<Enemy> enemy_;
+		std::weak_ptr<AliveActor> enemy_;
 		std::shared_ptr<Player> player;
 
 		bool wantsSwap_ = true;

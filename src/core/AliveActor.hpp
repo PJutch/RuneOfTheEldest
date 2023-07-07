@@ -19,6 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Actor.hpp"
 
 #include "World.hpp"
+#include "Controller.hpp"
 
 #include "util/geometry.hpp"
 
@@ -38,6 +39,18 @@ namespace core {
 		AliveActor() = default;
 		AliveActor(Stats stats, sf::Vector3i newPosition, std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine);
 		AliveActor(Stats stats, std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine);
+
+		void controller(std::unique_ptr<Controller> newController) {
+			controller_ = std::move(newController);
+		}
+
+		Controller& controller() noexcept {
+			return *controller_;
+		}
+
+		const Controller& controller() const noexcept {
+			return *controller_;
+		}
 
 		[[nodiscard]] sf::Vector3i position() const noexcept final {
 			return position_;
@@ -72,35 +85,9 @@ namespace core {
 		[[nodiscard]] const sf::Texture* texture() const noexcept final {
 			return stats.texture;
 		}
-	protected:
-		[[nodiscard]] World& world() noexcept {
-			return *world_;
-		}
 
-		[[nodiscard]] const World& world() const noexcept {
-			return *world_;
-		}
-
-		[[nodiscard]] util::RandomEngine& randomEngine() noexcept {
-			return *randomEngine_;
-		}
-
-		/// Sets next turn time
-		void nextTurn(double newNextTurn) noexcept {
-			nextTurn_ = newNextTurn;
-		}
-
-		/// Dealys next Actor turn and applies over time effects
-		void wait(double time) noexcept;
-
-		/// @brief Checks if can move to newPosition or swap with Actor there
-		/// @param forceSwap Forces swap even if other Actor doesn't want it
-		[[nodiscard]] bool canMoveToOrAttack(sf::Vector3i newPosition, bool forceSwap) const;
-
-		/// @brief Checks if can move to position + offset or swap with Actor there
-		/// @param forceSwap Forces swap even if other Actor doesn't want it
-		[[nodiscard]] bool canMoveToOrAttack(sf::Vector2i offset, bool forceSwap) const {
-			return canMoveToOrAttack(position() + util::make3D(offset, 0), forceSwap);
+		void endTurn() noexcept {
+			wait(stats.turnDelay);
 		}
 
 		/// @brief Changes position if newPosition isn't occupied or attacks Actor there
@@ -133,15 +120,72 @@ namespace core {
 		/// @param forceSwap Forces swap even if other Actor doesn't want it
 		void tryMoveInDirection(sf::Vector2i direction, bool forceSwap);
 
+		[[nodiscard]] World& world() noexcept {
+			return *world_;
+		}
+
+		[[nodiscard]] const World& world() const noexcept {
+			return *world_;
+		}
+
+		[[nodiscard]] util::RandomEngine& randomEngine() noexcept {
+			return *randomEngine_;
+		}
+
+		void spawn();
+
+		bool act() final {
+			return controller_->act();
+		}
+
+		[[nodiscard]] bool shouldInterruptOnDelete() const final {
+			return controller_->shouldInterruptOnDelete();
+		}
+
+		[[nodiscard]] bool isOnPlayerSide() const final {
+			return controller_->isOnPlayerSide();
+		}
+
+		[[nodiscard]] bool wantsSwap() const noexcept final {
+			return controller_->wantsSwap();
+		}
+
+		void handleSwap() noexcept final {
+			controller_->handleSwap();
+		}
+
+		void handleSound(Sound sound) noexcept final {
+			controller_->handleSound(sound);
+		}
+
+		AiState aiState() const noexcept final {
+			return controller_->aiState();
+		}
+	protected:
+		/// Sets next turn time
+		void nextTurn(double newNextTurn) noexcept {
+			nextTurn_ = newNextTurn;
+		}
+
+		/// Dealys next Actor turn and applies over time effects
+		void wait(double time) noexcept;
+
+		/// @brief Checks if can move to newPosition or swap with Actor there
+		/// @param forceSwap Forces swap even if other Actor doesn't want it
+		[[nodiscard]] bool canMoveToOrAttack(sf::Vector3i newPosition, bool forceSwap) const;
+
+		/// @brief Checks if can move to position + offset or swap with Actor there
+		/// @param forceSwap Forces swap even if other Actor doesn't want it
+		[[nodiscard]] bool canMoveToOrAttack(sf::Vector2i offset, bool forceSwap) const {
+			return canMoveToOrAttack(position() + util::make3D(offset, 0), forceSwap);
+		}
+
 		void hp(double newHp) noexcept {
 			hp_ = newHp;
 		}
-
-		void endTurn() noexcept {
-			wait(stats.turnDelay);
-		}
 	private:
 		Stats stats;
+		std::unique_ptr<Controller> controller_;
 
 		double nextTurn_ = 0;
 		sf::Vector3i position_;

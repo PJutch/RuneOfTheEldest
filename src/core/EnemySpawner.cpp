@@ -15,7 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "EnemySpawner.hpp"
 
-#include "Enemy.hpp"
+#include "AliveActor.hpp"
+#include "EnemyAi.hpp"
 
 #include "util/parse.hpp"
 #include "util/filesystem.hpp"
@@ -96,8 +97,8 @@ namespace core {
 			for (const EnemyData& enemyData : enemyData)
 				for (int i = 0; i < std::uniform_int_distribution{ enemyData.minOnLevel, enemyData.maxOnLevel }(*randomEngine); ++i) {
 					sf::Vector3i position = world->randomPositionAt(level, &World::isFree);
-					auto enemy = std::make_shared<Enemy>(enemyData.stats, position, world, randomEngine);
-					enemy->ai(std::make_unique<EnemyAi>(enemy, player));
+					auto enemy = std::make_shared<AliveActor>(enemyData.stats, position, world, randomEngine);
+					enemy->controller(std::make_unique<EnemyAi>(enemy, player));
 					world->addActor(std::move(enemy));
 				}
 	}

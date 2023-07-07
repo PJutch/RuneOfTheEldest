@@ -26,18 +26,21 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 Game::Game(std::shared_ptr<core::World> newWorld,
            std::shared_ptr<core::Player> player_,
+           std::unique_ptr<core::PlayerController> playerController_,
            std::unique_ptr<core::EnemySpawner> enemySpawner_,
            std::unique_ptr<generation::DungeonGenerator> newDungeonGenerator,
            std::shared_ptr<sf::RenderWindow> window_,
            std::unique_ptr<render::Renderer> newRenderer,
            util::LoggerFactory& loggerFactory) :
-    world{std::move(newWorld)},
-    player{ std::move(player_) },
-    enemySpawner{std::move(enemySpawner_)},
-    dungeonGenerator_{std::move(newDungeonGenerator)},
-    window{std::move(window_)},
-    renderer_{std::move(newRenderer)},
-    generationLogger{ loggerFactory.create("generation") } {}
+        world{std::move(newWorld)},
+        player{ std::move(player_) },
+        enemySpawner{std::move(enemySpawner_)},
+        dungeonGenerator_{std::move(newDungeonGenerator)},
+        window{std::move(window_)},
+        renderer_{std::move(newRenderer)},
+        generationLogger{ loggerFactory.create("generation") } {
+    player->controller(std::move(playerController_));
+}
 
 void Game::run() {
     generate();
@@ -77,7 +80,7 @@ void Game::handleEvent(sf::Event event) {
     if (renderer().handleEvent(event))
         return;
 
-    player->handleEvent(event);
+    player->controller().handleEvent(event);
 }
 
 void Game::generate() {

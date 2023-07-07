@@ -15,7 +15,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "EnemyAi.hpp"
 
-#include "Enemy.hpp"
+#include "AliveActor.hpp"
 #include "Player.hpp"
 
 #include "util/pathfinding.hpp"
@@ -24,7 +24,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/assert.hpp"
 
 namespace core {
-	EnemyAi::EnemyAi(std::weak_ptr<Enemy> newEnemy_, std::shared_ptr<Player> player_) :
+	EnemyAi::EnemyAi(std::weak_ptr<AliveActor> newEnemy_, std::shared_ptr<Player> player_) :
 		enemy_{ std::move(newEnemy_) }, player{ std::move(player_) }, targetPosition{ enemy_.lock()->position() } {}
 
 	bool EnemyAi::act() {
@@ -39,10 +39,10 @@ namespace core {
 			targetPosition = player->position();
 			state_ = AiState::ATTACKING;
 			targetPriority = 1.;
-		} else if (state() == AiState::ATTACKING) {
+		} else if (aiState() == AiState::ATTACKING) {
 			targetPosition = tryFollowStairs(targetPosition);
 			state_ = AiState::SEEKING;
-		} else if (state() == AiState::SEEKING && enemy_.lock()->position() == targetPosition) {
+		} else if (aiState() == AiState::SEEKING && enemy_.lock()->position() == targetPosition) {
 			targetPosition = randomNearbyTarget();
 			targetPriority = 0.01;
 		} else
