@@ -37,16 +37,6 @@ namespace core {
 		Player() = default;
 
 		void spawn();
-	private:
-		enum class State {
-			WAITING_TURN,
-			WAITING_INPUT,
-			ENDED_TURN
-		};
-		State state = State::WAITING_TURN;
-
-		bool tryAscentStairs();
-		bool tryDescentStairs();
 	};
 }
 
