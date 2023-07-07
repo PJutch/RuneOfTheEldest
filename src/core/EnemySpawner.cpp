@@ -94,7 +94,9 @@ namespace core {
 	void EnemySpawner::spawn() {
 		for (int level = 0; level < world->tiles().shape().z; ++level)
 			for (const EnemyData& enemyData : enemyData)
-				for (int i = 0; i < std::uniform_int_distribution{ enemyData.minOnLevel, enemyData.maxOnLevel }(*randomEngine); ++i)
-					Enemy::spawnSingle(level, enemyData.stats, world, player, *randomEngine);
+				for (int i = 0; i < std::uniform_int_distribution{ enemyData.minOnLevel, enemyData.maxOnLevel }(*randomEngine); ++i) {
+					sf::Vector3i position = world->randomPositionAt(level, &World::isFree);
+					world->addActor(std::make_shared<Enemy>(position, enemyData.stats, world, player, *randomEngine));
+				}
 	}
 }

@@ -40,12 +40,6 @@ namespace core {
 		/// Randomly moves goblin
 		bool act() final;
 
-		static void spawnSingle(int level, AliveActor::Stats stats,
-			                    std::shared_ptr<World> world, std::shared_ptr<Player> player, util::RandomEngine& randomEngine) {
-			sf::Vector3i position = world->randomPositionAt(level, &World::isFree);
-			world->addActor(std::make_shared<Enemy>(position, stats, world, std::move(player), randomEngine));
-		}
-
 		[[nodiscard]] bool shouldInterruptOnDelete() const final {
 			return false;
 		}
