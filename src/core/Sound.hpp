@@ -20,6 +20,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace core {
 	struct Sound {
+		/// Action caused sound
 		enum class Type {
 			WALK,   ///< Actor moved
 			ATTACK, ///< Actor attacked
@@ -29,11 +30,19 @@ namespace core {
 		static const int totalTypes = static_cast<int>(Sound::Type::TOTAL);
 
 		Type type;
+
+		/// Sound source side
 		bool isSourceOnPlayerSide;
+
+		/// Sound source position
 		sf::Vector3i position;
 
 		friend bool operator == (const Sound&, const Sound&) = default;
 
+		/// @brief Volume of Sound heard from listenerPosition
+		/// @details Sound volume depends on the type.
+		/// It reduces quadratically with the distance.
+		/// Sounds can't be heard from other Levels
 		double volume(sf::Vector3i listenerPosition);
 	};
 }

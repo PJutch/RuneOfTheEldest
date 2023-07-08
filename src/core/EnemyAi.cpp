@@ -40,13 +40,13 @@ namespace core {
 		if (canSeePlayer()) {
 			targetPosition = enemy->world().player().position();
 			aiState(AiState::ATTACKING);
-			targetPriority = 1.;
+			targetPriority = 1.; // Ignore any sounds when can see Player
 		} else if (aiState() == AiState::ATTACKING) {
 			targetPosition = tryFollowStairs(targetPosition);
 			aiState(AiState::SEEKING);
 		} else if (aiState() == AiState::SEEKING && enemy->position() == targetPosition) {
 			targetPosition = randomNearbyTarget();
-			targetPriority = 0.01;
+			targetPriority = 0.01; // Ignore quite sounds
 		} else
 			targetPriority *= 0.9;
 	}
@@ -90,10 +90,10 @@ namespace core {
 		auto enemy = enemy_.lock();
 
 		if (util::canSee(enemy->position(), sound.position, enemy->world()))
-			return;
+			return; // Ignore sounds with known sources
 
 		if (sound.type == Sound::Type::WALK && !sound.isSourceOnPlayerSide)
-			return;
+			return; // Ignore friend's WALK to prevent chasing each other on corners
 
 		double priority = sound.volume(enemy->position());
 		if (priority > targetPriority) {

@@ -48,7 +48,7 @@ namespace core {
 		std::weak_ptr<Actor> enemy_;
 
 		sf::Vector3i targetPosition;
-		double targetPriority = 0.01;
+		double targetPriority = 0.01; // Ignore quite sounds
 
 		bool canSeePlayer() const noexcept;
 
