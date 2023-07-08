@@ -130,34 +130,6 @@ namespace core {
 		[[nodiscard]] util::RandomEngine& randomEngine() noexcept {
 			return *randomEngine_;
 		}
-
-		bool act() {
-			return controller_->act();
-		}
-
-		[[nodiscard]] bool shouldInterruptOnDelete() const {
-			return controller_->shouldInterruptOnDelete();
-		}
-
-		[[nodiscard]] bool isOnPlayerSide() const {
-			return controller_->isOnPlayerSide();
-		}
-
-		[[nodiscard]] bool wantsSwap() const noexcept {
-			return controller_->wantsSwap();
-		}
-
-		void handleSwap() noexcept {
-			controller_->handleSwap();
-		}
-
-		void handleSound(Sound sound) noexcept {
-			controller_->handleSound(sound);
-		}
-
-		AiState aiState() const noexcept {
-			return controller_->aiState();
-		}
 protected:
 		/// @brief Checks if can move to newPosition or swap with Actor there
 		/// @param forceSwap Forces swap even if other Actor doesn't want it

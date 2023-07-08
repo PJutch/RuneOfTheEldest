@@ -43,26 +43,26 @@ namespace core {
 		auto other = world().actorAt(newPosition);
 		if (!other) {
 			position(newPosition);
-			world().makeSound({ Sound::Type::WALK, isOnPlayerSide(), position() });
+			world().makeSound({ Sound::Type::WALK, controller().isOnPlayerSide(), position() });
 			return true;
 		}
 
-		if (other->isOnPlayerSide() != isOnPlayerSide()) {
+		if (other->controller().isOnPlayerSide() != controller().isOnPlayerSide()) {
 			other->beDamaged(stats.damage);
-			world().makeSound({ Sound::Type::ATTACK, isOnPlayerSide(), position()});
+			world().makeSound({ Sound::Type::ATTACK, controller().isOnPlayerSide(), position()});
 			return true;
 		}
 
-		if (!other->wantsSwap() && !forceSwap)
+		if (!other->controller().wantsSwap() && !forceSwap)
 			return false;
 
 		sf::Vector3i oldPosition = position();
 		position(other->position());
 		other->position(oldPosition);
 
-		handleSwap();
-		other->handleSwap();
-		world().makeSound({ Sound::Type::WALK, isOnPlayerSide(), position() });
+		controller().handleSwap();
+		other->controller().handleSwap();
+		world().makeSound({ Sound::Type::WALK, controller().isOnPlayerSide(), position() });
 		return true;
 	}
 
@@ -74,10 +74,10 @@ namespace core {
 		if (!other)
 			return true;
 
-		if (other->isOnPlayerSide() != isOnPlayerSide())
+		if (other->controller().isOnPlayerSide() != controller().isOnPlayerSide())
 			return true;
 
-		return forceSwap || other->wantsSwap();
+		return forceSwap || other->controller().wantsSwap();
 	}
 
 	void Actor::tryMoveInDirection(sf::Vector2i direction, bool forceSwap) {

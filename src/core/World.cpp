@@ -43,13 +43,13 @@ namespace core {
 			popActor();
 
 			if (actors_.back()->isAlive()) {
-				bool complete = actors_.back()->act();
+				bool complete = actors_.back()->controller().act();
 				pushActor();
 				if (!complete)
 					break;
 			}
 			else {
-				bool interrupt = actors_.back()->shouldInterruptOnDelete();
+				bool interrupt = actors_.back()->controller().shouldInterruptOnDelete();
 				actors_.pop_back();
 				if (interrupt)
 					break;
@@ -59,7 +59,7 @@ namespace core {
 
 	void World::makeSound(Sound sound) {
 		for (auto actor : actors())
-			actor->handleSound(sound);
+			actor->controller().handleSound(sound);
 	}
 
 	void World::generateStairs() {
