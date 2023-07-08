@@ -130,20 +130,6 @@ namespace core {
 		[[nodiscard]] util::RandomEngine& randomEngine() noexcept {
 			return *randomEngine_;
 		}
-protected:
-		/// @brief Checks if can move to newPosition or swap with Actor there
-		/// @param forceSwap Forces swap even if other Actor doesn't want it
-		[[nodiscard]] bool canMoveToOrAttack(sf::Vector3i newPosition, bool forceSwap) const;
-
-		/// @brief Checks if can move to position + offset or swap with Actor there
-		/// @param forceSwap Forces swap even if other Actor doesn't want it
-		[[nodiscard]] bool canMoveToOrAttack(sf::Vector2i offset, bool forceSwap) const {
-			return canMoveToOrAttack(position() + util::make3D(offset, 0), forceSwap);
-		}
-
-		void hp(double newHp) noexcept {
-			hp_ = newHp;
-		}
 	private:
 		Stats stats;
 		std::unique_ptr<Controller> controller_;
@@ -154,6 +140,16 @@ protected:
 
 		std::shared_ptr<World> world_;
 		util::RandomEngine* randomEngine_;
+
+		/// @brief Checks if can move to newPosition or swap with Actor there
+		/// @param forceSwap Forces swap even if other Actor doesn't want it
+		[[nodiscard]] bool canMoveToOrAttack(sf::Vector3i newPosition, bool forceSwap) const;
+
+		/// @brief Checks if can move to position + offset or swap with Actor there
+		/// @param forceSwap Forces swap even if other Actor doesn't want it
+		[[nodiscard]] bool canMoveToOrAttack(sf::Vector2i offset, bool forceSwap) const {
+			return canMoveToOrAttack(position() + util::make3D(offset, 0), forceSwap);
+		}
 	};
 }
 

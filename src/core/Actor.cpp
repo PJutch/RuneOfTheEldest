@@ -30,7 +30,7 @@ namespace core {
 		nextTurn_ += stats.turnDelay;
 
 		hp_ += stats.regen * stats.turnDelay;
-		hp(std::min(hp(), maxHp()));
+		hp_ = std::min(hp(), maxHp());
 	}
 
 	bool Actor::tryMoveTo(sf::Vector3i newPosition, bool forceSwap) {
