@@ -26,10 +26,10 @@ namespace core {
 	Actor::Actor(Stats stats_, std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine) :
 		Actor{ stats_, {0, 0, 0}, std::move(newWorld), newRandomEngine } {}
 
-	void Actor::wait(double time) noexcept {
-		nextTurn_ += time;
+	void Actor::endTurn() noexcept {
+		nextTurn_ += stats.turnDelay;
 
-		hp_ += stats.regen * time;
+		hp_ += stats.regen * stats.turnDelay;
 		hp(std::min(hp(), maxHp()));
 	}
 

@@ -87,9 +87,7 @@ namespace core {
 			return stats.texture;
 		}
 
-		void endTurn() noexcept {
-			wait(stats.turnDelay);
-		}
+		void endTurn() noexcept;
 
 		/// @brief Changes position if newPosition isn't occupied or attacks Actor there
 		/// @param forceSwap Forces swap even if other Actor doesn't want it
@@ -160,15 +158,7 @@ namespace core {
 		AiState aiState() const noexcept {
 			return controller_->aiState();
 		}
-	protected:
-		/// Sets next turn time
-		void nextTurn(double newNextTurn) noexcept {
-			nextTurn_ = newNextTurn;
-		}
-
-		/// Dealys next Actor turn and applies over time effects
-		void wait(double time) noexcept;
-
+protected:
 		/// @brief Checks if can move to newPosition or swap with Actor there
 		/// @param forceSwap Forces swap even if other Actor doesn't want it
 		[[nodiscard]] bool canMoveToOrAttack(sf::Vector3i newPosition, bool forceSwap) const;
