@@ -21,6 +21,12 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/Keyboard.hpp"
 
 namespace core {
+	PlayerController::PlayerController(std::weak_ptr<Actor> player_) : player{ std::move(player_) } {
+		wantsSwap(false);
+		isOnPlayerSide(true);
+		shouldInterruptOnDelete(true);
+	}
+
 	void PlayerController::endTurn() noexcept {
 		state = State::ENDED_TURN;
 		player.lock()->endTurn();

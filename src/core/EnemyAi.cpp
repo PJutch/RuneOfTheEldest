@@ -24,7 +24,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace core {
 	EnemyAi::EnemyAi(std::weak_ptr<Actor> newEnemy_) :
-		enemy_{ std::move(newEnemy_) }, targetPosition{ enemy_.lock()->position() } {}
+			enemy_{ std::move(newEnemy_) }, targetPosition{ enemy_.lock()->position() } {
+		aiState(AiState::INACTIVE);
+	}
 
 	bool EnemyAi::act() {
 		updateTarget();
@@ -37,11 +39,11 @@ namespace core {
 		auto enemy = enemy_.lock();
 		if (canSeePlayer()) {
 			targetPosition = enemy->world().player().position();
-			state_ = AiState::ATTACKING;
+			aiState(AiState::ATTACKING);
 			targetPriority = 1.;
 		} else if (aiState() == AiState::ATTACKING) {
 			targetPosition = tryFollowStairs(targetPosition);
-			state_ = AiState::SEEKING;
+			aiState(AiState::SEEKING);
 		} else if (aiState() == AiState::SEEKING && enemy->position() == targetPosition) {
 			targetPosition = randomNearbyTarget();
 			targetPriority = 0.01;
@@ -71,7 +73,7 @@ namespace core {
 	void EnemyAi::travelToTarget() noexcept {
 		auto enemy = enemy_.lock();
 
-		wantsSwap_ = true;
+		wantsSwap(true);
 		sf::Vector3i nextStep_ = util::nextStep(enemy->world(), enemy->position(), targetPosition);
 		if (nextStep_.z == 0)
 			enemy->tryMoveInDirection(util::getXY(nextStep_), false);
@@ -112,7 +114,7 @@ namespace core {
 		if (priority > targetPriority) {
 			targetPosition = sound.position;
 			targetPriority = priority;
-			state_ = AiState::SEEKING;
+			aiState(AiState::SEEKING);
 		}
 	}
 }

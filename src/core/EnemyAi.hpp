@@ -39,30 +39,16 @@ namespace core {
 		/// Chases or attacks Player
 		bool act() final;
 
-		[[nodiscard]] bool isOnPlayerSide() const final {
-			return false;
-		}
-
-		[[nodiscard]] bool wantsSwap() const noexcept final {
-			return wantsSwap_;
-		}
-
 		void handleSwap() noexcept final {
-			wantsSwap_ = false;
-		}
-
-		AiState aiState() const noexcept final {
-			return state_;
+			wantsSwap(false);
 		}
 
 		void handleSound(Sound sound) noexcept final;
 	private:
 		std::weak_ptr<Actor> enemy_;
 
-		bool wantsSwap_ = true;
 		sf::Vector3i targetPosition;
 		double targetPriority = 0.01;
-		AiState state_ = AiState::INACTIVE;
 
 		bool canSeePlayer() const noexcept;
 

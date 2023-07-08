@@ -31,25 +31,13 @@ namespace core {
 	/// Controlled by player Actor
 	class PlayerController : public Controller {
 	public:
-		PlayerController(std::weak_ptr<Actor> player_) : player{ std::move(player_) } {}
+		PlayerController(std::weak_ptr<Actor> player);
 
 		/// Waits for player input
 		bool act() final;
 
 		/// Moves on WSAD, tries to ascent/descent stairs by <>
 		void handleEvent(sf::Event event) final;
-
-		[[nodiscard]] bool shouldInterruptOnDelete() const final {
-			return true;
-		}
-
-		[[nodiscard]] bool isOnPlayerSide() const final {
-			return true;
-		}
-
-		[[nodiscard]] bool wantsSwap() const noexcept final {
-			return false;
-		}
 	private:
 		std::weak_ptr<Actor> player;
 

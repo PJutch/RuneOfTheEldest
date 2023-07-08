@@ -30,14 +30,6 @@ namespace {
         bool act() final {
             return true;
         }
-
-        [[nodiscard]] bool isOnPlayerSide() const final {
-            return false;
-        }
-
-        bool wantsSwap() const noexcept final {
-            return true;
-        }
     };
 
     std::shared_ptr<core::Actor> makeTestActor(sf::Vector3i pos) {

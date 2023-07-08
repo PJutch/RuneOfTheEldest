@@ -26,8 +26,9 @@ namespace {
 		TestController(std::weak_ptr<core::Actor> actor_, int newId, std::vector<int>* log_,
 			           double waitAfter_ = std::numeric_limits<double>::infinity(),
 			           double dieAfter_ = std::numeric_limits<double>::infinity(), bool shouldInterruptOnDelete_ = false) noexcept :
-			actor{ std::move(actor_) }, id_{ newId }, log{ log_ },
-			waitAfter{ waitAfter_ }, dieAfter{ dieAfter_ }, interruptOnDelete{ shouldInterruptOnDelete_ } {}
+				actor{ std::move(actor_) }, id_{ newId }, log{ log_ }, waitAfter{ waitAfter_ }, dieAfter{ dieAfter_ } {
+			shouldInterruptOnDelete(shouldInterruptOnDelete_);
+		}
 
 		bool act() final {
 			auto actor_ = actor.lock();
@@ -43,24 +44,8 @@ namespace {
 			return actor_->nextTurn() <= waitAfter;
 		}
 
-		bool shouldInterruptOnDelete() const noexcept final {
-			return interruptOnDelete;
-		}
-
-		AiState aiState() const noexcept final {
-			return AiState::NONE;
-		}
-
 		int id() const noexcept {
 			return id_;
-		}
-
-		[[nodiscard]] bool isOnPlayerSide() const final {
-			return false;
-		}
-
-		bool wantsSwap() const noexcept final {
-			return true;
 		}
 
 		void handleSwap() noexcept final {}

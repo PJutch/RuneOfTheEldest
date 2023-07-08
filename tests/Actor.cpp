@@ -24,16 +24,8 @@ namespace {
 			return true;
 		}
 
-		[[nodiscard]] bool isOnPlayerSide() const final {
-			return false;
-		}
-
-		bool wantsSwap() const noexcept final {
-			return wantsSwap_;
-		}
-
 		void wantsSwap(bool newWantsSwap) noexcept {
-			wantsSwap_ = newWantsSwap;
+			Controller::wantsSwap(newWantsSwap);
 		}
 
 		void handleSwap() noexcept final {
@@ -44,7 +36,6 @@ namespace {
 			return hadSwapped_;
 		}
 	private:
-		bool wantsSwap_ = true;
 		bool hadSwapped_ = false;
 	};
 

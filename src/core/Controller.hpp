@@ -35,15 +35,19 @@ namespace core {
 		virtual void handleEvent(sf::Event event) {}
 
 		/// If true interrupts Actor processing in queue and continue Game loop when this Actor deleted
-		[[nodiscard]] virtual bool shouldInterruptOnDelete() const {
-			return false;
+		[[nodiscard]] bool shouldInterruptOnDelete() const noexcept {
+			return shouldInterruptOnDelete_;
 		}
 
 		/// Checks if Actor is player ally
-		[[nodiscard]] virtual bool isOnPlayerSide() const = 0;
+		[[nodiscard]] bool isOnPlayerSide() const noexcept {
+			return isOnPlayerSide_;
+		}
 
 		/// Checks if allies can swap with this Actor
-		[[nodiscard]] virtual bool wantsSwap() const noexcept = 0;
+		[[nodiscard]] bool wantsSwap() const noexcept {
+			return wantsSwap_;
+		}
 
 		/// Called after swapping with another Actor
 		virtual void handleSwap() noexcept {}
@@ -51,9 +55,30 @@ namespace core {
 		/// Called when Actor hears a sound
 		virtual void handleSound(Sound sound) noexcept {}
 
-		[[nodiscard]] virtual AiState aiState() const noexcept {
-			return AiState::NONE;
+		[[nodiscard]] AiState aiState() const noexcept {
+			return aiState_;
 		}
+	protected:
+		void aiState(AiState newAiState) noexcept {
+			aiState_ = newAiState;
+		}
+
+		void wantsSwap(bool newWantsSwap) noexcept {
+			wantsSwap_ = newWantsSwap;
+		}
+
+		void isOnPlayerSide(bool newIsOnPlayerSide) noexcept {
+			isOnPlayerSide_ = newIsOnPlayerSide;
+		}
+
+		void shouldInterruptOnDelete(bool newShouldInterruptOnDelete) noexcept {
+			shouldInterruptOnDelete_ = newShouldInterruptOnDelete;
+		}
+	private:
+		AiState aiState_ = AiState::NONE;
+		bool wantsSwap_ = true;
+		bool isOnPlayerSide_ = false;
+		bool shouldInterruptOnDelete_ = false;
 	};
 }
 
