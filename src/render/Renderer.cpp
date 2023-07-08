@@ -26,13 +26,12 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace render {
     Renderer::Renderer(std::shared_ptr<Camera> camera,
-        std::shared_ptr<PlayerMap> playerMap_,
-        std::shared_ptr<sf::RenderWindow> window_,
-        std::shared_ptr<core::World> world_,
-        std::shared_ptr<AssetManager> assets_) :
+                       std::shared_ptr<PlayerMap> playerMap_,
+                       std::shared_ptr<sf::RenderWindow> window_,
+                       std::shared_ptr<core::World> world_,
+                       std::shared_ptr<AssetManager> assets_) :
         camera{ std::move(camera) }, assets_{ std::move(assets_) }, playerMap{ std::move(playerMap_) },
-        world{ std::move(world_) },
-        window{ std::move(window_) } {}
+        world{ std::move(world_) }, window{ std::move(window_) } {}
 
     void Renderer::drawWorld() {
         for (int x = 0; x < world->tiles().shape().x; ++x)
@@ -42,8 +41,11 @@ namespace render {
         if (renderAreas_) 
             drawAreas(camera->position().level);
 
-        for (auto actor : playerMap->seenActors())
+        for (const auto& actor : playerMap->seenActors())
             draw(actor);
+
+        for (core::Sound sound : playerMap->recentSounds())
+            draw(sound);
     }
 
     void Renderer::drawTile(sf::Vector3i position) {
@@ -77,6 +79,16 @@ namespace render {
         drawSprite(topLeft, { 0, 0 }, *actor.texture, colorMod);
         drawHpBar(topLeft + util::bottomLeft(spriteSize), util::bottomLeft(maxHpBarSize), actor.hp, actor.maxHp, maxHpBarSize, colorMod);
         drawSprite(topLeft + util::topRight(spriteSize), util::topRight(aiStateIconSize), assets()->aiStateIcon(actor.aiState), colorMod);
+    }
+
+    void Renderer::draw(core::Sound sound) {
+        if (sound.position.z != world->player().position().z)
+            return;
+
+        if (util::canSee(sound.position, world->player().position(), *world)) 
+            return;
+
+        drawSprite(toScreen(util::getXY(sound.position)), { 0, 0 }, assets()->soundIcon(sound.type, sound.isSourceOnPlayerSide));
     }
 
     void Renderer::drawInWorldRect(sf::IntRect rect, sf::Color fillColor, sf::Color outlineColor, float outlineThickness) {

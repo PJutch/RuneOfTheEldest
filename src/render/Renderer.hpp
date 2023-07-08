@@ -113,6 +113,7 @@ namespace render {
         void drawAreas(int level);
         void drawTile(sf::Vector3i position);
         void draw(PlayerMap::SeenActor actor);
+        void draw(core::Sound sound);
 
         void drawHpBar(sf::Vector2f screenPosition, sf::Vector2f origin, double hp, double maxHp, sf::Vector2f maxSize, double colorMod = 1.0);
         void drawSprite(sf::Vector2f screenPosition, sf::Vector2f origin, const sf::Texture& texture, double colorMod = 1.0);

@@ -21,7 +21,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/Keyboard.hpp"
 
 namespace core {
-	PlayerController::PlayerController(std::weak_ptr<Actor> player_) : player{ std::move(player_) } {
+	PlayerController::PlayerController(std::weak_ptr<Actor> player_, std::shared_ptr<render::PlayerMap> map_) :
+			player{ std::move(player_) }, map{ std::move(map_) } {
 		wantsSwap(false);
 		isOnPlayerSide(true);
 		shouldInterruptOnDelete(true);
@@ -29,6 +30,7 @@ namespace core {
 
 	void PlayerController::endTurn() noexcept {
 		state = State::ENDED_TURN;
+		map->clearSounds();
 		player.lock()->endTurn();
 	}
 
@@ -36,26 +38,24 @@ namespace core {
 		if (state != State::WAITING_INPUT)
 			return;
 
-		auto player_ = player.lock();
-
 		if (event.type == sf::Event::KeyPressed) {
 			if (event.key.code == sf::Keyboard::Numpad5)
-				player_->endTurn();
+				endTurn();
 			else if (event.key.code == sf::Keyboard::Comma) {
 				if (event.key.shift)
 					if (tryAscentStairs())
-						player_->endTurn();
+						endTurn();
 			}
 			else if (event.key.code == sf::Keyboard::Period) {
 				if (event.key.shift)
 					if (tryDescentStairs())
-						player_->endTurn();
+						endTurn();
 			}
 			else if (util::isNumpad(event.key.code))
 				for (int i = 1; i <= 9; ++i)
 					if (sf::Keyboard::isKeyPressed(util::numpad(i))) {
-						if (player_->tryMove(util::numpadDirections<int>[i - 1], true))
-							player_->endTurn();
+						if (player.lock()->tryMove(util::numpadDirections<int>[i - 1], true))
+							endTurn();
 						return;
 					}
 		}

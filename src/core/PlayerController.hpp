@@ -22,8 +22,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "World.hpp"
 
 #include "render/AssetManager.hpp"
+#include "render/PlayerMap.hpp"
 
 #include "util/geometry.hpp"
+#include "util/raycast.hpp"
 
 #include <SFML/Window/Event.hpp>
 
@@ -31,15 +33,21 @@ namespace core {
 	/// Controlled by player Actor
 	class PlayerController : public Controller {
 	public:
-		PlayerController(std::weak_ptr<Actor> player);
+		PlayerController(std::weak_ptr<Actor> player, std::shared_ptr<render::PlayerMap> map);
 
 		/// Waits for player input
 		bool act() final;
 
 		/// Moves on WSAD, tries to ascent/descent stairs by <>
 		void handleEvent(sf::Event event) final;
+
+		/// Add sound to PlayerMap
+		void handleSound(Sound sound) {
+			map->handleSound(sound);
+		}
 	private:
 		std::weak_ptr<Actor> player;
+		std::shared_ptr<render::PlayerMap> map;
 
 		enum class State {
 			WAITING_TURN,

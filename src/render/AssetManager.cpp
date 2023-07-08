@@ -39,6 +39,11 @@ namespace render {
         loadTexture(aiStateIconMut(AiState::SEEKING), "seeking AI state icon", "resources/textures/AiState/confused.png");
         loadTexture(aiStateIconMut(AiState::ATTACKING), "attacking AI state icon", "resources/textures/AiState/angry.png");
 
+        loadTexture(soundIconMut(core::Sound::Type::WALK, false  ),    "enemy walk sound icon", "resources/textures/Sound/walkEnemy.png"   );
+        loadTexture(soundIconMut(core::Sound::Type::WALK, true   ),   "friend walk sound icon", "resources/textures/Sound/walkFriend.png"  );
+        loadTexture(soundIconMut(core::Sound::Type::ATTACK, false),  "enemy attack sound icon", "resources/textures/Sound/attackEnemy.png" );
+        loadTexture(soundIconMut(core::Sound::Type::ATTACK, true ), "friend attack sound icon", "resources/textures/Sound/attackFriend.png");
+
         logger->info("Loading font...");
         if (!font_.loadFromFile("resources/fonts/Roboto/Roboto-Medium.ttf"))
             throw FontLoadError{ "Unable to load font" };

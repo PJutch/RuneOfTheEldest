@@ -18,6 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "core/Tile.hpp"
 #include "core/AiState.hpp"
+#include "core/Sound.hpp"
 
 #include "util/log.hpp"
 #include "util/Exception.hpp"
@@ -66,6 +67,11 @@ namespace render {
 			return playerTexture_;
 		}
 
+		/// Gets icon for given sound type and source side
+		[[nodiscard]] const sf::Texture& soundIcon(core::Sound::Type type, bool isSourceOnPlayerSide) const noexcept {
+			return soundIcons[static_cast<int>(type) * 2 + static_cast<int>(isSourceOnPlayerSide)];
+		}
+
 		/// Gets icon for given AiState
 		[[nodiscard]] const sf::Texture& aiStateIcon(AiState state) const noexcept {
 			return aiStateIcons[static_cast<int>(state)];
@@ -88,6 +94,8 @@ namespace render {
 
 		sf::Texture playerTexture_;
 
+		std::array<sf::Texture, core::Sound::totalTypes * 2> soundIcons;
+
 		std::array<sf::Texture, totalAiStates> aiStateIcons;
 
 		sf::Font font_;
@@ -100,6 +108,10 @@ namespace render {
 
 		[[nodiscard]] sf::Texture& aiStateIconMut(AiState state) noexcept {
 			return aiStateIcons[static_cast<int>(state)];
+		}
+
+		[[nodiscard]] sf::Texture& soundIconMut(core::Sound::Type type, bool isSourceOnPlayerSide) noexcept {
+			return soundIcons[static_cast<int>(type) * 2 + static_cast<int>(isSourceOnPlayerSide)];
 		}
 
 		void fillTexture(sf::Texture& texture,

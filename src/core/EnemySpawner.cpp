@@ -58,8 +58,9 @@ namespace core {
 		}
 	}
 
-	EnemySpawner::EnemySpawner(std::shared_ptr<World> world_, std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine_) :
-			world{ std::move(world_) }, randomEngine{&randomEngine_},
+	EnemySpawner::EnemySpawner(std::shared_ptr<World> world_, std::shared_ptr<render::PlayerMap> playerMap_, 
+		                       std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine_) :
+		world{ std::move(world_) }, playerMap{std::move(playerMap_)}, randomEngine{&randomEngine_},
 			playerData{ .maxHp = 10, .regen = 0.1, .damage = 2, .turnDelay = 1, .texture = &assets->playerTexture() } {
 		util::forEachFile("resources/enemies/", [this, &assets](std::ifstream& file) {
 			auto params = util::parseMapping(file);
@@ -103,7 +104,7 @@ namespace core {
 				}
 
 		auto player = std::make_shared<Actor>(playerData, world->randomPositionAt(0, &World::isFree), world, randomEngine);
-		player->controller(std::make_unique<PlayerController>(player));
+		player->controller(std::make_unique<PlayerController>(player, playerMap));
 		world->player(player);
 		world->addActor(std::move(player));
 	}

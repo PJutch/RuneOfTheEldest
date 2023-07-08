@@ -24,6 +24,7 @@ namespace render {
 
 	void PlayerMap::onGenerate() {
 		seenActors_.clear();
+		clearSounds();
 		tileStates.assign(world->tiles().shape(), TileState::UNSEEN);
 	}
 

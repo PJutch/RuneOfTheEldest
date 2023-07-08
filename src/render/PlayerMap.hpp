@@ -61,10 +61,23 @@ namespace render {
 			updateTiles();
 			updateActors();
 		}
+
+		void handleSound(core::Sound sound) {
+			recentSounds_.push_back(sound);
+		}
+
+		void clearSounds() {
+			recentSounds_.clear();
+		}
+
+		std::span<const core::Sound> recentSounds() {
+			return recentSounds_;
+		}
 	private:
 		util::Array3D<TileState> tileStates;
-
 		std::vector<SeenActor> seenActors_;
+
+		std::vector<core::Sound> recentSounds_;
 
 		std::shared_ptr<core::World> world;
 

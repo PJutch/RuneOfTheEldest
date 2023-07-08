@@ -21,9 +21,12 @@ If not, see <https://www.gnu.org/licenses/>. */
 namespace core {
 	struct Sound {
 		enum class Type {
-			WALK,
-			ATTACK,
+			WALK,   ///< Actor moved
+			ATTACK, ///< Actor attacked
+			TOTAL   ///< Technical enumerator. Should be last
 		};
+
+		static const int totalTypes = static_cast<int>(Sound::Type::TOTAL);
 
 		Type type;
 		bool isSourceOnPlayerSide;

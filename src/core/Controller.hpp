@@ -50,10 +50,10 @@ namespace core {
 		}
 
 		/// Called after swapping with another Actor
-		virtual void handleSwap() noexcept {}
+		virtual void handleSwap() {}
 
 		/// Called when Actor hears a sound
-		virtual void handleSound(Sound sound) noexcept {}
+		virtual void handleSound(Sound sound) {}
 
 		[[nodiscard]] AiState aiState() const noexcept {
 			return aiState_;

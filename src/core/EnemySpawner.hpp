@@ -20,6 +20,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Actor.hpp"
 
 #include "render/AssetManager.hpp"
+#include "render/PlayerMap.hpp"
 
 #include "util/random.hpp"
 #include "util/Map.hpp"
@@ -27,11 +28,13 @@ If not, see <https://www.gnu.org/licenses/>. */
 namespace core {
 	class EnemySpawner {
 	public:
-		EnemySpawner(std::shared_ptr<World> world, std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine);
+		EnemySpawner(std::shared_ptr<World> world, std::shared_ptr<render::PlayerMap> playerMap, 
+			         std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine);
 
 		void spawn();
 	private:
 		std::shared_ptr<World> world;
+		std::shared_ptr<render::PlayerMap> playerMap;
 		util::RandomEngine* randomEngine;
 
 		struct EnemyData {
