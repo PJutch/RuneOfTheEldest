@@ -27,7 +27,7 @@ namespace core {
 	public:
 		virtual bool act() = 0;
 
-		virtual void handleEvent(sf::Event event) = 0;
+		virtual void handleEvent(sf::Event event) {}
 
 		[[nodiscard]] virtual bool shouldInterruptOnDelete() const = 0;
 

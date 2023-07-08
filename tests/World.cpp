@@ -19,60 +19,36 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <gtest/gtest.h>
 
 namespace {
-	class TestActor : public core::Actor {
+	class TestController : public core::Controller {
 	public:
-		TestActor() = default;
-		TestActor(sf::Vector3i newPosition, int newId = -1) noexcept :
-			position_{ newPosition }, id_{ newId } {}
-		TestActor(double firstTurn, double turnDelay_, int newId = -1, std::vector<int>* log_ = nullptr,
-			double waitAfter_ = std::numeric_limits<int>::max(),
-			double dieAfter_ = std::numeric_limits<int>::max(), bool shouldInterruptOnDelete_ = false) noexcept :
-			nextTurn_{ firstTurn }, turnDelay{ turnDelay_ }, id_{ newId }, log{ log_ },
+		TestController(std::weak_ptr<core::Actor> actor_, int newId = -1) : 
+			actor{ std::move(actor_) }, id_{ newId } {}
+		TestController(std::weak_ptr<core::Actor> actor_, int newId, std::vector<int>* log_,
+			           double waitAfter_ = std::numeric_limits<double>::infinity(),
+			           double dieAfter_ = std::numeric_limits<double>::infinity(), bool shouldInterruptOnDelete_ = false) noexcept :
+			actor{ std::move(actor_) }, id_{ newId }, log{ log_ },
 			waitAfter{ waitAfter_ }, dieAfter{ dieAfter_ }, interruptOnDelete{ shouldInterruptOnDelete_ } {}
 
-		sf::Vector3i position() const noexcept final {
-			return position_;
-		}
+		bool act() final {
+			auto actor_ = actor.lock();
 
-		void position(sf::Vector3i newPosition) noexcept final {
-			position_ = newPosition;
-		}
-
-		bool act() override {
 			if (log)
 				log->push_back(id());
-			nextTurn_ += turnDelay;
-			return nextTurn_ <= waitAfter;
-		}
 
-		double nextTurn() const noexcept final {
-			return nextTurn_;
-		}
+			actor_->endTurn();
 
-		bool isAlive() const noexcept final {
-			return nextTurn_ <= dieAfter;
+			if (actor_->nextTurn() > dieAfter)
+				actor_->beDamaged(std::numeric_limits<double>::infinity());
+
+			return actor_->nextTurn() <= waitAfter;
 		}
 
 		bool shouldInterruptOnDelete() const noexcept final {
 			return interruptOnDelete;
 		}
 
-		void beDamaged(double damage) noexcept final {}
-
 		AiState aiState() const noexcept final {
 			return AiState::NONE;
-		}
-
-		const sf::Texture* texture() const final {
-			return nullptr;
-		}
-
-		[[nodiscard]] double hp() const noexcept final {
-			return 0;
-		}
-
-		[[nodiscard]] double maxHp() const noexcept final {
-			return 0;
 		}
 
 		int id() const noexcept {
@@ -97,6 +73,8 @@ namespace {
 			return lastSound_;
 		}
 	private:
+		std::weak_ptr<core::Actor> actor;
+
 		double nextTurn_ = 0;
 		double turnDelay = 0;
 		sf::Vector3i position_{ 0, 0, 0 };
@@ -118,9 +96,21 @@ TEST(World, emptyActors) {
 	EXPECT_TRUE(world.actors().empty());
 }
 
+std::shared_ptr<core::Actor> makeTestActor() {
+	return std::make_shared<core::Actor>(core::Actor::Stats{ .maxHp = 1 }, nullptr, nullptr);
+}
+
+std::shared_ptr<core::Actor> makeTestActor(sf::Vector3i position) {
+	return std::make_shared<core::Actor>(core::Actor::Stats{.maxHp = 1}, position, nullptr, nullptr);
+}
+
+std::shared_ptr<core::Actor> makeTestActor(double turnDelay) {
+	return std::make_shared<core::Actor>(core::Actor::Stats{ .maxHp = 1, .turnDelay = turnDelay }, nullptr, nullptr);
+}
+
 TEST(World, addActor) {
-	auto actor1 = std::make_shared<TestActor>(sf::Vector3i{ 0, 0, 0 });
-	auto actor2 = std::make_shared<TestActor>(sf::Vector3i{ 2, 3, 4 });
+	auto actor1 = makeTestActor({ 0, 0, 0 });
+	auto actor2 = makeTestActor({ 2, 3, 4 });
 
 	core::World world;
 	world.addActor(actor1);
@@ -132,8 +122,8 @@ TEST(World, addActor) {
 }
 
 TEST(World, actorAt) {
-	auto actor1 = std::make_shared<TestActor>(sf::Vector3i{ 0, 0, 0 });
-	auto actor2 = std::make_shared<TestActor>(sf::Vector3i{ 2, 3, 4 });
+	auto actor1 = makeTestActor({ 0, 0, 0 });
+	auto actor2 = makeTestActor({ 2, 3, 4 });
 
 	core::World world;
 	world.addActor(actor1);
@@ -144,81 +134,108 @@ TEST(World, actorAt) {
 
 TEST(World, actorAtNull) {
 	core::World world;
-	world.addActor(std::make_shared<TestActor>(sf::Vector3i{ 0, 0, 0 }));
-	world.addActor(std::make_shared<TestActor>(sf::Vector3i{ 2, 3, 4 }));
+	world.addActor(makeTestActor({ 0, 0, 0 }));
+	world.addActor(makeTestActor({ 2, 3, 4 }));
 
 	EXPECT_EQ(world.actorAt({ 2, 3, 11 }), nullptr);
 }
 
 TEST(World, update) {
+	core::World world;
 	std::vector<int> log;
 
-	core::World world;
-	world.addActor(std::make_shared<TestActor>(0, 2, 0,  &log));
-	world.addActor(std::make_shared<TestActor>(7, 2, 1, &log, 7));
+	auto actor1 = makeTestActor(2);
+	actor1->controller(std::make_unique<TestController>(actor1, 0, &log));
+	world.addActor(std::move(actor1));
+
+	auto actor2 = makeTestActor(7);
+	actor2->controller(std::make_unique<TestController>(actor2, 1, &log, 7));
+	world.addActor(std::move(actor2));
 
 	world.update();
 
-	ASSERT_EQ(log.size(), 5);
-	EXPECT_EQ(log[0], 0);
-	EXPECT_EQ(log[1], 0);
-	EXPECT_EQ(log[2], 0);
-	EXPECT_EQ(log[3], 0);
-	EXPECT_EQ(log[4], 1);
+	ASSERT_EQ(log.size(), 6);
+	EXPECT_EQ(std::ranges::count(log, 0), 4);
+	EXPECT_EQ(std::ranges::count(log, 1), 2);
+	EXPECT_EQ(log[5], 1);
 }
 
 TEST(World, updateMany) {
 	std::vector<int> log;
-
 	core::World world;
-	world.addActor(std::make_shared<TestActor>(0, 2, 0, &log));
-	world.addActor(std::make_shared<TestActor>(0, 2, 1, &log));
-	world.addActor(std::make_shared<TestActor>(0, 2, 2, &log));
-	world.addActor(std::make_shared<TestActor>(0, 2, 3, &log));
-	world.addActor(std::make_shared<TestActor>(7, 2, 4, &log, 7));
+
+	auto actor1 = makeTestActor(2);
+	actor1->controller(std::make_unique<TestController>(actor1, 0, &log));
+	world.addActor(std::move(actor1));
+
+	auto actor2 = makeTestActor(2);
+	actor2->controller(std::make_unique<TestController>(actor2, 1, &log));
+	world.addActor(std::move(actor2));
+
+	auto actor3 = makeTestActor(2);
+	actor3->controller(std::make_unique<TestController>(actor3, 2, &log));
+	world.addActor(std::move(actor3));
+
+	auto actor4 = makeTestActor(2);
+	actor4->controller(std::make_unique<TestController>(actor4, 3, &log));
+	world.addActor(std::move(actor4));
+
+	auto actor5 = makeTestActor(7);
+	actor5->controller(std::make_unique<TestController>(actor5, 4, &log, 7));
+	world.addActor(std::move(actor5));
 
 	world.update();
 
-	ASSERT_EQ(log.size(), 17);
-	EXPECT_EQ(log[16], 4);
+	ASSERT_EQ(log.size(), 18);
 	EXPECT_EQ(std::ranges::count(log, 0), 4);
 	EXPECT_EQ(std::ranges::count(log, 1), 4);
 	EXPECT_EQ(std::ranges::count(log, 2), 4);
 	EXPECT_EQ(std::ranges::count(log, 3), 4);
-}
-
-TEST(World, updateEmpty) {
-	std::vector<int> log;
-	core::World world;
-	world.update();
-	ASSERT_EQ(log.size(), 0);
+	EXPECT_EQ(std::ranges::count(log, 4), 2);
+	EXPECT_EQ(log[17], 4);
 }
 
 TEST(World, updateDeath) {
 	std::vector<int> log;
-
 	core::World world;
-	world.addActor(std::make_shared<TestActor>(0, 2, 0, &log));
-	world.addActor(std::make_shared<TestActor>(0, 2, 1, &log, std::numeric_limits<int>::max(), 3));
-	world.addActor(std::make_shared<TestActor>(7, 2, 4, &log, 7));
+
+	auto actor1 = makeTestActor(2);
+	actor1->controller(std::make_unique<TestController>(actor1, 0, &log));
+	world.addActor(std::move(actor1));
+
+	auto actor2 = makeTestActor(2);
+	actor2->controller(std::make_unique<TestController>(actor2, 1, &log, std::numeric_limits<double>::infinity(), 3));
+	world.addActor(std::move(actor2));
+
+	auto actor3 = makeTestActor(7);
+	actor3->controller(std::make_unique<TestController>(actor3, 2, &log, 7));
+	world.addActor(std::move(actor3));
 
 	world.update();
 
-	ASSERT_EQ(log.size(), 7);
-	EXPECT_EQ(log[6], 4);
+	ASSERT_EQ(log.size(), 8);
 	EXPECT_EQ(std::ranges::count(log, 0), 4);
-	EXPECT_EQ(std::ranges::count(log, 1), 2);
+	EXPECT_EQ(std::ranges::count(log.begin(), log.begin() + 5, 1), 2);
+	EXPECT_EQ(std::ranges::count(log.begin() + 5, log.end(), 1), 0);
+	EXPECT_EQ(std::ranges::count(log, 2), 2);
+	EXPECT_EQ(log[7], 2);
 }
 
 TEST(World, updateDeathInterrupt) {
 	std::vector<int> log;
-
 	core::World world;
-	world.addActor(std::make_shared<TestActor>(0, 2, 0, &log));
-	world.addActor(std::make_shared<TestActor>(0, 2, 1, &log, std::numeric_limits<int>::max(), 3, true));
+
+	auto actor1 = makeTestActor(2);
+	actor1->controller(std::make_unique<TestController>(actor1, 0, &log));
+	world.addActor(std::move(actor1));
+
+	auto actor2 = makeTestActor(2);
+	actor2->controller(std::make_unique<TestController>(actor2, 1, &log, std::numeric_limits<double>::infinity(), 3, true));
+	world.addActor(std::move(actor2));
 
 	world.update();
 
+	EXPECT_GE(std::ranges::count(log, 0), 1);
 	EXPECT_EQ(std::ranges::count(log, 1), 2);
 }
 
@@ -229,7 +246,7 @@ TEST(World, isFree) {
 	world.tiles()[{ 0, 0, 0 }] = Tile::EMPTY;
 	world.tiles()[{ 0, 1, 0 }] = Tile::EMPTY;
 
-	world.addActor(std::make_shared<TestActor>(sf::Vector3i{0, 1, 0}));
+	world.addActor(makeTestActor({0, 1, 0}));
 
 	EXPECT_TRUE(world.isFree({ 0, 0, 0 }));
 	EXPECT_FALSE(world.isFree({ 0, 1, 0 }));
@@ -238,14 +255,18 @@ TEST(World, isFree) {
 
 TEST(World, makeSound) {
 	core::World world;
-	auto actor1 = std::make_shared<TestActor>();
-	auto actor2 = std::make_shared<TestActor>();
+
+	auto actor1 = makeTestActor();
+	actor1->controller(std::make_unique<TestController>(actor1));
 	world.addActor(actor1);
+
+	auto actor2 = makeTestActor();
+	actor2->controller(std::make_unique<TestController>(actor2));
 	world.addActor(actor2);
 
 	core::Sound sound{ core::Sound::Type::ATTACK, true, {1, 0, 1} };
 	world.makeSound(sound);
 
-	EXPECT_EQ(actor1->lastSound(), sound);
-	EXPECT_EQ(actor2->lastSound(), sound);
+	EXPECT_EQ(dynamic_cast<TestController&>(actor1->controller()).lastSound(), sound);
+	EXPECT_EQ(dynamic_cast<TestController&>(actor2->controller()).lastSound(), sound);
 }
