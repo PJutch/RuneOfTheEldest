@@ -13,27 +13,27 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#include "AliveActor.hpp"
+#include "Actor.hpp"
 
 #include "util/geometry.hpp"
 
 namespace core {
-	AliveActor::AliveActor(Stats stats_, sf::Vector3i newPosition,
+	Actor::Actor(Stats stats_, sf::Vector3i newPosition,
 		                   std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine) :
 		stats{stats_}, position_{ newPosition }, hp_{ stats.maxHp }, 
 		world_{ std::move(newWorld) }, randomEngine_{ newRandomEngine } {}
 
-	AliveActor::AliveActor(Stats stats_, std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine) :
-		AliveActor{ stats_, {0, 0, 0}, std::move(newWorld), newRandomEngine } {}
+	Actor::Actor(Stats stats_, std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine) :
+		Actor{ stats_, {0, 0, 0}, std::move(newWorld), newRandomEngine } {}
 
-	void AliveActor::wait(double time) noexcept {
+	void Actor::wait(double time) noexcept {
 		nextTurn_ += time;
 
 		hp_ += stats.regen * time;
 		hp(std::min(hp(), maxHp()));
 	}
 
-	bool AliveActor::tryMoveTo(sf::Vector3i newPosition, bool forceSwap) {
+	bool Actor::tryMoveTo(sf::Vector3i newPosition, bool forceSwap) {
 		if (newPosition == position())
 			return false;
 
@@ -66,7 +66,7 @@ namespace core {
 		return true;
 	}
 
-	bool AliveActor::canMoveToOrAttack(sf::Vector3i newPosition, bool forceSwap) const {
+	bool Actor::canMoveToOrAttack(sf::Vector3i newPosition, bool forceSwap) const {
 		if (!isPassable(world().tiles()[newPosition]))
 			return false;
 
@@ -80,7 +80,7 @@ namespace core {
 		return forceSwap || other->wantsSwap();
 	}
 
-	void AliveActor::tryMoveInDirection(sf::Vector2i direction, bool forceSwap) {
+	void Actor::tryMoveInDirection(sf::Vector2i direction, bool forceSwap) {
 		if (tryMove(direction, forceSwap))
 			return;
 

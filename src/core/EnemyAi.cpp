@@ -15,7 +15,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "EnemyAi.hpp"
 
-#include "AliveActor.hpp"
+#include "Actor.hpp"
 
 #include "util/pathfinding.hpp"
 #include "util/raycast.hpp"
@@ -23,7 +23,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/assert.hpp"
 
 namespace core {
-	EnemyAi::EnemyAi(std::weak_ptr<AliveActor> newEnemy_) : 
+	EnemyAi::EnemyAi(std::weak_ptr<Actor> newEnemy_) :
 		enemy_{ std::move(newEnemy_) }, targetPosition{ enemy_.lock()->position() } {}
 
 	bool EnemyAi::act() {

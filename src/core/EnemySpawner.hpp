@@ -17,7 +17,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define ENEMY_SPAWNER_HPP_
 
 #include "World.hpp"
-#include "AliveActor.hpp"
+#include "Actor.hpp"
 
 #include "render/AssetManager.hpp"
 
@@ -35,13 +35,13 @@ namespace core {
 		util::RandomEngine* randomEngine;
 
 		struct EnemyData {
-			AliveActor::Stats stats;
+			Actor::Stats stats;
 
 			int minOnLevel;
 			int maxOnLevel;
 		};
 		std::vector<EnemyData> enemyData;
-		AliveActor::Stats playerData;
+		Actor::Stats playerData;
 	};
 }
 

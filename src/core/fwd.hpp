@@ -20,7 +20,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace core {
 	class World;
-	class AliveActor;
+	class Actor;
 	class EnemySpawner;
 	class PlayerController;
 	class Controller;

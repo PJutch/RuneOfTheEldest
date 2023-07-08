@@ -16,8 +16,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef WORLD_HPP_
 #define WORLD_HPP_
 
-#include "Actor.hpp"
 #include "Tile.hpp"
+#include "Sound.hpp"
+#include "fwd.hpp"
 
 #include "util/Array3D.hpp"
 #include "util/Map.hpp"
@@ -159,17 +160,8 @@ namespace core {
 
 		util::RandomEngine* randomEngine = nullptr;
 
-		void pushActor() {
-			std::ranges::push_heap(actors_, std::greater<>{}, [](std::shared_ptr<Actor>& actor) {
-				return actor->nextTurn();
-				});
-		}
-
-		void popActor() {
-			std::ranges::pop_heap(actors_, std::greater<>{}, [](std::shared_ptr<Actor>& actor) {
-				return actor->nextTurn();
-				});
-		}
+		void pushActor();
+		void popActor();
 	};
 }
 

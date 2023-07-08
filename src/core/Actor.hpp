@@ -13,77 +13,185 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef ACTOR_HPP_
-#define ACTOR_HPP_
+#ifndef ALIVE_ACTOR_HPP_
+#define ALIVE_ACTOR_HPP_
 
-#include "Sound.hpp"
-#include "AiState.hpp"
-#include "fwd.hpp"
+#include "World.hpp"
+#include "Controller.hpp"
 
-namespace render {
-	class Renderer;
-}
+#include "util/geometry.hpp"
+#include "util/random.hpp"
 
 #include <SFML/Graphics/Texture.hpp>
-#include <SFML/System/Vector3.hpp>
-
-#include <memory>
 
 namespace core {
-	/// Abstract base for object that performs some actions in its turn
+	/// Base for all Actors with hp and position in world
 	class Actor {
 	public:
-		virtual ~Actor() = default;
+		/// Immutable params of the Actor
+		struct Stats {
+			double maxHp;
+			double regen;
+			double damage;
+			double turnDelay;
+			const sf::Texture* texture;
+		};
 
-		/// Actor position in world
-		[[nodiscard]] virtual sf::Vector3i position() const = 0;
+		Actor() = default;
+		Actor(Stats stats, sf::Vector3i newPosition, std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine);
+		Actor(Stats stats, std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine);
 
-		/// Sets position in world
-		virtual void position(sf::Vector3i newPosition) = 0;
+		void controller(std::unique_ptr<Controller> newController) {
+			controller_ = std::move(newController);
+		}
 
-		/// @brief Perform action in its turn
-		/// @details Called in this actor turn.
-		/// Can perform action and advance next turn or wait for user input
-		/// @returns true if should pass turn to other actor, false if should wait
-		virtual bool act() = 0;
+		Controller& controller() noexcept {
+			return *controller_;
+		}
 
-		/// @brief Gets time when actor's next turn begins
-		/// @warning Returned time should change only in Actor's turn
-		[[nodiscard]] virtual double nextTurn() const = 0;
+		const Controller& controller() const noexcept {
+			return *controller_;
+		}
 
-		/// Checks if Actor should be removed
-		[[nodiscard]] virtual bool isAlive() const = 0;
+		[[nodiscard]] sf::Vector3i position() const noexcept {
+			return position_;
+		}
 
-		/// If true interrupts Actor processing in queue and continue Game loop when this Actor deleted
-		[[nodiscard]] virtual bool shouldInterruptOnDelete() const = 0;
+		void position(sf::Vector3i newPosition) noexcept {
+			position_ = newPosition;
+		}
 
-		/// Checks if Actor is player ally
-		[[nodiscard]] virtual bool isOnPlayerSide() const = 0;
+		[[nodiscard]] double nextTurn() const noexcept {
+			return nextTurn_;
+		}
 
-		/// Checks if Actor can swap with AI controlled Actor
-		[[nodiscard]] virtual bool wantsSwap() const = 0;
+		[[nodiscard]] bool isAlive() const {
+			return hp() > 0;
+		}
 
-		/// Called after swapping with another Actor
-		virtual void handleSwap() = 0;
-
-		/// Damages Actor by given HPs
-		virtual void beDamaged(double damage) = 0;
-
-		/// called when Actor hears a sound
-		virtual void handleSound(Sound sound) = 0;
+		void beDamaged(double damage) {
+			hp_ -= damage;
+		}
 
 		/// Gets Actor HP
-		[[nodiscard]] virtual double hp() const = 0;
+		[[nodiscard]] double hp() const noexcept {
+			return hp_;
+		}
 
 		/// Gets max possible HP
-		[[nodiscard]] virtual double maxHp() const = 0;
+		[[nodiscard]] double maxHp() const noexcept {
+			return stats.maxHp;
+		}
 
-		[[nodiscard]] virtual AiState aiState() const = 0;
+		[[nodiscard]] const sf::Texture* texture() const noexcept {
+			return stats.texture;
+		}
 
-		[[nodiscard]] virtual const sf::Texture* texture() const = 0;
+		void endTurn() noexcept {
+			wait(stats.turnDelay);
+		}
 
-		[[nodiscard]] virtual Controller& controller() = 0;
-		[[nodiscard]] virtual const Controller& controller() const = 0;
+		/// @brief Changes position if newPosition isn't occupied or attacks Actor there
+		/// @param forceSwap Forces swap even if other Actor doesn't want it
+		/// @returns true if moved or attacked
+		bool tryMoveTo(sf::Vector3i newPosition, bool forceSwap);
+
+		/// @brief Changes position if newPosition isn't occupied or attacks Actor there
+		/// @param forceSwap Forces swap even if other Actor doesn't want it
+		/// @returns true if moved or attacked
+		bool tryMoveTo(sf::Vector2i newPosition, bool forceSwap) {
+			return tryMoveTo(util::make3D(newPosition, position().z), forceSwap);
+		}
+
+		/// @brief Changes position if position + offset isn't occupied or attacks Actor there
+		/// @param forceSwap Forces swap even if other Actor doesn't want it
+		/// @returns true if moved or attacked
+		bool tryMove(sf::Vector3i offset, bool forceSwap) {
+			return tryMoveTo(position() + offset, forceSwap);
+		}
+
+		/// @brief Changes position if position + offset isn't occupied or attacks Actor there
+		/// @param forceSwap Forces swap even if other Actor doesn't want it
+		/// @returns true if moved or attacked
+		bool tryMove(sf::Vector2i offset, bool forceSwap) {
+			return tryMoveTo(util::getXY(position()) + offset, forceSwap);
+		}
+
+		/// @brief Tries to move in given direction or 45 degrees left or right
+		/// @param forceSwap Forces swap even if other Actor doesn't want it
+		void tryMoveInDirection(sf::Vector2i direction, bool forceSwap);
+
+		[[nodiscard]] World& world() noexcept {
+			return *world_;
+		}
+
+		[[nodiscard]] const World& world() const noexcept {
+			return *world_;
+		}
+
+		[[nodiscard]] util::RandomEngine& randomEngine() noexcept {
+			return *randomEngine_;
+		}
+
+		bool act() {
+			return controller_->act();
+		}
+
+		[[nodiscard]] bool shouldInterruptOnDelete() const {
+			return controller_->shouldInterruptOnDelete();
+		}
+
+		[[nodiscard]] bool isOnPlayerSide() const {
+			return controller_->isOnPlayerSide();
+		}
+
+		[[nodiscard]] bool wantsSwap() const noexcept {
+			return controller_->wantsSwap();
+		}
+
+		void handleSwap() noexcept {
+			controller_->handleSwap();
+		}
+
+		void handleSound(Sound sound) noexcept {
+			controller_->handleSound(sound);
+		}
+
+		AiState aiState() const noexcept {
+			return controller_->aiState();
+		}
+	protected:
+		/// Sets next turn time
+		void nextTurn(double newNextTurn) noexcept {
+			nextTurn_ = newNextTurn;
+		}
+
+		/// Dealys next Actor turn and applies over time effects
+		void wait(double time) noexcept;
+
+		/// @brief Checks if can move to newPosition or swap with Actor there
+		/// @param forceSwap Forces swap even if other Actor doesn't want it
+		[[nodiscard]] bool canMoveToOrAttack(sf::Vector3i newPosition, bool forceSwap) const;
+
+		/// @brief Checks if can move to position + offset or swap with Actor there
+		/// @param forceSwap Forces swap even if other Actor doesn't want it
+		[[nodiscard]] bool canMoveToOrAttack(sf::Vector2i offset, bool forceSwap) const {
+			return canMoveToOrAttack(position() + util::make3D(offset, 0), forceSwap);
+		}
+
+		void hp(double newHp) noexcept {
+			hp_ = newHp;
+		}
+	private:
+		Stats stats;
+		std::unique_ptr<Controller> controller_;
+
+		double nextTurn_ = 0;
+		sf::Vector3i position_;
+		double hp_;
+
+		std::shared_ptr<World> world_;
+		util::RandomEngine* randomEngine_;
 	};
 }
 

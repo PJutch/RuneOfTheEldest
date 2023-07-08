@@ -18,6 +18,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "geometry.hpp"
 
+#include <vector>
+
 namespace util {
 	template <typename T>
 	class Array3D {

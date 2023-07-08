@@ -15,6 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "World.hpp"
 
+#include "Actor.hpp"
+
 namespace core {
 	std::shared_ptr<Actor> World::actorAt(sf::Vector3i position) {
 		auto iter = std::ranges::find_if(actors_, [position](std::shared_ptr<Actor> actor) {
@@ -77,5 +79,17 @@ namespace core {
 
 		upStairs_.insert_or_assign(pos2, pos1);
 		tiles()[pos2] = Tile::UP_STAIRS;
+	}
+
+	void World::pushActor() {
+		std::ranges::push_heap(actors_, std::greater<>{}, [](std::shared_ptr<Actor>& actor) {
+			return actor->nextTurn();
+		});
+	}
+
+	void World::popActor() {
+		std::ranges::pop_heap(actors_, std::greater<>{}, [](std::shared_ptr<Actor>& actor) {
+			return actor->nextTurn();
+		});
 	}
 }
