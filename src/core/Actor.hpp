@@ -130,16 +130,6 @@ namespace core {
 		[[nodiscard]] util::RandomEngine& randomEngine() noexcept {
 			return *randomEngine_;
 		}
-	private:
-		Stats stats;
-		std::unique_ptr<Controller> controller_;
-
-		double nextTurn_ = 0;
-		sf::Vector3i position_;
-		double hp_;
-
-		std::shared_ptr<World> world_;
-		util::RandomEngine* randomEngine_;
 
 		/// @brief Checks if can move to newPosition or swap with Actor there
 		/// @param forceSwap Forces swap even if other Actor doesn't want it
@@ -150,6 +140,16 @@ namespace core {
 		[[nodiscard]] bool canMoveToOrAttack(sf::Vector2i offset, bool forceSwap) const {
 			return canMoveToOrAttack(position() + util::make3D(offset, 0), forceSwap);
 		}
+	private:
+		Stats stats;
+		std::unique_ptr<Controller> controller_;
+
+		double nextTurn_ = 0;
+		sf::Vector3i position_;
+		double hp_;
+
+		std::shared_ptr<World> world_;
+		util::RandomEngine* randomEngine_;
 	};
 }
 

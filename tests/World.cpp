@@ -89,23 +89,23 @@ namespace {
 
 		core::Sound lastSound_{};
 	};
+
+	std::shared_ptr<core::Actor> makeTestActor() {
+		return std::make_shared<core::Actor>(core::Actor::Stats{ .maxHp = 1 }, nullptr, nullptr);
+	}
+
+	std::shared_ptr<core::Actor> makeTestActor(sf::Vector3i position) {
+		return std::make_shared<core::Actor>(core::Actor::Stats{ .maxHp = 1 }, position, nullptr, nullptr);
+	}
+
+	std::shared_ptr<core::Actor> makeTestActor(double turnDelay) {
+		return std::make_shared<core::Actor>(core::Actor::Stats{ .maxHp = 1, .turnDelay = turnDelay }, nullptr, nullptr);
+	}
 }
 
 TEST(World, emptyActors) {
 	core::World world;
 	EXPECT_TRUE(world.actors().empty());
-}
-
-std::shared_ptr<core::Actor> makeTestActor() {
-	return std::make_shared<core::Actor>(core::Actor::Stats{ .maxHp = 1 }, nullptr, nullptr);
-}
-
-std::shared_ptr<core::Actor> makeTestActor(sf::Vector3i position) {
-	return std::make_shared<core::Actor>(core::Actor::Stats{.maxHp = 1}, position, nullptr, nullptr);
-}
-
-std::shared_ptr<core::Actor> makeTestActor(double turnDelay) {
-	return std::make_shared<core::Actor>(core::Actor::Stats{ .maxHp = 1, .turnDelay = turnDelay }, nullptr, nullptr);
 }
 
 TEST(World, addActor) {

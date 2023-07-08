@@ -16,7 +16,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "render/PlayerMap.hpp"
 
 #include "core/World.hpp"
-#include "core/Player.hpp"
+#include "core/Actor.hpp"
 
 #include "util/assert.hpp"
 
@@ -24,29 +24,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <memory>
 
-namespace { 
-    class TestActor : public core::Actor {
+namespace {
+    class TestController : public core::Controller {
     public:
-        TestActor() = default;
-        TestActor(sf::Vector3i newPosition) noexcept : position_{ newPosition }{}
-
-        sf::Vector3i position() const noexcept final {
-            return position_;
-        }
-
-        void position(sf::Vector3i newPosition) noexcept final {
-            position_ = newPosition;
-        }
-
-        bool act() override {
-            return true;
-        }
-
-        double nextTurn() const noexcept final {
-            return 0;
-        }
-
-        bool isAlive() const noexcept final {
+        bool act() final {
             return true;
         }
 
@@ -54,22 +35,8 @@ namespace {
             return false;
         }
 
-        void beDamaged(double damage) noexcept final {}
-
         AiState aiState() const noexcept final {
             return AiState::NONE;
-        }
-
-        const sf::Texture* texture() const final {
-            return nullptr;
-        }
-
-        [[nodiscard]] double hp() const noexcept final {
-            return 0;
-        }
-
-        [[nodiscard]] double maxHp() const noexcept final {
-            return 0;
         }
 
         [[nodiscard]] bool isOnPlayerSide() const final {
@@ -83,19 +50,27 @@ namespace {
         void handleSwap() noexcept final {}
 
         void handleSound(core::Sound sound) noexcept final {}
-    private:
-        sf::Vector3i position_{ 0, 0, 0 };
     };
+
+    std::shared_ptr<core::Actor> makeTestActor(sf::Vector3i pos) {
+        auto actor = std::make_shared<core::Actor>(core::Actor::Stats{ .maxHp = 1 }, pos, nullptr, nullptr);
+        actor->controller(std::make_unique<TestController>());
+        return std::move(actor);
+    }
+
+    std::shared_ptr<core::Actor> makeTestActor() {
+        return makeTestActor({ 0, 0, 0 });
+    }
 }
 
 TEST(PlayerMap, tileVisibilityEmpty) {
     auto world = std::make_shared<core::World>();
     world->tiles().assign({ 3, 3, 1 }, Tile::EMPTY);
 
-    auto player = std::make_shared<core::Player>();
-    player->position({ 0, 2, 0 });
+    auto player = makeTestActor({ 0, 2, 0 });
+    world->player(std::move(player));
 
-    render::PlayerMap playerMap{ std::move(player), std::move(world) };
+    render::PlayerMap playerMap{ std::move(world) };
     playerMap.onGenerate();
     playerMap.update();
 
@@ -112,15 +87,18 @@ namespace {
         for (int x = 0; x < 3; ++x)
             world->tiles()[{x, 1, 0}] = Tile::WALL;
 
+        auto player = makeTestActor();
+        world->player(std::move(player));
+
         return std::move(world);
     }
 }
 
 TEST(PlayerMap, tileVisibilityWall) {
-    auto player = std::make_shared<core::Player>();
-    player->position({ 1, 0, 0 });
+    auto world = createWallWorld();
+    world->player().position({ 1, 0, 0 });
 
-    render::PlayerMap playerMap{ std::move(player), createWallWorld() };
+    render::PlayerMap playerMap{ std::move(world) };
     playerMap.onGenerate();
     playerMap.update();
 
@@ -133,14 +111,14 @@ TEST(PlayerMap, tileVisibilityWall) {
 }
 
 TEST(PlayerMap, tileMemorization) {
-    auto player = std::make_shared<core::Player>();
+    auto world = createWallWorld();
 
-    render::PlayerMap playerMap{ player, createWallWorld() };
+    render::PlayerMap playerMap{ world };
     playerMap.onGenerate();
 
-    player->position({ 1, 0, 0 });
+    world->player().position({ 1, 0, 0 });
     playerMap.update();
-    player->position({ 1, 2, 0 });
+    world->player().position({ 1, 2, 0 });
     playerMap.update();
 
     for (int x = 0; x < 3; ++x)
@@ -152,14 +130,13 @@ TEST(PlayerMap, tileMemorization) {
 }
 
 TEST(PlayerMap, seenActors) {
-    auto player = std::make_shared<core::Player>();
-    player->position({ 1, 0, 0 });
-
     auto world = createWallWorld();
-    world->addActor(std::make_shared<TestActor>(sf::Vector3i{ 2, 0, 0 }));
-    world->addActor(std::make_shared<TestActor>(sf::Vector3i{ 2, 2, 0 }));
+    world->player().position({ 1, 0, 0 });
 
-    render::PlayerMap playerMap{ std::move(player), std::move(world) };
+    world->addActor(makeTestActor({ 2, 0, 0 }));
+    world->addActor(makeTestActor({ 2, 2, 0 }));
+
+    render::PlayerMap playerMap{ std::move(world) };
     playerMap.onGenerate();
     playerMap.update();
 
@@ -168,18 +145,16 @@ TEST(PlayerMap, seenActors) {
 }
 
 TEST(PlayerMap, seenActorsMemorization) {
-    auto player = std::make_shared<core::Player>();
-
     auto world = createWallWorld();
-    auto actor = std::make_shared<TestActor>(sf::Vector3i{ 2, 0, 0 });
+    auto actor = makeTestActor({ 2, 0, 0 });
     world->addActor(actor);
 
-    render::PlayerMap playerMap{ player, std::move(world) };
+    render::PlayerMap playerMap{ world };
     playerMap.onGenerate();
 
-    player->position({ 1, 0, 0 });
+    world->player().position({ 1, 0, 0 });
     playerMap.update();
-    player->position({ 1, 2, 0 });
+    world->player().position({ 1, 2, 0 });
     playerMap.update();
     actor->position({1, 0, 0});
 
