@@ -13,29 +13,22 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef SOUND_HPP_
-#define SOUND_HPP_
+#include "Sound.hpp"
 
-#include <SFML/System/Vector3.hpp>
+#include <array>
 
 namespace core {
-	struct Sound {
-		enum class Type {
-			WALK,   ///< Actor moved
-			ATTACK, ///< Actor attacked
-			TOTAL   ///< Technical enumerator. Should be last
-		};
+	namespace {
+		const std::array<double, Sound::totalTypes> basicVolumes{ 0.1, 0.5 };
+	}
 
-		static const int totalTypes = static_cast<int>(Sound::Type::TOTAL);
+	double Sound::volume(sf::Vector3i listenerPosition) {
+		if (position.z != listenerPosition.z)
+			return 0.0;
 
-		Type type;
-		bool isSourceOnPlayerSide;
-		sf::Vector3i position;
+		auto [dx, dy, dz] = position - listenerPosition;
+		double distance = dx * dx + dy * dy;
 
-		friend bool operator == (const Sound&, const Sound&) = default;
-
-		double volume(sf::Vector3i listenerPosition);
-	};
+		return basicVolumes[static_cast<int>(type)] / distance;
+	}
 }
-
-#endif

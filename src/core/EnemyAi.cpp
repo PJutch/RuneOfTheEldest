@@ -86,31 +86,16 @@ namespace core {
 		return util::canSee(enemy->position(), enemy->world().player().position(), enemy->world());
 	}
 
-	namespace {
-		double basicPriority(Sound sound) {
-			switch (sound.type) {
-			case Sound::Type::WALK:
-				return sound.isSourceOnPlayerSide ? 0.1 : 0.0;
-			case Sound::Type::ATTACK: return 0.5;
-			default:
-				TROTE_ASSERT(false, "All sound types sholud be handled");
-			}
-		}
-	}
-
 	void EnemyAi::handleSound(Sound sound) noexcept {
 		auto enemy = enemy_.lock();
-
-		if (sound.position.z != enemy->position().z)
-			return;
 
 		if (util::canSee(enemy->position(), sound.position, enemy->world()))
 			return;
 
-		auto [dx, dy, dz] = sound.position - enemy->position();
-		double distance = dx * dx + dy * dy;
+		if (sound.type == Sound::Type::WALK && !sound.isSourceOnPlayerSide)
+			return;
 
-		double priority = basicPriority(sound) / distance;
+		double priority = sound.volume(enemy->position());
 		if (priority > targetPriority) {
 			targetPosition = sound.position;
 			targetPriority = priority;

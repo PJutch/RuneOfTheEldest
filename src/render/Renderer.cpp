@@ -82,10 +82,10 @@ namespace render {
     }
 
     void Renderer::draw(core::Sound sound) {
-        if (sound.position.z != world->player().position().z)
+        if (util::canSee(sound.position, world->player().position(), *world)) 
             return;
 
-        if (util::canSee(sound.position, world->player().position(), *world)) 
+        if (sound.volume(world->player().position()) < 0.01)
             return;
 
         drawSprite(toScreen(util::getXY(sound.position)), { 0, 0 }, assets()->soundIcon(sound.type, sound.isSourceOnPlayerSide));
