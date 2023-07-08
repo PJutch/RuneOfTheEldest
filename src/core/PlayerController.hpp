@@ -36,9 +36,7 @@ namespace core {
 		/// Waits for player input
 		bool act() final;
 
-		/// Notifies about events
-		/// @details moves on WSAD
-		///      \n try to ascent/descent stairs by <>
+		/// Moves on WSAD, tries to ascent/descent stairs by <>
 		void handleEvent(sf::Event event) final;
 
 		[[nodiscard]] bool shouldInterruptOnDelete() const final {

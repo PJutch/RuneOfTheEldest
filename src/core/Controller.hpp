@@ -25,20 +25,30 @@ namespace core {
 	/// Controlls Actor actions
 	class Controller {
 	public:
+		/// @brief Perform action in its turn
+		/// @details Called in this actor turn.
+		/// Can perform action and advance next turn or wait for user input
+		/// @returns true if should pass turn to other actor, false if should waits
 		virtual bool act() = 0;
 
+		/// Notifies about events
 		virtual void handleEvent(sf::Event event) {}
 
+		/// If true interrupts Actor processing in queue and continue Game loop when this Actor deleted
 		[[nodiscard]] virtual bool shouldInterruptOnDelete() const {
 			return false;
 		}
 
+		/// Checks if Actor is player ally
 		[[nodiscard]] virtual bool isOnPlayerSide() const = 0;
 
+		/// Checks if allies can swap with this Actor
 		[[nodiscard]] virtual bool wantsSwap() const noexcept = 0;
 
+		/// Called after swapping with another Actor
 		virtual void handleSwap() noexcept {}
 
+		/// Called when Actor hears a sound
 		virtual void handleSound(Sound sound) noexcept {}
 
 		[[nodiscard]] virtual AiState aiState() const noexcept {

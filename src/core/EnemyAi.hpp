@@ -36,6 +36,7 @@ namespace core {
 	public:
 		EnemyAi(std::weak_ptr<Actor> newEnemy_);
 
+		/// Chases or attacks Player
 		bool act() final;
 
 		[[nodiscard]] bool isOnPlayerSide() const final {
