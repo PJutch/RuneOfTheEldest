@@ -29,17 +29,21 @@ namespace core {
 
 		virtual void handleEvent(sf::Event event) {}
 
-		[[nodiscard]] virtual bool shouldInterruptOnDelete() const = 0;
+		[[nodiscard]] virtual bool shouldInterruptOnDelete() const {
+			return false;
+		}
 
 		[[nodiscard]] virtual bool isOnPlayerSide() const = 0;
 
 		[[nodiscard]] virtual bool wantsSwap() const noexcept = 0;
 
-		virtual void handleSwap() noexcept = 0;
+		virtual void handleSwap() noexcept {}
 
-		virtual void handleSound(Sound sound) noexcept = 0;
+		virtual void handleSound(Sound sound) noexcept {}
 
-		virtual AiState aiState() const noexcept = 0;
+		[[nodiscard]] virtual AiState aiState() const noexcept {
+			return AiState::NONE;
+		}
 	};
 }
 

@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 /// State of Enemy AI
 enum class AiState {
-	NONE,       ///< Controlled by player
+	NONE,       ///< Has no AI (may be Player controlled)
 	INACTIVE,   ///< Hasn't seen player before
 	SEEKING,    ///< Has seen player but can't see it currently
 	ATTACKING,  ///< Can see player

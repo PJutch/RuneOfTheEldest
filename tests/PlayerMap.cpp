@@ -31,14 +31,6 @@ namespace {
             return true;
         }
 
-        bool shouldInterruptOnDelete() const noexcept final {
-            return false;
-        }
-
-        AiState aiState() const noexcept final {
-            return AiState::NONE;
-        }
-
         [[nodiscard]] bool isOnPlayerSide() const final {
             return false;
         }
@@ -46,10 +38,6 @@ namespace {
         bool wantsSwap() const noexcept final {
             return true;
         }
-
-        void handleSwap() noexcept final {}
-
-        void handleSound(core::Sound sound) noexcept final {}
     };
 
     std::shared_ptr<core::Actor> makeTestActor(sf::Vector3i pos) {

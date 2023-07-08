@@ -38,12 +38,6 @@ namespace core {
 
 		bool act() final;
 
-		void handleEvent(sf::Event event) noexcept final {}
-
-		[[nodiscard]] bool shouldInterruptOnDelete() const final {
-			return false;
-		}
-
 		[[nodiscard]] bool isOnPlayerSide() const final {
 			return false;
 		}

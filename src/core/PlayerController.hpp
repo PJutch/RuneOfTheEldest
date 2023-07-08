@@ -52,14 +52,6 @@ namespace core {
 		[[nodiscard]] bool wantsSwap() const noexcept final {
 			return false;
 		}
-
-		void handleSwap() noexcept final {}
-
-		void handleSound(Sound) noexcept final {}
-
-		AiState aiState() const noexcept final {
-			return AiState::NONE;
-		}
 	private:
 		std::weak_ptr<Actor> player;
 

@@ -24,14 +24,6 @@ namespace {
 			return true;
 		}
 
-		bool shouldInterruptOnDelete() const noexcept final {
-			return false;
-		}
-
-		AiState aiState() const noexcept final {
-			return AiState::NONE;
-		}
-
 		[[nodiscard]] bool isOnPlayerSide() const final {
 			return false;
 		}
@@ -51,8 +43,6 @@ namespace {
 		bool hadSwapped() const noexcept {
 			return hadSwapped_;
 		}
-
-		void handleSound(core::Sound sound) noexcept final {}
 	private:
 		bool wantsSwap_ = true;
 		bool hadSwapped_ = false;
