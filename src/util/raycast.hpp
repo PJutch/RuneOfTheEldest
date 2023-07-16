@@ -22,7 +22,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace util {
 	/// Checks if position1 and position2 are visible from each other
-	bool canSee(sf::Vector3i position1, sf::Vector3i position2, const core::World& dungeon);
+	bool isObstructed(sf::Vector3<double> position1, sf::Vector3<double> position2, const core::World& dungeon);
+
+	/// Checks if tile at to can be seen from pos from
+	bool canSee(sf::Vector3i from, sf::Vector3i to, const core::World& dungeon);
 }
 
 #endif

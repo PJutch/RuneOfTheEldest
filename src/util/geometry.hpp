@@ -33,6 +33,12 @@ namespace util {
         return { static_cast<T>(vec.x), static_cast<T>(vec.y) };
     }
 
+    /// Cast sf::Vector3<U> to sf::Vector3<T> using static_cast
+    template <typename T, typename U>
+    [[nodiscard]] sf::Vector3<T> geometry_cast(sf::Vector3<U> vec) noexcept {
+        return { static_cast<T>(vec.x), static_cast<T>(vec.y), static_cast<T>(vec.z) };
+    }
+
     /// Add deltaX to vec.x
     /// @returns result as new vector
     template <typename T>

@@ -20,12 +20,12 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "geometry.hpp"
 
 namespace util {
-	bool canSee(sf::Vector3i pos1, sf::Vector3i pos2, const core::World& world) {
+	bool isObstructed(sf::Vector3<double> pos1, sf::Vector3<double> pos2, const core::World& world) {
 		if (pos1 == pos2)
-			return true;
+			return false;
 
 		if (pos1.z != pos2.z)
-			return false;
+			return true;
 
 		double distance_ = util::distance(util::getXY(pos1), util::getXY(pos2));
 
@@ -34,17 +34,30 @@ namespace util {
 		double sin = (pos2.y - pos1.y) / distance_;
 
 		double wholeDistance;
-		double offset = std::modf(distance_, &wholeDistance) / 2 + 1; // offset to make checked positions simmetrical
+		double offset = std::modf(distance_, &wholeDistance) / 2; // offset to make checked positions simmetrical
 
 		// checks points on line from pos1 to pos2 with step 1
 		for (double distance = offset; distance <= distance_ - offset; ++distance) {
 			int x = pos1.x + std::round(distance * cos);
 			int y = pos1.y + std::round(distance * sin);
 
-			if (!isPassable(world.tiles()[{x, y, pos1.z}]))
-				return false;
+			if (!isPassable(world.tiles()[sf::Vector3i(x, y, pos1.z)]))
+				return true;
 		}
 
-		return true;
+		return false;
+	}
+
+	bool canSee(sf::Vector3i from, sf::Vector3i to, const core::World& dungeon) {
+		std::array<sf::Vector3<double>, 4> toCheck{ sf::Vector3<double>{-0.5, -0.5, 0.0},
+													{0.5, -0.5, 0.0}, 
+												    {-0.5, 0.5, 0.0}, 
+			                                        {0.5, 0.5, 0.0} };
+
+		for (sf::Vector3<double> offset : toCheck)
+			if (!isObstructed(geometry_cast<double>(from), geometry_cast<double>(to) + offset, dungeon))
+				return true;
+
+		return false;
 	}
 }

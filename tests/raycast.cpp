@@ -65,6 +65,8 @@ TEST(raycast, canSeeBlockByFloor) {
 
 TEST(raycast, canSeeSelf) {
     core::World world;
+    world.tiles().assign({ 2, 2, 2 }, Tile::WALL);
+    world.tiles()[{1, 1, 1}] = Tile::EMPTY;
     EXPECT_TRUE(util::canSee({1, 1, 1}, {1, 1, 1}, world));
 }
 
