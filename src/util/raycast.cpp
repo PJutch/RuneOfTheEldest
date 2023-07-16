@@ -20,32 +20,35 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "geometry.hpp"
 
 namespace util {
-	bool isObstructed(sf::Vector3<double> pos1, sf::Vector3<double> pos2, const core::World& world) {
-		if (pos1 == pos2)
-			return false;
+	namespace {
+		/// Checks if position1 and position2 are visible from each other
+		bool isObstructed(sf::Vector3<double> pos1, sf::Vector3<double> pos2, const core::World& world) {
+			if (pos1 == pos2)
+				return false;
 
-		if (pos1.z != pos2.z)
-			return true;
-
-		double distance_ = util::distance(util::getXY(pos1), util::getXY(pos2));
-
-		// sin and cos of angle between pos2 - pos1 and x axis
-		double cos = (pos2.x - pos1.x) / distance_;
-		double sin = (pos2.y - pos1.y) / distance_;
-
-		double wholeDistance;
-		double offset = std::modf(distance_, &wholeDistance) / 2; // offset to make checked positions simmetrical
-
-		// checks points on line from pos1 to pos2 with step 1
-		for (double distance = offset; distance <= distance_ - offset; ++distance) {
-			int x = pos1.x + std::round(distance * cos);
-			int y = pos1.y + std::round(distance * sin);
-
-			if (!isPassable(world.tiles()[sf::Vector3i(x, y, pos1.z)]))
+			if (pos1.z != pos2.z)
 				return true;
-		}
 
-		return false;
+			double distance_ = util::distance(util::getXY(pos1), util::getXY(pos2));
+
+			// sin and cos of angle between pos2 - pos1 and x axis
+			double cos = (pos2.x - pos1.x) / distance_;
+			double sin = (pos2.y - pos1.y) / distance_;
+
+			double wholeDistance;
+			double offset = std::modf(distance_, &wholeDistance) / 2; // offset to make checked positions simmetrical
+
+			// checks points on line from pos1 to pos2 with step 1
+			for (double distance = offset; distance <= distance_ - offset; ++distance) {
+				int x = pos1.x + std::round(distance * cos);
+				int y = pos1.y + std::round(distance * sin);
+
+				if (!isPassable(world.tiles()[sf::Vector3i(x, y, pos1.z)]))
+					return true;
+			}
+
+			return false;
+		}
 	}
 
 	bool canSee(sf::Vector3i from, sf::Vector3i to, const core::World& dungeon) {
