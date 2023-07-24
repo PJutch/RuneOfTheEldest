@@ -62,11 +62,6 @@ namespace render {
 			return tileTextures[static_cast<int>(tile)];
 		}
 
-		/// Gets player texture
-		[[nodiscard]] const sf::Texture& playerTexture() const noexcept {
-			return playerTexture_;
-		}
-
 		/// Gets icon for given sound type and source side
 		[[nodiscard]] const sf::Texture& soundIcon(core::Sound::Type type, bool isSourceOnPlayerSide) const noexcept {
 			return soundIcons[static_cast<int>(type) * 2 + static_cast<int>(isSourceOnPlayerSide)];
@@ -91,8 +86,6 @@ namespace render {
 
 		inline const static sf::Vector2i tileSize_{ 16, 16 };
 		std::array<sf::Texture, totalTiles> tileTextures;
-
-		sf::Texture playerTexture_;
 
 		std::array<sf::Texture, core::Sound::totalTypes * 2> soundIcons;
 

@@ -22,28 +22,26 @@ namespace render {
     AssetManager::AssetManager(util::LoggerFactory& loggerFactory) : logger{ loggerFactory.create("assets") } {
         logger->info("Loading...");
 
-        loadTexture(tileTextureMut(Tile::EMPTY), "floor tile texture", "resources/textures/Tile/floor.png");
-        loadTexture(tileTextureMut(Tile::WALL), "wall tile texture", "resources/textures/Tile/wall.png");
+        loadTexture(tileTextureMut(Tile::EMPTY), "floor tile texture", "resources/textures/Tiles/floor.png");
+        loadTexture(tileTextureMut(Tile::WALL), "wall tile texture", "resources/textures/Tiles/wall.png");
 
-        loadTexture(tileTextureMut(Tile::UP_STAIRS), "up stairs tile texture", "resources/textures/Tile/up_stairs.png");
-        loadTexture(tileTextureMut(Tile::DOWN_STAIRS), "down stairs tile texture", "resources/textures/Tile/down_stairs.png");
-
-        loadTexture(playerTexture_, "player texture", "resources/textures/player.png");
+        loadTexture(tileTextureMut(Tile::UP_STAIRS), "up stairs tile texture", "resources/textures/Tiles/up_stairs.png");
+        loadTexture(tileTextureMut(Tile::DOWN_STAIRS), "down stairs tile texture", "resources/textures/Tiles/down_stairs.png");
 
         logger->info("Creating debug tile textures...");
         fillTexture(tileTextureMut(Tile::ROOM), tileSize(), sf::Color::Red);
         fillTexture(tileTextureMut(Tile::ROOM_ENTRANCE), tileSize(), sf::Color::Magenta);
         fillTexture(tileTextureMut(Tile::PASSAGE), tileSize(), sf::Color::Blue);
 
-        loadTexture(aiStateIconMut(AiState::INACTIVE), "incative AI state icon", "resources/textures/AiState/sleeping.png");
-        loadTexture(aiStateIconMut(AiState::CHECKING), "checking AI state icon", "resources/textures/AiState/curious.png");
-        loadTexture(aiStateIconMut(AiState::WANDERING), "wandering AI state icon", "resources/textures/AiState/confused.png");
-        loadTexture(aiStateIconMut(AiState::ATTACKING), "attacking AI state icon", "resources/textures/AiState/angry.png");
+        loadTexture(aiStateIconMut(AiState::INACTIVE), "incative AI state icon", "resources/textures/AiStates/sleeping.png");
+        loadTexture(aiStateIconMut(AiState::CHECKING), "checking AI state icon", "resources/textures/AiStates/curious.png");
+        loadTexture(aiStateIconMut(AiState::WANDERING), "wandering AI state icon", "resources/textures/AiStates/confused.png");
+        loadTexture(aiStateIconMut(AiState::ATTACKING), "attacking AI state icon", "resources/textures/AiStates/angry.png");
 
-        loadTexture(soundIconMut(core::Sound::Type::WALK, false  ),    "enemy walk sound icon", "resources/textures/Sound/walkEnemy.png"   );
-        loadTexture(soundIconMut(core::Sound::Type::WALK, true   ),   "friend walk sound icon", "resources/textures/Sound/walkFriend.png"  );
-        loadTexture(soundIconMut(core::Sound::Type::ATTACK, false),  "enemy attack sound icon", "resources/textures/Sound/attackEnemy.png" );
-        loadTexture(soundIconMut(core::Sound::Type::ATTACK, true ), "friend attack sound icon", "resources/textures/Sound/attackFriend.png");
+        loadTexture(soundIconMut(core::Sound::Type::WALK, false  ),    "enemy walk sound icon", "resources/textures/Sounds/walkEnemy.png"   );
+        loadTexture(soundIconMut(core::Sound::Type::WALK, true   ),   "friend walk sound icon", "resources/textures/Sounds/walkFriend.png"  );
+        loadTexture(soundIconMut(core::Sound::Type::ATTACK, false),  "enemy attack sound icon", "resources/textures/Sounds/attackEnemy.png" );
+        loadTexture(soundIconMut(core::Sound::Type::ATTACK, true ), "friend attack sound icon", "resources/textures/Sounds/attackFriend.png");
 
         logger->info("Loading font...");
         if (!font_.loadFromFile("resources/fonts/Roboto/Roboto-Medium.ttf"))

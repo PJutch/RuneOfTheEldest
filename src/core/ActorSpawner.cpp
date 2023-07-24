@@ -70,7 +70,7 @@ namespace core {
 	ActorSpawner::ActorSpawner(std::shared_ptr<World> world_, std::shared_ptr<render::PlayerMap> playerMap_,
 		std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine_) :
 		world{ std::move(world_) }, playerMap{ std::move(playerMap_) }, randomEngine{ &randomEngine_ } {
-		util::forEachFile("resources/enemies/", [this, &assets](std::ifstream& file) {
+		util::forEachFile("resources/Actors/", [this, &assets](std::ifstream& file) {
 			auto params = util::parseMapping(file);
 
 			actorData.emplace_back();
