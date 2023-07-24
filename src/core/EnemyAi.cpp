@@ -24,7 +24,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace {
 	double maxIgnoredPriority = 0.0001;
-	double maxWanderingPriority = 0.01;
+	double maxWanderingPriority = 0.003;
 }
 
 namespace core {
@@ -110,10 +110,12 @@ namespace core {
 			return; // Ignore friend's WALK to prevent chasing each other on corners
 
 		double priority = sound.volume(enemy->position());
-		if (wandering) {
-			if (priority > maxWanderingPriority)
-				setTarget(sound.position, priority);
-		} else if (priority > targetPriority)
+		if (priority < maxIgnoredPriority)
+			return;
+
+		if (priority < maxWanderingPriority && targetPriority < maxIgnoredPriority)
+			wander();
+		else if (priority > targetPriority)
 			setTarget(sound.position, priority);
 	}
 
@@ -122,7 +124,9 @@ namespace core {
 			return AiState::ATTACKING;
 		else if (targetPriority < maxIgnoredPriority)
 			return AiState::INACTIVE;
+		else if (wandering)
+			return AiState::WANDERING;
 		else
-			return AiState::SEEKING;
+			return AiState::CHECKING;
 	}
 }

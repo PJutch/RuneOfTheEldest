@@ -36,7 +36,8 @@ namespace render {
         fillTexture(tileTextureMut(Tile::PASSAGE), tileSize(), sf::Color::Blue);
 
         loadTexture(aiStateIconMut(AiState::INACTIVE), "incative AI state icon", "resources/textures/AiState/sleeping.png");
-        loadTexture(aiStateIconMut(AiState::SEEKING), "seeking AI state icon", "resources/textures/AiState/confused.png");
+        loadTexture(aiStateIconMut(AiState::CHECKING), "checking AI state icon", "resources/textures/AiState/curious.png");
+        loadTexture(aiStateIconMut(AiState::WANDERING), "wandering AI state icon", "resources/textures/AiState/confused.png");
         loadTexture(aiStateIconMut(AiState::ATTACKING), "attacking AI state icon", "resources/textures/AiState/angry.png");
 
         loadTexture(soundIconMut(core::Sound::Type::WALK, false  ),    "enemy walk sound icon", "resources/textures/Sound/walkEnemy.png"   );

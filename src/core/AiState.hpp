@@ -20,7 +20,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 enum class AiState {
 	NONE,       ///< Has no AI (may be Player controlled)
 	INACTIVE,   ///< Hasn't seen player before
-	SEEKING,    ///< Has seen player but can't see it currently
+	CHECKING,   ///< Checking suspisious location
+	WANDERING,  ///< Wanders randomly
 	ATTACKING,  ///< Can see player
 	TOTAL_      ///< Technical enumerator. Should always be last
 };
