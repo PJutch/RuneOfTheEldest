@@ -22,6 +22,11 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/geometry.hpp"
 #include "util/assert.hpp"
 
+namespace {
+	double maxIgnoredPriority = 0.0001;
+	double maxWanderingPriority = 0.01;
+}
+
 namespace core {
 	EnemyAi::EnemyAi(std::weak_ptr<Actor> newEnemy_) :
 		enemy_{ std::move(newEnemy_) }, targetPosition{ enemy_.lock()->position() } {}
@@ -40,12 +45,13 @@ namespace core {
 			return;
 		}
 
-		if (targetPriority < 0.001) {
+		if (targetPriority < maxIgnoredPriority) {
+			targetPosition = enemy->position();
 			wandering = false;
 			return;
 		}
 
-		if (targetPriority < 0.01 && !wandering)
+		if (targetPriority < maxWanderingPriority && !wandering)
 			wander();
 		
 		if (enemy->position() == targetPosition) {
@@ -105,7 +111,7 @@ namespace core {
 
 		double priority = sound.volume(enemy->position());
 		if (wandering) {
-			if (priority > 0.01)
+			if (priority > maxWanderingPriority)
 				setTarget(sound.position, priority);
 		} else if (priority > targetPriority)
 			setTarget(sound.position, priority);
@@ -114,7 +120,7 @@ namespace core {
 	AiState EnemyAi::aiState() const noexcept {
 		if (canSeePlayer())
 			return AiState::ATTACKING;
-		else if (targetPriority < 0.001)
+		else if (targetPriority < maxIgnoredPriority)
 			return AiState::INACTIVE;
 		else
 			return AiState::SEEKING;
