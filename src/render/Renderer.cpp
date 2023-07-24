@@ -26,11 +26,11 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace render {
     Renderer::Renderer(std::shared_ptr<Camera> camera,
-                       std::shared_ptr<PlayerMap> playerMap_,
+                       std::shared_ptr<PlayerMap> newPlayerMap,
                        std::shared_ptr<sf::RenderWindow> window_,
                        std::shared_ptr<core::World> world_,
                        std::shared_ptr<AssetManager> assets_) :
-        camera{ std::move(camera) }, assets_{ std::move(assets_) }, playerMap{ std::move(playerMap_) },
+        camera{ std::move(camera) }, assets_{ std::move(assets_) }, playerMap_{ std::move(newPlayerMap) },
         world{ std::move(world_) }, window{ std::move(window_) } {}
 
     void Renderer::drawWorld() {
@@ -41,10 +41,10 @@ namespace render {
         if (renderAreas_) 
             drawAreas(camera->position().level);
 
-        for (const auto& actor : playerMap->seenActors())
+        for (const auto& actor : playerMap_->seenActors())
             draw(actor);
 
-        for (core::Sound sound : playerMap->recentSounds())
+        for (core::Sound sound : playerMap_->recentSounds())
             draw(sound);
     }
 
@@ -52,7 +52,7 @@ namespace render {
         const sf::Texture& texture = assets()->tileTexture(world->tiles()[position]);
         sf::Vector2f screenPos = toScreen(util::getXY(position));
 
-        switch (playerMap->tileState(position)) {
+        switch (playerMap_->tileState(position)) {
         case PlayerMap::TileState::VISIBLE: drawSprite(screenPos, { 0, 0 }, texture); break;
         case PlayerMap::TileState::MEMORIZED: drawSprite(screenPos, { 0, 0 }, texture, 0.5); break;
         }
@@ -64,7 +64,8 @@ namespace render {
     }
 
     void Renderer::draw(PlayerMap::SeenActor actor) {
-        double colorMod = util::canSee(world->player().position(), actor.position, *world) ? 1.0 : 0.5;
+        bool seen = playerMap_->seeEverything() || util::canSee(world->player().position(), actor.position, *world);
+        double colorMod = seen ? 1.0 : 0.5;
 
         if (actor.position.z != camera->position().level)
             return;
@@ -77,8 +78,10 @@ namespace render {
         sf::Vector2f topLeft = toScreen(util::getXY(actor.position)) + util::bottomMiddle(tileSize) - util::bottomMiddle(spriteSize);
 
         drawSprite(topLeft, { 0, 0 }, *actor.texture, colorMod);
-        drawHpBar(topLeft + util::bottomLeft(spriteSize), util::bottomLeft(maxHpBarSize), actor.hp, actor.maxHp, maxHpBarSize, colorMod);
-        drawSprite(topLeft + util::topRight(spriteSize), util::topRight(aiStateIconSize), assets()->aiStateIcon(actor.aiState), colorMod);
+        drawHpBar(topLeft + util::bottomLeft(spriteSize), util::bottomLeft(maxHpBarSize), 
+                  actor.hp, actor.maxHp, maxHpBarSize, colorMod);
+        drawSprite(topLeft + util::topRight(spriteSize), util::topRight(aiStateIconSize), 
+                   assets()->aiStateIcon(actor.aiState), colorMod);
     }
 
     void Renderer::draw(core::Sound sound) {
@@ -171,6 +174,6 @@ namespace render {
 
     void Renderer::update(sf::Time elapsedTime) {
         camera->update(elapsedTime);
-        playerMap->update();
+        playerMap_->update();
     }
 }

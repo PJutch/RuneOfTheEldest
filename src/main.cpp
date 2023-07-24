@@ -77,6 +77,7 @@ int main() {
 
         game.dungeonGenerator().splitChance(0.9);
         game.dungeonGenerator().minSize(5);
+        game.renderer().playerMap().seeEverything(true);
         // game.dungeonGenerator().roomGenerator().debugTiles();
         // game.renderer().renderAreas();
 

@@ -55,6 +55,14 @@ namespace render {
             renderAreas_ = newRenderAreas;
         }
 
+        PlayerMap& playerMap() noexcept {
+            return *playerMap_;
+        }
+
+        const PlayerMap& playerMap() const noexcept {
+            return *playerMap_;
+        }
+
         /// @brief Passes input Event to Renderer components such as Camera
         /// @returns true if Event shouldn't be passed to other objects
         bool handleEvent(sf::Event event) {
@@ -67,7 +75,7 @@ namespace render {
 
         /// Notifies Renderer components such as PlayerMap about world generation
         void onGenerate() {
-            playerMap->onGenerate();
+            playerMap_->onGenerate();
             camera->reset();
         }
 
@@ -85,7 +93,7 @@ namespace render {
 
         std::shared_ptr<Camera> camera;
         std::shared_ptr<AssetManager> assets_;
-        std::shared_ptr<PlayerMap> playerMap;
+        std::shared_ptr<PlayerMap> playerMap_;
 
         std::shared_ptr<core::World> world;
 

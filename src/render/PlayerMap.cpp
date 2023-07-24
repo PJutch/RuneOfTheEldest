@@ -25,10 +25,14 @@ namespace render {
 	void PlayerMap::onGenerate() {
 		seenActors_.clear();
 		clearSounds();
-		tileStates.assign(world->tiles().shape(), TileState::UNSEEN);
+
+		tileStates.assign(world->tiles().shape(), seeEverything_ ? TileState::VISIBLE : TileState::UNSEEN);
 	}
 
 	void PlayerMap::updateTiles() {
+		if (seeEverything_)
+			return;
+
 		auto [shapeX, shapeY, shapeZ] = world->tiles().shape();
 		for (int z = 0; z < shapeZ; ++z) {
 			for (int x = 0; x < shapeX; ++x)
@@ -41,12 +45,13 @@ namespace render {
 	}
 
 	void PlayerMap::updateActors() {
-		std::erase_if(seenActors_, [&player = world->player(), &world = *world](auto actor) -> bool {
-			return util::canSee(player.position(), actor.position, world);
+		std::erase_if(seenActors_, [this, &player = world->player(), &world = *world](auto actor) -> bool {
+			return seeEverything_ || util::canSee(player.position(), actor.position, world);
 		});
 
 		for (const auto& actor : world->actors())
-			if (util::canSee(world->player().position(), actor->position(), *world))
-				seenActors_.emplace_back(actor->position(), actor->hp(), actor->maxHp(), actor->controller().aiState(), actor->texture() );
+			if (seeEverything_ || util::canSee(world->player().position(), actor->position(), *world))
+				seenActors_.emplace_back(actor->position(), actor->hp(), actor->maxHp(), 
+					                     actor->controller().aiState(), actor->texture() );
 	}
 }

@@ -70,10 +70,20 @@ namespace render {
 			recentSounds_.clear();
 		}
 
+		void seeEverything(bool newSeeEverything) {
+			seeEverything_ = newSeeEverything;
+		}
+
+		bool seeEverything() {
+			return seeEverything_;
+		}
+
 		std::span<const core::Sound> recentSounds() {
 			return recentSounds_;
 		}
 	private:
+		bool seeEverything_ = false;
+
 		util::Array3D<TileState> tileStates;
 		std::vector<SeenActor> seenActors_;
 
