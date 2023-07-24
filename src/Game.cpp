@@ -19,18 +19,18 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "generation/DungeonGenerator.hpp"
 
 #include "core/World.hpp"
-#include "core/EnemySpawner.hpp"
+#include "core/ActorSpawner.hpp"
 
 #include "util/Keyboard.hpp"
 
 Game::Game(std::shared_ptr<core::World> newWorld,
-           std::unique_ptr<core::EnemySpawner> enemySpawner_,
+           std::unique_ptr<core::ActorSpawner> actorSpawner_,
            std::unique_ptr<generation::DungeonGenerator> newDungeonGenerator,
            std::shared_ptr<sf::RenderWindow> window_,
            std::unique_ptr<render::Renderer> newRenderer,
            util::LoggerFactory& loggerFactory) :
         world{std::move(newWorld)},
-        enemySpawner{std::move(enemySpawner_)},
+        actorSpawner{std::move(actorSpawner_)},
         dungeonGenerator_{std::move(newDungeonGenerator)},
         window{std::move(window_)},
         renderer_{std::move(newRenderer)},
@@ -89,8 +89,8 @@ void Game::generate() {
     generationLogger->info("Generating stairs...");
     world->generateStairs();
 
-    generationLogger->info("Spawning enemies...");
-    enemySpawner->spawn();
+    generationLogger->info("Spawning actors...");
+    actorSpawner->spawn();
 
     generationLogger->info("Finished");
 

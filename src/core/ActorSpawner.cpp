@@ -13,7 +13,7 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#include "EnemySpawner.hpp"
+#include "ActorSpawner.hpp"
 
 #include "EnemyAi.hpp"
 #include "PlayerController.hpp"
@@ -67,47 +67,47 @@ namespace core {
 		}
 	}
 
-	EnemySpawner::EnemySpawner(std::shared_ptr<World> world_, std::shared_ptr<render::PlayerMap> playerMap_,
+	ActorSpawner::ActorSpawner(std::shared_ptr<World> world_, std::shared_ptr<render::PlayerMap> playerMap_,
 		std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine_) :
 		world{ std::move(world_) }, playerMap{ std::move(playerMap_) }, randomEngine{ &randomEngine_ } {
 		util::forEachFile("resources/enemies/", [this, &assets](std::ifstream& file) {
 			auto params = util::parseMapping(file);
 
-			enemyData.emplace_back();
+			actorData.emplace_back();
 			processParam(params, "hp", [this](std::string_view value) {
-				enemyData.back().stats.maxHp = util::parseReal(value);
-				});
+				actorData.back().stats.maxHp = util::parseReal(value);
+			});
 			processParam(params, "regen", [this](std::string_view value) {
-				enemyData.back().stats.regen = util::parseReal(value);
-				});
+				actorData.back().stats.regen = util::parseReal(value);
+			});
 			processParam(params, "damage", [this](std::string_view value) {
-				enemyData.back().stats.damage = util::parseReal(value);
-				});
+				actorData.back().stats.damage = util::parseReal(value);
+			});
 			processParam(params, "turnDelay", [this](std::string_view value) {
-				enemyData.back().stats.turnDelay = util::parseReal(value);
-				});
+				actorData.back().stats.turnDelay = util::parseReal(value);
+			});
 
 			processOptionalParam(params, "controller", [this](std::string_view value) {
-				enemyData.back().controller = value;
-				});
+				actorData.back().controller = value;
+			});
 
 			processParam(params, "texture", [this, &assets](std::string_view value) {
-				enemyData.back().stats.texture = &assets->texture(value);
-				});
+				actorData.back().stats.texture = &assets->texture(value);
+			});
 
 			processParam(params, "minOnLevel", [this](std::string_view value) {
-				enemyData.back().minOnLevel = util::parseUint(value);
-				});
+				actorData.back().minOnLevel = util::parseUint(value);
+			});
 			processParam(params, "maxOnLevel", [this](std::string_view value) {
-				enemyData.back().maxOnLevel = util::parseUint(value);
-				});
+				actorData.back().maxOnLevel = util::parseUint(value);
+			});
 
 			processOptionalParam(params, "minLevel", [this](std::string_view value) {
-				enemyData.back().minLevel = util::parseUint(value);
-				});
+				actorData.back().minLevel = util::parseUint(value);
+			});
 			processOptionalParam(params, "maxLevel", [this](std::string_view value) {
-				enemyData.back().maxLevel = util::parseUint(value);
-				});
+				actorData.back().maxLevel = util::parseUint(value);
+			});
 
 			if (!params.empty())
 				throw UnknownParamsError{ params };
@@ -122,7 +122,7 @@ namespace core {
 		};
 	}
 
-	std::unique_ptr<Controller> EnemySpawner::createController(std::shared_ptr<Actor> actor, std::string_view type) {
+	std::unique_ptr<Controller> ActorSpawner::createController(std::shared_ptr<Actor> actor, std::string_view type) {
 		if (type == "player")
 			return std::make_unique<PlayerController>(actor, playerMap);
 		else if (type == "enemy")
@@ -131,9 +131,9 @@ namespace core {
 			throw UnknownControllerError{ type };
 	}
 
-	void EnemySpawner::spawn() {
+	void ActorSpawner::spawn() {
 		for (int level = 0; level < world->tiles().shape().z; ++level)
-			for (const EnemyData& data : enemyData) 
+			for (const ActorData& data : actorData) 
 				if (data.minLevel <= level && (!data.maxLevel || level <= data.maxLevel)) {
 					int count = std::uniform_int_distribution{ data.minOnLevel, data.maxOnLevel }(*randomEngine);
 					for (int i = 0; i < count; ++i) {

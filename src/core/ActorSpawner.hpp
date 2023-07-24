@@ -13,8 +13,8 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef ENEMY_SPAWNER_HPP_
-#define ENEMY_SPAWNER_HPP_
+#ifndef ACTOR_SPAWNER_HPP_
+#define ACTOR_SPAWNER_HPP_
 
 #include "World.hpp"
 #include "Actor.hpp"
@@ -28,9 +28,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <optional>
 
 namespace core {
-	class EnemySpawner {
+	class ActorSpawner {
 	public:
-		EnemySpawner(std::shared_ptr<World> world, std::shared_ptr<render::PlayerMap> playerMap, 
+		ActorSpawner(std::shared_ptr<World> world, std::shared_ptr<render::PlayerMap> playerMap,
 			         std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine);
 
 		void spawn();
@@ -39,7 +39,7 @@ namespace core {
 		std::shared_ptr<render::PlayerMap> playerMap;
 		util::RandomEngine* randomEngine;
 
-		struct EnemyData {
+		struct ActorData {
 			Actor::Stats stats;
 
 			std::string controller = "enemy";
@@ -50,7 +50,7 @@ namespace core {
 			int minLevel = 0;
 			std::optional<int> maxLevel;
 		};
-		std::vector<EnemyData> enemyData;
+		std::vector<ActorData> actorData;
 
 		std::unique_ptr<Controller> createController(std::shared_ptr<Actor> actor, std::string_view type);
 	};

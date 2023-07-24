@@ -21,7 +21,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 namespace core {
 	class World;
 	class Actor;
-	class EnemySpawner;
+	class ActorSpawner;
 	class PlayerController;
 	class Controller;
 }
