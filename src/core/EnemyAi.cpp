@@ -24,9 +24,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace core {
 	EnemyAi::EnemyAi(std::weak_ptr<Actor> newEnemy_) :
-			enemy_{ std::move(newEnemy_) }, targetPosition{ enemy_.lock()->position() } {
-		aiState(AiState::INACTIVE);
-	}
+		enemy_{ std::move(newEnemy_) }, targetPosition{ enemy_.lock()->position() } {}
 
 	bool EnemyAi::act() {
 		updateTarget();
@@ -38,17 +36,27 @@ namespace core {
 	void EnemyAi::updateTarget() noexcept {
 		auto enemy = enemy_.lock();
 		if (canSeePlayer()) {
-			targetPosition = enemy->world().player().position();
-			aiState(AiState::ATTACKING);
-			targetPriority = 1.; // Ignore any sounds when can see Player
-		} else if (aiState() == AiState::ATTACKING) {
-			targetPosition = tryFollowStairs(targetPosition);
-			aiState(AiState::SEEKING);
-		} else if (aiState() == AiState::SEEKING && enemy->position() == targetPosition) {
-			targetPosition = randomNearbyTarget();
-			targetPriority = 0.01; // Ignore quite sounds
-		} else
-			targetPriority *= 0.9;
+			setTarget(enemy->world().player().position(), 1.);
+			return;
+		}
+
+		if (targetPriority < 0.001) {
+			wandering = false;
+			return;
+		}
+
+		if (targetPriority < 0.01 && !wandering)
+			wander();
+		
+		if (enemy->position() == targetPosition) {
+			if (checkStairs) {
+				targetPosition = tryFollowStairs(targetPosition);
+				checkStairs = false;
+			} else
+				wander();
+		}
+			
+		targetPriority *= 0.9;
 	}
 
 	sf::Vector3i EnemyAi::randomNearbyTarget() noexcept {
@@ -96,10 +104,19 @@ namespace core {
 			return; // Ignore friend's WALK to prevent chasing each other on corners
 
 		double priority = sound.volume(enemy->position());
-		if (priority > targetPriority) {
-			targetPosition = sound.position;
-			targetPriority = priority;
-			aiState(AiState::SEEKING);
-		}
+		if (wandering) {
+			if (priority > 0.01)
+				setTarget(sound.position, priority);
+		} else if (priority > targetPriority)
+			setTarget(sound.position, priority);
+	}
+
+	AiState EnemyAi::aiState() const noexcept {
+		if (canSeePlayer())
+			return AiState::ATTACKING;
+		else if (targetPriority < 0.001)
+			return AiState::INACTIVE;
+		else
+			return AiState::SEEKING;
 	}
 }

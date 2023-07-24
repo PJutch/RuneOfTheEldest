@@ -44,15 +44,33 @@ namespace core {
 		}
 
 		void handleSound(Sound sound) noexcept final;
+
+		[[nodiscard]] AiState aiState() const noexcept final;
 	private:
 		std::weak_ptr<Actor> enemy_;
 
 		sf::Vector3i targetPosition;
-		double targetPriority = 0.01; // Ignore quite sounds
+		double targetPriority = 0.0;
+		bool checkStairs = false;
+		bool wandering = false;
 
 		bool canSeePlayer() const noexcept;
 
 		void updateTarget() noexcept;
+
+		void setTarget(sf::Vector3i position, double priority) {
+			targetPosition = position;
+			targetPriority = priority;
+			checkStairs = true;
+			wandering = false;
+		}
+
+		void wander() noexcept {
+			targetPosition = randomNearbyTarget();
+			wandering = true;
+			checkStairs = false;
+		}
+
 		sf::Vector3i randomNearbyTarget() noexcept;
 		sf::Vector3i tryFollowStairs(sf::Vector3i position) noexcept;
 

@@ -55,14 +55,11 @@ namespace core {
 		/// Called when Actor hears a sound
 		virtual void handleSound(Sound sound) {}
 
-		[[nodiscard]] AiState aiState() const noexcept {
-			return aiState_;
+		/// Actor AiState
+		[[nodiscard]] virtual AiState aiState() const {
+			return AiState::NONE;
 		}
 	protected:
-		void aiState(AiState newAiState) noexcept {
-			aiState_ = newAiState;
-		}
-
 		void wantsSwap(bool newWantsSwap) noexcept {
 			wantsSwap_ = newWantsSwap;
 		}
@@ -75,7 +72,6 @@ namespace core {
 			shouldInterruptOnDelete_ = newShouldInterruptOnDelete;
 		}
 	private:
-		AiState aiState_ = AiState::NONE;
 		bool wantsSwap_ = true;
 		bool isOnPlayerSide_ = false;
 		bool shouldInterruptOnDelete_ = false;
