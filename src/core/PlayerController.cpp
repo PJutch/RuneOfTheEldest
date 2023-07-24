@@ -21,11 +21,12 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/Keyboard.hpp"
 
 namespace core {
-	PlayerController::PlayerController(std::weak_ptr<Actor> player_, std::shared_ptr<render::PlayerMap> map_) :
-			player{ std::move(player_) }, map{ std::move(map_) } {
+	PlayerController::PlayerController(std::shared_ptr<Actor> player_, std::shared_ptr<render::PlayerMap> map_) :
+			player{ player_ }, map{ std::move(map_) } {
 		wantsSwap(false);
 		isOnPlayerSide(true);
 		shouldInterruptOnDelete(true);
+		player_->world().player(player_);
 	}
 
 	void PlayerController::endTurn() noexcept {

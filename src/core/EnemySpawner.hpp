@@ -42,6 +42,8 @@ namespace core {
 		struct EnemyData {
 			Actor::Stats stats;
 
+			std::string controller = "enemy";
+
 			int minOnLevel;
 			int maxOnLevel;
 
@@ -49,7 +51,8 @@ namespace core {
 			std::optional<int> maxLevel;
 		};
 		std::vector<EnemyData> enemyData;
-		Actor::Stats playerData;
+
+		std::unique_ptr<Controller> createController(std::shared_ptr<Actor> actor, std::string_view type);
 	};
 }
 

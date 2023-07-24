@@ -33,7 +33,8 @@ namespace core {
 		class NoValueError : public LoadError {
 		public:
 			NoValueError(std::string_view name, util::Stacktrace currentStacktrace = {}) noexcept :
-				LoadError{ std::format("Value for required param \"{}\" is not given", name), std::move(currentStacktrace) } {}
+				LoadError{ std::format("Value for required param \"{}\" is not given", name),
+						   std::move(currentStacktrace) } {}
 		};
 
 		std::string unknownParamsMessage(std::unordered_map<std::string, std::string> params) {
@@ -45,7 +46,8 @@ namespace core {
 
 		class UnknownParamsError : public LoadError {
 		public:
-			UnknownParamsError(std::unordered_map<std::string, std::string> params, util::Stacktrace currentStacktrace = {}) noexcept :
+			UnknownParamsError(std::unordered_map<std::string, std::string> params,
+				util::Stacktrace currentStacktrace = {}) noexcept :
 				LoadError{ unknownParamsMessage(params), std::move(currentStacktrace) } {}
 		};
 
@@ -58,53 +60,75 @@ namespace core {
 		}
 
 		template <typename Callback>
-		void processOptionalParam(std::unordered_map<std::string, std::string>& params, 
-			                      const std::string& name, Callback&& callback) {
+		void processOptionalParam(std::unordered_map<std::string, std::string>& params,
+			const std::string& name, Callback&& callback) {
 			if (auto value = util::getAndErase(params, name))
 				callback(*value);
 		}
 	}
 
-	EnemySpawner::EnemySpawner(std::shared_ptr<World> world_, std::shared_ptr<render::PlayerMap> playerMap_, 
-		                       std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine_) :
-		world{ std::move(world_) }, playerMap{std::move(playerMap_)}, randomEngine{&randomEngine_},
-			playerData{ .maxHp = 10, .regen = 0.1, .damage = 2, .turnDelay = 1, .texture = &assets->playerTexture() } {
+	EnemySpawner::EnemySpawner(std::shared_ptr<World> world_, std::shared_ptr<render::PlayerMap> playerMap_,
+		std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine_) :
+		world{ std::move(world_) }, playerMap{ std::move(playerMap_) }, randomEngine{ &randomEngine_ } {
 		util::forEachFile("resources/enemies/", [this, &assets](std::ifstream& file) {
 			auto params = util::parseMapping(file);
-			
+
 			enemyData.emplace_back();
 			processParam(params, "hp", [this](std::string_view value) {
 				enemyData.back().stats.maxHp = util::parseReal(value);
-			});
+				});
 			processParam(params, "regen", [this](std::string_view value) {
 				enemyData.back().stats.regen = util::parseReal(value);
-			});
+				});
 			processParam(params, "damage", [this](std::string_view value) {
 				enemyData.back().stats.damage = util::parseReal(value);
-			});
+				});
 			processParam(params, "turnDelay", [this](std::string_view value) {
 				enemyData.back().stats.turnDelay = util::parseReal(value);
-			});
+				});
+
+			processOptionalParam(params, "controller", [this](std::string_view value) {
+				enemyData.back().controller = value;
+				});
+
 			processParam(params, "texture", [this, &assets](std::string_view value) {
 				enemyData.back().stats.texture = &assets->texture(value);
-			});
+				});
+
 			processParam(params, "minOnLevel", [this](std::string_view value) {
 				enemyData.back().minOnLevel = util::parseUint(value);
-			});
+				});
 			processParam(params, "maxOnLevel", [this](std::string_view value) {
 				enemyData.back().maxOnLevel = util::parseUint(value);
-			});
+				});
 
 			processOptionalParam(params, "minLevel", [this](std::string_view value) {
 				enemyData.back().minLevel = util::parseUint(value);
-			});
+				});
 			processOptionalParam(params, "maxLevel", [this](std::string_view value) {
 				enemyData.back().maxLevel = util::parseUint(value);
-			});
+				});
 
 			if (!params.empty())
 				throw UnknownParamsError{ params };
-		});
+			});
+	}
+
+	namespace {
+		class UnknownControllerError : public util::RuntimeError {
+		public:
+			UnknownControllerError(std::string_view type, util::Stacktrace currentStacktrace = {}) noexcept :
+				util::RuntimeError{ std::format("Unknow controller {}", type), std::move(currentStacktrace) } {}
+		};
+	}
+
+	std::unique_ptr<Controller> EnemySpawner::createController(std::shared_ptr<Actor> actor, std::string_view type) {
+		if (type == "player")
+			return std::make_unique<PlayerController>(actor, playerMap);
+		else if (type == "enemy")
+			return std::make_unique<EnemyAi>(actor);
+		else
+			throw UnknownControllerError{ type };
 	}
 
 	void EnemySpawner::spawn() {
@@ -115,14 +139,9 @@ namespace core {
 					for (int i = 0; i < count; ++i) {
 						sf::Vector3i position = world->randomPositionAt(level, &World::isFree);
 						auto enemy = std::make_shared<Actor>(data.stats, position, world, randomEngine);
-						enemy->controller(std::make_unique<EnemyAi>(enemy));
+						enemy->controller(createController(enemy, data.controller));
 						world->addActor(std::move(enemy));
 					}
 			}
-
-		auto player = std::make_shared<Actor>(playerData, world->randomPositionAt(0, &World::isFree), world, randomEngine);
-		player->controller(std::make_unique<PlayerController>(player, playerMap));
-		world->player(player);
-		world->addActor(std::move(player));
 	}
 }
