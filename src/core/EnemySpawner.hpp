@@ -25,6 +25,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/random.hpp"
 #include "util/Map.hpp"
 
+#include <optional>
+
 namespace core {
 	class EnemySpawner {
 	public:
@@ -42,6 +44,9 @@ namespace core {
 
 			int minOnLevel;
 			int maxOnLevel;
+
+			int minLevel = 0;
+			std::optional<int> maxLevel;
 		};
 		std::vector<EnemyData> enemyData;
 		Actor::Stats playerData;

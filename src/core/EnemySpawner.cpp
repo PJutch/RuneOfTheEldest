@@ -56,6 +56,13 @@ namespace core {
 			else
 				throw NoValueError{ name };
 		}
+
+		template <typename Callback>
+		void processOptionalParam(std::unordered_map<std::string, std::string>& params, 
+			                      const std::string& name, Callback&& callback) {
+			if (auto value = util::getAndErase(params, name))
+				callback(*value);
+		}
 	}
 
 	EnemySpawner::EnemySpawner(std::shared_ptr<World> world_, std::shared_ptr<render::PlayerMap> playerMap_, 
@@ -88,6 +95,13 @@ namespace core {
 				enemyData.back().maxOnLevel = util::parseUint(value);
 			});
 
+			processOptionalParam(params, "minLevel", [this](std::string_view value) {
+				enemyData.back().minLevel = util::parseUint(value);
+			});
+			processOptionalParam(params, "maxLevel", [this](std::string_view value) {
+				enemyData.back().maxLevel = util::parseUint(value);
+			});
+
 			if (!params.empty())
 				throw UnknownParamsError{ params };
 		});
@@ -95,13 +109,16 @@ namespace core {
 
 	void EnemySpawner::spawn() {
 		for (int level = 0; level < world->tiles().shape().z; ++level)
-			for (const EnemyData& enemyData : enemyData)
-				for (int i = 0; i < std::uniform_int_distribution{ enemyData.minOnLevel, enemyData.maxOnLevel }(*randomEngine); ++i) {
-					sf::Vector3i position = world->randomPositionAt(level, &World::isFree);
-					auto enemy = std::make_shared<Actor>(enemyData.stats, position, world, randomEngine);
-					enemy->controller(std::make_unique<EnemyAi>(enemy));
-					world->addActor(std::move(enemy));
-				}
+			for (const EnemyData& data : enemyData) 
+				if (data.minLevel <= level && (!data.maxLevel || level <= data.maxLevel)) {
+					int count = std::uniform_int_distribution{ data.minOnLevel, data.maxOnLevel }(*randomEngine);
+					for (int i = 0; i < count; ++i) {
+						sf::Vector3i position = world->randomPositionAt(level, &World::isFree);
+						auto enemy = std::make_shared<Actor>(data.stats, position, world, randomEngine);
+						enemy->controller(std::make_unique<EnemyAi>(enemy));
+						world->addActor(std::move(enemy));
+					}
+			}
 
 		auto player = std::make_shared<Actor>(playerData, world->randomPositionAt(0, &World::isFree), world, randomEngine);
 		player->controller(std::make_unique<PlayerController>(player, playerMap));
