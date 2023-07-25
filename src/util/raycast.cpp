@@ -52,14 +52,17 @@ namespace util {
 	}
 
 	bool canSee(sf::Vector3i from, sf::Vector3i to, const core::World& dungeon) {
-		std::array<sf::Vector3<double>, 4> toCheck{ sf::Vector3<double>{-0.5, -0.5, 0.0},
-													{0.5, -0.5, 0.0}, 
-												    {-0.5, 0.5, 0.0}, 
-			                                        {0.5, 0.5, 0.0} };
+		const std::array<sf::Vector3<double>, 5> toCheck{ sf::Vector3<double>{-0.5, -0.5, 0.0},
+													                         {0.5, -0.5, 0.0}, 
+												                             {-0.5, 0.5, 0.0}, 
+																			 {0.5, 0.5, 0.0},
+																			 {0.0, 0.0, 0.0} };
 
-		for (sf::Vector3<double> offset : toCheck)
-			if (!isObstructed(geometry_cast<double>(from), geometry_cast<double>(to) + offset, dungeon))
-				return true;
+		for (sf::Vector3<double> fromOffset : toCheck)
+			for (sf::Vector3<double> toOffset : toCheck)
+				if (!isObstructed(geometry_cast<double>(from) + fromOffset, 
+								  geometry_cast<double>(to) + toOffset, dungeon))
+					return true;
 
 		return false;
 	}
