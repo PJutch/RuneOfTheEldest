@@ -18,6 +18,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "core/fwd.hpp"
 
+#include <util/geometry.hpp>
+#include <util/Map.hpp>
+
 #include <SFML/System/Vector3.hpp>
 
 #include <memory>
@@ -32,6 +35,8 @@ namespace util {
 		bool canSee(sf::Vector3i from, sf::Vector3i to);
 	private:
 		std::shared_ptr<core::World> world;
+
+		UnorderedMap<std::pair<sf::Vector3i, sf::Vector3i>, bool> cache;
 	};
 }
 

@@ -68,6 +68,12 @@ namespace util {
 	}
 
 	bool Raycaster::canSee(sf::Vector3i from, sf::Vector3i to) {
-		return util::canSee(from, to, *world);
+		auto cache_iter = cache.find({ from, to });
+		if (cache_iter != cache.end())
+			return cache_iter->second;
+		
+		bool result = util::canSee(from, to, *world);
+		cache[{ from, to }] = result;
+		return result;
 	}
 }
