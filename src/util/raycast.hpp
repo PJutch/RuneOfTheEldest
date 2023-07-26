@@ -20,9 +20,19 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <SFML/System/Vector3.hpp>
 
+#include <memory>
+
 namespace util {
-	/// Checks if tile at to can be seen from pos from
-	bool canSee(sf::Vector3i from, sf::Vector3i to, const core::World& dungeon);
+	class Raycaster {
+	public:
+		Raycaster(std::shared_ptr<core::World> world_) :
+			world{ std::move(world_) } {}
+
+		/// Checks if tile at to can be seen from tile at from
+		bool canSee(sf::Vector3i from, sf::Vector3i to);
+	private:
+		std::shared_ptr<core::World> world;
+	};
 }
 
 #endif

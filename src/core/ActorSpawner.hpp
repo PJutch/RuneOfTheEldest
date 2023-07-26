@@ -31,12 +31,14 @@ namespace core {
 	class ActorSpawner {
 	public:
 		ActorSpawner(std::shared_ptr<World> world, std::shared_ptr<render::PlayerMap> playerMap,
-			         std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine);
+			         std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine, 
+			         std::shared_ptr<util::Raycaster> raycaster);
 
 		void spawn();
 	private:
 		std::shared_ptr<World> world;
 		std::shared_ptr<render::PlayerMap> playerMap;
+		std::shared_ptr<util::Raycaster> raycaster;
 		util::RandomEngine* randomEngine;
 
 		struct ActorData {

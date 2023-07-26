@@ -28,8 +28,8 @@ namespace {
 }
 
 namespace core {
-	EnemyAi::EnemyAi(std::weak_ptr<Actor> newEnemy_) :
-		enemy_{ std::move(newEnemy_) }, targetPosition{ enemy_.lock()->position() } {}
+	EnemyAi::EnemyAi(std::weak_ptr<Actor> newEnemy, std::shared_ptr<util::Raycaster> raycaster_) :
+		enemy_{ std::move(newEnemy) }, targetPosition{ enemy_.lock()->position() }, raycaster{std::move(raycaster_)} {}
 
 	bool EnemyAi::act() {
 		updateTarget();
@@ -97,13 +97,13 @@ namespace core {
 
 	bool EnemyAi::canSeePlayer() const noexcept {
 		auto enemy = enemy_.lock();
-		return util::canSee(enemy->position(), enemy->world().player().position(), enemy->world());
+		return raycaster->canSee(enemy->position(), enemy->world().player().position());
 	}
 
 	void EnemyAi::handleSound(Sound sound) noexcept {
 		auto enemy = enemy_.lock();
 
-		if (util::canSee(enemy->position(), sound.position, enemy->world()))
+		if (raycaster->canSee(enemy->position(), sound.position))
 			return; // Ignore sounds with known sources
 
 		if (sound.type == Sound::Type::WALK && !sound.isSourceOnPlayerSide)

@@ -29,9 +29,10 @@ namespace render {
                        std::shared_ptr<PlayerMap> newPlayerMap,
                        std::shared_ptr<sf::RenderWindow> window_,
                        std::shared_ptr<core::World> world_,
+                       std::shared_ptr<util::Raycaster> raycaster_,
                        std::shared_ptr<AssetManager> assets_) :
         camera{ std::move(camera) }, assets_{ std::move(assets_) }, playerMap_{ std::move(newPlayerMap) },
-        world{ std::move(world_) }, window{ std::move(window_) } {}
+        world{ std::move(world_) }, raycaster{ std::move(raycaster_) }, window{std::move(window_)} {}
 
     void Renderer::drawWorld() {
         for (int x = 0; x < world->tiles().shape().x; ++x)
@@ -64,7 +65,7 @@ namespace render {
     }
 
     void Renderer::draw(PlayerMap::SeenActor actor) {
-        bool seen = playerMap_->seeEverything() || util::canSee(world->player().position(), actor.position, *world);
+        bool seen = playerMap_->seeEverything() || raycaster->canSee(world->player().position(), actor.position);
         double colorMod = seen ? 1.0 : 0.5;
 
         if (actor.position.z != camera->position().level)
@@ -85,7 +86,7 @@ namespace render {
     }
 
     void Renderer::draw(core::Sound sound) {
-        if (util::canSee(sound.position, world->player().position(), *world)) 
+        if (raycaster->canSee(sound.position, world->player().position()))
             return;
 
         if (sound.volume(world->player().position()) < 0.01)

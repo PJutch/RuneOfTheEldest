@@ -20,6 +20,7 @@ If not, see < https://www.gnu.org/licenses/>. */
 #include "core/Actor.hpp"
 
 #include "util/Array3D.hpp"
+#include "util/raycast.hpp"
 
 #include <SFML/System/Vector3.hpp>
 
@@ -30,7 +31,7 @@ If not, see < https://www.gnu.org/licenses/>. */
 namespace render {
 	class PlayerMap {
 	public:
-		PlayerMap(std::shared_ptr<core::World> world);
+		PlayerMap(std::shared_ptr<core::World> world, std::shared_ptr<util::Raycaster> raycaster);
 
 		enum class TileState {
 			UNSEEN,
@@ -90,6 +91,7 @@ namespace render {
 		std::vector<core::Sound> recentSounds_;
 
 		std::shared_ptr<core::World> world;
+		std::shared_ptr<util::Raycaster> raycaster;
 
 		void updateTiles();
 		void updateActors();

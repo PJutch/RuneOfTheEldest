@@ -24,6 +24,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "render/AssetManager.hpp"
 
 #include "util/random.hpp"
+#include "util/raycast.hpp"
 
 #include <SFML/System/Vector3.hpp>
 
@@ -34,7 +35,7 @@ namespace core {
 	/// AI controlling enemy
 	class EnemyAi : public Controller {
 	public:
-		EnemyAi(std::weak_ptr<Actor> newEnemy_);
+		EnemyAi(std::weak_ptr<Actor> enemy, std::shared_ptr<util::Raycaster> raycaster);
 
 		/// Chases or attacks Player
 		bool act() final;
@@ -53,6 +54,8 @@ namespace core {
 		double targetPriority = 0.0;
 		bool checkStairs = false;
 		bool wandering = false;
+
+		std::shared_ptr<util::Raycaster> raycaster;
 
 		bool canSeePlayer() const noexcept;
 

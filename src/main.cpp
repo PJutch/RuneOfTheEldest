@@ -28,6 +28,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/log.hpp"
 #include "util/Exception.hpp"
 #include "util/random.hpp"
+#include "util/raycast.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/VideoMode.hpp>

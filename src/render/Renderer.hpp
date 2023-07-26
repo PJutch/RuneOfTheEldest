@@ -48,6 +48,7 @@ namespace render {
             std::shared_ptr<PlayerMap> playerMap,
             std::shared_ptr<sf::RenderWindow> window,
             std::shared_ptr<core::World> world,
+            std::shared_ptr<util::Raycaster> raycaster,
             std::shared_ptr<AssetManager> assets);
 
         /// If true bsp areas created by dungeon generation are rendered
@@ -96,6 +97,7 @@ namespace render {
         std::shared_ptr<PlayerMap> playerMap_;
 
         std::shared_ptr<core::World> world;
+        std::shared_ptr<util::Raycaster> raycaster;
 
         std::shared_ptr<sf::RenderWindow> window;
 

@@ -50,7 +50,7 @@ TEST(PlayerMap, tileVisibilityEmpty) {
     auto player = makeTestActor({ 0, 2, 0 });
     world->player(std::move(player));
 
-    render::PlayerMap playerMap{ std::move(world) };
+    render::PlayerMap playerMap{ world, std::make_shared<util::Raycaster>(world) };
     playerMap.onGenerate();
     playerMap.update();
 
@@ -78,7 +78,7 @@ TEST(PlayerMap, tileVisibilityWall) {
     auto world = createWallWorld();
     world->player().position({ 1, 0, 0 });
 
-    render::PlayerMap playerMap{ std::move(world) };
+    render::PlayerMap playerMap{ world, std::make_shared<util::Raycaster>(world) };
     playerMap.onGenerate();
     playerMap.update();
 
@@ -93,7 +93,7 @@ TEST(PlayerMap, tileVisibilityWall) {
 TEST(PlayerMap, tileMemorization) {
     auto world = createWallWorld();
 
-    render::PlayerMap playerMap{ world };
+    render::PlayerMap playerMap{ world, std::make_shared<util::Raycaster>(world) };
     playerMap.onGenerate();
 
     world->player().position({ 1, 0, 0 });
@@ -116,7 +116,7 @@ TEST(PlayerMap, seenActors) {
     world->addActor(makeTestActor({ 2, 0, 0 }));
     world->addActor(makeTestActor({ 2, 2, 0 }));
 
-    render::PlayerMap playerMap{ std::move(world) };
+    render::PlayerMap playerMap{ world, std::make_shared<util::Raycaster>(world) };
     playerMap.onGenerate();
     playerMap.update();
 
@@ -129,7 +129,7 @@ TEST(PlayerMap, seenActorsMemorization) {
     auto actor = makeTestActor({ 2, 0, 0 });
     world->addActor(actor);
 
-    render::PlayerMap playerMap{ world };
+    render::PlayerMap playerMap{ world, std::make_shared<util::Raycaster>(world) };
     playerMap.onGenerate();
 
     world->player().position({ 1, 0, 0 });

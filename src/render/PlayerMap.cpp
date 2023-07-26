@@ -20,7 +20,8 @@ If not, see < https://www.gnu.org/licenses/>. */
 #include "util/raycast.hpp"
 
 namespace render {
-	PlayerMap::PlayerMap(std::shared_ptr<core::World> world_) : world{ std::move(world_) } {}
+	PlayerMap::PlayerMap(std::shared_ptr<core::World> world_, std::shared_ptr<util::Raycaster> raycaster_) :
+		world{ std::move(world_) }, raycaster{std::move(raycaster_)} {}
 
 	void PlayerMap::onGenerate() {
 		seenActors_.clear();
@@ -37,7 +38,7 @@ namespace render {
 		for (int z = 0; z < shapeZ; ++z) {
 			for (int x = 0; x < shapeX; ++x)
 				for (int y = 0; y < shapeY; ++y)
-					if (util::canSee(world->player().position(), { x, y, z }, *world))
+					if (raycaster->canSee(world->player().position(), { x, y, z }))
 						tileStates[{ x, y, z }] = TileState::VISIBLE;
 					else if (tileState({ x, y, z }) == TileState::VISIBLE)
 						tileStates[{ x, y, z }] = TileState::MEMORIZED;
@@ -46,11 +47,11 @@ namespace render {
 
 	void PlayerMap::updateActors() {
 		std::erase_if(seenActors_, [this, &player = world->player(), &world = *world](auto actor) -> bool {
-			return seeEverything_ || util::canSee(player.position(), actor.position, world);
+			return seeEverything_ || raycaster->canSee(player.position(), actor.position);
 		});
 
 		for (const auto& actor : world->actors())
-			if (seeEverything_ || util::canSee(world->player().position(), actor->position(), *world))
+			if (seeEverything_ || raycaster->canSee(world->player().position(), actor->position()))
 				seenActors_.emplace_back(actor->position(), actor->hp(), actor->maxHp(), 
 					                     actor->controller().aiState(), actor->texture() );
 	}

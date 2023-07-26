@@ -20,60 +20,68 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <gtest/gtest.h>
 
 TEST(raycast, canSeeEmpty) {
-    core::World world;
-    world.tiles().assign({ 3, 3, 1 }, Tile::EMPTY);
+    auto world = std::make_shared<core::World>();
+    world->tiles().assign({ 3, 3, 1 }, Tile::EMPTY);
 
-    EXPECT_TRUE(util::canSee({0, 2, 0}, {2, 1, 0}, world));
+    util::Raycaster raycaster{ std::move(world) };
+    EXPECT_TRUE(raycaster.canSee({0, 2, 0}, {2, 1, 0}));
 }
 
 TEST(raycast, canSeeAdjenct) {
-    core::World world;
-    world.tiles().assign({ 2, 2, 1 }, Tile::WALL);
+    auto world = std::make_shared<core::World>();
+    world->tiles().assign({ 2, 2, 1 }, Tile::WALL);
 
-    world.tiles()[{0, 1, 0}] = Tile::EMPTY;
-    world.tiles()[{1, 1, 0}] = Tile::EMPTY;
+    world->tiles()[{0, 1, 0}] = Tile::EMPTY;
+    world->tiles()[{1, 1, 0}] = Tile::EMPTY;
 
-    EXPECT_TRUE(util::canSee({ 0, 1, 0 }, { 1, 1, 0 }, world));
+    util::Raycaster raycaster{ std::move(world) };
+    EXPECT_TRUE(raycaster.canSee({ 0, 1, 0 }, { 1, 1, 0 }));
 }
 
 TEST(raycast, canSeeAdjenctDiagonal) {
-    core::World world;
-    world.tiles().assign({ 2, 2, 1 }, Tile::WALL);
+    auto world = std::make_shared<core::World>();
+    world->tiles().assign({ 2, 2, 1 }, Tile::WALL);
 
-    world.tiles()[{0, 1, 0}] = Tile::EMPTY;
-    world.tiles()[{1, 0, 0}] = Tile::EMPTY;
+    world->tiles()[{0, 1, 0}] = Tile::EMPTY;
+    world->tiles()[{1, 0, 0}] = Tile::EMPTY;
 
-    EXPECT_TRUE(util::canSee({ 0, 1, 0 }, { 1, 0, 0 }, world));
+    util::Raycaster raycaster{ std::move(world) };
+    EXPECT_TRUE(raycaster.canSee({ 0, 1, 0 }, { 1, 0, 0 }));
 }
 
 TEST(raycast, canSeeBlockByWall) {
-    core::World world;
-    world.tiles().assign({ 3, 3, 1 }, Tile::WALL);
+    auto world = std::make_shared<core::World>();
+    world->tiles().assign({ 3, 3, 1 }, Tile::WALL);
 
-    world.tiles()[{0, 2, 0}] = Tile::EMPTY;
-    world.tiles()[{2, 1, 0}] = Tile::EMPTY;
+    world->tiles()[{0, 2, 0}] = Tile::EMPTY;
+    world->tiles()[{2, 1, 0}] = Tile::EMPTY;
 
-    EXPECT_FALSE(util::canSee({ 0, 2, 0 }, { 2, 1, 0 }, world));
+    util::Raycaster raycaster{ std::move(world) };
+    EXPECT_FALSE(raycaster.canSee({ 0, 2, 0 }, { 2, 1, 0 }));
 }
 
 TEST(raycast, canSeeBlockByFloor) {
-    core::World world;
-    world.tiles().assign({ 2, 2, 2 }, Tile::EMPTY);
+    auto world = std::make_shared<core::World>();
+    world->tiles().assign({ 2, 2, 2 }, Tile::EMPTY);
 
-    EXPECT_FALSE(util::canSee({ 0, 1, 0 }, { 1, 1, 1 }, world));
+    util::Raycaster raycaster{ std::move(world) };
+    EXPECT_FALSE(raycaster.canSee({ 0, 1, 0 }, { 1, 1, 1 }));
 }
 
 TEST(raycast, canSeeSelf) {
-    core::World world;
-    world.tiles().assign({ 2, 2, 2 }, Tile::WALL);
-    world.tiles()[{1, 1, 1}] = Tile::EMPTY;
-    EXPECT_TRUE(util::canSee({1, 1, 1}, {1, 1, 1}, world));
+    auto world = std::make_shared<core::World>();
+    world->tiles().assign({ 2, 2, 2 }, Tile::WALL);
+    world->tiles()[{1, 1, 1}] = Tile::EMPTY;
+
+    util::Raycaster raycaster{ std::move(world) };
+    EXPECT_TRUE(raycaster.canSee({1, 1, 1}, {1, 1, 1}));
 }
 
 TEST(raycast, canSeeWall) {
-    core::World world;
-    world.tiles().assign({ 3, 3, 1 }, Tile::EMPTY);
-    world.tiles()[{ 2, 1, 0 }] = Tile::WALL;
+    auto world = std::make_shared<core::World>();
+    world->tiles().assign({ 3, 3, 1 }, Tile::EMPTY);
+    world->tiles()[{ 2, 1, 0 }] = Tile::WALL;
 
-    EXPECT_TRUE(util::canSee({ 0, 2, 0 }, { 2, 1, 0 }, world));
+    util::Raycaster raycaster{ std::move(world) };
+    EXPECT_TRUE(raycaster.canSee({ 0, 2, 0 }, { 2, 1, 0 }));
 }

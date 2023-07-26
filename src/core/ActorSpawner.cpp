@@ -68,8 +68,10 @@ namespace core {
 	}
 
 	ActorSpawner::ActorSpawner(std::shared_ptr<World> world_, std::shared_ptr<render::PlayerMap> playerMap_,
-		std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine_) :
-		world{ std::move(world_) }, playerMap{ std::move(playerMap_) }, randomEngine{ &randomEngine_ } {
+							   std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine_,
+							   std::shared_ptr<util::Raycaster> raycaster_) :
+		world{ std::move(world_) }, playerMap{ std::move(playerMap_) }, randomEngine{ &randomEngine_ }, 
+		raycaster{ std::move(raycaster_) } {
 		util::forEachFile("resources/Actors/", [this, &assets](std::ifstream& file) {
 			auto params = util::parseMapping(file);
 
@@ -126,7 +128,7 @@ namespace core {
 		if (type == "player")
 			return std::make_unique<PlayerController>(actor, playerMap);
 		else if (type == "enemy")
-			return std::make_unique<EnemyAi>(actor);
+			return std::make_unique<EnemyAi>(actor, raycaster);
 		else
 			throw UnknownControllerError{ type };
 	}
