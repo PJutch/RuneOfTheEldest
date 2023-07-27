@@ -22,14 +22,11 @@ If not, see <https://www.gnu.org/licenses/>. */
 namespace util {
 	namespace {
 		/// Checks if position1 and position2 are visible from each other
-		bool isObstructed(sf::Vector3<double> pos1, sf::Vector3<double> pos2, const core::World& world) {
+		bool isObstructed(sf::Vector2<double> pos1, sf::Vector2<double> pos2, int z, const core::World& world) {
 			if (pos1 == pos2)
 				return false;
 
-			if (pos1.z != pos2.z)
-				return true;
-
-			double distance_ = util::distance(util::getXY(pos1), util::getXY(pos2));
+			double distance_ = util::distance(pos1, pos2);
 
 			// sin and cos of angle between pos2 - pos1 and x axis
 			double cos = (pos2.x - pos1.x) / distance_;
@@ -43,24 +40,24 @@ namespace util {
 				int x = pos1.x + std::round(distance * cos);
 				int y = pos1.y + std::round(distance * sin);
 
-				if (!isPassable(world.tiles()[sf::Vector3i(x, y, pos1.z)]))
+				if (!isPassable(world.tiles()[sf::Vector3i(x, y, z)]))
 					return true;
 			}
 
 			return false;
 		}
 
-		bool canSee(sf::Vector3i from, sf::Vector3i to, const core::World& dungeon) {
-			const std::array<sf::Vector3<double>, 5> toCheck{ sf::Vector3<double>{-0.5, -0.5, 0.0},
-																				 {0.5, -0.5, 0.0},
-																				 {-0.5, 0.5, 0.0},
-																				 {0.5, 0.5, 0.0},
-																				 {0.0, 0.0, 0.0} };
+		bool canSee(sf::Vector2i from, sf::Vector2i to, int z, const core::World& dungeon) {
+			const std::array<sf::Vector2<double>, 5> toCheck{ sf::Vector2<double>{-0.5, -0.5},
+																				 { 0.5, -0.5},
+																				 {-0.5,  0.5},
+																				 { 0.5,  0.5},
+																				 { 0.0,  0.0} };
 
-			for (sf::Vector3<double> fromOffset : toCheck)
-				for (sf::Vector3<double> toOffset : toCheck)
+			for (sf::Vector2<double> fromOffset : toCheck)
+				for (sf::Vector2<double> toOffset : toCheck)
 					if (!isObstructed(geometry_cast<double>(from) + fromOffset,
-						geometry_cast<double>(to) + toOffset, dungeon))
+						              geometry_cast<double>(to) + toOffset, z, dungeon))
 						return true;
 
 			return false;
@@ -68,12 +65,22 @@ namespace util {
 	}
 
 	bool Raycaster::canSee(sf::Vector3i from, sf::Vector3i to) {
-		auto cache_iter = cache.find({ from, to });
+		if (from == to)
+			return true;
+
+		if (from.z != to.z)
+			return false;
+
+		auto from2D = getXY(from);
+		auto to2D = getXY(to);
+		int z = from.z;
+
+		auto cache_iter = cache.find({ from2D, to2D, z });
 		if (cache_iter != cache.end())
 			return cache_iter->second;
 		
-		bool result = util::canSee(from, to, *world);
-		cache[{ from, to }] = result;
+		bool result = util::canSee(from2D, to2D, z, *world);
+		cache[{ from2D, to2D, z }] = result;
 		return result;
 	}
 }

@@ -24,6 +24,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <SFML/System/Vector3.hpp>
 
 #include <memory>
+#include <tuple>
 
 namespace util {
 	class Raycaster {
@@ -36,7 +37,7 @@ namespace util {
 	private:
 		std::shared_ptr<core::World> world;
 
-		UnorderedMap<std::pair<sf::Vector3i, sf::Vector3i>, bool> cache;
+		UnorderedMap<std::tuple<sf::Vector2i, sf::Vector2i, int>, bool> cache;
 	};
 }
 
