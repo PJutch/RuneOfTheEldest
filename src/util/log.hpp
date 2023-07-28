@@ -22,8 +22,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>
 
-#include <boost/di.hpp>
-
 #include <filesystem>
 #include <ranges>
 
