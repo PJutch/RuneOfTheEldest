@@ -85,3 +85,16 @@ TEST(raycast, canSeeWall) {
     util::Raycaster raycaster{ std::move(world) };
     EXPECT_TRUE(raycaster.canSee({ 0, 2, 0 }, { 2, 1, 0 }));
 }
+
+TEST(raycast, canSeeWallStiffAngle) {
+    auto world = std::make_shared<core::World>();
+    world->tiles().assign({ 2, 5, 1 }, Tile::EMPTY);
+    world->tiles()[{ 1, 0, 0 }] = Tile::WALL;
+    world->tiles()[{ 1, 1, 0 }] = Tile::WALL;
+    world->tiles()[{ 1, 2, 0 }] = Tile::WALL;
+    world->tiles()[{ 1, 3, 0 }] = Tile::WALL;
+    world->tiles()[{ 1, 4, 0 }] = Tile::WALL;
+
+    util::Raycaster raycaster{ std::move(world) };
+    EXPECT_TRUE(raycaster.canSee({ 0, 4, 0 }, { 1, 0, 0 }));
+}
