@@ -56,6 +56,7 @@ namespace render {
         switch (playerMap_->tileState(position)) {
         case PlayerMap::TileState::VISIBLE: drawSprite(screenPos, { 0, 0 }, texture); break;
         case PlayerMap::TileState::MEMORIZED: drawSprite(screenPos, { 0, 0 }, texture, 0.5); break;
+        case PlayerMap::TileState::UNSEEN: break;
         }
     }
 
