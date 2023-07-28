@@ -53,7 +53,7 @@ namespace core {
 						endTurn();
 			}
 			else if (util::isNumpad(event.key.code))
-				for (int i = 1; i <= 9; ++i)
+				for (ptrdiff_t i = 1; i <= 9; ++i)
 					if (sf::Keyboard::isKeyPressed(util::numpad(i))) {
 						if (player.lock()->tryMove(util::numpadDirections<int>[i - 1], true))
 							endTurn();

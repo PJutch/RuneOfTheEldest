@@ -64,7 +64,7 @@ namespace render {
 
 		/// Gets icon for given sound type and source side
 		[[nodiscard]] const sf::Texture& soundIcon(core::Sound::Type type, bool isSourceOnPlayerSide) const noexcept {
-			return soundIcons[static_cast<int>(type) * 2 + static_cast<int>(isSourceOnPlayerSide)];
+			return soundIcons[static_cast<ptrdiff_t>(type) * 2 + static_cast<ptrdiff_t>(isSourceOnPlayerSide)];
 		}
 
 		/// Gets icon for given AiState

@@ -29,7 +29,7 @@ namespace render {
         const float cameraSpeed = 40.f;
         float moved = cameraSpeed * elapsedTime.asSeconds();
 
-        for (int i = 1; i <= 9; ++i)
+        for (ptrdiff_t i = 1; i <= 9; ++i)
             if (sf::Keyboard::isKeyPressed(util::numpad(i)))
                 move(util::numpadDirections<float>[i - 1] * moved);
     }

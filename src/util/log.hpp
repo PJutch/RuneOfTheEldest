@@ -34,14 +34,6 @@ namespace util {
     /// Short typedef for file sink (single threaded one)
     using FileSink = spdlog::sinks::basic_file_sink_st;
 
-    /// boost::di module providing log sinks
-    [[nodiscard]] inline auto logModule() {
-        return boost::di::make_injector(
-            boost::di::bind<FileSink>.to(std::make_shared<FileSink>("log.txt", true)),
-            boost::di::bind<spdlog::sinks::sink * []>.to<ConsoleSink, FileSink>()
-        );
-    }
-
     /// factory for creating loggers
     class LoggerFactory {
     public:

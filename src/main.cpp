@@ -44,8 +44,16 @@ sf::String createSfString(std::string_view string) {
                                 std::ranges::end(string));
 }
 
+/// boost::di module providing log sinks
+[[nodiscard]] inline auto logModule() {
+    return boost::di::make_injector(
+        boost::di::bind<util::FileSink>.to(std::make_shared<util::FileSink>("log.txt", true)),
+        boost::di::bind<spdlog::sinks::sink*[]>.to<util::ConsoleSink, util::FileSink>()
+    );
+}
+
 int main() {
-    auto logModule_ = util::logModule();
+    auto logModule_ = logModule();
     auto loggerFactory = logModule_.create<util::LoggerFactory>();
     auto logger = loggerFactory.create("main");   
 

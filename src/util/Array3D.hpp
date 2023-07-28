@@ -58,13 +58,15 @@ namespace util {
 		/// @warning Check position by yourself
 		[[nodiscard]] T& operator[] (sf::Vector3i position) noexcept {
 			TROTE_ASSERT(isValidPosition(position));
-			return elements[position.z * shape_.x * shape_.y + position.x * shape_.y + position.y];
+			auto pos = util::geometry_cast<ptrdiff_t>(position);
+			return elements[pos.z * shape_.x * shape_.y + pos.x * shape_.y + pos.y];
 		}
 
 		/// @warning Check position by yourself
 		[[nodiscard]] const T& operator[] (sf::Vector3i position) const noexcept {
 			TROTE_ASSERT(isValidPosition(position));
-			return elements[position.z * shape_.x * shape_.y + position.x * shape_.y + position.y];
+			auto pos = util::geometry_cast<ptrdiff_t>(position);
+			return elements[pos.z * shape_.x * shape_.y + pos.x * shape_.y + pos.y];
 		}
 
 		/// Array sizes in all axis

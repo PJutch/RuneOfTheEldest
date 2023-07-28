@@ -163,7 +163,7 @@ namespace render {
         sf::Text text;
         text.setString(string);
         text.setFont(assets()->font());
-        text.setColor(color);
+        text.setFillColor(color);
         text.setCharacterSize(characterSize);
 
         sf::FloatRect textBounds = text.getLocalBounds();
