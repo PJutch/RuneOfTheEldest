@@ -18,6 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "core/World.hpp"
 
 #include "geometry.hpp"
+#include "assert.hpp"
 
 namespace util {
 	namespace {
@@ -65,6 +66,9 @@ namespace util {
 	}
 
 	bool Raycaster::canSee(sf::Vector3i from, sf::Vector3i to) {
+		TROTE_ASSERT(world->tiles().isValidPosition(from));
+		TROTE_ASSERT(world->tiles().isValidPosition(to));
+
 		if (from == to)
 			return true;
 

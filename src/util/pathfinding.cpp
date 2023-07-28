@@ -55,6 +55,8 @@ namespace {
 			PathUpdate update = queue.top();
 			queue.pop();
 
+			TROTE_ASSERT(world.tiles().isValidPosition(update.position));
+
 			if (update.minFullDistance >= buffer[to].distance)
 				break;
 
@@ -84,6 +86,9 @@ namespace {
 
 namespace util {
 	sf::Vector3i nextStep(const core::World& world, sf::Vector3i position, sf::Vector3i target) {
+		TROTE_ASSERT(world.tiles().isValidPosition(position));
+		TROTE_ASSERT(world.tiles().isValidPosition(target));
+
 		util::Array3D<PathNode> path = findPath(world, position, target);
 
 		sf::Vector3i current = target;

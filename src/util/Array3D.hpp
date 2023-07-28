@@ -17,6 +17,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define ARRAY_3D_HPP_
 
 #include "geometry.hpp"
+#include "assert.hpp"
 
 #include <vector>
 
@@ -56,11 +57,13 @@ namespace util {
 
 		/// @warning Check position by yourself
 		[[nodiscard]] T& operator[] (sf::Vector3i position) noexcept {
+			TROTE_ASSERT(isValidPosition(position));
 			return elements[position.z * shape_.x * shape_.y + position.x * shape_.y + position.y];
 		}
 
 		/// @warning Check position by yourself
 		[[nodiscard]] const T& operator[] (sf::Vector3i position) const noexcept {
+			TROTE_ASSERT(isValidPosition(position));
 			return elements[position.z * shape_.x * shape_.y + position.x * shape_.y + position.y];
 		}
 
@@ -76,6 +79,10 @@ namespace util {
 
 		/// Clears and creates new dungeon with given shape filled with given value
 		void assign(sf::Vector3i newShape, T value) {
+			TROTE_ASSERT(newShape.x >= 0);
+			TROTE_ASSERT(newShape.y >= 0);
+			TROTE_ASSERT(newShape.z >= 0);
+
 			elements.clear();
 			shape_ = newShape;
 			elements.resize(shape().x * shape().y * shape().z, value);

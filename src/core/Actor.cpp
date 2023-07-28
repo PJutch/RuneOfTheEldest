@@ -34,6 +34,8 @@ namespace core {
 	}
 
 	bool Actor::tryMoveTo(sf::Vector3i newPosition, bool forceSwap) {
+		TROTE_ASSERT(world().tiles().isValidPosition(newPosition));
+
 		if (newPosition == position())
 			return false;
 
@@ -67,6 +69,8 @@ namespace core {
 	}
 
 	bool Actor::canMoveToOrAttack(sf::Vector3i newPosition, bool forceSwap) const {
+		TROTE_ASSERT(world().tiles().isValidPosition(newPosition));
+
 		if (!isPassable(world().tiles()[newPosition]))
 			return false;
 
