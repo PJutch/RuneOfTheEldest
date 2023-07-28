@@ -28,12 +28,12 @@ namespace util {
     }
 
     /// Gets numpad key for number
-    inline sf::Keyboard::Key numpad(int i) noexcept {
+    inline sf::Keyboard::Key numpad(ptrdiff_t i) noexcept {
         return static_cast<sf::Keyboard::Key>(sf::Keyboard::Numpad0 + i);
     }
 
     /// Gets number for numpad key
-    inline int fromNumpad(sf::Keyboard::Key numpad_) noexcept {
+    inline ptrdiff_t fromNumpad(sf::Keyboard::Key numpad_) noexcept {
         return numpad_ - sf::Keyboard::Numpad0;
     }
 

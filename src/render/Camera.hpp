@@ -33,7 +33,8 @@ namespace render {
 
             Position() = default;
             Position(float x_, float y_, int level_) : x{ x_ }, y{ y_ }, level{ level_ } {}
-            explicit Position(sf::Vector3i position) : Position(position.x, position.y, position.z) {}
+            explicit Position(sf::Vector3i position) : Position(static_cast<float>(position.x), 
+                                                                static_cast<float>(position.y), position.z) {}
 
             [[nodiscard]] sf::Vector2f xy() const noexcept {
                 return { x, y };
@@ -57,10 +58,10 @@ namespace render {
         }
 
         /// Notifies camera about sfml event
-        virtual void handleEvent(sf::Event event) {}
+        virtual void handleEvent([[maybe_unused]] sf::Event event) {}
 
         /// Updates camera every frame
-        virtual void update(sf::Time elapsedTime) {}
+        virtual void update([[maybe_unused]] sf::Time elapsedTime) {}
     };
 }
 

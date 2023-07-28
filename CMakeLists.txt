@@ -23,7 +23,7 @@ project(TheRuneOfTheEldest VERSION 0.1
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-if(WIN32)
+if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:preprocessor")
 endif()
 
@@ -31,8 +31,11 @@ include(cmake/FetchDependencies.cmake)
 
 add_subdirectory(src)
 
+include(cmake/DefaultCompilerOptions.cmake)
+
 add_executable(TheRuneOfTheEldest src/main.cpp src/Game.cpp)
 target_link_libraries(TheRuneOfTheEldest sources dependencies)
+setDefaultCompilerOptions(TheRuneOfTheEldest)
 
 add_subdirectory(tests)
 

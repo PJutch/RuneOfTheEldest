@@ -102,7 +102,7 @@ namespace render {
         std::shared_ptr<sf::RenderWindow> window;
 
         [[nodiscard]] sf::Vector2f toScreen(sf::Vector2i worldVector) const noexcept {
-            return toScreen(worldVector.x, worldVector.y);
+            return toScreen(util::geometry_cast<float>(worldVector));
         }
 
         [[nodiscard]] sf::Vector2f toScreen(sf::Vector2f worldVector) const noexcept {
@@ -112,6 +112,10 @@ namespace render {
         [[nodiscard]] sf::Vector2f toScreen(float worldX, float worldY) const noexcept {
             auto [tileX, tileY] = assets()->tileSize();
             return { worldX * tileX, worldY * tileY };
+        }
+
+        [[nodiscard]] sf::Vector2f toScreen(int worldX, int worldY) const noexcept {
+            return toScreen(sf::Vector2i{worldX, worldY});
         }
 
         void worldScreenView() noexcept {

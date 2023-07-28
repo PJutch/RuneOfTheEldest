@@ -13,13 +13,10 @@
 # You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 # If not, see <https://www.gnu.org/licenses/>.
 
-include(../../cmake/DefaultCompilerOptions.cmake)
-
-add_library(core STATIC)
-
-target_sources(core PRIVATE Actor.cpp World.cpp ActorSpawner.cpp EnemyAi.cpp PlayerController.cpp Sound.cpp)
-
-setDefaultCompilerOptions(core)
-
-target_include_directories(core PRIVATE ..)
-target_link_libraries(core PRIVATE dependencies util render)
+macro(setDefaultCompilerOptions target)
+    if(MSVC)
+      target_compile_options(${target} PRIVATE /W4)
+    else()
+      target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic)
+    endif()
+endmacro()

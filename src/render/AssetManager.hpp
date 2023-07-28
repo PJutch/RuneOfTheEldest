@@ -104,7 +104,7 @@ namespace render {
 		}
 
 		[[nodiscard]] sf::Texture& soundIconMut(core::Sound::Type type, bool isSourceOnPlayerSide) noexcept {
-			return soundIcons[static_cast<int>(type) * 2 + static_cast<int>(isSourceOnPlayerSide)];
+			return soundIcons[static_cast<ptrdiff_t>(type) * 2 + static_cast<ptrdiff_t>(isSourceOnPlayerSide)];
 		}
 
 		void fillTexture(sf::Texture& texture,

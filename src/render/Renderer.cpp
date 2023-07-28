@@ -110,7 +110,7 @@ namespace render {
         sf::Sprite sprite;
         sprite.setTexture(texture);
 
-        sf::Uint8 spriteColor = colorMod * 255;
+        auto spriteColor = static_cast<sf::Uint8>(colorMod * 255);
         sprite.setColor({ spriteColor , spriteColor , spriteColor });
 
         sprite.setPosition(screenPosition);
@@ -121,10 +121,11 @@ namespace render {
 
     void Renderer::drawHpBar(sf::Vector2f screenPosition, sf::Vector2f origin, 
                              double hp, double maxHp, sf::Vector2f maxSize, double colorMod) {
-        float hpFraction = static_cast<float>(hp) / maxHp;
-        sf::Color color((1 - hpFraction) * colorMod * 255, hpFraction * colorMod * 255, 0);
+        double hpFraction = hp / maxHp;
+        sf::Color color{ static_cast<sf::Uint8>((1 - hpFraction) * colorMod * 255),
+                         static_cast<sf::Uint8>(hpFraction * colorMod * 255), 0 };
 
-        sf::Vector2f size{ hpFraction * maxSize.x, maxSize.y };
+        sf::Vector2f size{ static_cast<float>(hpFraction * maxSize.x), maxSize.y };
 
         sf::RectangleShape rectShape{ size };
         rectShape.setPosition(screenPosition);

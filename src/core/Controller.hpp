@@ -25,6 +25,8 @@ namespace core {
 	/// Controlls Actor actions
 	class Controller {
 	public:
+		virtual ~Controller() = default;
+
 		/// @brief Perform action in its turn
 		/// @details Called in this actor turn.
 		/// Can perform action and advance next turn or wait for user input
@@ -32,7 +34,7 @@ namespace core {
 		virtual bool act() = 0;
 
 		/// Notifies about events
-		virtual void handleEvent(sf::Event event) {}
+		virtual void handleEvent([[maybe_unused]] sf::Event event) {}
 
 		/// If true interrupts Actor processing in queue and continue Game loop when this Actor deleted
 		[[nodiscard]] bool shouldInterruptOnDelete() const noexcept {
@@ -53,7 +55,7 @@ namespace core {
 		virtual void handleSwap() {}
 
 		/// Called when Actor hears a sound
-		virtual void handleSound(Sound sound) {}
+		virtual void handleSound([[maybe_unused]] Sound sound) {}
 
 		/// Actor AiState
 		[[nodiscard]] virtual AiState aiState() const {
