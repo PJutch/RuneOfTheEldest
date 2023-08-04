@@ -16,6 +16,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef SKILL_HPP_
 #define SKILL_HPP_
 
+#include <memory>
+
 namespace core {
 	class Skill {
 	public:
@@ -30,6 +32,8 @@ namespace core {
 		virtual double turnDelayMul() const {
 			return 1;
 		}
+
+		virtual std::unique_ptr<Skill> clone() const = 0;
 	};
 }
 

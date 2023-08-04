@@ -17,7 +17,7 @@ include(../../cmake/DefaultCompilerOptions.cmake)
 
 add_library(core STATIC)
 
-target_sources(core PRIVATE Actor.cpp World.cpp ActorSpawner.cpp EnemyAi.cpp PlayerController.cpp Sound.cpp)
+target_sources(core PRIVATE Actor.cpp World.cpp ActorSpawner.cpp EnemyAi.cpp PlayerController.cpp Sound.cpp "XpManager.cpp")
 
 setDefaultCompilerOptions(core)
 

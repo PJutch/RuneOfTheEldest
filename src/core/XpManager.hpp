@@ -16,16 +16,20 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef XP_MANAGER_HPP_
 #define XP_MANAGER_HPP_
 
+#include "Skill.hpp"
+#include "RegenSkill.hpp"
+
+#include "World.hpp"
+
+#include "util/random.hpp"
+
 namespace core {
 	class XpManager {
 	public:
-		void addXp(double dxp) {
-			xp += dxp;
-			if (xp >= xpUntilNextLvl) {
-				xp -= xpUntilNextLvl;
-				xpUntilNextLvl *= 2;
-			}
-		}
+		XpManager() = default;
+		XpManager(std::shared_ptr<World> world, util::RandomEngine& randomEngine_);
+
+		void addXp(double dxp);
 
 		double xpPercentUntilNextLvl() {
 			return xp / xpUntilNextLvl;
@@ -38,6 +42,11 @@ namespace core {
 	private:
 		double xp = 0;
 		double xpUntilNextLvl = 1;
+
+		std::vector<std::unique_ptr<Skill>> skills;
+
+		std::shared_ptr<World> world;
+		util::RandomEngine* randomEngine;
 	};
 }
 

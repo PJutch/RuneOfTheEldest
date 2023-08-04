@@ -13,26 +13,24 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef REGEN_SKILL_HPP_
-#define REGEN_SKILL_HPP_
+#include "XpManager.hpp"
 
-#include "Skill.hpp"
+#include "Actor.hpp"
 
 namespace core {
-	class RegenSkill : public Skill {
-	public:
-		RegenSkill(double newRegenMul) : regenMul_{ newRegenMul } {}
+	XpManager::XpManager(std::shared_ptr<World> world_, util::RandomEngine& randomEngine_) : 
+			world{std::move(world_)}, randomEngine{&randomEngine_} {
+		skills.push_back(std::make_unique<RegenSkill>(2));
+	}
 
-		double regenMul() const final {
-			return regenMul_;
-		}
+	void XpManager::addXp(double dxp) {
+		xp += dxp;
+		if (xp >= xpUntilNextLvl) {
+			auto iskill = std::uniform_int_distribution<ptrdiff_t>{ 0, std::ssize(skills) - 1 }(*randomEngine);
+			world->player().addSkill(skills[iskill]->clone());
 
-		std::unique_ptr<Skill> clone() const override {
-			return std::make_unique<RegenSkill>(*this);
+			xp -= xpUntilNextLvl;
+			xpUntilNextLvl *= 2;
 		}
-	private:
-		double regenMul_;
-	};
+	}
 }
-
-#endif
