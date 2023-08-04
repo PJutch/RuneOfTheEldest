@@ -30,6 +30,11 @@ namespace core {
 		double xpPercentUntilNextLvl() {
 			return xp / xpUntilNextLvl;
 		}
+
+		void onGenerate() {
+			xp = 0;
+			xpUntilNextLvl = 1;
+		}
 	private:
 		double xp = 0;
 		double xpUntilNextLvl = 1;

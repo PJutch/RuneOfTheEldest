@@ -24,6 +24,7 @@ namespace core {
 	class ActorSpawner;
 	class PlayerController;
 	class Controller;
+	class XpManager;
 }
 
 #endif

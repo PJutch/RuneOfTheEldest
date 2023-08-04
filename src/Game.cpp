@@ -25,6 +25,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 Game::Game(std::shared_ptr<core::World> newWorld,
            std::unique_ptr<core::ActorSpawner> actorSpawner_,
+           std::shared_ptr<core::XpManager> xpManager_,
            std::unique_ptr<generation::DungeonGenerator> newDungeonGenerator,
            std::shared_ptr<sf::RenderWindow> window_,
            std::unique_ptr<render::Renderer> newRenderer,
@@ -34,6 +35,7 @@ Game::Game(std::shared_ptr<core::World> newWorld,
         dungeonGenerator_{std::move(newDungeonGenerator)},
         window{std::move(window_)},
         renderer_{std::move(newRenderer)},
+        xpManager{std::move(xpManager_)},
         generationLogger{ loggerFactory.create("generation") } {}
 
 void Game::run() {
@@ -95,4 +97,5 @@ void Game::generate() {
     generationLogger->info("Finished");
 
     renderer().onGenerate();
+    xpManager->onGenerate();
 }
