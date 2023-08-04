@@ -18,6 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "World.hpp"
 #include "Controller.hpp"
+#include "Skill.hpp"
 #include "XpManager.hpp"
 
 #include "util/geometry.hpp"
@@ -150,9 +151,14 @@ namespace core {
 		[[nodiscard]] bool canMoveToOrAttack(sf::Vector2i offset, bool forceSwap) const {
 			return canMoveToOrAttack(position() + util::make3D(offset, 0), forceSwap);
 		}
+
+		void addSkill(std::unique_ptr<Skill> skill) {
+			skills.push_back(std::move(skill));
+		}
 	private:
 		Stats stats;
 		std::unique_ptr<Controller> controller_;
+		std::vector<std::unique_ptr<Skill>> skills;
 
 		double nextTurn_ = 0;
 		sf::Vector3i position_;
@@ -161,6 +167,10 @@ namespace core {
 		std::shared_ptr<World> world_;
 		std::shared_ptr<XpManager> xpManager;
 		util::RandomEngine* randomEngine_;
+
+		double regen();
+		double damage();
+		double turnDelay();
 	};
 }
 

@@ -30,9 +30,9 @@ namespace core {
 		Actor{ stats_, {0, 0, 0}, std::move(newWorld), std::move(xpManager), newRandomEngine } {}
 
 	void Actor::endTurn() noexcept {
-		nextTurn_ += stats.turnDelay;
+		nextTurn_ += turnDelay();
 
-		hp_ += stats.regen * stats.turnDelay;
+		hp_ += regen() * turnDelay();
 		hp_ = std::min(hp(), maxHp());
 	}
 
@@ -53,7 +53,7 @@ namespace core {
 		}
 
 		if (other->controller().isOnPlayerSide() != controller().isOnPlayerSide()) {
-			other->beDamaged(stats.damage);
+			other->beDamaged(damage());
 			world().makeSound({ Sound::Type::ATTACK, controller().isOnPlayerSide(), position()});
 			return true;
 		}
@@ -99,5 +99,26 @@ namespace core {
 			if (tryMove(util::turnDirection45Right(direction), forceSwap)) return;
 			if (tryMove(util::turnDirection45Left (direction), forceSwap)) return;
 		}
+	}
+
+	double Actor::regen() {
+		double res = stats.regen;
+		for (const auto& skill : skills)
+			res *= skill->regenMul();
+		return res;
+	}
+
+	double Actor::damage() {
+		double res = stats.damage;
+		for (const auto& skill : skills)
+			res *= skill->damageMul();
+		return res;
+	}
+
+	double Actor::turnDelay() {
+		double res = stats.turnDelay;
+		for (const auto& skill : skills)
+			res *= skill->turnDelayMul();
+		return res;
 	}
 }
