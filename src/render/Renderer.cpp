@@ -58,7 +58,7 @@ namespace render {
         case PlayerMap::TileState::MEMORIZED: drawSprite(screenPos, { 0, 0 }, texture, 0.5); break;
         case PlayerMap::TileState::UNSEEN: break;
         }
-    }
+    } 
 
     void Renderer::drawAreas(int z) {
         for (sf::IntRect area : world->areas(z))

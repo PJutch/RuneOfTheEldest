@@ -39,8 +39,10 @@ namespace {
 		bool hadSwapped_ = false;
 	};
 
+	auto testXpManager = std::make_shared<core::XpManager>();
+
 	core::Actor makeTestActor(double maxHp, double regen, double damage, double turnDelay) {
-		return core::Actor{ core::Actor::Stats{ maxHp, regen, damage, turnDelay, nullptr }, nullptr, nullptr };
+		return core::Actor{ core::Actor::Stats{ maxHp, regen, damage, turnDelay, 0, nullptr }, nullptr, testXpManager, nullptr };
 	}
 
 	std::shared_ptr<core::Actor> makeSharedTestActor(double maxHp, double regen, double damage, double turnDelay) {
@@ -48,7 +50,7 @@ namespace {
 	}
 
 	std::shared_ptr<core::Actor> makeSharedTestActor(sf::Vector3i pos, std::shared_ptr<core::World> world) {
-		return std::make_shared<core::Actor>(core::Actor::Stats{ .maxHp = 1 }, pos, std::move(world), nullptr );
+		return std::make_shared<core::Actor>(core::Actor::Stats{ .maxHp = 1 }, pos, std::move(world), testXpManager, nullptr );
 	}
 }
 

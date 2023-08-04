@@ -75,16 +75,18 @@ namespace {
 		core::Sound lastSound_{};
 	};
 
+	auto testXpManager = std::make_shared<core::XpManager>();
+
 	std::shared_ptr<core::Actor> makeTestActor() {
-		return std::make_shared<core::Actor>(core::Actor::Stats{ .maxHp = 1 }, nullptr, nullptr);
+		return std::make_shared<core::Actor>(core::Actor::Stats{ .maxHp = 1 }, nullptr, testXpManager, nullptr);
 	}
 
 	std::shared_ptr<core::Actor> makeTestActor(sf::Vector3i position) {
-		return std::make_shared<core::Actor>(core::Actor::Stats{ .maxHp = 1 }, position, nullptr, nullptr);
+		return std::make_shared<core::Actor>(core::Actor::Stats{ .maxHp = 1 }, position, nullptr, testXpManager, nullptr);
 	}
 
 	std::shared_ptr<core::Actor> makeTestActor(double turnDelay) {
-		return std::make_shared<core::Actor>(core::Actor::Stats{ .maxHp = 1, .turnDelay = turnDelay }, nullptr, nullptr);
+		return std::make_shared<core::Actor>(core::Actor::Stats{ .maxHp = 1, .turnDelay = turnDelay }, nullptr, testXpManager, nullptr);
 	}
 }
 

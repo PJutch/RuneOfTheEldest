@@ -67,10 +67,11 @@ namespace core {
 		}
 	}
 
-	ActorSpawner::ActorSpawner(std::shared_ptr<World> world_, std::shared_ptr<render::PlayerMap> playerMap_,
+	ActorSpawner::ActorSpawner(std::shared_ptr<World> world_, std::shared_ptr<XpManager> xpManager_, 
+		                       std::shared_ptr<render::PlayerMap> playerMap_,
 							   std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine_,
 							   std::shared_ptr<util::Raycaster> raycaster_) :
-			world{ std::move(world_) }, playerMap{ std::move(playerMap_) },
+		world{ std::move(world_) }, xpManager{ std::move(xpManager_) }, playerMap {std::move(playerMap_)},
 			raycaster{ std::move(raycaster_) }, randomEngine{ &randomEngine_ } {
 		util::forEachFile("resources/Actors/", [this, &assets](std::ifstream& file) {
 			auto params = util::parseMapping(file);
@@ -87,6 +88,9 @@ namespace core {
 			});
 			processParam(params, "turnDelay", [this](std::string_view value) {
 				actorData.back().stats.turnDelay = util::parseReal(value);
+			});
+			processParam(params, "xp", [this](std::string_view value) {
+				actorData.back().stats.xp = util::parseReal(value);
 			});
 
 			processOptionalParam(params, "controller", [this](std::string_view value) {
@@ -140,7 +144,7 @@ namespace core {
 					int count = std::uniform_int_distribution{ data.minOnLevel, data.maxOnLevel }(*randomEngine);
 					for (int i = 0; i < count; ++i) {
 						sf::Vector3i position = world->randomPositionAt(level, &World::isFree);
-						auto enemy = std::make_shared<Actor>(data.stats, position, world, randomEngine);
+						auto enemy = std::make_shared<Actor>(data.stats, position, world, xpManager, randomEngine);
 						enemy->controller(createController(enemy, data.controller));
 						world->addActor(std::move(enemy));
 					}

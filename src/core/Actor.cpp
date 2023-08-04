@@ -19,12 +19,15 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace core {
 	Actor::Actor(Stats stats_, sf::Vector3i newPosition,
-		                   std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine) :
+		         std::shared_ptr<World> newWorld, std::shared_ptr<XpManager> xpManager_,
+		         util::RandomEngine* newRandomEngine) :
 		stats{stats_}, position_{ newPosition }, hp_{ stats.maxHp }, 
-		world_{ std::move(newWorld) }, randomEngine_{ newRandomEngine } {}
+		world_{ std::move(newWorld) }, xpManager{ std::move(xpManager_) }, randomEngine_ {newRandomEngine} {}
 
-	Actor::Actor(Stats stats_, std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine) :
-		Actor{ stats_, {0, 0, 0}, std::move(newWorld), newRandomEngine } {}
+	Actor::Actor(Stats stats_, 
+		         std::shared_ptr<World> newWorld, std::shared_ptr<XpManager> xpManager, 
+		         util::RandomEngine* newRandomEngine) :
+		Actor{ stats_, {0, 0, 0}, std::move(newWorld), std::move(xpManager), newRandomEngine } {}
 
 	void Actor::endTurn() noexcept {
 		nextTurn_ += stats.turnDelay;

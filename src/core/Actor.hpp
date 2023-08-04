@@ -18,6 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "World.hpp"
 #include "Controller.hpp"
+#include "XpManager.hpp"
 
 #include "util/geometry.hpp"
 #include "util/random.hpp"
@@ -34,12 +35,17 @@ namespace core {
 			double regen;
 			double damage;
 			double turnDelay;
+			double xp;
 			const sf::Texture* texture;
 		};
 
 		Actor() = default;
-		Actor(Stats stats, sf::Vector3i newPosition, std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine);
-		Actor(Stats stats, std::shared_ptr<World> newWorld, util::RandomEngine* newRandomEngine);
+		Actor(Stats stats, sf::Vector3i position, 
+			  std::shared_ptr<World> world, std::shared_ptr<XpManager> xpManager, 
+			  util::RandomEngine* randomEngine);
+		Actor(Stats stats, 
+			  std::shared_ptr<World> world, std::shared_ptr<XpManager> xpManager, 
+			  util::RandomEngine* randomEngine);
 
 		void controller(std::unique_ptr<Controller> newController) {
 			controller_ = std::move(newController);
@@ -70,7 +76,11 @@ namespace core {
 		}
 
 		void beDamaged(double damage) {
+			if (!isAlive()) 
+				return;
 			hp_ -= damage;
+			if (!isAlive())
+				xpManager->addXp(stats.xp);
 		}
 
 		/// Gets Actor HP
@@ -149,6 +159,7 @@ namespace core {
 		double hp_;
 
 		std::shared_ptr<World> world_;
+		std::shared_ptr<XpManager> xpManager;
 		util::RandomEngine* randomEngine_;
 	};
 }
