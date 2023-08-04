@@ -29,10 +29,12 @@ namespace render {
                        std::shared_ptr<PlayerMap> newPlayerMap,
                        std::shared_ptr<sf::RenderWindow> window_,
                        std::shared_ptr<core::World> world_,
+                       std::shared_ptr<core::XpManager> xpManager_,
                        std::shared_ptr<util::Raycaster> raycaster_,
                        std::shared_ptr<AssetManager> assets_) :
         camera{ std::move(camera) }, assets_{ std::move(assets_) }, playerMap_{ std::move(newPlayerMap) },
-        world{ std::move(world_) }, raycaster{ std::move(raycaster_) }, window{std::move(window_)} {}
+        world{ std::move(world_) }, xpManager{ std::move(xpManager_) },
+        raycaster{ std::move(raycaster_) }, window{std::move(window_)} {}
 
     void Renderer::drawWorld() {
         for (int x = 0; x < world->tiles().shape().x; ++x)
@@ -141,7 +143,10 @@ namespace render {
         window->clear(sf::Color::Black);
 
         worldScreenView();
-        drawWorld();
+        drawWorld(); 
+
+        hudView();
+        drawHud();
 
         window->display();
     }
@@ -178,5 +183,18 @@ namespace render {
     void Renderer::update(sf::Time elapsedTime) {
         camera->update(elapsedTime);
         playerMap_->update();
+    }
+
+    void Renderer::drawXpBar() {
+        double xpPercent = xpManager->xpPercentUntilNextLvl();
+
+        sf::Vector2f size{ static_cast<float>(xpPercent * window->getSize().x), static_cast<float>(window->getSize().y / 128)};
+
+        sf::RectangleShape rectShape{ size };
+        rectShape.setPosition(0, window->getSize().y - size.y);
+
+        rectShape.setFillColor({ 255, 128, 0 });
+
+        window->draw(rectShape);
     }
 }

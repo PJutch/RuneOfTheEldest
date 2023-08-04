@@ -48,6 +48,7 @@ namespace render {
             std::shared_ptr<PlayerMap> playerMap,
             std::shared_ptr<sf::RenderWindow> window,
             std::shared_ptr<core::World> world,
+            std::shared_ptr<core::XpManager> xpManager,
             std::shared_ptr<util::Raycaster> raycaster,
             std::shared_ptr<AssetManager> assets);
 
@@ -97,6 +98,8 @@ namespace render {
         std::shared_ptr<PlayerMap> playerMap_;
 
         std::shared_ptr<core::World> world;
+        std::shared_ptr<core::XpManager> xpManager;
+
         std::shared_ptr<util::Raycaster> raycaster;
 
         std::shared_ptr<sf::RenderWindow> window;
@@ -138,6 +141,16 @@ namespace render {
         void drawInWorldRect(sf::IntRect rect, sf::Color color) {
             drawInWorldRect(rect, color, sf::Color::Transparent, 0.0f);
         }
+
+        void hudView() {
+            window->setView(window->getDefaultView());
+        }
+
+        void drawHud() {
+            drawXpBar();
+        }
+
+        void drawXpBar();
 
         void drawText(sf::Vector2f position, const std::string& text, sf::Color color, int characterSize);
     };

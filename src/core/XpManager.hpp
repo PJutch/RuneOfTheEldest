@@ -21,9 +21,18 @@ namespace core {
 	public:
 		void addXp(double dxp) {
 			xp += dxp;
+			if (xp >= xpUntilNextLvl) {
+				xp -= xpUntilNextLvl;
+				xpUntilNextLvl *= 2;
+			}
+		}
+
+		double xpPercentUntilNextLvl() {
+			return xp / xpUntilNextLvl;
 		}
 	private:
 		double xp = 0;
+		double xpUntilNextLvl = 1;
 	};
 }
 
