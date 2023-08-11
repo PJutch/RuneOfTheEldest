@@ -44,12 +44,12 @@ namespace core {
 		util::RandomEngine* randomEngine;
 
 		struct ActorData {
-			Actor::Stats stats;
+			Actor::Stats stats{};
 
 			std::string controller = "enemy";
 
-			int minOnLevel;
-			int maxOnLevel;
+			int minOnLevel = 0;
+			int maxOnLevel = 0;
 
 			int minLevel = 0;
 			std::optional<int> maxLevel;

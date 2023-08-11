@@ -27,8 +27,8 @@ namespace core {
 			return 0.0;
 
 		auto [dx, dy, dz] = position - listenerPosition;
-		double distance = dx * dx + dy * dy;
+		int distance = dx * dx + dy * dy;
 
-		return basicVolumes[static_cast<int>(type)] / distance;
+		return basicVolumes[static_cast<ptrdiff_t>(type)] / distance;
 	}
 }

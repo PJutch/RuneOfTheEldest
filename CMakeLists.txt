@@ -15,7 +15,7 @@
 
 cmake_minimum_required(VERSION 3.20)
 
-cmake_policy(SET CMP0048 NEW)
+cmake_policy(SET CMP0048 NEW) 
 project(TheRuneOfTheEldest VERSION 0.1
         DESCRIPTION "Roguelike about the mage seeking for ancient knowledges"
         LANGUAGES CXX)

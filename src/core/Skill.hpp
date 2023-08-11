@@ -21,6 +21,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 namespace core {
 	class Skill {
 	public:
+		virtual ~Skill() = default;
+
 		virtual double regenMul() const {
 			return 1;
 		}

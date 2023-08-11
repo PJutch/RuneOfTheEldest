@@ -34,7 +34,7 @@ namespace util {
 
     /// Gets number for numpad key
     inline ptrdiff_t fromNumpad(sf::Keyboard::Key numpad_) noexcept {
-        return numpad_ - sf::Keyboard::Numpad0;
+        return static_cast<ptrdiff_t>(numpad_) - static_cast<ptrdiff_t>(sf::Keyboard::Numpad0);
     }
 
     ///  Chacks if key is numpad key

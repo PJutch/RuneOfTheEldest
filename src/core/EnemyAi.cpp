@@ -77,10 +77,10 @@ namespace core {
 	sf::Vector3i EnemyAi::tryFollowStairs(sf::Vector3i position) noexcept {
 		auto enemy = enemy_.lock();
 
-		if (auto destination = enemy->world().upStairs(position))
-			return *destination;
-		else if (auto destination = enemy->world().downStairs(position))
-			return *destination;
+		if (auto upDestination = enemy->world().upStairs(position))
+			return *upDestination;
+		else if (auto downDestination = enemy->world().downStairs(position))
+			return *downDestination;
 		return position;
 	}
 

@@ -15,7 +15,7 @@
 
 macro(setDefaultCompilerOptions target)
     if(MSVC)
-      target_compile_options(${target} PRIVATE /W4)
+      target_compile_options(${target} PRIVATE /W4 /external:anglebrackets /external:W0 /external:templates-)
     else()
       target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic)
     endif()

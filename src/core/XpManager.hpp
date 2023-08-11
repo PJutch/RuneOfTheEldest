@@ -46,7 +46,7 @@ namespace core {
 		std::vector<std::unique_ptr<Skill>> skills;
 
 		std::shared_ptr<World> world;
-		util::RandomEngine* randomEngine;
+		util::RandomEngine* randomEngine = nullptr;
 	};
 }
 

@@ -87,7 +87,9 @@ namespace util {
 
 			elements.clear();
 			shape_ = newShape;
-			elements.resize(shape().x * shape().y * shape().z, value);
+			elements.resize(static_cast<ptrdiff_t>(shape().x)
+				          * static_cast<ptrdiff_t>(shape().y)
+				          * static_cast<ptrdiff_t>(shape().z), value);
 		}
 	private:
 		std::vector<T> elements;
