@@ -18,19 +18,22 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Actor.hpp"
 
 namespace core {
-	XpManager::XpManager(std::shared_ptr<World> world_, util::RandomEngine& randomEngine_) : 
+	XpManager::XpManager(std::shared_ptr<World> world_, std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine_) :
 			world{std::move(world_)}, randomEngine{&randomEngine_} {
-		skills.push_back(std::make_unique<RegenSkill>(2));
+		skills.push_back(std::make_unique<RegenSkill>(2, assets->texture("resources/textures/RegenSkill.png")));
 	}
 
-	void XpManager::addXp(double dxp) {
-		xp += dxp;
-		if (xp >= xpUntilNextLvl) {
-			auto iskill = std::uniform_int_distribution<ptrdiff_t>{ 0, std::ssize(skills) - 1 }(*randomEngine);
-			world->player().addSkill(skills[iskill]->clone());
-
-			xp -= xpUntilNextLvl;
-			xpUntilNextLvl *= 2;
+	void XpManager::generateAvailableSkills() {
+		availableSkills_.resize(3);
+		for (const Skill*& skill : availableSkills_) {
+			auto iskill = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(skills) - 1}(*randomEngine);
+			skill = skills[iskill].get();
 		}
+	}
+
+	void XpManager::levelUp(const Skill* skill) {
+		world->player().addSkill(skill->clone());
+		xp -= xpUntilNextLvl;
+		xpUntilNextLvl *= 2;
 	}
 }

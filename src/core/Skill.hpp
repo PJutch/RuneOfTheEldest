@@ -16,11 +16,17 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef SKILL_HPP_
 #define SKILL_HPP_
 
+namespace sf {
+	class Texture;
+}
+
+#include <string>
 #include <memory>
 
 namespace core {
 	class Skill {
 	public:
+		Skill(const sf::Texture& newIcon, std::string_view newName) : icon_{&newIcon}, name_{newName} {}
 		virtual ~Skill() = default;
 
 		virtual double regenMul() const {
@@ -36,6 +42,17 @@ namespace core {
 		}
 
 		virtual std::unique_ptr<Skill> clone() const = 0;
+
+		[[nodiscard]] const sf::Texture& icon() const {
+			return *icon_;
+		}
+
+		[[nodiscard]] const std::string& name() const {
+			return name_;
+		}
+	private:
+		const sf::Texture* icon_;
+		std::string name_;
 	};
 }
 

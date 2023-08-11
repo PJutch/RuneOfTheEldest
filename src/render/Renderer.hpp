@@ -126,6 +126,10 @@ namespace render {
             window->setView(createFullscreenView(cameraPos, 512, window->getSize()));
         }
 
+        void hudView() noexcept {
+            window->setView(createFullscreenView(1024.f, window->getSize()));
+        }
+
         void drawWorld();
         void drawAreas(int level);
         void drawTile(sf::Vector3i position);
@@ -133,26 +137,36 @@ namespace render {
         void draw(core::Sound sound);
 
         void drawHpBar(sf::Vector2f screenPosition, sf::Vector2f origin, double hp, double maxHp, sf::Vector2f maxSize, double colorMod = 1.0);
-        void drawSprite(sf::Vector2f screenPosition, sf::Vector2f origin, const sf::Texture& texture, double colorMod = 1.0);
+        void drawSprite(sf::Vector2f screenPosition, sf::Vector2f origin, const sf::Texture& texture, double colorMod = 1.0, float scale = 1.0);
 
         void drawInWorldRect(sf::IntRect rect,
-            sf::Color fillColor, sf::Color outlineColor, float outlineThickness);
+                sf::Color fillColor, sf::Color outlineColor, float outlineThickness) {
+            drawRect({toScreen(rect.top, rect.left), toScreen(rect.width, rect.height)},
+                     fillColor, outlineColor, outlineThickness);
+        }
 
         void drawInWorldRect(sf::IntRect rect, sf::Color color) {
             drawInWorldRect(rect, color, sf::Color::Transparent, 0.0f);
         }
 
-        void hudView() {
-            window->setView(window->getDefaultView());
+        void drawRect(sf::FloatRect rect,
+            sf::Color fillColor, sf::Color outlineColor, float outlineThickness);
+
+        void drawRect(sf::FloatRect rect, sf::Color color) {
+            drawRect(rect, color, sf::Color::Transparent, 0.0f);
         }
 
         void drawHud() {
             drawXpBar();
+            if (xpManager->canLevelUp())
+                drawLevelupScreen();
         }
 
         void drawXpBar();
 
         void drawText(sf::Vector2f position, const std::string& text, sf::Color color, int characterSize);
+
+        void drawLevelupScreen();
     };
 }
 

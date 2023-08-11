@@ -21,15 +21,31 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "World.hpp"
 
+#include "render/AssetManager.hpp"
+
 #include "util/random.hpp"
 
 namespace core {
 	class XpManager {
 	public:
 		XpManager() = default;
-		XpManager(std::shared_ptr<World> world, util::RandomEngine& randomEngine_);
+		XpManager(std::shared_ptr<World> world, std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine_);
 
-		void addXp(double dxp);
+		void addXp(double dxp) {
+			xp += dxp;
+		}
+
+		bool canLevelUp() {
+			return xp >= xpUntilNextLvl;
+		}
+
+		std::span<Skill const* const> availableSkills() {
+			if (availableSkills_.empty())
+				generateAvailableSkills();
+			return availableSkills_;
+		}
+
+		void levelUp(const Skill* skill);
 
 		double xpPercentUntilNextLvl() {
 			return xp / xpUntilNextLvl;
@@ -44,9 +60,12 @@ namespace core {
 		double xpUntilNextLvl = 1;
 
 		std::vector<std::unique_ptr<Skill>> skills;
+		std::vector<const Skill*> availableSkills_;
 
 		std::shared_ptr<World> world;
 		util::RandomEngine* randomEngine = nullptr;
+
+		void generateAvailableSkills();
 	};
 }
 

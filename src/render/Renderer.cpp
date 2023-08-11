@@ -26,22 +26,22 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace render {
     Renderer::Renderer(std::shared_ptr<Camera> camera,
-                       std::shared_ptr<PlayerMap> newPlayerMap,
-                       std::shared_ptr<sf::RenderWindow> window_,
-                       std::shared_ptr<core::World> world_,
-                       std::shared_ptr<core::XpManager> xpManager_,
-                       std::shared_ptr<util::Raycaster> raycaster_,
-                       std::shared_ptr<AssetManager> assets_) :
-        camera{ std::move(camera) }, assets_{ std::move(assets_) }, playerMap_{ std::move(newPlayerMap) },
-        world{ std::move(world_) }, xpManager{ std::move(xpManager_) },
-        raycaster{ std::move(raycaster_) }, window{std::move(window_)} {}
+        std::shared_ptr<PlayerMap> newPlayerMap,
+        std::shared_ptr<sf::RenderWindow> window_,
+        std::shared_ptr<core::World> world_,
+        std::shared_ptr<core::XpManager> xpManager_,
+        std::shared_ptr<util::Raycaster> raycaster_,
+        std::shared_ptr<AssetManager> assets_) :
+        camera{std::move(camera)}, assets_{std::move(assets_)}, playerMap_{std::move(newPlayerMap)},
+        world{std::move(world_)}, xpManager{std::move(xpManager_)},
+        raycaster{std::move(raycaster_)}, window{std::move(window_)} {}
 
     void Renderer::drawWorld() {
         for (int x = 0; x < world->tiles().shape().x; ++x)
             for (int y = 0; y < world->tiles().shape().y; ++y)
-                drawTile({ x, y, camera->position().level });
+                drawTile({x, y, camera->position().level});
 
-        if (renderAreas_) 
+        if (renderAreas_)
             drawAreas(camera->position().level);
 
         for (const auto& actor : playerMap_->seenActors())
@@ -56,11 +56,11 @@ namespace render {
         sf::Vector2f screenPos = toScreen(util::getXY(position));
 
         switch (playerMap_->tileState(position)) {
-        case PlayerMap::TileState::VISIBLE: drawSprite(screenPos, { 0, 0 }, texture); break;
-        case PlayerMap::TileState::MEMORIZED: drawSprite(screenPos, { 0, 0 }, texture, 0.5); break;
+        case PlayerMap::TileState::VISIBLE: drawSprite(screenPos, {0, 0}, texture); break;
+        case PlayerMap::TileState::MEMORIZED: drawSprite(screenPos, {0, 0}, texture, 0.5); break;
         case PlayerMap::TileState::UNSEEN: break;
         }
-    } 
+    }
 
     void Renderer::drawAreas(int z) {
         for (sf::IntRect area : world->areas(z))
@@ -77,15 +77,15 @@ namespace render {
         sf::Vector2f spriteSize = util::geometry_cast<float>(actor.texture->getSize());
         sf::Vector2f tileSize = util::geometry_cast<float>(assets()->tileSize());
         sf::Vector2f aiStateIconSize = util::geometry_cast<float>(assets()->aiStateIcon(actor.aiState).getSize());
-        sf::Vector2f maxHpBarSize{ spriteSize.x, 2.f };
+        sf::Vector2f maxHpBarSize{spriteSize.x, 2.f};
 
         sf::Vector2f topLeft = toScreen(util::getXY(actor.position)) + util::bottomMiddle(tileSize) - util::bottomMiddle(spriteSize);
 
-        drawSprite(topLeft, { 0, 0 }, *actor.texture, colorMod);
-        drawHpBar(topLeft + util::bottomLeft(spriteSize), util::bottomLeft(maxHpBarSize), 
-                  actor.hp, actor.maxHp, maxHpBarSize, colorMod);
-        drawSprite(topLeft + util::topRight(spriteSize), util::topRight(aiStateIconSize), 
-                   assets()->aiStateIcon(actor.aiState), colorMod);
+        drawSprite(topLeft, {0, 0}, *actor.texture, colorMod);
+        drawHpBar(topLeft + util::bottomLeft(spriteSize), util::bottomLeft(maxHpBarSize),
+            actor.hp, actor.maxHp, maxHpBarSize, colorMod);
+        drawSprite(topLeft + util::topRight(spriteSize), util::topRight(aiStateIconSize),
+            assets()->aiStateIcon(actor.aiState), colorMod);
     }
 
     void Renderer::draw(core::Sound sound) {
@@ -95,12 +95,12 @@ namespace render {
         if (sound.volume(world->player().position()) < 0.01)
             return;
 
-        drawSprite(toScreen(util::getXY(sound.position)), { 0, 0 }, assets()->soundIcon(sound.type, sound.isSourceOnPlayerSide));
+        drawSprite(toScreen(util::getXY(sound.position)), {0, 0}, assets()->soundIcon(sound.type, sound.isSourceOnPlayerSide));
     }
 
-    void Renderer::drawInWorldRect(sf::IntRect rect, sf::Color fillColor, sf::Color outlineColor, float outlineThickness) {
-        sf::RectangleShape rectShape{ toScreen(rect.width, rect.height) };
-        rectShape.setPosition(toScreen(rect.left, rect.top));
+    void Renderer::drawRect(sf::FloatRect rect, sf::Color fillColor, sf::Color outlineColor, float outlineThickness) {
+        sf::RectangleShape rectShape{{rect.width, rect.height}};
+        rectShape.setPosition(rect.left, rect.top);
 
         rectShape.setFillColor(fillColor);
         rectShape.setOutlineColor(outlineColor);
@@ -109,12 +109,14 @@ namespace render {
         window->draw(rectShape);
     }
 
-    void Renderer::drawSprite(sf::Vector2f screenPosition, sf::Vector2f origin, const sf::Texture& texture, double colorMod) {
+    void Renderer::drawSprite(sf::Vector2f screenPosition, sf::Vector2f origin, const sf::Texture& texture, double colorMod, float scale) {
         sf::Sprite sprite;
         sprite.setTexture(texture);
 
         auto spriteColor = static_cast<sf::Uint8>(colorMod * 255);
-        sprite.setColor({ spriteColor , spriteColor , spriteColor });
+        sprite.setColor({spriteColor , spriteColor , spriteColor});
+
+        sprite.setScale(scale, scale);
 
         sprite.setPosition(screenPosition);
         sprite.setOrigin(origin);
@@ -122,15 +124,15 @@ namespace render {
         window->draw(sprite);
     }
 
-    void Renderer::drawHpBar(sf::Vector2f screenPosition, sf::Vector2f origin, 
-                             double hp, double maxHp, sf::Vector2f maxSize, double colorMod) {
+    void Renderer::drawHpBar(sf::Vector2f screenPosition, sf::Vector2f origin,
+        double hp, double maxHp, sf::Vector2f maxSize, double colorMod) {
         double hpFraction = hp / maxHp;
-        sf::Color color{ static_cast<sf::Uint8>((1 - hpFraction) * colorMod * 255),
-                         static_cast<sf::Uint8>(hpFraction * colorMod * 255), 0 };
+        sf::Color color{static_cast<sf::Uint8>((1 - hpFraction) * colorMod * 255),
+                         static_cast<sf::Uint8>(hpFraction * colorMod * 255), 0};
 
-        sf::Vector2f size{ static_cast<float>(hpFraction * maxSize.x), maxSize.y };
+        sf::Vector2f size{static_cast<float>(hpFraction * maxSize.x), maxSize.y};
 
-        sf::RectangleShape rectShape{ size };
+        sf::RectangleShape rectShape{size};
         rectShape.setPosition(screenPosition);
         rectShape.setOrigin(origin);
 
@@ -143,7 +145,7 @@ namespace render {
         window->clear(sf::Color::Black);
 
         worldScreenView();
-        drawWorld(); 
+        drawWorld();
 
         hudView();
         drawHud();
@@ -153,7 +155,7 @@ namespace render {
 
     void Renderer::drawDeathScreen() {
         window->clear(sf::Color::Black);
-        window->setView(createFullscreenView(1024.f, window->getSize()));
+        hudView();
 
         auto [screenX, screenY] = window->getView().getSize();
 
@@ -188,13 +190,37 @@ namespace render {
     void Renderer::drawXpBar() {
         double xpPercent = xpManager->xpPercentUntilNextLvl();
 
-        sf::Vector2f size{ static_cast<float>(xpPercent * window->getSize().x), static_cast<float>(window->getSize().y / 128)};
+        sf::Vector2f size{static_cast<float>(xpPercent * window->getSize().x), static_cast<float>(window->getSize().y / 128)};
 
-        sf::RectangleShape rectShape{ size };
+        sf::RectangleShape rectShape{size};
         rectShape.setPosition(0, window->getSize().y - size.y);
 
-        rectShape.setFillColor({ 255, 128, 0 });
+        rectShape.setFillColor({255, 128, 0});
 
         window->draw(rectShape);
+    }
+
+    void Renderer::drawLevelupScreen() {
+        hudView();
+
+        auto skills = xpManager->availableSkills();
+
+        sf::Vector2f screenSize = window->getView().getSize();
+
+        float skillWidth = screenSize.x / 7;
+        float leftBoundary = (screenSize.x - skillWidth * skills.size()) / 2;
+        float skillXCenter = leftBoundary + skillWidth / 2;
+        for (const core::Skill* skill : skills) {
+            drawRect({skillXCenter - skillWidth / 2, 300, skillWidth, 250},
+                sf::Color{32, 32, 32}, sf::Color{128, 128, 128}, 4.f);
+
+            const sf::Texture& icon = skill->icon();
+            drawSprite({skillXCenter, 3 * screenSize.y / 8}, util::geometry_cast<float>(icon.getSize()) / 2.f,
+                       icon, 1.0, 8.0);
+
+            drawText({skillXCenter, screenSize.y / 2}, skill->name(), sf::Color::White, 30);
+
+            skillXCenter += skillWidth;
+        }
     }
 }

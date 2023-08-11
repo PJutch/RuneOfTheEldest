@@ -47,15 +47,19 @@ void Game::run() {
         while (window->pollEvent(event))
             handleEvent(event);
 
-        if (world->player().isAlive()) {
+        if (!world->player().isAlive()) {
+            renderer().drawDeathScreen();
+            continue;
+        }
+
+        if (!xpManager->canLevelUp()) {
             world->update();
 
             sf::Time elapsedTime = clock.restart();
             renderer().update(elapsedTime);
+        }
 
-            renderer().draw();
-        } else
-            renderer().drawDeathScreen();
+        renderer().draw();   
     }
 }
 
