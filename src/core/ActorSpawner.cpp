@@ -30,13 +30,6 @@ namespace core {
 				RuntimeError{ message, std::move(currentStacktrace) } {}
 		};
 
-		class NoValueError : public LoadError {
-		public:
-			NoValueError(std::string_view name, util::Stacktrace currentStacktrace = {}) noexcept :
-				LoadError{ std::format("Value for required param \"{}\" is not given", name),
-						   std::move(currentStacktrace) } {}
-		};
-
 		std::string unknownParamsMessage(std::unordered_map<std::string, std::string> params) {
 			std::string message = "Unknown params: ";
 			for (auto [name, value] : params)
@@ -50,21 +43,6 @@ namespace core {
 				util::Stacktrace currentStacktrace = {}) noexcept :
 				LoadError{ unknownParamsMessage(params), std::move(currentStacktrace) } {}
 		};
-
-		template <typename Callback>
-		void processParam(std::unordered_map<std::string, std::string>& params, const std::string& name, Callback&& callback) {
-			if (auto value = util::getAndErase(params, name))
-				callback(*value);
-			else
-				throw NoValueError{ name };
-		}
-
-		template <typename Callback>
-		void processOptionalParam(std::unordered_map<std::string, std::string>& params,
-			const std::string& name, Callback&& callback) {
-			if (auto value = util::getAndErase(params, name))
-				callback(*value);
-		}
 	}
 
 	ActorSpawner::ActorSpawner(std::shared_ptr<World> world_, std::shared_ptr<XpManager> xpManager_, 
@@ -77,43 +55,23 @@ namespace core {
 			auto params = util::parseMapping(file);
 
 			actorData.emplace_back();
-			processParam(params, "hp", [this](std::string_view value) {
-				actorData.back().stats.maxHp = util::parseReal(value);
-			});
-			processParam(params, "regen", [this](std::string_view value) {
-				actorData.back().stats.regen = util::parseReal(value);
-			});
-			processParam(params, "damage", [this](std::string_view value) {
-				actorData.back().stats.damage = util::parseReal(value);
-			});
-			processParam(params, "turnDelay", [this](std::string_view value) {
-				actorData.back().stats.turnDelay = util::parseReal(value);
-			});
-			processParam(params, "xp", [this](std::string_view value) {
-				actorData.back().stats.xp = util::parseReal(value);
-			});
+			actorData.back().stats.maxHp = util::parseReal(util::getAndEraseRequired(params, "hp"));
+			actorData.back().stats.regen = util::parseReal(util::getAndEraseRequired(params, "regen"));
+			actorData.back().stats.damage = util::parseReal(util::getAndEraseRequired(params, "damage"));
+			actorData.back().stats.turnDelay = util::parseReal(util::getAndEraseRequired(params, "turnDelay"));
+			actorData.back().stats.xp = util::parseReal(util::getAndEraseRequired(params, "xp"));
 
-			processOptionalParam(params, "controller", [this](std::string_view value) {
-				actorData.back().controller = value;
-			});
+			if (auto v = util::getAndErase(params, "controller"))
+				actorData.back().controller = *v;
 
-			processParam(params, "texture", [this, &assets](std::string_view value) {
-				actorData.back().stats.texture = &assets->texture(value);
-			});
+			actorData.back().stats.texture = &assets->texture(util::getAndEraseRequired(params, "texture"));
+			actorData.back().minOnLevel = util::parseUint(util::getAndEraseRequired(params, "minOnLevel"));
+			actorData.back().maxOnLevel = util::parseUint(util::getAndEraseRequired(params, "maxOnLevel"));
 
-			processParam(params, "minOnLevel", [this](std::string_view value) {
-				actorData.back().minOnLevel = util::parseUint(value);
-			});
-			processParam(params, "maxOnLevel", [this](std::string_view value) {
-				actorData.back().maxOnLevel = util::parseUint(value);
-			});
-
-			processOptionalParam(params, "minLevel", [this](std::string_view value) {
-				actorData.back().minLevel = util::parseUint(value);
-			});
-			processOptionalParam(params, "maxLevel", [this](std::string_view value) {
-				actorData.back().maxLevel = util::parseUint(value);
-			});
+			if (auto v = util::getAndErase(params, "minLevel"))
+				actorData.back().minLevel = util::parseUint(*v);
+			if (auto v = util::getAndErase(params, "maxLevel"))
+				actorData.back().maxLevel = util::parseUint(*v);
 
 			if (!params.empty())
 				throw UnknownParamsError{ params };

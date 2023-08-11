@@ -16,6 +16,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef MAP_HPP_
 #define MAP_HPP_
 
+#include "Exception.hpp"
+
 #include <boost/container_hash/hash.hpp>
 
 #include <unordered_map>
@@ -61,6 +63,22 @@ namespace util {
         auto value = std::move(iter->second);
         map.erase(iter);
         return value;
+    }
+
+    class ValueRequiredError : public RuntimeError {
+    public:
+        template <typename Key>
+        ValueRequiredError(const Key& key, util::Stacktrace currentStacktrace = {}) noexcept :
+            RuntimeError{std::format("Value for key \"{}\" is required", key),
+                         std::move(currentStacktrace)} {}
+    };
+
+    template <typename Map, typename Key>
+    [[nodiscard]] typename Map::mapped_type getAndEraseRequired(Map& map, const Key& key) {
+        if (auto value = getAndErase(map, key))
+            return *value;
+        else
+            throw ValueRequiredError{key};
     }
 
     template <typename Key, typename Mapped>
