@@ -17,10 +17,41 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Actor.hpp"
 
+#include "util/parse.hpp"
+#include "util/Map.hpp"
+#include "util/filesystem.hpp"
+
+namespace {
+	std::string unknownParamsMessage(std::unordered_map<std::string, std::string> params) {
+		std::string message = "Unknown params: ";
+		for (auto [name, value] : params)
+			message += std::format("\"{}\" ", name);
+		return message;
+	}
+
+	class UnknownParamsError : public util::RuntimeError {
+	public:
+		UnknownParamsError(std::unordered_map<std::string, std::string> params,
+			               util::Stacktrace currentStacktrace = {}) noexcept :
+			RuntimeError{unknownParamsMessage(params), std::move(currentStacktrace)} {}
+	};
+}
+
 namespace core {
 	XpManager::XpManager(std::shared_ptr<World> world_, std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine_) :
 			world{std::move(world_)}, randomEngine{&randomEngine_} {
-		skills.push_back(std::make_unique<RegenSkill>(2, assets->texture("resources/textures/RegenSkill.png")));
+		util::forEachFile("resources/Skills/", [this, &assets](std::ifstream& file) {
+			auto params = util::parseMapping(file);
+
+			double regenMul = util::parseReal(util::getAndEraseRequired(params, "regenMul"));
+			const sf::Texture& icon = assets->texture(util::getAndEraseRequired(params, "icon"));
+			std::string name = util::getAndEraseRequired(params, "name");
+
+			if (!params.empty())
+				throw UnknownParamsError{params};
+
+			skills.push_back(std::make_unique<RegenSkill>(regenMul, icon, name));
+		});
 	}
 
 	void XpManager::generateAvailableSkills() {

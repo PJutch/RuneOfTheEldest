@@ -21,7 +21,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 namespace core {
 	class RegenSkill : public Skill {
 	public:
-		RegenSkill(double newRegenMul, const sf::Texture& icon_) : regenMul_{newRegenMul}, Skill{icon_, "Increased regen"} {}
+		RegenSkill(double newRegenMul, const sf::Texture& icon_, std::string_view name_) : 
+			regenMul_{newRegenMul}, Skill{icon_, name_} {}
 
 		double regenMul() const final {
 			return regenMul_;

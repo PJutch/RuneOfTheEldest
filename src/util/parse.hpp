@@ -29,19 +29,19 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace util {
 	/// More safe wrapper around isspace
-	bool isSpace(char c) noexcept {
+	inline bool isSpace(char c) noexcept {
 		return std::isspace(static_cast<unsigned char>(c));
 	}
 
 	/// More safe wrapper around isdigit
-	bool isDigit(char c) noexcept {
+	inline bool isDigit(char c) noexcept {
 		return std::isdigit(static_cast<unsigned char>(c));
 	}
 
 	/// @brief Strip spaces from left and right
 	/// @details Removes all chars satisfying isSpace from left and right.
 	/// Returns subview of input view
-	std::string_view strip(std::string_view s) noexcept {
+	inline std::string_view strip(std::string_view s) noexcept {
 		auto begin = std::ranges::find_if_not(s, &isSpace);
 		if (begin == s.end())
 			return {};
@@ -53,7 +53,7 @@ namespace util {
 	/// @brief Strip comment from line
 	/// @details Removes all chars after '#'.
 	/// Returns subview of input view
-	std::string_view stripComment(std::string_view s) noexcept {
+	inline std::string_view stripComment(std::string_view s) noexcept {
 		auto commentBegin = std::ranges::find(s, '#');
 		return { s.begin(), commentBegin };
 	}
@@ -197,7 +197,7 @@ namespace util {
 	/// @details Key is part before first space.
 	/// Values is part after first continuous space block.
 	/// Returns subview of the given view.
-	std::pair<std::string_view, std::string_view> parseKeyValuePair(std::string_view s) {
+	inline std::pair<std::string_view, std::string_view> parseKeyValuePair(std::string_view s) {
 		if (s.empty())
 			throw EmptyStringError{ s };
 
@@ -213,7 +213,7 @@ namespace util {
 	}
 
 	/// Parses whole stream as key-value pairs
-	std::unordered_map<std::string, std::string> parseMapping(std::istream& is) {
+	inline std::unordered_map<std::string, std::string> parseMapping(std::istream& is) {
 		std::unordered_map<std::string, std::string> result;
 		forEachStrippedLine(is, [&result](std::string_view line) {
 			result.insert(parseKeyValuePair(line));
