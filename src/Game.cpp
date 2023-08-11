@@ -76,6 +76,11 @@ void Game::handleEvent(sf::Event event) {
             generate();
             return;
         }
+
+    if (xpManager->canLevelUp()) {
+        renderer().handleLevelupScreenEvent(event);
+        return;
+    }
        
     if (renderer().handleEvent(event))
         return;

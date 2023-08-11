@@ -72,6 +72,9 @@ namespace render {
             return camera->shouldStealControl();
         }
 
+        /// @brief Handles events for skill selection
+        void handleLevelupScreenEvent(sf::Event event);
+
         /// Updates Renderer components such as Camera
         void update(sf::Time elapsedTime);
 
@@ -126,8 +129,8 @@ namespace render {
             window->setView(createFullscreenView(cameraPos, 512, window->getSize()));
         }
 
-        void hudView() noexcept {
-            window->setView(createFullscreenView(1024.f, window->getSize()));
+        sf::View hudView() noexcept {
+            return createFullscreenView(1024.f, window->getSize());
         }
 
         void drawWorld();

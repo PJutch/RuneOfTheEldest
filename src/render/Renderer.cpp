@@ -155,7 +155,7 @@ namespace render {
 
     void Renderer::drawDeathScreen() {
         window->clear(sf::Color::Black);
-        hudView();
+        window->setView(hudView());
 
         auto [screenX, screenY] = window->getView().getSize();
 
@@ -200,18 +200,22 @@ namespace render {
         window->draw(rectShape);
     }
 
+    namespace {
+        const float skillWidth = 256;
+        const float skillHeight = 256;
+    }
+
     void Renderer::drawLevelupScreen() {
-        hudView();
+        window->setView(hudView());
 
         auto skills = xpManager->availableSkills();
 
         sf::Vector2f screenSize = window->getView().getSize();
 
-        float skillWidth = screenSize.x / 7;
         float leftBoundary = (screenSize.x - skillWidth * skills.size()) / 2;
         float skillXCenter = leftBoundary + skillWidth / 2;
         for (const core::Skill* skill : skills) {
-            drawRect({skillXCenter - skillWidth / 2, 300, skillWidth, 250},
+            drawRect({skillXCenter - skillWidth / 2, 300, skillHeight, 250},
                 sf::Color{32, 32, 32}, sf::Color{128, 128, 128}, 4.f);
 
             const sf::Texture& icon = skill->icon();
@@ -219,6 +223,30 @@ namespace render {
                        icon, 1.0, 8.0);
 
             drawText({skillXCenter, screenSize.y / 2}, skill->name(), sf::Color::White, 30);
+
+            skillXCenter += skillWidth;
+        }
+    }
+
+    void Renderer::handleLevelupScreenEvent(sf::Event event) {
+        if (event.type != event.MouseButtonPressed)
+            return;
+
+        sf::Vector2f clickPos = window->mapPixelToCoords({event.mouseButton.x, event.mouseButton.y});
+
+        auto skills = xpManager->availableSkills();
+
+        sf::Vector2f screenSize = window->getView().getSize();
+
+        float leftBoundary = (screenSize.x - skillWidth * skills.size()) / 2;
+        float skillXCenter = leftBoundary + skillWidth / 2;
+        for (const core::Skill* skill : skills) {
+            sf::FloatRect currentSkillRect{skillXCenter - skillWidth / 2, 300, skillWidth, skillHeight};
+
+            if (currentSkillRect.contains(clickPos)) {
+                xpManager->levelUp(skill);
+                return;
+            }
 
             skillXCenter += skillWidth;
         }
