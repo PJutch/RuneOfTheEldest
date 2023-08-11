@@ -144,10 +144,10 @@ namespace render {
     void Renderer::draw() {
         window->clear(sf::Color::Black);
 
-        worldScreenView();
+        window->setView(worldScreenView());
         drawWorld();
 
-        hudView();
+        window->setView(hudView());
         drawHud();
 
         window->display();
@@ -193,7 +193,7 @@ namespace render {
         sf::Vector2f size{static_cast<float>(xpPercent * window->getSize().x), static_cast<float>(window->getSize().y / 128)};
 
         sf::RectangleShape rectShape{size};
-        rectShape.setPosition(0, window->getSize().y - size.y);
+        rectShape.setPosition(0, window->getView().getSize().y - size.y);
 
         rectShape.setFillColor({255, 128, 0});
 

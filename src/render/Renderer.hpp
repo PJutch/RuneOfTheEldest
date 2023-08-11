@@ -124,9 +124,9 @@ namespace render {
             return toScreen(sf::Vector2i{worldX, worldY});
         }
 
-        void worldScreenView() noexcept {
+        sf::View worldScreenView() noexcept {
             auto cameraPos = toScreen(camera->position().xy());
-            window->setView(createFullscreenView(cameraPos, 512, window->getSize()));
+            return createFullscreenView(cameraPos, 512, window->getSize());
         }
 
         sf::View hudView() noexcept {
