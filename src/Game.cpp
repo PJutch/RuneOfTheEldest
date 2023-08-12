@@ -32,10 +32,10 @@ Game::Game(std::shared_ptr<core::World> newWorld,
            util::LoggerFactory& loggerFactory) :
         world{std::move(newWorld)},
         actorSpawner{std::move(actorSpawner_)},
+        xpManager{std::move(xpManager_)},
         dungeonGenerator_{std::move(newDungeonGenerator)},
         window{std::move(window_)},
         renderer_{std::move(newRenderer)},
-        xpManager{std::move(xpManager_)},
         generationLogger{ loggerFactory.create("generation") } {}
 
 void Game::run() {

@@ -23,7 +23,7 @@ namespace core {
 	public:
 		UnconditionalSkill(double newRegenMul, double newDamageMul, double newTurnDelayMul, double newXpMul,
 			               const sf::Texture& icon_, std::string_view name_) :
-			regenMul_{newRegenMul}, damageMul_{newDamageMul}, turnDelayMul_{newTurnDelayMul}, xpMul_{newXpMul}, Skill {icon_, name_} {}
+			Skill{icon_, name_}, regenMul_{newRegenMul}, damageMul_{newDamageMul}, turnDelayMul_{newTurnDelayMul}, xpMul_{newXpMul} {}
 
 		double regenMul() const final {
 			return regenMul_;
