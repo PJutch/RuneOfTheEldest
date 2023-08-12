@@ -28,6 +28,7 @@ namespace core {
 	class XpManager {
 	public:
 		XpManager() = default;
+		XpManager(std::shared_ptr<World> world_) : world{std::move(world_)} {}
 		XpManager(std::shared_ptr<World> world, std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine_);
 
 		void addXp(double dxp);

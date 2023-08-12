@@ -45,8 +45,18 @@ namespace {
 		return core::Actor{ core::Actor::Stats{ maxHp, regen, damage, turnDelay, 0, nullptr }, nullptr, testXpManager, nullptr };
 	}
 
+	core::Actor makeTestActor(double maxHp, double regen, double damage, double turnDelay,
+		                      std::shared_ptr<core::XpManager> xpManager) {
+		return core::Actor{core::Actor::Stats{ maxHp, regen, damage, turnDelay, 0, nullptr }, nullptr, xpManager, nullptr};
+	}
+
 	std::shared_ptr<core::Actor> makeSharedTestActor(double maxHp, double regen, double damage, double turnDelay) {
 		return std::make_shared<core::Actor>(makeTestActor(maxHp, regen, damage, turnDelay));
+	}
+
+	std::shared_ptr<core::Actor> makeSharedTestActor(double maxHp, double regen, double damage, double turnDelay, 
+		                                             std::shared_ptr<core::XpManager> xpManager) {
+		return std::make_shared<core::Actor>(makeTestActor(maxHp, regen, damage, turnDelay, xpManager));
 	}
 
 	std::shared_ptr<core::Actor> makeSharedTestActor(sf::Vector3i pos, std::shared_ptr<core::World> world) {
@@ -71,11 +81,15 @@ TEST(Actor, beDamaged) {
 }
 
 TEST(Actor, beDamagedLethal) {
-	core::Actor actor = makeTestActor(5.0, 1.0, 1.0, 1);
+	auto world = std::make_shared<core::World>();
+	auto xpManager = std::make_shared<core::XpManager>(world);
 
-	actor.beDamaged(7);
+	auto actor = makeSharedTestActor(5.0, 1.0, 1.0, 1, xpManager);
+	world->player(actor);
 
-	EXPECT_FALSE(actor.isAlive());
+	actor->beDamaged(7);
+
+	EXPECT_FALSE(actor->isAlive());
 }
 
 TEST(Actor, regen) {

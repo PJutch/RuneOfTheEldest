@@ -88,6 +88,11 @@ namespace {
 	std::shared_ptr<core::Actor> makeTestActor(double turnDelay) {
 		return std::make_shared<core::Actor>(core::Actor::Stats{ .maxHp = 1, .turnDelay = turnDelay }, nullptr, testXpManager, nullptr);
 	}
+
+	std::shared_ptr<core::Actor> makeTestActor(double turnDelay, std::shared_ptr<core::XpManager> xpManager) {
+		return std::make_shared<core::Actor>(core::Actor::Stats{.maxHp = 1, .turnDelay = turnDelay}, 
+			                                 nullptr, std::move(xpManager), nullptr);
+	}
 }
 
 TEST(World, emptyActors) {
@@ -184,21 +189,24 @@ TEST(World, updateMany) {
 
 TEST(World, updateDeath) {
 	std::vector<int> log;
-	core::World world;
+	auto world = std::make_shared<core::World>();
+	auto xpManager = std::make_shared<core::XpManager>(world);
 
-	auto actor1 = makeTestActor(2);
+	auto actor1 = makeTestActor(2, xpManager);
 	actor1->controller(std::make_unique<TestController>(actor1, 0, &log));
-	world.addActor(std::move(actor1));
+	world->addActor(actor1);
 
-	auto actor2 = makeTestActor(2);
+	auto actor2 = makeTestActor(2, xpManager);
 	actor2->controller(std::make_unique<TestController>(actor2, 1, &log, std::numeric_limits<double>::infinity(), 3));
-	world.addActor(std::move(actor2));
+	world->addActor(std::move(actor2));
 
-	auto actor3 = makeTestActor(7);
+	auto actor3 = makeTestActor(7, xpManager);
 	actor3->controller(std::make_unique<TestController>(actor3, 2, &log, 7));
-	world.addActor(std::move(actor3));
+	world->addActor(std::move(actor3));
 
-	world.update();
+	world->player(actor1);
+
+	world->update();
 
 	ASSERT_EQ(log.size(), 8);
 	EXPECT_EQ(std::ranges::count(log, 0), 4);
@@ -210,17 +218,20 @@ TEST(World, updateDeath) {
 
 TEST(World, updateDeathInterrupt) {
 	std::vector<int> log;
-	core::World world;
+	auto world = std::make_shared<core::World>();
+	auto xpManager = std::make_shared<core::XpManager>(world);
 
-	auto actor1 = makeTestActor(2);
+	auto actor1 = makeTestActor(2, xpManager);
 	actor1->controller(std::make_unique<TestController>(actor1, 0, &log));
-	world.addActor(std::move(actor1));
+	world->addActor(actor1);
 
-	auto actor2 = makeTestActor(2);
+	auto actor2 = makeTestActor(2, xpManager);
 	actor2->controller(std::make_unique<TestController>(actor2, 1, &log, std::numeric_limits<double>::infinity(), 3, true));
-	world.addActor(std::move(actor2));
+	world->addActor(std::move(actor2));
 
-	world.update();
+	world->player(actor1);
+
+	world->update();
 
 	EXPECT_GE(std::ranges::count(log, 0), 1);
 	EXPECT_EQ(std::ranges::count(log, 1), 2);
