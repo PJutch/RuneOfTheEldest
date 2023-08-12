@@ -57,13 +57,17 @@ namespace core {
 			if (auto v = util::getAndErase(params, "turnDelayMul"))
 				turnDelayMul = util::parseReal(*v);
 
+			double xpMul = 1;
+			if (auto v = util::getAndErase(params, "xpMul"))
+				xpMul = util::parseReal(*v);
+
 			const sf::Texture& icon = assets->texture(util::getAndEraseRequired(params, "icon"));
 			std::string name = util::getAndEraseRequired(params, "name");
 
 			if (!params.empty())
 				throw UnknownParamsError{params};
 
-			skills.push_back(std::make_unique<UnconditionalSkill>(regenMul, damageMul, turnDelayMul,
+			skills.push_back(std::make_unique<UnconditionalSkill>(regenMul, damageMul, turnDelayMul, xpMul,
 				             icon, name));
 		});
 	}
@@ -82,5 +86,9 @@ namespace core {
 
 		xp -= xpUntilNextLvl;
 		xpUntilNextLvl *= 2;
+	}
+
+	void XpManager::addXp(double dxp) {
+		xp += dxp * world->player().xpMul();
 	}
 }

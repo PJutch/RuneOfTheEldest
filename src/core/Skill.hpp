@@ -32,6 +32,7 @@ namespace core {
 		virtual double regenMul() const = 0;
 		virtual double damageMul() const = 0;
 		virtual double turnDelayMul() const = 0;
+		virtual double xpMul() const = 0;
 
 		virtual std::unique_ptr<Skill> clone() const = 0;
 

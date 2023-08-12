@@ -121,4 +121,11 @@ namespace core {
 			res *= skill->turnDelayMul();
 		return res;
 	}
+
+	double Actor::xpMul() const {
+		double res = 1;
+		for (const auto& skill : skills)
+			res *= skill->xpMul();
+		return res;
+	}
 }

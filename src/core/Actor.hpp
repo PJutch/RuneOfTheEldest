@@ -155,6 +155,8 @@ namespace core {
 		void addSkill(std::unique_ptr<Skill> skill) {
 			skills.push_back(std::move(skill));
 		}
+
+		double xpMul() const;
 	private:
 		Stats stats;
 		std::unique_ptr<Controller> controller_;

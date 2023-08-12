@@ -30,9 +30,7 @@ namespace core {
 		XpManager() = default;
 		XpManager(std::shared_ptr<World> world, std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine_);
 
-		void addXp(double dxp) {
-			xp += dxp;
-		}
+		void addXp(double dxp);
 
 		bool canLevelUp() {
 			return xp >= xpUntilNextLvl;
