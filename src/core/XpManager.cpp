@@ -15,6 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "XpManager.hpp"
 
+#include "UnconditionalSkill.hpp"
+
 #include "Actor.hpp"
 
 #include "util/parse.hpp"
@@ -43,14 +45,26 @@ namespace core {
 		util::forEachFile("resources/Skills/", [this, &assets](std::ifstream& file) {
 			auto params = util::parseMapping(file);
 
-			double regenMul = util::parseReal(util::getAndEraseRequired(params, "regenMul"));
+			double regenMul = 1;
+			if (auto v = util::getAndErase(params, "regenMul"))
+				regenMul = util::parseReal(*v);
+
+			double damageMul = 1;
+			if (auto v = util::getAndErase(params, "damageMul"))
+				damageMul = util::parseReal(*v);
+
+			double turnDelayMul = 1;
+			if (auto v = util::getAndErase(params, "turnDelayMul"))
+				turnDelayMul = util::parseReal(*v);
+
 			const sf::Texture& icon = assets->texture(util::getAndEraseRequired(params, "icon"));
 			std::string name = util::getAndEraseRequired(params, "name");
 
 			if (!params.empty())
 				throw UnknownParamsError{params};
 
-			skills.push_back(std::make_unique<RegenSkill>(regenMul, icon, name));
+			skills.push_back(std::make_unique<UnconditionalSkill>(regenMul, damageMul, turnDelayMul,
+				             icon, name));
 		});
 	}
 
@@ -64,6 +78,8 @@ namespace core {
 
 	void XpManager::levelUp(const Skill* skill) {
 		world->player().addSkill(skill->clone());
+		availableSkills_.clear();
+
 		xp -= xpUntilNextLvl;
 		xpUntilNextLvl *= 2;
 	}

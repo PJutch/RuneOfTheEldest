@@ -17,7 +17,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define XP_MANAGER_HPP_
 
 #include "Skill.hpp"
-#include "RegenSkill.hpp"
 
 #include "World.hpp"
 

@@ -13,26 +13,37 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef REGEN_SKILL_HPP_
-#define REGEN_SKILL_HPP_
+#ifndef UNCONDITIONAL_SKILL_HPP_
+#define UNCONDITIONAL_SKILL_HPP_
 
 #include "Skill.hpp"
 
 namespace core {
-	class RegenSkill : public Skill {
+	class UnconditionalSkill : public Skill {
 	public:
-		RegenSkill(double newRegenMul, const sf::Texture& icon_, std::string_view name_) : 
-			regenMul_{newRegenMul}, Skill{icon_, name_} {}
+		UnconditionalSkill(double newRegenMul, double newDamageMul, double newTurnDelayMul,
+			               const sf::Texture& icon_, std::string_view name_) :
+			regenMul_{newRegenMul}, damageMul_{newDamageMul}, turnDelayMul_{newTurnDelayMul}, Skill {icon_, name_} {}
 
 		double regenMul() const final {
 			return regenMul_;
 		}
 
+		double damageMul() const final {
+			return damageMul_;
+		}
+
+		double turnDelayMul() const final {
+			return turnDelayMul_;
+		}
+
 		std::unique_ptr<Skill> clone() const override {
-			return std::make_unique<RegenSkill>(*this);
+			return std::make_unique<UnconditionalSkill>(*this);
 		}
 	private:
 		double regenMul_;
+		double damageMul_;
+		double turnDelayMul_;
 	};
 }
 
