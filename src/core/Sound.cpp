@@ -16,6 +16,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Sound.hpp"
 
 #include <array>
+#include <cstddef>
 
 namespace core {
 	namespace {
