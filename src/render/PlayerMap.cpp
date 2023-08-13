@@ -51,7 +51,7 @@ namespace render {
 		});
 
 		for (const auto& actor : world->actors())
-			if (seeEverything_ || raycaster->canSee(world->player().position(), actor->position()))
+			if (actor->isAlive() && (seeEverything_ || raycaster->canSee(world->player().position(), actor->position())))
 				seenActors_.emplace_back(actor->position(), actor->hp(), actor->maxHp(), 
 					                     actor->controller().aiState(), actor->texture() );
 	}
