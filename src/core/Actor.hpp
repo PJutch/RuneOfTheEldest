@@ -91,7 +91,7 @@ namespace core {
 
 		/// Gets max possible HP
 		[[nodiscard]] double maxHp() const noexcept {
-			return stats.maxHp;
+			return stats.maxHp * hpMul;
 		}
 
 		[[nodiscard]] const sf::Texture* texture() const noexcept {
@@ -154,9 +154,12 @@ namespace core {
 
 		void addSkill(std::unique_ptr<Skill> skill) {
 			skills.push_back(std::move(skill));
+			updateHp();
 		}
 
 		double xpMul() const;
+
+		void updateHp();
 	private:
 		Stats stats;
 		std::unique_ptr<Controller> controller_;
@@ -165,6 +168,7 @@ namespace core {
 		double nextTurn_ = 0;
 		sf::Vector3i position_;
 		double hp_;
+		double hpMul = 1;
 
 		std::shared_ptr<World> world_;
 		std::shared_ptr<XpManager> xpManager;

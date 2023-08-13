@@ -128,4 +128,13 @@ namespace core {
 			res *= skill->xpMul();
 		return res;
 	}
+
+	void Actor::updateHp() {
+		double newMul = 1;
+		for (const auto& skill : skills)
+			newMul *= skill->hpMul();
+
+		hp_ *= newMul / hpMul;
+		hpMul = newMul;
+	}
 }

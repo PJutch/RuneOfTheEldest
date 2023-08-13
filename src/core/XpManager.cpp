@@ -61,13 +61,18 @@ namespace core {
 			if (auto v = util::getAndErase(params, "xpMul"))
 				xpMul = util::parseReal(*v);
 
+			double hpMul = 1;
+			if (auto v = util::getAndErase(params, "hpMul"))
+				hpMul = util::parseReal(*v);
+
 			const sf::Texture& icon = assets->texture(util::getAndEraseRequired(params, "icon"));
 			std::string name = util::getAndEraseRequired(params, "name");
 
 			if (!params.empty())
 				throw UnknownParamsError{params};
 
-			skills.push_back(std::make_unique<UnconditionalSkill>(regenMul, damageMul, turnDelayMul, xpMul,
+			skills.push_back(std::make_unique<UnconditionalSkill>(
+				             regenMul, damageMul, turnDelayMul, xpMul, hpMul,
 				             icon, name));
 		});
 	}

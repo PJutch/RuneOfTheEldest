@@ -21,9 +21,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 namespace core {
 	class UnconditionalSkill : public Skill {
 	public:
-		UnconditionalSkill(double newRegenMul, double newDamageMul, double newTurnDelayMul, double newXpMul,
+		UnconditionalSkill(double newRegenMul, double newDamageMul, double newTurnDelayMul, double newXpMul, double hpMul,
 			               const sf::Texture& icon_, std::string_view name_) :
-			Skill{icon_, name_}, regenMul_{newRegenMul}, damageMul_{newDamageMul}, turnDelayMul_{newTurnDelayMul}, xpMul_{newXpMul} {}
+			Skill{icon_, name_}, regenMul_{newRegenMul}, damageMul_{newDamageMul}, 
+			turnDelayMul_{newTurnDelayMul}, xpMul_{newXpMul}, hpMul_{hpMul} {}
 
 		double regenMul() const final {
 			return regenMul_;
@@ -41,6 +42,10 @@ namespace core {
 			return xpMul_;
 		}
 
+		double hpMul() const final {
+			return hpMul_;
+		}
+
 		std::unique_ptr<Skill> clone() const override {
 			return std::make_unique<UnconditionalSkill>(*this);
 		}
@@ -49,6 +54,7 @@ namespace core {
 		double damageMul_;
 		double turnDelayMul_;
 		double xpMul_;
+		double hpMul_;
 	};
 }
 
