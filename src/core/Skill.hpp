@@ -16,6 +16,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef SKILL_HPP_
 #define SKILL_HPP_
 
+#include <core/fwd.hpp>
+
 namespace sf {
 	class Texture;
 }
@@ -36,6 +38,8 @@ namespace core {
 		virtual double hpMul() const = 0;
 
 		virtual std::unique_ptr<Skill> clone() const = 0;
+
+		virtual void owner(std::weak_ptr<Actor> newOwner) {}
 
 		[[nodiscard]] const sf::Texture& icon() const {
 			return *icon_;

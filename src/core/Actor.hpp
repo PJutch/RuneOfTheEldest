@@ -28,7 +28,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace core {
 	/// Base for all Actors with hp and position in world
-	class Actor {
+	class Actor : public std::enable_shared_from_this<Actor> {
 	public:
 		/// Immutable params of the Actor
 		struct Stats {
@@ -153,6 +153,7 @@ namespace core {
 		}
 
 		void addSkill(std::unique_ptr<Skill> skill) {
+			skill->owner(weak_from_this());
 			skills.push_back(std::move(skill));
 			updateHp();
 		}

@@ -13,48 +13,60 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef UNCONDITIONAL_SKILL_HPP_
-#define UNCONDITIONAL_SKILL_HPP_
+#ifndef LOW_HP_SKILL_HPP_
+#define LOW_HP_SKILL_HPP_
 
 #include "Skill.hpp"
 
+#include "Actor.hpp"
+
 namespace core {
-	class UnconditionalSkill : public Skill {
+	class LowHpSkill : public Skill {
 	public:
-		UnconditionalSkill(double newRegenMul, double newDamageMul, double newTurnDelayMul, double newXpMul, double hpMul,
-			               const sf::Texture& icon_, std::string_view name_) :
-			Skill{icon_, name_}, regenMul_{newRegenMul}, damageMul_{newDamageMul}, 
-			turnDelayMul_{newTurnDelayMul}, xpMul_{newXpMul}, hpMul_{hpMul} {}
+		LowHpSkill(double newRegenMul, double newDamageMul, double newTurnDelayMul, double newXpMul,
+			       const sf::Texture& icon_, std::string_view name_) :
+			Skill{icon_, name_}, regenMul_{newRegenMul}, damageMul_{newDamageMul},
+			turnDelayMul_{newTurnDelayMul}, xpMul_{newXpMul} {}
 
 		double regenMul() const final {
-			return regenMul_;
+			return shouldApply() ? regenMul_ : 1;
 		}
 
 		double damageMul() const final {
-			return damageMul_;
+			return shouldApply() ? damageMul_ : 1;
 		}
 
 		double turnDelayMul() const final {
-			return turnDelayMul_;
+			return shouldApply() ? turnDelayMul_ : 1;
 		}
 
 		double xpMul() const final {
-			return xpMul_;
+			return shouldApply() ? xpMul_ : 1;
 		}
 
 		double hpMul() const final {
-			return hpMul_;
+			return 1;
 		}
 
 		std::unique_ptr<Skill> clone() const final {
-			return std::make_unique<UnconditionalSkill>(*this);
+			return std::make_unique<LowHpSkill>(*this);
+		}
+
+		void owner(std::weak_ptr<Actor> newOwner) final {
+			owner_ = std::move(newOwner);
 		}
 	private:
 		double regenMul_;
 		double damageMul_;
 		double turnDelayMul_;
 		double xpMul_;
-		double hpMul_;
+
+		std::weak_ptr<Actor> owner_;
+
+		bool shouldApply() const {
+			auto ownerPtr = owner_.lock();
+			return ownerPtr->hp() < 0.5 * ownerPtr->maxHp();
+		}
 	};
 }
 

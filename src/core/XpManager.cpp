@@ -16,6 +16,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "XpManager.hpp"
 
 #include "UnconditionalSkill.hpp"
+#include "LowHpSkill.hpp"
 
 #include "Actor.hpp"
 
@@ -36,6 +37,13 @@ namespace {
 		UnknownParamsError(std::unordered_map<std::string, std::string> params,
 			               util::Stacktrace currentStacktrace = {}) noexcept :
 			RuntimeError{unknownParamsMessage(params), std::move(currentStacktrace)} {}
+	};
+
+	class UnknownSkillTypeError : public util::RuntimeError {
+	public:
+		UnknownSkillTypeError(std::string_view type, util::Stacktrace currentStacktrace = {}) noexcept :
+			RuntimeError{std::format("Unknown skill type \"{}\"", type), 
+			std::move(currentStacktrace)} {}
 	};
 }
 
@@ -61,9 +69,14 @@ namespace core {
 			if (auto v = util::getAndErase(params, "xpMul"))
 				xpMul = util::parseReal(*v);
 
+			std::string type = "unconditional";
+			if (auto v = util::getAndErase(params, "type"))
+				type = *v;
+
 			double hpMul = 1;
-			if (auto v = util::getAndErase(params, "hpMul"))
-				hpMul = util::parseReal(*v);
+			if (type == "unconditional")
+				if (auto v = util::getAndErase(params, "hpMul"))
+					hpMul = util::parseReal(*v);
 
 			const sf::Texture& icon = assets->texture(util::getAndEraseRequired(params, "icon"));
 			std::string name = util::getAndEraseRequired(params, "name");
@@ -71,9 +84,16 @@ namespace core {
 			if (!params.empty())
 				throw UnknownParamsError{params};
 
-			skills.push_back(std::make_unique<UnconditionalSkill>(
-				             regenMul, damageMul, turnDelayMul, xpMul, hpMul,
-				             icon, name));
+			if (type == "unconditional")
+				skills.push_back(std::make_unique<UnconditionalSkill>(
+					regenMul, damageMul, turnDelayMul, xpMul, hpMul,
+					icon, name));
+			else if (type == "lowHp")
+				skills.push_back(std::make_unique<LowHpSkill>(
+					regenMul, damageMul, turnDelayMul, xpMul,
+					icon, name));
+			else
+				throw UnknownSkillTypeError(type);
 		});
 	}
 
