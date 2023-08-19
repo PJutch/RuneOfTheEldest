@@ -53,7 +53,7 @@ namespace core {
 		}
 
 		if (other->controller().isOnPlayerSide() != controller().isOnPlayerSide()) {
-			other->beDamaged(damage());
+			other->beDamaged(damage(*other));
 			world().makeSound({ Sound::Type::ATTACK, controller().isOnPlayerSide(), position()});
 			return true;
 		}
@@ -108,10 +108,10 @@ namespace core {
 		return res;
 	}
 
-	double Actor::damage() {
+	double Actor::damage(const Actor& target) {
 		double res = stats.damage;
 		for (const auto& skill : skills)
-			res *= skill->damageMul();
+			res *= skill->damageMul(target);
 		return res;
 	}
 

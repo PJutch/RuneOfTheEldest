@@ -17,6 +17,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "UnconditionalSkill.hpp"
 #include "LowHpSkill.hpp"
+#include "TargetFullHpSkill.hpp"
 
 #include "Actor.hpp"
 
@@ -53,30 +54,33 @@ namespace core {
 		util::forEachFile("resources/Skills/", [this, &assets](std::ifstream& file) {
 			auto params = util::parseMapping(file);
 
-			double regenMul = 1;
-			if (auto v = util::getAndErase(params, "regenMul"))
-				regenMul = util::parseReal(*v);
-
-			double damageMul = 1;
-			if (auto v = util::getAndErase(params, "damageMul"))
-				damageMul = util::parseReal(*v);
-
-			double turnDelayMul = 1;
-			if (auto v = util::getAndErase(params, "turnDelayMul"))
-				turnDelayMul = util::parseReal(*v);
-
-			double xpMul = 1;
-			if (auto v = util::getAndErase(params, "xpMul"))
-				xpMul = util::parseReal(*v);
-
 			std::string type = "unconditional";
 			if (auto v = util::getAndErase(params, "type"))
 				type = *v;
 
+			double regenMul = 1;
+			double turnDelayMul = 1;
+			double xpMul = 1;
 			double hpMul = 1;
+
 			if (type == "unconditional")
 				if (auto v = util::getAndErase(params, "hpMul"))
 					hpMul = util::parseReal(*v);
+
+			if (type != "targetFullHp") {
+				if (auto v = util::getAndErase(params, "regenMul"))
+					regenMul = util::parseReal(*v);
+
+				if (auto v = util::getAndErase(params, "turnDelayMul"))
+					turnDelayMul = util::parseReal(*v);
+
+				if (auto v = util::getAndErase(params, "xpMul"))
+					xpMul = util::parseReal(*v);
+			}
+
+			double damageMul = 1;
+			if (auto v = util::getAndErase(params, "damageMul"))
+				damageMul = util::parseReal(*v);
 
 			const sf::Texture& icon = assets->texture(util::getAndEraseRequired(params, "icon"));
 			std::string name = util::getAndEraseRequired(params, "name");
@@ -92,6 +96,9 @@ namespace core {
 				skills.push_back(std::make_unique<LowHpSkill>(
 					regenMul, damageMul, turnDelayMul, xpMul,
 					icon, name));
+			else if (type == "targetFullHp")
+				skills.push_back(std::make_unique<TargetFullHpSkill>(
+				    damageMul, icon, name)); 
 			else
 				throw UnknownSkillTypeError(type);
 		});

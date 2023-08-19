@@ -13,48 +13,28 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef UNCONDITIONAL_SKILL_HPP_
-#define UNCONDITIONAL_SKILL_HPP_
+#ifndef TARGET_FULL_HP_SKILL_HPP_
+#define TARGET_FULL_HP_SKILL_HPP_
 
 #include "Skill.hpp"
 
+#include "Actor.hpp"
+
 namespace core {
-	class UnconditionalSkill : public Skill {
+	class TargetFullHpSkill : public Skill {
 	public:
-		UnconditionalSkill(double newRegenMul, double newDamageMul, double newTurnDelayMul, double newXpMul, double hpMul,
-			               const sf::Texture& icon_, std::string_view name_) :
-			Skill{icon_, name_}, regenMul_{newRegenMul}, damageMul_{newDamageMul}, 
-			turnDelayMul_{newTurnDelayMul}, xpMul_{newXpMul}, hpMul_{hpMul} {}
+		TargetFullHpSkill(double newDamageMul, const sf::Texture& icon_, std::string_view name_) :
+			Skill{icon_, name_}, damageMul_{newDamageMul} {}
 
-		double regenMul() const final {
-			return regenMul_;
-		}
-
-		double damageMul(const Actor&) const final {
-			return damageMul_;
-		}
-
-		double turnDelayMul() const final {
-			return turnDelayMul_;
-		}
-
-		double xpMul() const final {
-			return xpMul_;
-		}
-
-		double hpMul() const final {
-			return hpMul_;
+		double damageMul(const Actor& target) const final {
+			return target.hp() == target.maxHp() ? damageMul_ : 1;
 		}
 
 		std::unique_ptr<Skill> clone() const final {
-			return std::make_unique<UnconditionalSkill>(*this);
+			return std::make_unique<TargetFullHpSkill>(*this);
 		}
 	private:
-		double regenMul_;
 		double damageMul_;
-		double turnDelayMul_;
-		double xpMul_;
-		double hpMul_;
 	};
 }
 

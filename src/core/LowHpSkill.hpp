@@ -32,7 +32,7 @@ namespace core {
 			return shouldApply() ? regenMul_ : 1;
 		}
 
-		double damageMul() const final {
+		double damageMul(const Actor&) const final {
 			return shouldApply() ? damageMul_ : 1;
 		}
 
@@ -42,10 +42,6 @@ namespace core {
 
 		double xpMul() const final {
 			return shouldApply() ? xpMul_ : 1;
-		}
-
-		double hpMul() const final {
-			return 1;
 		}
 
 		std::unique_ptr<Skill> clone() const final {

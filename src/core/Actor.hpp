@@ -176,7 +176,7 @@ namespace core {
 		util::RandomEngine* randomEngine_;
 
 		double regen();
-		double damage();
+		double damage(const Actor& target);
 		double turnDelay();
 	};
 }

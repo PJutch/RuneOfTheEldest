@@ -31,11 +31,25 @@ namespace core {
 		Skill(const sf::Texture& newIcon, std::string_view newName) : icon_{&newIcon}, name_{newName} {}
 		virtual ~Skill() = default;
 
-		virtual double regenMul() const = 0;
-		virtual double damageMul() const = 0;
-		virtual double turnDelayMul() const = 0;
-		virtual double xpMul() const = 0;
-		virtual double hpMul() const = 0;
+		virtual double regenMul() const {
+			return 1;
+		}
+
+		virtual double damageMul(const Actor& target) const {
+			return 1;
+		}
+
+		virtual double turnDelayMul() const {
+			return 1;
+		}
+
+		virtual double xpMul() const {
+			return 1;
+		}
+
+		virtual double hpMul() const {
+			return 1;
+		}
 
 		virtual std::unique_ptr<Skill> clone() const = 0;
 
