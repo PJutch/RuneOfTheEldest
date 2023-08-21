@@ -118,7 +118,7 @@ namespace core {
 	double Actor::turnDelay() {
 		double speedMod = 1;
 		for (const auto& skill : skills)
-			speedMod += skill->speedMod();
+			speedMod += skill->speedBonus();
 
 		return stats.turnDelay / speedMod;
 	}
@@ -128,6 +128,20 @@ namespace core {
 		for (const auto& skill : skills)
 			res *= skill->xpMul();
 		return res;
+	}
+
+	double Actor::evasion() {
+		double evasion = stats.evasion;
+		for (const auto& skill : skills)
+			evasion += skill->evasionBonus();
+		return evasion;
+	}
+
+	double Actor::accuracy() {
+		double accuracy = stats.accuracy;
+		for (const auto& skill : skills)
+			accuracy += skill->accuracyBonus();
+		return accuracy;
 	}
 
 	void Actor::updateHp() {

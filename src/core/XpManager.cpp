@@ -59,7 +59,9 @@ namespace core {
 				type = *v;
 
 			double regenMul = 1;
-			double speedMod = 0;
+			double speedBonus = 0;
+			double accuracyBonus = 0;
+			double evasionBonus = 0;
 			double xpMul = 1;
 			double hpMul = 1;
 
@@ -71,8 +73,14 @@ namespace core {
 				if (auto v = util::getAndErase(params, "regenMul"))
 					regenMul = util::parseReal(*v);
 
-				if (auto v = util::getAndErase(params, "speedMod"))
-					speedMod = util::parseReal(*v);
+				if (auto v = util::getAndErase(params, "speed"))
+					speedBonus = util::parseReal(*v);
+
+				if (auto v = util::getAndErase(params, "accuracy"))
+					accuracyBonus = util::parseReal(*v);
+
+				if (auto v = util::getAndErase(params, "evasion"))
+					evasionBonus = util::parseReal(*v);
 
 				if (auto v = util::getAndErase(params, "xpMul"))
 					xpMul = util::parseReal(*v);
@@ -90,11 +98,11 @@ namespace core {
 
 			if (type == "unconditional")
 				skills.push_back(std::make_unique<UnconditionalSkill>(
-					regenMul, damageMul, speedMod, xpMul, hpMul,
+					regenMul, damageMul, speedBonus, accuracyBonus, evasionBonus, xpMul, hpMul,
 					icon, name));
 			else if (type == "lowHp")
 				skills.push_back(std::make_unique<LowHpSkill>(
-					regenMul, damageMul, speedMod, xpMul,
+					regenMul, damageMul, speedBonus, accuracyBonus, evasionBonus, xpMul,
 					icon, name));
 			else if (type == "targetFullHp")
 				skills.push_back(std::make_unique<TargetFullHpSkill>(

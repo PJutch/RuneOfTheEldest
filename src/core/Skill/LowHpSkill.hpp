@@ -23,10 +23,12 @@ If not, see <https://www.gnu.org/licenses/>. */
 namespace core {
 	class LowHpSkill : public Skill {
 	public:
-		LowHpSkill(double newRegenMul, double newDamageMul, double speedModifier, double newXpMul,
+		LowHpSkill(double newRegenMul, double newDamageMul, double newSpeedBonus, double newXpMul, 
+			       double newAccuracyBonus, double newEvasionBonus,
 			       const sf::Texture& icon_, std::string_view name_) :
 			Skill{icon_, name_}, regenMul_{newRegenMul}, damageMul_{newDamageMul},
-			speedMod_{speedModifier}, xpMul_{newXpMul} {}
+			accuracyBonus_{newSpeedBonus}, evasionBonus_{newEvasionBonus},
+			speedBonus_{newSpeedBonus}, xpMul_{newXpMul} {}
 
 		double regenMul() const final {
 			return shouldApply() ? regenMul_ : 1;
@@ -36,12 +38,20 @@ namespace core {
 			return shouldApply() ? damageMul_ : 1;
 		}
 
-		double speedMod() const final {
-			return shouldApply() ? speedMod_ : 0;
+		double speedBonus() const final {
+			return shouldApply() ? speedBonus_ : 0;
 		}
 
 		double xpMul() const final {
 			return shouldApply() ? xpMul_ : 1;
+		}
+
+		double accuracyBonus() const final {
+			return shouldApply() ? accuracyBonus_ : 0;
+		}
+
+		double evasionBonus() const final {
+			return shouldApply() ? evasionBonus_ : 0;
 		}
 
 		std::unique_ptr<Skill> clone() const final {
@@ -54,7 +64,9 @@ namespace core {
 	private:
 		double regenMul_;
 		double damageMul_;
-		double speedMod_;
+		double accuracyBonus_;
+		double evasionBonus_;
+		double speedBonus_;
 		double xpMul_;
 
 		std::weak_ptr<Actor> owner_;

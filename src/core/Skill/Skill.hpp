@@ -39,7 +39,7 @@ namespace core {
 			return 1;
 		}
 
-		virtual double speedMod() const {
+		virtual double speedBonus() const {
 			return 0;
 		}
 
@@ -49,6 +49,14 @@ namespace core {
 
 		virtual double hpMul() const {
 			return 1;
+		}
+
+		virtual double accuracyBonus() const {
+			return 0;
+		}
+
+		virtual double evasionBonus() const {
+			return 0;
 		}
 
 		virtual std::unique_ptr<Skill> clone() const = 0;

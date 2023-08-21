@@ -189,10 +189,12 @@ namespace core {
 
 		double regen();
 		double damage(const Actor& target);
+		double accuracy();
+		double evasion();
 		double turnDelay();
 
 		double hitChance(double accuracy) {
-			return accuracy / (accuracy + stats.evasion);
+			return accuracy / (accuracy + evasion());
 		}
 	};
 }
