@@ -53,7 +53,7 @@ namespace core {
 		}
 
 		if (other->controller().isOnPlayerSide() != controller().isOnPlayerSide()) {
-			other->beDamaged(damage(*other));
+			other->beAttacked(damage(*other), stats.accuracy);
 			world().makeSound({ Sound::Type::ATTACK, controller().isOnPlayerSide(), position()});
 			return true;
 		}

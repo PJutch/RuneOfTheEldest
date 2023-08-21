@@ -34,9 +34,16 @@ namespace core {
 		struct Stats {
 			double maxHp;
 			double regen;
+
 			double damage;
+			double accuracy;
+
+			double evasion;
+
 			double turnDelay;
+
 			double xp;
+
 			const sf::Texture* texture;
 		};
 
@@ -82,6 +89,11 @@ namespace core {
 			hp_ -= damage;
 			if (!isAlive())
 				xpManager->addXp(stats.xp);
+		}
+
+		void beAttacked(double damage, double accuracy) {
+			if (isAlive() && std::bernoulli_distribution{hitChance(accuracy)}(randomEngine()))
+				beDamaged(damage);
 		}
 
 		/// Gets Actor HP
@@ -178,6 +190,10 @@ namespace core {
 		double regen();
 		double damage(const Actor& target);
 		double turnDelay();
+
+		double hitChance(double accuracy) {
+			return accuracy / (accuracy + stats.evasion);
+		}
 	};
 }
 

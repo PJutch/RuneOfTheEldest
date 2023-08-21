@@ -58,6 +58,8 @@ namespace core {
 			actorData.back().stats.maxHp = util::parseReal(util::getAndEraseRequired(params, "hp"));
 			actorData.back().stats.regen = util::parseReal(util::getAndEraseRequired(params, "regen"));
 			actorData.back().stats.damage = util::parseReal(util::getAndEraseRequired(params, "damage"));
+			actorData.back().stats.accuracy = util::parseReal(util::getAndEraseRequired(params, "accuracy"));
+			actorData.back().stats.evasion = util::parseReal(util::getAndEraseRequired(params, "evasion"));
 			actorData.back().stats.turnDelay = util::parseReal(util::getAndEraseRequired(params, "turnDelay"));
 			actorData.back().stats.xp = util::parseReal(util::getAndEraseRequired(params, "xp"));
 
