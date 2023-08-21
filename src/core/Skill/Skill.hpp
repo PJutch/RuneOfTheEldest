@@ -39,8 +39,8 @@ namespace core {
 			return 1;
 		}
 
-		virtual double turnDelayMul() const {
-			return 1;
+		virtual double speedMod() const {
+			return 0;
 		}
 
 		virtual double xpMul() const {

@@ -59,7 +59,7 @@ namespace core {
 				type = *v;
 
 			double regenMul = 1;
-			double turnDelayMul = 1;
+			double speedMod = 0;
 			double xpMul = 1;
 			double hpMul = 1;
 
@@ -71,8 +71,8 @@ namespace core {
 				if (auto v = util::getAndErase(params, "regenMul"))
 					regenMul = util::parseReal(*v);
 
-				if (auto v = util::getAndErase(params, "turnDelayMul"))
-					turnDelayMul = util::parseReal(*v);
+				if (auto v = util::getAndErase(params, "speedMod"))
+					speedMod = util::parseReal(*v);
 
 				if (auto v = util::getAndErase(params, "xpMul"))
 					xpMul = util::parseReal(*v);
@@ -90,11 +90,11 @@ namespace core {
 
 			if (type == "unconditional")
 				skills.push_back(std::make_unique<UnconditionalSkill>(
-					regenMul, damageMul, turnDelayMul, xpMul, hpMul,
+					regenMul, damageMul, speedMod, xpMul, hpMul,
 					icon, name));
 			else if (type == "lowHp")
 				skills.push_back(std::make_unique<LowHpSkill>(
-					regenMul, damageMul, turnDelayMul, xpMul,
+					regenMul, damageMul, speedMod, xpMul,
 					icon, name));
 			else if (type == "targetFullHp")
 				skills.push_back(std::make_unique<TargetFullHpSkill>(

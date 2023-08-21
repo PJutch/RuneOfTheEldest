@@ -116,10 +116,11 @@ namespace core {
 	}
 
 	double Actor::turnDelay() {
-		double res = stats.turnDelay;
+		double speedMod = 1;
 		for (const auto& skill : skills)
-			res *= skill->turnDelayMul();
-		return res;
+			speedMod += skill->speedMod();
+
+		return stats.turnDelay / speedMod;
 	}
 
 	double Actor::xpMul() const {

@@ -23,10 +23,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 namespace core {
 	class LowHpSkill : public Skill {
 	public:
-		LowHpSkill(double newRegenMul, double newDamageMul, double newTurnDelayMul, double newXpMul,
+		LowHpSkill(double newRegenMul, double newDamageMul, double speedModifier, double newXpMul,
 			       const sf::Texture& icon_, std::string_view name_) :
 			Skill{icon_, name_}, regenMul_{newRegenMul}, damageMul_{newDamageMul},
-			turnDelayMul_{newTurnDelayMul}, xpMul_{newXpMul} {}
+			speedMod_{speedModifier}, xpMul_{newXpMul} {}
 
 		double regenMul() const final {
 			return shouldApply() ? regenMul_ : 1;
@@ -36,8 +36,8 @@ namespace core {
 			return shouldApply() ? damageMul_ : 1;
 		}
 
-		double turnDelayMul() const final {
-			return shouldApply() ? turnDelayMul_ : 1;
+		double speedMod() const final {
+			return shouldApply() ? speedMod_ : 0;
 		}
 
 		double xpMul() const final {
@@ -54,7 +54,7 @@ namespace core {
 	private:
 		double regenMul_;
 		double damageMul_;
-		double turnDelayMul_;
+		double speedMod_;
 		double xpMul_;
 
 		std::weak_ptr<Actor> owner_;
