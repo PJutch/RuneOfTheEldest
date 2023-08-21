@@ -17,8 +17,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define ALIVE_ACTOR_HPP_
 
 #include "World.hpp"
-#include "Controller.hpp"
-#include "Skill.hpp"
+#include "Controller/Controller.hpp"
+#include "Skill/Skill.hpp"
 #include "XpManager.hpp"
 
 #include "util/geometry.hpp"

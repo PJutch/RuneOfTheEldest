@@ -15,9 +15,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "XpManager.hpp"
 
-#include "UnconditionalSkill.hpp"
-#include "LowHpSkill.hpp"
-#include "TargetFullHpSkill.hpp"
+#include "Skill/UnconditionalSkill.hpp"
+#include "Skill/LowHpSkill.hpp"
+#include "Skill/TargetFullHpSkill.hpp"
 
 #include "Actor.hpp"
 

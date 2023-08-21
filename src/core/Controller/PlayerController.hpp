@@ -18,8 +18,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Controller.hpp"
 
-#include "fwd.hpp"
-#include "World.hpp"
+#include "../fwd.hpp"
+#include "../World.hpp"
 
 #include "render/AssetManager.hpp"
 #include "render/PlayerMap.hpp"

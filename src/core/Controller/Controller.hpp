@@ -16,8 +16,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef CONTROLLER_HPP_
 #define CONTROLLER_HPP_
 
-#include "AiState.hpp"
-#include "Sound.hpp"
+#include "../AiState.hpp"
+#include "../Sound.hpp"
 
 #include <SFML/Window/Event.hpp>
 

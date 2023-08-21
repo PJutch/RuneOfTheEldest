@@ -16,7 +16,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef XP_MANAGER_HPP_
 #define XP_MANAGER_HPP_
 
-#include "Skill.hpp"
+#include "Skill/Skill.hpp"
 
 #include "World.hpp"
 

@@ -16,9 +16,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef ENEMY_AI_HPP_
 #define ENEMY_AI_HPP_
 
-#include "fwd.hpp"
-#include "AiState.hpp"
-#include "Sound.hpp"
+#include "../fwd.hpp"
+#include "../AiState.hpp"
+#include "../Sound.hpp"
 #include "Controller.hpp"
 
 #include "render/AssetManager.hpp"

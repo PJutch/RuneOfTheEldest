@@ -15,8 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "ActorSpawner.hpp"
 
-#include "EnemyAi.hpp"
-#include "PlayerController.hpp"
+#include "Controller/EnemyAi.hpp"
+#include "Controller/PlayerController.hpp"
 
 #include "util/parse.hpp"
 #include "util/filesystem.hpp"

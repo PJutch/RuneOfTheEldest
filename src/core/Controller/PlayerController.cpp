@@ -15,8 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "PlayerController.hpp"
 
-#include "World.hpp"
-#include "Actor.hpp"
+#include "../World.hpp"
+#include "../Actor.hpp"
 
 #include "util/Keyboard.hpp"
 

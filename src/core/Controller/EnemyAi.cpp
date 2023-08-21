@@ -15,7 +15,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "EnemyAi.hpp"
 
-#include "Actor.hpp"
+#include "../Actor.hpp"
 
 #include "util/pathfinding.hpp"
 #include "util/raycast.hpp"
