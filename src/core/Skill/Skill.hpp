@@ -38,7 +38,7 @@ namespace core {
 		}
 
 		/// Actor damage multiplier
-		virtual double damageMul(const Actor& target) const {
+		virtual double damageMul([[maybe_unused]] const Actor& target) const {
 			return 1;
 		}
 
@@ -73,7 +73,7 @@ namespace core {
 		virtual std::unique_ptr<Skill> clone() const = 0;
 
 		/// Sets Actor owning this skill
-		virtual void owner(std::weak_ptr<Actor> newOwner) {}
+		virtual void owner([[maybe_unused]] std::weak_ptr<Actor> newOwner) {}
 
 		/// Skill icon for level up menu
 		[[nodiscard]] const sf::Texture& icon() const {

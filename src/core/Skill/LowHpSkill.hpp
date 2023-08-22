@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Skill.hpp"
 
-#include "Actor.hpp"
+#include "../Actor.hpp"
 
 namespace core {
 	/// @brief Applies if Actor has low hp
@@ -30,7 +30,7 @@ namespace core {
 			       double newAccuracyBonus, double newEvasionBonus,
 			       const sf::Texture& icon_, std::string_view name_) :
 			Skill{icon_, name_}, regenMul_{newRegenMul}, damageMul_{newDamageMul},
-			accuracyBonus_{newSpeedBonus}, evasionBonus_{newEvasionBonus},
+			accuracyBonus_{newAccuracyBonus}, evasionBonus_{newEvasionBonus},
 			speedBonus_{newSpeedBonus}, xpMul_{newXpMul} {}
 
 		double regenMul() const final {

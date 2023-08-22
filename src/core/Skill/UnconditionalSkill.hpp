@@ -24,11 +24,12 @@ namespace core {
 	/// Default skill type.
 	class UnconditionalSkill : public Skill {
 	public:
-		UnconditionalSkill(double newRegenMul, double newDamageMul, double newSpeedBonus, double newAccuracyBonus, double newEvasionBonus, 
+		UnconditionalSkill(double newRegenMul, double newDamageMul, double newSpeedBonus,
+			               double newAccuracyBonus, double newEvasionBonus, 
 			               double newXpMul, double hpMul,
 			               const sf::Texture& icon_, std::string_view name_) :
 			Skill{icon_, name_}, regenMul_{newRegenMul}, damageMul_{newDamageMul}, 
-			accuracyBonus_{newSpeedBonus}, evasionBonus_{newEvasionBonus},
+			accuracyBonus_{newAccuracyBonus}, evasionBonus_{newEvasionBonus},
 			speedBonus_{newSpeedBonus}, xpMul_{newXpMul}, hpMul_{hpMul} {}
 
 		double regenMul() const final {

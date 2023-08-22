@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Skill.hpp"
 
-#include "Actor.hpp"
+#include "../Actor.hpp"
 
 namespace core {
 	/// @brief Applies if attacked Actor has full hp
