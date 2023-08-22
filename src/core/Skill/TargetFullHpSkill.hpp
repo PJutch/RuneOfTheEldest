@@ -21,6 +21,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Actor.hpp"
 
 namespace core {
+	/// @brief Applies if attacked Actor has full hp
+	/// @details Type in skill file is "targetFullHp"
 	class TargetFullHpSkill : public Skill {
 	public:
 		TargetFullHpSkill(double newDamageMul, const sf::Texture& icon_, std::string_view name_) :

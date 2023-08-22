@@ -19,6 +19,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Skill.hpp"
 
 namespace core {
+	/// @brief Always applies
+	/// @details Type in skill file is "unconditional".
+	/// Default skill type.
 	class UnconditionalSkill : public Skill {
 	public:
 		UnconditionalSkill(double newRegenMul, double newDamageMul, double newSpeedBonus, double newAccuracyBonus, double newEvasionBonus, 

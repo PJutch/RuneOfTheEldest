@@ -25,30 +25,43 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/random.hpp"
 
 namespace core {
+	/// Manages player xp and leveling up
 	class XpManager {
 	public:
 		XpManager() = default;
 		XpManager(std::shared_ptr<World> world_) : world{std::move(world_)} {}
 		XpManager(std::shared_ptr<World> world, std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine_);
 
+		/// Add given amount of xp to player
 		void addXp(double dxp);
 
+		/// Checks if player has enough xp to level up
 		bool canLevelUp() {
 			return xp >= xpUntilNextLvl;
 		}
 
+		/// @brief Skills for player to choose from.
+		/// @details Randomly selects 3 skills for player.
+		/// Return same skills on each call.
+		/// Resets on level up
 		std::span<Skill const* const> availableSkills() {
 			if (availableSkills_.empty())
 				generateAvailableSkills();
 			return availableSkills_;
 		}
 
+		/// @brief Levels up player
+		/// @details Add clone of selected skill to player
+		/// Resets available skills
+		/// Increases xp requirements for next level
 		void levelUp(const Skill* skill);
 
+		/// Returns colected percent of xp for next level
 		double xpPercentUntilNextLvl() {
 			return xp / xpUntilNextLvl;
 		}
 
+		/// Resets xp and xp requirements
 		void onGenerate() {
 			xp = 0;
 			xpUntilNextLvl = 1;

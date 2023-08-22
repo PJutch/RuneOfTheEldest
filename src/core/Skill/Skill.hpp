@@ -26,47 +26,61 @@ namespace sf {
 #include <memory>
 
 namespace core {
+	/// Skill modifying Actor stats
 	class Skill {
 	public:
 		Skill(const sf::Texture& newIcon, std::string_view newName) : icon_{&newIcon}, name_{newName} {}
 		virtual ~Skill() = default;
 
+		/// Actor regen multiplier
 		virtual double regenMul() const {
 			return 1;
 		}
 
+		/// Actor damage multiplier
 		virtual double damageMul(const Actor& target) const {
 			return 1;
 		}
 
+		/// @brief Bonus added to actor speed
+		/// @details Actor turn delay is stats.turnDelay / sum(skill.speedBonus())
 		virtual double speedBonus() const {
 			return 0;
 		}
 
+		/// Multiplier for xp recieved by Actor
 		virtual double xpMul() const {
 			return 1;
 		}
 
+		/// @brief Actor max hp and hp multiplier
+		/// @warning Actor hp are recomputed only on skill addition
 		virtual double hpMul() const {
 			return 1;
 		}
 
+		/// Added to actor accuracy
 		virtual double accuracyBonus() const {
 			return 0;
 		}
 
+		/// Added to actor avasion
 		virtual double evasionBonus() const {
 			return 0;
 		}
 
+		/// Copies this Skill
 		virtual std::unique_ptr<Skill> clone() const = 0;
 
+		/// Sets Actor owning this skill
 		virtual void owner(std::weak_ptr<Actor> newOwner) {}
 
+		/// Skill icon for level up menu
 		[[nodiscard]] const sf::Texture& icon() const {
 			return *icon_;
 		}
 
+		/// Skill name for level up menu
 		[[nodiscard]] const std::string& name() const {
 			return name_;
 		}

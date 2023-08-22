@@ -21,6 +21,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Actor.hpp"
 
 namespace core {
+	/// @brief Applies if Actor has low hp
+	/// @detail Actor hp should be less than 50% of his max hp
+	/// Type in skill file is "lowHp"
 	class LowHpSkill : public Skill {
 	public:
 		LowHpSkill(double newRegenMul, double newDamageMul, double newSpeedBonus, double newXpMul, 
