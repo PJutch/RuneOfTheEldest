@@ -100,7 +100,6 @@ void Game::generate() {
     generationLogger->info("Generating stairs...");
     world->generateStairs();
 
-    generationLogger->info("Spawning actors...");
     actorSpawner->spawn();
 
     generationLogger->info("Finished");

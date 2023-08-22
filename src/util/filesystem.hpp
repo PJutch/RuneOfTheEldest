@@ -49,6 +49,15 @@ namespace util {
 			callback(file);
 		});
 	}
+
+	/// Calls callback with each file stream and path in given directory
+	template <typename Callback> requires std::invocable<Callback, std::ifstream&, const std::filesystem::path&>
+	void forEachFile(const std::filesystem::path& path, Callback&& callback) {
+		forEachFile(path, [&callback](const std::filesystem::path& filePath) {
+			std::ifstream file{filePath};
+			callback(file, filePath);
+		});
+	}
 }
 
 #endif

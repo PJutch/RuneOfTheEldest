@@ -32,7 +32,8 @@ namespace core {
 	public:
 		ActorSpawner(std::shared_ptr<World> world, std::shared_ptr<XpManager> xpManager, 
 			         std::shared_ptr<render::PlayerMap> playerMap,
-			         std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine, 
+			         std::shared_ptr<render::AssetManager> assets, util::LoggerFactory& loggerFactory, 
+			         util::RandomEngine& randomEngine,
 			         std::shared_ptr<util::Raycaster> raycaster);
 
 		void spawn();
@@ -42,6 +43,8 @@ namespace core {
 		std::shared_ptr<render::PlayerMap> playerMap;
 		std::shared_ptr<util::Raycaster> raycaster;
 		util::RandomEngine* randomEngine;
+
+		std::shared_ptr<spdlog::logger> logger;
 
 		struct ActorData {
 			Actor::Stats stats{};

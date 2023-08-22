@@ -47,11 +47,15 @@ namespace core {
 
 	ActorSpawner::ActorSpawner(std::shared_ptr<World> world_, std::shared_ptr<XpManager> xpManager_, 
 		                       std::shared_ptr<render::PlayerMap> playerMap_,
-							   std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine_,
+							   std::shared_ptr<render::AssetManager> assets, util::LoggerFactory& loggerFactory, 
+		                       util::RandomEngine& randomEngine_,
 							   std::shared_ptr<util::Raycaster> raycaster_) :
-		world{ std::move(world_) }, xpManager{ std::move(xpManager_) }, playerMap {std::move(playerMap_)},
-			raycaster{ std::move(raycaster_) }, randomEngine{ &randomEngine_ } {
-		util::forEachFile("resources/Actors/", [this, &assets](std::ifstream& file) {
+			world{ std::move(world_) }, xpManager{ std::move(xpManager_) }, playerMap {std::move(playerMap_)},
+			raycaster{ std::move(raycaster_) }, randomEngine{ &randomEngine_ }, logger{loggerFactory.create("actors")} {
+		logger->info("Loading...");
+		util::forEachFile("resources/Actors/", [this, &assets](std::ifstream& file, const std::filesystem::path& path) {
+			logger->info("Loading spec from {} ...", path.generic_string());
+
 			auto params = util::parseMapping(file);
 
 			actorData.emplace_back();
@@ -77,7 +81,8 @@ namespace core {
 
 			if (!params.empty())
 				throw UnknownParamsError{ params };
-			});
+		});
+		logger->info("Loaded");
 	}
 
 	namespace {
@@ -98,6 +103,7 @@ namespace core {
 	}
 
 	void ActorSpawner::spawn() {
+		logger->info("Spawning...");
 		for (int level = 0; level < world->tiles().shape().z; ++level)
 			for (const ActorData& data : actorData) 
 				if (data.minLevel <= level && (!data.maxLevel || level <= data.maxLevel)) {
@@ -109,5 +115,6 @@ namespace core {
 						world->addActor(std::move(enemy));
 					}
 			}
+		logger->info("Spawned");
 	}
 }

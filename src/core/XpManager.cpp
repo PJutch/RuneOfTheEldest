@@ -49,9 +49,13 @@ namespace {
 }
 
 namespace core {
-	XpManager::XpManager(std::shared_ptr<World> world_, std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine_) :
-			world{std::move(world_)}, randomEngine{&randomEngine_} {
-		util::forEachFile("resources/Skills/", [this, &assets](std::ifstream& file) {
+	XpManager::XpManager(std::shared_ptr<World> world_, std::shared_ptr<render::AssetManager> assets, 
+		                 util::LoggerFactory& loggerFactory, util::RandomEngine& randomEngine_) :
+			world{std::move(world_)}, randomEngine{&randomEngine_}, logger{loggerFactory.create("xp")} {
+		logger->info("Loading...");
+		util::forEachFile("resources/Skills/", [this, &assets](std::ifstream& file, const std::filesystem::path& path) {
+			logger->info("Loading Skill spec from {} ...", path.generic_string());
+
 			auto params = util::parseMapping(file);
 
 			std::string type = "unconditional";
@@ -98,7 +102,8 @@ namespace core {
 
 			if (type == "unconditional")
 				skills.push_back(std::make_unique<UnconditionalSkill>(
-					regenMul, damageMul, speedBonus, accuracyBonus, evasionBonus, xpMul, hpMul,
+					regenMul, damageMul, speedBonus, 
+					accuracyBonus, evasionBonus, xpMul, hpMul,
 					icon, name));
 			else if (type == "lowHp")
 				skills.push_back(std::make_unique<LowHpSkill>(
@@ -110,17 +115,24 @@ namespace core {
 			else
 				throw UnknownSkillTypeError(type);
 		});
+		logger->info("Loaded");
 	}
 
 	void XpManager::generateAvailableSkills() {
+		logger->info("Selecting available skills...");
 		availableSkills_.resize(3);
 		for (const Skill*& skill : availableSkills_) {
 			auto iskill = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(skills) - 1}(*randomEngine);
 			skill = skills[iskill].get();
+			
+			logger->info("Selected skill #{} {}", iskill, skill->name());
 		}
 	}
 
 	void XpManager::levelUp(const Skill* skill) {
+		logger->info("Finished level up");
+		logger->info("Player selected skill {}", skill->name());
+
 		world->player().addSkill(skill->clone());
 		availableSkills_.clear();
 

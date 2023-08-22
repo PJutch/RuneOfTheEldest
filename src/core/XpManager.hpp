@@ -30,7 +30,8 @@ namespace core {
 	public:
 		XpManager() = default;
 		XpManager(std::shared_ptr<World> world_) : world{std::move(world_)} {}
-		XpManager(std::shared_ptr<World> world, std::shared_ptr<render::AssetManager> assets, util::RandomEngine& randomEngine_);
+		XpManager(std::shared_ptr<World> world, std::shared_ptr<render::AssetManager> assets, 
+			      util::LoggerFactory& loggerFactory, util::RandomEngine& randomEngine_);
 
 		/// Add given amount of xp to player
 		void addXp(double dxp);
@@ -75,6 +76,8 @@ namespace core {
 
 		std::shared_ptr<World> world;
 		util::RandomEngine* randomEngine = nullptr;
+
+		std::shared_ptr<spdlog::logger> logger;
 
 		void generateAvailableSkills();
 	};
