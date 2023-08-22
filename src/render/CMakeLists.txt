@@ -17,7 +17,10 @@ include(../../cmake/DefaultCompilerOptions.cmake)
 
 add_library(render STATIC)
 
-target_sources(render PRIVATE FreeCamera.cpp SwitchableCamera.cpp AssetManager.cpp Renderer.cpp PlayerMap.cpp)
+target_sources(render PRIVATE AssetManager.cpp Renderer.cpp PlayerMap.cpp)
+
+add_subdirectory(Camera)
+target_link_libraries(render PRIVATE Camera)
 
 setDefaultCompilerOptions(render)
 

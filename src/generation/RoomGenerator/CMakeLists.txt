@@ -13,17 +13,13 @@
 # You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 # If not, see <https://www.gnu.org/licenses/>.
 
-include(../../cmake/DefaultCompilerOptions.cmake)
+include(../../../cmake/DefaultCompilerOptions.cmake)
 
-add_library(generation STATIC)
+add_library(RoomGenerator STATIC)
 
-target_sources(generation PRIVATE DungeonGenerator.cpp
-                                  Area.cpp)
+target_sources(RoomGenerator PRIVATE BasicRoomGenerator.cpp RandomSizeRoomGenerator.cpp)
 
-add_subdirectory(RoomGenerator)
-target_link_libraries(generation PRIVATE RoomGenerator)
+setDefaultCompilerOptions(RoomGenerator)
 
-setDefaultCompilerOptions(generation)
-
-target_include_directories(generation PRIVATE ..)
-target_link_libraries(generation PRIVATE dependencies)
+target_include_directories(RoomGenerator PRIVATE ../..)
+target_link_libraries(RoomGenerator PRIVATE dependencies generation)

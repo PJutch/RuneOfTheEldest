@@ -17,13 +17,13 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "core/ActorSpawner.hpp"
 
-#include "generation/RandomSizeRoomGenerator.hpp"
+#include "generation/RoomGenerator/RandomSizeRoomGenerator.hpp"
 #include "generation/DungeonGenerator.hpp"
 
 #include "render/Renderer.hpp"
-#include "render/FreeCamera.hpp"
-#include "render/PlayerLockedCamera.hpp"
-#include "render/SwitchableCamera.hpp"
+#include "render/Camera/FreeCamera.hpp"
+#include "render/Camera/PlayerLockedCamera.hpp"
+#include "render/Camera/SwitchableCamera.hpp"
 
 #include "util/log.hpp"
 #include "util/Exception.hpp"

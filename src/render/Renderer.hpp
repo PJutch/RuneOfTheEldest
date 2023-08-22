@@ -16,7 +16,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef RENDERER_HPP_
 #define RENDERER_HPP_
 
-#include "Camera.hpp"
+#include "Camera/Camera.hpp"
 #include "View.hpp"
 #include "AssetManager.hpp"
 #include "PlayerMap.hpp"

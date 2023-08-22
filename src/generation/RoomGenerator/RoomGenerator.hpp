@@ -16,7 +16,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef ROOM_GENERATOR_HPP_
 #define ROOM_GENERATOR_HPP_
 
-#include "Area.hpp"
+#include "../Area.hpp"
 
 #include <memory>
 

@@ -13,7 +13,7 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 If not, see <https://www.gnu.org/licenses/>. */
 
-#include "generation/BasicRoomGenerator.hpp"
+#include "generation/RoomGenerator/BasicRoomGenerator.hpp"
 
 #include "core/World.hpp"
 
