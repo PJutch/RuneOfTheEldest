@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 # If not, see <https://www.gnu.org/licenses/>.
 
-include(../../cmake/DefaultCompilerOptions.cmake)
+include(${PROJECT_SOURCE_DIR}/cmake/DefaultCompilerOptions.cmake)
 
 add_library(core STATIC)
 
@@ -24,5 +24,5 @@ target_link_libraries(core PRIVATE Controller)
 
 setDefaultCompilerOptions(core)
 
-target_include_directories(core PRIVATE ..)
+target_include_directories(core PRIVATE ${PROJECT_SOURCE_DIR}/src)
 target_link_libraries(core PRIVATE dependencies util render)

@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 # If not, see <https://www.gnu.org/licenses/>.
 
-include(../../cmake/DefaultCompilerOptions.cmake)
+include(${PROJECT_SOURCE_DIR}/cmake/DefaultCompilerOptions.cmake)
 
 add_library(generation STATIC)
 
@@ -25,5 +25,5 @@ target_link_libraries(generation PRIVATE RoomGenerator)
 
 setDefaultCompilerOptions(generation)
 
-target_include_directories(generation PRIVATE ..)
+target_include_directories(generation PRIVATE ${PROJECT_SOURCE_DIR}/src)
 target_link_libraries(generation PRIVATE dependencies)

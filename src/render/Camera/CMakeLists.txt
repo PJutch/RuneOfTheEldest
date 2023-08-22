@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 # If not, see <https://www.gnu.org/licenses/>.
 
-include(../../../cmake/DefaultCompilerOptions.cmake)
+include(${PROJECT_SOURCE_DIR}/cmake/DefaultCompilerOptions.cmake)
 
 add_library(Camera STATIC)
 
@@ -21,5 +21,5 @@ target_sources(Camera PRIVATE FreeCamera.cpp SwitchableCamera.cpp)
 
 setDefaultCompilerOptions(Camera)
 
-target_include_directories(Camera PRIVATE ../..)
+target_include_directories(Camera PRIVATE ${PROJECT_SOURCE_DIR}/src)
 target_link_libraries(Camera PRIVATE dependencies util render)
