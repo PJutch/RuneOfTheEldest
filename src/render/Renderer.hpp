@@ -16,6 +16,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef RENDERER_HPP_
 #define RENDERER_HPP_
 
+#include "LevelUpScreen.hpp"
+
 #include "Camera/Camera.hpp"
 #include "View.hpp"
 #include "AssetManager.hpp"
@@ -57,6 +59,11 @@ namespace render {
             renderAreas_ = newRenderAreas;
         }
 
+        /// If true bsp areas created by dungeon generation are rendered
+        bool shouldRenderAreas() noexcept {
+            return renderAreas_;
+        }
+
         PlayerMap& playerMap() noexcept {
             return *playerMap_;
         }
@@ -65,15 +72,13 @@ namespace render {
             return *playerMap_;
         }
 
-        /// @brief Passes input Event to Renderer components such as Camera
-        /// @returns true if Event shouldn't be passed to other objects
-        bool handleEvent(sf::Event event) {
-            camera->handleEvent(event);
-            return camera->shouldStealControl();
+        const Camera& camera() const noexcept {
+            return *camera_;
         }
 
-        /// @brief Handles events for skill selection
-        void handleLevelupScreenEvent(sf::Event event);
+        Camera& camera() noexcept {
+            return *camera_;
+        }
 
         /// Updates Renderer components such as Camera
         void update(sf::Time elapsedTime);
@@ -81,31 +86,44 @@ namespace render {
         /// Notifies Renderer components such as PlayerMap about world generation
         void onGenerate() {
             playerMap_->onGenerate();
-            camera->reset();
+            camera_->reset();
         }
 
-        /// Renders game world
-        void draw();
+        void clear() {
+            window->clear(sf::Color::Black);
+        }
 
-        /// Renders "You died screen"
-        void drawDeathScreen();
+        void display() {
+            window->display();
+        }
+
+        void setWorldScreenView() noexcept {
+            window->setView(worldScreenView());
+        }
+
+        void setHudView() noexcept {
+            window->setView(hudView());
+        }
+
+        sf::Vector2f viewSize() const noexcept {
+            return window->getView().getSize();
+        }
+
+        sf::Vector2f pixelToCoords(sf::Vector2i pixel) const noexcept {
+            return window->mapPixelToCoords(pixel);
+        }
 
         std::shared_ptr<AssetManager> assets() const noexcept {
             return assets_;
         }
-    private:
-        bool renderAreas_ = false;
 
-        std::shared_ptr<Camera> camera;
-        std::shared_ptr<AssetManager> assets_;
-        std::shared_ptr<PlayerMap> playerMap_;
+        const AssetManager& assetsRef() const noexcept {
+            return *assets_;
+        }
 
-        std::shared_ptr<core::World> world;
-        std::shared_ptr<core::XpManager> xpManager;
-
-        std::shared_ptr<util::Raycaster> raycaster;
-
-        std::shared_ptr<sf::RenderWindow> window;
+        util::Raycaster& raycaster() const noexcept {
+            return *raycaster_;
+        }
 
         [[nodiscard]] sf::Vector2f toScreen(sf::Vector2i worldVector) const noexcept {
             return toScreen(util::geometry_cast<float>(worldVector));
@@ -117,39 +135,11 @@ namespace render {
 
         [[nodiscard]] sf::Vector2f toScreen(float worldX, float worldY) const noexcept {
             auto [tileX, tileY] = assets()->tileSize();
-            return { worldX * tileX, worldY * tileY };
+            return {worldX * tileX, worldY * tileY};
         }
 
         [[nodiscard]] sf::Vector2f toScreen(int worldX, int worldY) const noexcept {
             return toScreen(sf::Vector2i{worldX, worldY});
-        }
-
-        sf::View worldScreenView() noexcept {
-            auto cameraPos = toScreen(camera->position().xy());
-            return createFullscreenView(cameraPos, 512, window->getSize());
-        }
-
-        sf::View hudView() noexcept {
-            return createFullscreenView(1024.f, window->getSize());
-        }
-
-        void drawWorld();
-        void drawAreas(int level);
-        void drawTile(sf::Vector3i position);
-        void draw(PlayerMap::SeenActor actor);
-        void draw(core::Sound sound);
-
-        void drawHpBar(sf::Vector2f screenPosition, sf::Vector2f origin, double hp, double maxHp, sf::Vector2f maxSize, double colorMod = 1.0);
-        void drawSprite(sf::Vector2f screenPosition, sf::Vector2f origin, const sf::Texture& texture, double colorMod = 1.0, float scale = 1.0);
-
-        void drawInWorldRect(sf::IntRect rect,
-                sf::Color fillColor, sf::Color outlineColor, float outlineThickness) {
-            drawRect({toScreen(rect.top, rect.left), toScreen(rect.width, rect.height)},
-                     fillColor, outlineColor, outlineThickness);
-        }
-
-        void drawInWorldRect(sf::IntRect rect, sf::Color color) {
-            drawInWorldRect(rect, color, sf::Color::Transparent, 0.0f);
         }
 
         void drawRect(sf::FloatRect rect,
@@ -159,18 +149,65 @@ namespace render {
             drawRect(rect, color, sf::Color::Transparent, 0.0f);
         }
 
-        void drawHud() {
-            drawXpBar();
-            if (xpManager->canLevelUp())
-                drawLevelupScreen();
+        void drawInWorldRect(sf::IntRect rect,
+            sf::Color fillColor, sf::Color outlineColor, float outlineThickness) {
+            drawRect({toScreen(rect.top, rect.left), toScreen(rect.width, rect.height)},
+                fillColor, outlineColor, outlineThickness);
         }
 
-        void drawXpBar();
+        void drawInWorldRect(sf::IntRect rect, sf::Color color) {
+            drawInWorldRect(rect, color, sf::Color::Transparent, 0.0f);
+        }
 
+        void drawSprite(sf::Vector2f screenPosition, sf::Vector2f origin, const sf::Texture& texture, double colorMod = 1.0, float scale = 1.0);
+    
         void drawText(sf::Vector2f position, const std::string& text, sf::Color color, int characterSize);
+    private:
+        bool renderAreas_ = false;
 
-        void drawLevelupScreen();
+        std::shared_ptr<Camera> camera_;
+        std::shared_ptr<AssetManager> assets_;
+        std::shared_ptr<PlayerMap> playerMap_;
+
+        std::shared_ptr<core::World> world;
+        std::shared_ptr<core::XpManager> xpManager;
+
+        std::shared_ptr<util::Raycaster> raycaster_;
+
+        std::shared_ptr<sf::RenderWindow> window;
+
+        sf::View worldScreenView() noexcept {
+            auto cameraPos = toScreen(camera().position().xy());
+            return createFullscreenView(cameraPos, 512, window->getSize());
+        }
+
+        sf::View hudView() noexcept {
+            return createFullscreenView(1024.f, window->getSize());
+        }
     };
+
+    /// Renders game world
+    void draw(render::Renderer& renderer, const core::World& world, const core::XpManager& xpManager);
+
+    void draw(render::Renderer& renderer, const core::World& world);
+    void drawAreas(render::Renderer& renderer, const core::World& world, int level);
+    void drawTile(render::Renderer& renderer, const core::World& world, sf::Vector3i position);
+    void draw(render::Renderer& renderer, const core::World& world, PlayerMap::SeenActor actor);
+    void draw(render::Renderer& renderer, const core::World& world, core::Sound sound);
+
+    void drawHpBar(render::Renderer& renderer, const core::World& world, sf::Vector2f screenPosition, sf::Vector2f origin, double hp, double maxHp, sf::Vector2f maxSize, double colorMod = 1.0);
+    
+    void drawXpBar(render::Renderer& renderer, const core::World& world, const core::XpManager& xpManager);
+
+    inline void drawHud(render::Renderer& renderer, const core::World& world, const core::XpManager& xpManager) {
+        renderer.setHudView();
+        drawXpBar(renderer, world, xpManager);
+        if (xpManager.canLevelUp())
+            drawLevelupScreen(renderer, world, xpManager);
+    }
+
+    /// Renders "You died screen"
+    void drawDeathScreen(render::Renderer& renderer);
 }
 
 #endif

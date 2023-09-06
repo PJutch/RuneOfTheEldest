@@ -118,7 +118,7 @@ namespace core {
 		logger->info("Loaded");
 	}
 
-	void XpManager::generateAvailableSkills() {
+	void XpManager::generateAvailableSkills() const {
 		logger->info("Selecting available skills...");
 		availableSkills_.resize(3);
 		for (const Skill*& skill : availableSkills_) {

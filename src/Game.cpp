@@ -48,7 +48,7 @@ void Game::run() {
             handleEvent(event);
 
         if (!world->player().isAlive()) {
-            renderer().drawDeathScreen();
+            drawDeathScreen(renderer());
             continue;
         }
 
@@ -59,7 +59,7 @@ void Game::run() {
             renderer().update(elapsedTime);
         }
 
-        renderer().draw();   
+        render::draw(renderer(), *world, *xpManager);
     }
 }
 
@@ -78,11 +78,12 @@ void Game::handleEvent(sf::Event event) {
         }
 
     if (xpManager->canLevelUp()) {
-        renderer().handleLevelupScreenEvent(event);
+        render::handleLevelupScreenEvent(renderer(), *xpManager, event);
         return;
     }
        
-    if (renderer().handleEvent(event))
+    renderer().camera().handleEvent(event);
+    if (renderer().camera().shouldStealControl())
         return;
 
     world->player().controller().handleEvent(event);

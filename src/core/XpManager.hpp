@@ -37,7 +37,7 @@ namespace core {
 		void addXp(double dxp);
 
 		/// Checks if player has enough xp to level up
-		bool canLevelUp() {
+		bool canLevelUp() const noexcept {
 			return xp >= xpUntilNextLvl;
 		}
 
@@ -45,7 +45,7 @@ namespace core {
 		/// @details Randomly selects 3 skills for player.
 		/// Return same skills on each call.
 		/// Resets on level up
-		std::span<Skill const* const> availableSkills() {
+		std::span<Skill const* const> availableSkills() const {
 			if (availableSkills_.empty())
 				generateAvailableSkills();
 			return availableSkills_;
@@ -58,7 +58,7 @@ namespace core {
 		void levelUp(const Skill* skill);
 
 		/// Returns colected percent of xp for next level
-		double xpPercentUntilNextLvl() {
+		double xpPercentUntilNextLvl() const noexcept {
 			return xp / xpUntilNextLvl;
 		}
 
@@ -72,14 +72,14 @@ namespace core {
 		double xpUntilNextLvl = 1;
 
 		std::vector<std::unique_ptr<Skill>> skills;
-		std::vector<const Skill*> availableSkills_;
+		mutable std::vector<const Skill*> availableSkills_;
 
 		std::shared_ptr<World> world;
 		util::RandomEngine* randomEngine = nullptr;
 
 		std::shared_ptr<spdlog::logger> logger;
 
-		void generateAvailableSkills();
+		void generateAvailableSkills() const;
 	};
 }
 

@@ -32,70 +32,73 @@ namespace render {
         std::shared_ptr<core::XpManager> xpManager_,
         std::shared_ptr<util::Raycaster> raycaster_,
         std::shared_ptr<AssetManager> assets_) :
-        camera{std::move(camera)}, assets_{std::move(assets_)}, playerMap_{std::move(newPlayerMap)},
+        camera_{std::move(camera)}, assets_{std::move(assets_)}, playerMap_{std::move(newPlayerMap)},
         world{std::move(world_)}, xpManager{std::move(xpManager_)},
-        raycaster{std::move(raycaster_)}, window{std::move(window_)} {}
+        raycaster_{std::move(raycaster_)}, window{std::move(window_)} {}
 
-    void Renderer::drawWorld() {
-        for (int x = 0; x < world->tiles().shape().x; ++x)
-            for (int y = 0; y < world->tiles().shape().y; ++y)
-                drawTile({x, y, camera->position().level});
+    void draw(render::Renderer& renderer, const core::World& world) {
+        renderer.setWorldScreenView();
 
-        if (renderAreas_)
-            drawAreas(camera->position().level);
+        for (int x = 0; x < world.tiles().shape().x; ++x)
+            for (int y = 0; y < world.tiles().shape().y; ++y)
+                drawTile(renderer, world, {x, y, renderer.camera().position().level});
 
-        for (const auto& actor : playerMap_->seenActors())
-            draw(actor);
+        if (renderer.shouldRenderAreas())
+            drawAreas(renderer, world, renderer.camera().position().level);
 
-        for (core::Sound sound : playerMap_->recentSounds())
-            draw(sound);
+        for (const auto& actor : renderer.playerMap().seenActors())
+            draw(renderer, world, actor);
+
+        for (core::Sound sound : renderer.playerMap().recentSounds())
+            draw(renderer, world, sound);
     }
 
-    void Renderer::drawTile(sf::Vector3i position) {
-        const sf::Texture& texture = assets()->tileTexture(world->tiles()[position]);
-        sf::Vector2f screenPos = toScreen(util::getXY(position));
+    void drawTile(render::Renderer& renderer, const core::World& world, sf::Vector3i position) {
+        const sf::Texture& texture = renderer.assetsRef().tileTexture(world.tiles()[position]);
+        sf::Vector2f screenPos = renderer.toScreen(util::getXY(position));
 
-        switch (playerMap_->tileState(position)) {
-        case PlayerMap::TileState::VISIBLE: drawSprite(screenPos, {0, 0}, texture); break;
-        case PlayerMap::TileState::MEMORIZED: drawSprite(screenPos, {0, 0}, texture, 0.5); break;
+        switch (renderer.playerMap().tileState(position)) {
+        case PlayerMap::TileState::VISIBLE: renderer.drawSprite(screenPos, {0, 0}, texture); break;
+        case PlayerMap::TileState::MEMORIZED: renderer.drawSprite(screenPos, {0, 0}, texture, 0.5); break;
         case PlayerMap::TileState::UNSEEN: break;
         }
     }
 
-    void Renderer::drawAreas(int z) {
-        for (sf::IntRect area : world->areas(z))
-            drawInWorldRect(area, sf::Color::Transparent, sf::Color::Green, 1.0);
+    void drawAreas(render::Renderer& renderer, const core::World& world, int z) {
+        for (sf::IntRect area : world.areas(z))
+            renderer.drawInWorldRect(area, sf::Color::Transparent, sf::Color::Green, 1.0);
     }
 
-    void Renderer::draw(PlayerMap::SeenActor actor) {
-        bool seen = playerMap_->seeEverything() || raycaster->canSee(world->player().position(), actor.position);
+    void draw(render::Renderer& renderer, const core::World& world, PlayerMap::SeenActor actor) {
+        bool seen = renderer.playerMap().seeEverything() 
+                 || renderer.raycaster().canSee(world.player().position(), actor.position);
         double colorMod = seen ? 1.0 : 0.5;
 
-        if (actor.position.z != camera->position().level)
+        if (actor.position.z != renderer.camera().position().level)
             return;
 
         sf::Vector2f spriteSize = util::geometry_cast<float>(actor.texture->getSize());
-        sf::Vector2f tileSize = util::geometry_cast<float>(assets()->tileSize());
-        sf::Vector2f aiStateIconSize = util::geometry_cast<float>(assets()->aiStateIcon(actor.aiState).getSize());
+        sf::Vector2f tileSize = util::geometry_cast<float>(renderer.assetsRef().tileSize());
+        sf::Vector2f aiStateIconSize = util::geometry_cast<float>(renderer.assetsRef().aiStateIcon(actor.aiState).getSize());
         sf::Vector2f maxHpBarSize{spriteSize.x, 2.f};
 
-        sf::Vector2f topLeft = toScreen(util::getXY(actor.position)) + util::bottomMiddle(tileSize) - util::bottomMiddle(spriteSize);
+        sf::Vector2f topLeft = renderer.toScreen(util::getXY(actor.position)) + util::bottomMiddle(tileSize) - util::bottomMiddle(spriteSize);
 
-        drawSprite(topLeft, {0, 0}, *actor.texture, colorMod);
-        drawHpBar(topLeft + util::bottomLeft(spriteSize), util::bottomLeft(maxHpBarSize),
+        renderer.drawSprite(topLeft, {0, 0}, *actor.texture, colorMod);
+        drawHpBar(renderer, world, topLeft + util::bottomLeft(spriteSize), util::bottomLeft(maxHpBarSize),
             actor.hp, actor.maxHp, maxHpBarSize, colorMod);
-        drawSprite(topLeft + util::topRight(spriteSize), util::topRight(aiStateIconSize),
-            assets()->aiStateIcon(actor.aiState), colorMod);
+        renderer.drawSprite(topLeft + util::topRight(spriteSize), util::topRight(aiStateIconSize),
+            renderer.assetsRef().aiStateIcon(actor.aiState), colorMod);
     }
 
-    void Renderer::draw(core::Sound sound) {
-        if (raycaster->canSee(sound.position, world->player().position()))
+    void draw(render::Renderer& renderer, const core::World& world, core::Sound sound) {
+        if (renderer.raycaster().canSee(sound.position, world.player().position()))
             return;
 
-        if (sound.volume(world->player().position()) < 0.01)
+        if (sound.volume(world.player().position()) < 0.01)
             return;
 
-        drawSprite(toScreen(util::getXY(sound.position)), {0, 0}, assets()->soundIcon(sound.type, sound.isSourceOnPlayerSide));
+        renderer.drawSprite(renderer.toScreen(util::getXY(sound.position)), {0, 0}, renderer.assetsRef().soundIcon(sound.type, sound.isSourceOnPlayerSide));
     }
 
     void Renderer::drawRect(sf::FloatRect rect, sf::Color fillColor, sf::Color outlineColor, float outlineThickness) {
@@ -124,54 +127,44 @@ namespace render {
         window->draw(sprite);
     }
 
-    void Renderer::drawHpBar(sf::Vector2f screenPosition, sf::Vector2f origin,
-        double hp, double maxHp, sf::Vector2f maxSize, double colorMod) {
+    void drawHpBar(render::Renderer& renderer, const core::World& world, sf::Vector2f screenPosition, sf::Vector2f origin,
+                   double hp, double maxHp, sf::Vector2f maxSize, double colorMod) {
         double hpFraction = hp / maxHp;
         sf::Color color{static_cast<sf::Uint8>((1 - hpFraction) * colorMod * 255),
                          static_cast<sf::Uint8>(hpFraction * colorMod * 255), 0};
 
         sf::Vector2f size{static_cast<float>(hpFraction * maxSize.x), maxSize.y};
+        sf::FloatRect rect{screenPosition - origin, size};
 
-        sf::RectangleShape rectShape{size};
-        rectShape.setPosition(screenPosition);
-        rectShape.setOrigin(origin);
-
-        rectShape.setFillColor(color);
-
-        window->draw(rectShape);
+        renderer.drawRect(rect, color);
     }
 
-    void Renderer::draw() {
-        window->clear(sf::Color::Black);
-
-        window->setView(worldScreenView());
-        drawWorld();
-
-        window->setView(hudView());
-        drawHud();
-
-        window->display();
+    void draw(render::Renderer& renderer, const core::World& world, const core::XpManager& xpManager) {
+        renderer.clear();
+        draw(renderer, world);
+        drawHud(renderer, world, xpManager);
+        renderer.display();
     }
 
-    void Renderer::drawDeathScreen() {
-        window->clear(sf::Color::Black);
-        window->setView(hudView());
+    void drawDeathScreen(render::Renderer& renderer) {
+        renderer.clear();
+        renderer.setHudView();
 
-        auto [screenX, screenY] = window->getView().getSize();
+        auto [screenX, screenY] = renderer.viewSize();
 
         sf::Vector2f youDiedPos(screenX / 2, screenY / 2 - 150.f);
-        drawText(youDiedPos, "You died", sf::Color::Red, 300);
+        renderer.drawText(youDiedPos, "You died", sf::Color::Red, 300);
 
         sf::Vector2f continuePos(screenX / 2, screenY / 2 + 100.f);
-        drawText(continuePos, "Press any key to continue", sf::Color::Red, 50);
+        renderer.drawText(continuePos, "Press any key to continue", sf::Color::Red, 50);
 
-        window->display();
+        renderer.display();
     }
 
     void Renderer::drawText(sf::Vector2f position, const std::string& string, sf::Color color, int characterSize) {
         sf::Text text;
         text.setString(string);
-        text.setFont(assets()->font());
+        text.setFont(assetsRef().font());
         text.setFillColor(color);
         text.setCharacterSize(characterSize);
 
@@ -183,72 +176,16 @@ namespace render {
     }
 
     void Renderer::update(sf::Time elapsedTime) {
-        camera->update(elapsedTime);
+        camera_->update(elapsedTime);
         playerMap_->update();
     }
 
-    void Renderer::drawXpBar() {
-        double xpPercent = xpManager->xpPercentUntilNextLvl();
+    void drawXpBar(render::Renderer& renderer, const core::World& world, const core::XpManager& xpManager) {
+        double xpPercent = xpManager.xpPercentUntilNextLvl();
 
-        sf::Vector2f size{static_cast<float>(xpPercent * window->getSize().x), static_cast<float>(window->getSize().y / 128)};
+        sf::Vector2f size{static_cast<float>(xpPercent * renderer.viewSize().x), static_cast<float>(renderer.viewSize().y / 128)};
+        sf::FloatRect rect{0, renderer.viewSize().y - size.y, size.x, size.y};
 
-        sf::RectangleShape rectShape{size};
-        rectShape.setPosition(0, window->getView().getSize().y - size.y);
-
-        rectShape.setFillColor({255, 128, 0});
-
-        window->draw(rectShape);
-    }
-
-    namespace {
-        const float skillWidth = 256;
-        const float skillHeight = 256;
-    }
-
-    void Renderer::drawLevelupScreen() {
-        window->setView(hudView());
-
-        auto skills = xpManager->availableSkills();
-
-        sf::Vector2f screenSize = window->getView().getSize();
-
-        float leftBoundary = (screenSize.x - skillWidth * skills.size()) / 2;
-        float skillXCenter = leftBoundary + skillWidth / 2;
-        for (const core::Skill* skill : skills) {
-            drawRect({skillXCenter - skillWidth / 2, 300, skillHeight, 250},
-                sf::Color{32, 32, 32}, sf::Color{128, 128, 128}, 4.f);
-
-            const sf::Texture& icon = skill->icon();
-            drawSprite({skillXCenter, 3 * screenSize.y / 8}, util::geometry_cast<float>(icon.getSize()) / 2.f,
-                       icon, 1.0, 8.0);
-
-            drawText({skillXCenter, screenSize.y / 2}, skill->name(), sf::Color::White, 30);
-
-            skillXCenter += skillWidth;
-        }
-    }
-
-    void Renderer::handleLevelupScreenEvent(sf::Event event) {
-        if (event.type != event.MouseButtonPressed)
-            return;
-
-        sf::Vector2f clickPos = window->mapPixelToCoords({event.mouseButton.x, event.mouseButton.y});
-
-        auto skills = xpManager->availableSkills();
-
-        sf::Vector2f screenSize = window->getView().getSize();
-
-        float leftBoundary = (screenSize.x - skillWidth * skills.size()) / 2;
-        float skillXCenter = leftBoundary + skillWidth / 2;
-        for (const core::Skill* skill : skills) {
-            sf::FloatRect currentSkillRect{skillXCenter - skillWidth / 2, 300, skillWidth, skillHeight};
-
-            if (currentSkillRect.contains(clickPos)) {
-                xpManager->levelUp(skill);
-                return;
-            }
-
-            skillXCenter += skillWidth;
-        }
+        renderer.drawRect(rect, {255, 128, 0});
     }
 }
