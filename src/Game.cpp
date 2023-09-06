@@ -15,6 +15,11 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Game.hpp"
 
+#include "render/World.hpp"
+#include "render/DeathScreen.hpp"
+#include "render/Hud.hpp"
+#include "render/LevelUpScreen.hpp"
+
 #include "render/Renderer.hpp"
 #include "generation/DungeonGenerator.hpp"
 
@@ -47,19 +52,14 @@ void Game::run() {
         while (window->pollEvent(event))
             handleEvent(event);
 
-        if (!world->player().isAlive()) {
-            drawDeathScreen(renderer());
-            continue;
-        }
-
-        if (!xpManager->canLevelUp()) {
+        if (world->player().isAlive() && !xpManager->canLevelUp()) {
             world->update();
 
             sf::Time elapsedTime = clock.restart();
             renderer().update(elapsedTime);
         }
 
-        render::draw(renderer(), *world, *xpManager);
+        draw_();
     }
 }
 
@@ -107,4 +107,19 @@ void Game::generate() {
 
     renderer().onGenerate();
     xpManager->onGenerate();
+}
+
+void Game::draw_() {
+    renderer().clear();
+    if (!world->player().isAlive()) {
+        drawDeathScreen(renderer());
+    } else {
+        draw(renderer(), *world);
+
+        renderer().setHudView();
+        drawXpBar(renderer(), *xpManager);
+        if (xpManager->canLevelUp())
+            drawLevelupScreen(renderer(), *world, *xpManager);
+    }
+    renderer().display();
 }

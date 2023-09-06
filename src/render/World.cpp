@@ -1,0 +1,102 @@
+/* This file is part of the Rune of the Eldest.
+The Rune of the Eldest - Roguelike about the mage seeking for ancient knowledges
+Copyright (C) 2023  PJutch
+
+The Rune of the Eldest is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free Software Foundation,
+either version 3 of the License, or (at your option) any later version.
+
+The Rune of the Eldest is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
+If not, see <https://www.gnu.org/licenses/>. */
+
+#include "World.hpp"
+
+#include "Renderer.hpp"
+
+#include "core/World.hpp"
+
+namespace render {
+    void draw(Renderer& renderer, const core::World& world) {
+        renderer.setWorldScreenView();
+
+        for (int x = 0; x < world.tiles().shape().x; ++x)
+            for (int y = 0; y < world.tiles().shape().y; ++y)
+                drawTile(renderer, world, {x, y, renderer.camera().position().level});
+
+        if (renderer.shouldRenderAreas())
+            drawAreas(renderer, world, renderer.camera().position().level);
+
+        for (const auto& actor : renderer.playerMap().seenActors())
+            draw(renderer, world, actor);
+
+        for (core::Sound sound : renderer.playerMap().recentSounds())
+            draw(renderer, world, sound);
+    }
+
+    void drawTile(render::Renderer& renderer, const core::World& world, sf::Vector3i position) {
+        const sf::Texture& texture = renderer.assetsRef().tileTexture(world.tiles()[position]);
+        sf::Vector2f screenPos = renderer.toScreen(util::getXY(position));
+
+        switch (renderer.playerMap().tileState(position)) {
+        case PlayerMap::TileState::VISIBLE: renderer.drawSprite(screenPos, {0, 0}, texture); break;
+        case PlayerMap::TileState::MEMORIZED: renderer.drawSprite(screenPos, {0, 0}, texture, 0.5); break;
+        case PlayerMap::TileState::UNSEEN: break;
+        }
+    }
+
+    void drawAreas(render::Renderer& renderer, const core::World& world, int z) {
+        for (sf::IntRect area : world.areas(z))
+            renderer.drawInWorldRect(area, sf::Color::Transparent, sf::Color::Green, 1.0);
+    }
+
+    void draw(render::Renderer& renderer, const core::World& world, PlayerMap::SeenActor actor) {
+        bool seen = renderer.playerMap().seeEverything()
+                 || renderer.raycaster().canSee(world.player().position(), actor.position);
+        double colorMod = seen ? 1.0 : 0.5;
+
+        if (actor.position.z != renderer.camera().position().level)
+            return;
+
+        sf::Vector2f spriteSize = util::geometry_cast<float>(actor.texture->getSize());
+        sf::Vector2f tileSize = util::geometry_cast<float>(renderer.assetsRef().tileSize());
+        sf::Vector2f aiStateIconSize = util::geometry_cast<float>(renderer.assetsRef().aiStateIcon(actor.aiState).getSize());
+        sf::Vector2f maxHpBarSize{spriteSize.x, 2.f};
+
+        sf::Vector2f topLeft = renderer.toScreen(util::getXY(actor.position)) 
+                             + util::bottomMiddle(tileSize)
+                             - util::bottomMiddle(spriteSize);
+
+        renderer.drawSprite(topLeft, {0, 0}, *actor.texture, colorMod);
+        drawHpBar(renderer, topLeft + util::bottomLeft(spriteSize), util::bottomLeft(maxHpBarSize),
+            actor.hp, actor.maxHp, maxHpBarSize, colorMod);
+        renderer.drawSprite(topLeft + util::topRight(spriteSize), util::topRight(aiStateIconSize),
+            renderer.assetsRef().aiStateIcon(actor.aiState), colorMod);
+    }
+
+    void draw(render::Renderer& renderer, const core::World& world, core::Sound sound) {
+        if (renderer.raycaster().canSee(sound.position, world.player().position()))
+            return;
+
+        if (sound.volume(world.player().position()) < 0.01)
+            return;
+
+        const auto& icon = renderer.assetsRef().soundIcon(sound.type, sound.isSourceOnPlayerSide);
+        renderer.drawSprite(renderer.toScreen(util::getXY(sound.position)), {0, 0}, icon);
+    }
+
+    void drawHpBar(render::Renderer& renderer, sf::Vector2f screenPosition, sf::Vector2f origin,
+                   double hp, double maxHp, sf::Vector2f maxSize, double colorMod) {
+        double hpFraction = hp / maxHp;
+        sf::Color color{static_cast<sf::Uint8>((1 - hpFraction) * colorMod * 255),
+                        static_cast<sf::Uint8>(      hpFraction * colorMod * 255), 0};
+
+        sf::Vector2f size{static_cast<float>(hpFraction * maxSize.x), maxSize.y};
+        sf::FloatRect rect{screenPosition - origin, size};
+
+        renderer.drawRect(rect, color);
+    }
+}

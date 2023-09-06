@@ -16,8 +16,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef RENDERER_HPP_
 #define RENDERER_HPP_
 
-#include "LevelUpScreen.hpp"
-
 #include "Camera/Camera.hpp"
 #include "View.hpp"
 #include "AssetManager.hpp"
@@ -185,29 +183,6 @@ namespace render {
             return createFullscreenView(1024.f, window->getSize());
         }
     };
-
-    /// Renders game world
-    void draw(render::Renderer& renderer, const core::World& world, const core::XpManager& xpManager);
-
-    void draw(render::Renderer& renderer, const core::World& world);
-    void drawAreas(render::Renderer& renderer, const core::World& world, int level);
-    void drawTile(render::Renderer& renderer, const core::World& world, sf::Vector3i position);
-    void draw(render::Renderer& renderer, const core::World& world, PlayerMap::SeenActor actor);
-    void draw(render::Renderer& renderer, const core::World& world, core::Sound sound);
-
-    void drawHpBar(render::Renderer& renderer, const core::World& world, sf::Vector2f screenPosition, sf::Vector2f origin, double hp, double maxHp, sf::Vector2f maxSize, double colorMod = 1.0);
-    
-    void drawXpBar(render::Renderer& renderer, const core::World& world, const core::XpManager& xpManager);
-
-    inline void drawHud(render::Renderer& renderer, const core::World& world, const core::XpManager& xpManager) {
-        renderer.setHudView();
-        drawXpBar(renderer, world, xpManager);
-        if (xpManager.canLevelUp())
-            drawLevelupScreen(renderer, world, xpManager);
-    }
-
-    /// Renders "You died screen"
-    void drawDeathScreen(render::Renderer& renderer);
 }
 
 #endif

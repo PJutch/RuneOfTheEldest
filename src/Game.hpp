@@ -71,6 +71,7 @@ private:
 
     void handleEvent(sf::Event event);
     void generate();
+    void draw_();
 };
 
 #endif
