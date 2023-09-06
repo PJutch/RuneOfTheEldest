@@ -30,14 +30,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/Color.hpp>
-#include <SFML/Window/Event.hpp>
-#include <SFML/System/Time.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/System/Vector3.hpp>
 
-#include <array>
 #include <string_view>
-#include <filesystem>
 
 namespace render {
     /// Renders game world
@@ -77,9 +73,6 @@ namespace render {
         Camera& camera() noexcept {
             return *camera_;
         }
-
-        /// Updates Renderer components such as Camera
-        void update(sf::Time elapsedTime);
 
         /// Notifies Renderer components such as PlayerMap about world generation
         void onGenerate() {
@@ -159,7 +152,7 @@ namespace render {
 
         void drawSprite(sf::Vector2f screenPosition, sf::Vector2f origin, const sf::Texture& texture, double colorMod = 1.0, float scale = 1.0);
     
-        void drawText(sf::Vector2f position, const std::string& text, sf::Color color, int characterSize);
+        void drawText(sf::Vector2f position, std::string_view text, sf::Color color, int characterSize);
     private:
         bool renderAreas_ = false;
 

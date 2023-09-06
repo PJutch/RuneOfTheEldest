@@ -63,9 +63,9 @@ namespace render {
         window->draw(sprite);
     }
 
-    void Renderer::drawText(sf::Vector2f position, const std::string& string, sf::Color color, int characterSize) {
+    void Renderer::drawText(sf::Vector2f position, std::string_view string, sf::Color color, int characterSize) {
         sf::Text text;
-        text.setString(string);
+        text.setString(sf::String::fromUtf8(string.begin(), string.end()));
         text.setFont(assetsRef().font());
         text.setFillColor(color);
         text.setCharacterSize(characterSize);
@@ -75,10 +75,5 @@ namespace render {
         text.setPosition(position);
 
         window->draw(text);
-    }
-
-    void Renderer::update(sf::Time elapsedTime) {
-        camera_->update(elapsedTime);
-        playerMap_->update();
     }
 }

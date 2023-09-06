@@ -56,7 +56,8 @@ void Game::run() {
             world->update();
 
             sf::Time elapsedTime = clock.restart();
-            renderer().update(elapsedTime);
+            renderer().camera().update(elapsedTime);
+            renderer().playerMap().update();
         }
 
         draw_();
