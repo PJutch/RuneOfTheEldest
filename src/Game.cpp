@@ -34,13 +34,14 @@ Game::Game(std::shared_ptr<core::World> newWorld,
            std::unique_ptr<generation::DungeonGenerator> newDungeonGenerator,
            std::shared_ptr<sf::RenderWindow> window_,
            std::unique_ptr<render::Renderer> newRenderer,
+           std::shared_ptr<render::Camera> camera_,
            util::LoggerFactory& loggerFactory) :
         world{std::move(newWorld)},
         actorSpawner{std::move(actorSpawner_)},
         xpManager{std::move(xpManager_)},
         dungeonGenerator_{std::move(newDungeonGenerator)},
         window{std::move(window_)},
-        renderer_{std::move(newRenderer)},
+        renderer_{std::move(newRenderer)}, camera{std::move(camera_)},
         generationLogger{ loggerFactory.create("generation") } {}
 
 void Game::run() {
@@ -56,7 +57,7 @@ void Game::run() {
             world->update();
 
             sf::Time elapsedTime = clock.restart();
-            renderer().camera().update(elapsedTime);
+            camera->update(elapsedTime);
             renderer().playerMap().update();
         }
 
@@ -83,8 +84,8 @@ void Game::handleEvent(sf::Event event) {
         return;
     }
        
-    renderer().camera().handleEvent(event);
-    if (renderer().camera().shouldStealControl())
+    camera->handleEvent(event);
+    if (camera->shouldStealControl())
         return;
 
     world->player().controller().handleEvent(event);
@@ -107,6 +108,7 @@ void Game::generate() {
     generationLogger->info("Finished");
 
     renderer().onGenerate();
+    camera->reset();
     xpManager->onGenerate();
 }
 
@@ -115,7 +117,8 @@ void Game::draw_() {
     if (!world->player().isAlive()) {
         drawDeathScreen(renderer());
     } else {
-        draw(renderer(), *world);
+        renderer().setWorldScreenView(camera->position().xy());
+        draw(renderer(), *world, camera->position().level);
 
         renderer().setHudView();
         drawXpBar(renderer(), *xpManager);

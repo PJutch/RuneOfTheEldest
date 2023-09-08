@@ -53,18 +53,9 @@ namespace render {
             return *playerMap_;
         }
 
-        const Camera& camera() const noexcept {
-            return *camera_;
-        }
-
-        Camera& camera() noexcept {
-            return *camera_;
-        }
-
         /// Notifies Renderer components such as PlayerMap about world generation
         void onGenerate() {
             playerMap_->onGenerate();
-            camera_->reset();
         }
 
         void clear() {
@@ -75,8 +66,8 @@ namespace render {
             window->display();
         }
 
-        void setWorldScreenView() noexcept {
-            window->setView(worldScreenView());
+        void setWorldScreenView(sf::Vector2f cameraPos) noexcept {
+            window->setView(worldScreenView(cameraPos));
         }
 
         void setHudView() noexcept {
@@ -133,15 +124,13 @@ namespace render {
     
         void drawText(sf::Vector2f position, std::string_view text, sf::Color color, int characterSize);
     private:
-        std::shared_ptr<Camera> camera_;
         std::shared_ptr<AssetManager> assets_;
         std::shared_ptr<PlayerMap> playerMap_;
 
         std::shared_ptr<sf::RenderWindow> window;
 
-        sf::View worldScreenView() noexcept {
-            auto cameraPos = toScreen(camera().position().xy());
-            return createFullscreenView(cameraPos, 512, window->getSize());
+        sf::View worldScreenView(sf::Vector2f cameraPos) noexcept {
+            return createFullscreenView(toScreen(cameraPos), 512, window->getSize());
         }
 
         sf::View hudView() noexcept {

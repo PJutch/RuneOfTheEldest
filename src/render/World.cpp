@@ -20,17 +20,15 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "core/World.hpp"
 
 namespace render {
-    void draw(Renderer& renderer, const core::World& world) {
-        renderer.setWorldScreenView();
-
+    void draw(Renderer& renderer, const core::World& world, int z) {
         for (int x = 0; x < world.tiles().shape().x; ++x)
             for (int y = 0; y < world.tiles().shape().y; ++y)
-                drawTile(renderer, world, {x, y, renderer.camera().position().level});
+                drawTile(renderer, world, {x, y, z});
 
-        drawAreas(renderer, world, renderer.camera().position().level);
+        drawAreas(renderer, world, z);
 
         for (const auto& actor : renderer.playerMap().seenActors())
-            draw(renderer, world, actor);
+            draw(renderer, world, z, actor);
 
         for (core::Sound sound : renderer.playerMap().recentSounds())
             draw(renderer, world, sound);
@@ -56,11 +54,11 @@ namespace render {
             renderer.drawInWorldRect(area, sf::Color::Transparent, sf::Color::Green, 1.0);
     }
 
-    void draw(render::Renderer& renderer, const core::World& world, PlayerMap::SeenActor actor) {
-        double colorMod = renderer.playerMap().canSee(actor.position) ? 1.0 : 0.5;
-
-        if (actor.position.z != renderer.camera().position().level)
+    void draw(render::Renderer& renderer, const core::World& world, int z, PlayerMap::SeenActor actor) {
+        if (actor.position.z != z)
             return;
+
+        double colorMod = renderer.playerMap().canSee(actor.position) ? 1.0 : 0.5;
 
         sf::Vector2f spriteSize = util::geometry_cast<float>(actor.texture->getSize());
         sf::Vector2f tileSize = util::geometry_cast<float>(renderer.assets().tileSize());

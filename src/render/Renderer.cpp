@@ -24,7 +24,7 @@ namespace render {
             std::shared_ptr<PlayerMap> newPlayerMap,
             std::shared_ptr<sf::RenderWindow> window_,
             std::shared_ptr<AssetManager> assets_) :
-        camera_{std::move(camera)}, assets_{std::move(assets_)}, playerMap_{std::move(newPlayerMap)},
+        assets_{std::move(assets_)}, playerMap_{std::move(newPlayerMap)},
         window{std::move(window_)} {}
 
     void Renderer::drawRect(sf::FloatRect rect, sf::Color fillColor, sf::Color outlineColor, float outlineThickness) {

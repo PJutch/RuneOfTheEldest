@@ -26,10 +26,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <SFML/System/Vector3.hpp>
 
 namespace render {
-    void draw(Renderer& renderer, const core::World& world);
+    void draw(Renderer& renderer, const core::World& world, int z);
     void drawAreas(Renderer& renderer, const core::World& world, int level);
     void drawTile(Renderer& renderer, const core::World& world, sf::Vector3i position);
-    void draw(Renderer& renderer, const core::World& world, PlayerMap::SeenActor actor);
+    void draw(Renderer& renderer, const core::World& world, int z, PlayerMap::SeenActor actor);
     void draw(Renderer& renderer, const core::World& world, core::Sound sound);
     void drawHpBar(Renderer& renderer, sf::Vector2f screenPosition, sf::Vector2f origin, 
                    double hp, double maxHp, sf::Vector2f maxSize, double colorMod = 1.0);
