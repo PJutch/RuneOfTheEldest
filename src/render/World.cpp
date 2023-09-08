@@ -19,6 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Primitives.hpp"
 #include "coords.hpp"
 #include "PlayerMap.hpp"
+#include "AssetManager.hpp"
 
 #include "core/World.hpp"
 #include "core/Sound.hpp"
@@ -28,9 +29,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace render {
     namespace {
-        void drawTile(render::Renderer& renderer, const core::World& world, const render::PlayerMap& playerMap,
+        void drawTile(render::Renderer& renderer, const AssetManager& assets,
+                      const core::World& world, const render::PlayerMap& playerMap,
             sf::Vector3i position) {
-            const sf::Texture& texture = renderer.assets().tileTexture(world.tiles()[position]);
+            const sf::Texture& texture = assets.tileTexture(world.tiles()[position]);
             sf::Vector2f screenPos = toScreen(util::getXY(position));
 
             switch (playerMap.tileState(position)) {
@@ -49,15 +51,16 @@ namespace render {
                 drawInWorldRect(renderer.target(), area, sf::Color::Transparent, sf::Color::Green, 1.0);
         }
 
-        void draw(render::Renderer& renderer, const core::World& world, const render::PlayerMap& playerMap,
-            core::Sound sound) {
+        void draw(render::Renderer& renderer, const AssetManager& assets,
+                  const core::World& world, const render::PlayerMap& playerMap,
+                  core::Sound sound) {
             if (playerMap.canSee(sound.position))
                 return;
 
             if (sound.volume(world.player().position()) < 0.01)
                 return;
 
-            const auto& icon = renderer.assets().soundIcon(sound.type, sound.isSourceOnPlayerSide);
+            const auto& icon = assets.soundIcon(sound.type, sound.isSourceOnPlayerSide);
             drawSprite(renderer.target(), toScreen(util::getXY(sound.position)), {0, 0}, icon);
         }
 
@@ -73,7 +76,8 @@ namespace render {
             drawRect(renderer.target(), rect, color);
         }
 
-        void draw(render::Renderer& renderer, const core::World& world, const render::PlayerMap& playerMap, int z,
+        void draw(render::Renderer& renderer, const AssetManager& assets, 
+                  const core::World& world, const render::PlayerMap& playerMap, int z,
             PlayerMap::SeenActor actor) {
             if (actor.position.z != z)
                 return;
@@ -81,8 +85,8 @@ namespace render {
             double colorMod = playerMap.canSee(actor.position) ? 1.0 : 0.5;
 
             sf::Vector2f spriteSize = util::geometry_cast<float>(actor.texture->getSize());
-            sf::Vector2f tileSize = util::geometry_cast<float>(renderer.assets().tileSize());
-            sf::Vector2f aiStateIconSize = util::geometry_cast<float>(renderer.assets().aiStateIcon(actor.aiState).getSize());
+            sf::Vector2f tileSize = util::geometry_cast<float>(assets.tileSize());
+            sf::Vector2f aiStateIconSize = util::geometry_cast<float>(assets.aiStateIcon(actor.aiState).getSize());
             sf::Vector2f maxHpBarSize{spriteSize.x, 2.f};
 
             sf::Vector2f topLeft = toScreen(util::getXY(actor.position))
@@ -93,21 +97,22 @@ namespace render {
             drawHpBar(renderer, topLeft + util::bottomLeft(spriteSize), util::bottomLeft(maxHpBarSize),
                 actor.hp, actor.maxHp, maxHpBarSize, colorMod);
             drawSprite(renderer.target(), topLeft + util::topRight(spriteSize), util::topRight(aiStateIconSize),
-                renderer.assets().aiStateIcon(actor.aiState), colorMod);
+                assets.aiStateIcon(actor.aiState), colorMod);
         }
     }
 
-    void draw(Renderer& renderer, const core::World& world, const render::PlayerMap& playerMap, int z) {
+    void draw(Renderer& renderer, const AssetManager& assets,
+              const core::World& world, const render::PlayerMap& playerMap, int z) {
         for (int x = 0; x < world.tiles().shape().x; ++x)
             for (int y = 0; y < world.tiles().shape().y; ++y)
-                drawTile(renderer, world, playerMap, {x, y, z});
+                drawTile(renderer, assets, world, playerMap, {x, y, z});
 
         drawAreas(renderer, world, z);
 
         for (const auto& actor : playerMap.seenActors())
-            draw(renderer, world, playerMap, z, actor);
+            draw(renderer, assets, world, playerMap, z, actor);
 
         for (core::Sound sound : playerMap.recentSounds())
-            draw(renderer, world, playerMap, sound);
+            draw(renderer, assets, world, playerMap, sound);
     }
 }

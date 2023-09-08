@@ -68,10 +68,6 @@ namespace render {
             return window->mapPixelToCoords(pixel);
         }
 
-        const AssetManager& assets() const noexcept {
-            return *assets_;
-        }
-
         sf::RenderTarget& target() noexcept {
             return *window;
         }

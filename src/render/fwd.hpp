@@ -22,6 +22,7 @@ namespace render {
 	class Renderer;
 	class Camera;
 	class PlayerMap;
+	class AssetManager;
 }
 
 #endif

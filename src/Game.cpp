@@ -34,17 +34,18 @@ Game::Game(std::shared_ptr<core::World> newWorld,
            std::unique_ptr<generation::DungeonGenerator> newDungeonGenerator,
            std::shared_ptr<sf::RenderWindow> window_,
            std::unique_ptr<render::Renderer> newRenderer,
+           std::shared_ptr<render::AssetManager> assets_,
            std::shared_ptr<render::Camera> camera_,
            std::shared_ptr<render::PlayerMap> playerMap_,
            util::LoggerFactory& loggerFactory) :
-        world{std::move(newWorld)},
-        actorSpawner{std::move(actorSpawner_)},
-        xpManager{std::move(xpManager_)},
-        dungeonGenerator_{std::move(newDungeonGenerator)},
-        window{std::move(window_)},
-        renderer_{std::move(newRenderer)}, 
-        camera{std::move(camera_)}, playerMap{std::move(playerMap_)},
-        generationLogger{ loggerFactory.create("generation") } {}
+    world{std::move(newWorld)},
+    actorSpawner{std::move(actorSpawner_)},
+    xpManager{std::move(xpManager_)},
+    dungeonGenerator_{std::move(newDungeonGenerator)},
+    window{std::move(window_)},
+    renderer_{std::move(newRenderer)}, assets{std::move(assets_)},
+    camera{std::move(camera_)}, playerMap{std::move(playerMap_)},
+    generationLogger{ loggerFactory.create("generation") } {}
 
 void Game::run() {
     generate();
@@ -120,7 +121,7 @@ void Game::draw_() {
         drawDeathScreen(renderer());
     } else {
         renderer().setWorldScreenView(camera->position().xy());
-        draw(renderer(), *world, *playerMap, camera->position().level);
+        draw(renderer(), *assets, *world, *playerMap, camera->position().level);
 
         renderer().setHudView();
         drawXpBar(renderer(), *xpManager);

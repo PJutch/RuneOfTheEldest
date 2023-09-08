@@ -20,7 +20,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "core/fwd.hpp"
 
 namespace render {
-    void draw(Renderer& renderer, const core::World& world, const render::PlayerMap& playerMap, int z);
+    void draw(Renderer& renderer, const AssetManager& assets,
+              const core::World& world, const render::PlayerMap& playerMap, int z);
 }
 
 #endif

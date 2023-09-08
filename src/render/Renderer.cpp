@@ -25,7 +25,7 @@ namespace render {
     void Renderer::drawText(sf::Vector2f position, std::string_view string, sf::Color color, int characterSize) {
         sf::Text text;
         text.setString(sf::String::fromUtf8(string.begin(), string.end()));
-        text.setFont(assets().font());
+        text.setFont(assets_->font());
         text.setFillColor(color);
         text.setCharacterSize(characterSize);
 
