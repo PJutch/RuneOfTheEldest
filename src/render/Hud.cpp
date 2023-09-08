@@ -16,6 +16,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Hud.hpp"
 
 #include "Renderer.hpp"
+#include "Primitives.hpp"
 
 #include "core/XpManager.hpp"
 
@@ -27,6 +28,6 @@ namespace render {
                           static_cast<float>(renderer.viewSize().y) / 128};
         sf::FloatRect rect{0, renderer.viewSize().y - size.y, size.x, size.y};
 
-        renderer.drawRect(rect, {255, 128, 0});
+        drawRect(renderer.target(), rect, {255, 128, 0});
     }
 }

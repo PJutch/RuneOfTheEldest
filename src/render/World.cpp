@@ -16,6 +16,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "World.hpp"
 
 #include "Renderer.hpp"
+#include "Primitives.hpp"
 #include "coords.hpp"
 
 #include "core/World.hpp"
@@ -41,8 +42,8 @@ namespace render {
         sf::Vector2f screenPos = toScreen(util::getXY(position));
 
         switch (playerMap.tileState(position)) {
-        case PlayerMap::TileState::VISIBLE: renderer.drawSprite(screenPos, {0, 0}, texture); break;
-        case PlayerMap::TileState::MEMORIZED: renderer.drawSprite(screenPos, {0, 0}, texture, 0.5); break;
+        case PlayerMap::TileState::VISIBLE: drawSprite(renderer.target(), screenPos, {0, 0}, texture); break;
+        case PlayerMap::TileState::MEMORIZED: drawSprite(renderer.target(), screenPos, {0, 0}, texture, 0.5); break;
         case PlayerMap::TileState::UNSEEN: break;
         }
     }
@@ -53,7 +54,7 @@ namespace render {
             return;
 
         for (sf::IntRect area : world.areas(z))
-            renderer.drawInWorldRect(area, sf::Color::Transparent, sf::Color::Green, 1.0);
+            drawInWorldRect(renderer.target(), area, sf::Color::Transparent, sf::Color::Green, 1.0);
     }
 
     void draw(render::Renderer& renderer, const core::World& world, const render::PlayerMap& playerMap, int z,
@@ -72,10 +73,10 @@ namespace render {
                              + util::bottomMiddle(tileSize)
                              - util::bottomMiddle(spriteSize);
 
-        renderer.drawSprite(topLeft, {0, 0}, *actor.texture, colorMod);
+        drawSprite(renderer.target(), topLeft, {0, 0}, *actor.texture, colorMod);
         drawHpBar(renderer, topLeft + util::bottomLeft(spriteSize), util::bottomLeft(maxHpBarSize),
             actor.hp, actor.maxHp, maxHpBarSize, colorMod);
-        renderer.drawSprite(topLeft + util::topRight(spriteSize), util::topRight(aiStateIconSize),
+        drawSprite(renderer.target(), topLeft + util::topRight(spriteSize), util::topRight(aiStateIconSize),
             renderer.assets().aiStateIcon(actor.aiState), colorMod);
     }
 
@@ -88,7 +89,7 @@ namespace render {
             return;
 
         const auto& icon = renderer.assets().soundIcon(sound.type, sound.isSourceOnPlayerSide);
-        renderer.drawSprite(toScreen(util::getXY(sound.position)), {0, 0}, icon);
+        drawSprite(renderer.target(), toScreen(util::getXY(sound.position)), {0, 0}, icon);
     }
 
     void drawHpBar(render::Renderer& renderer, sf::Vector2f screenPosition, sf::Vector2f origin,
@@ -100,6 +101,6 @@ namespace render {
         sf::Vector2f size{static_cast<float>(hpFraction * maxSize.x), maxSize.y};
         sf::FloatRect rect{screenPosition - origin, size};
 
-        renderer.drawRect(rect, color);
+        drawRect(renderer.target(), rect, color);
     }
 }

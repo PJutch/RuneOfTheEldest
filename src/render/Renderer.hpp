@@ -72,24 +72,9 @@ namespace render {
             return *assets_;
         }
 
-        void drawRect(sf::FloatRect rect,
-            sf::Color fillColor, sf::Color outlineColor, float outlineThickness);
-
-        void drawRect(sf::FloatRect rect, sf::Color color) {
-            drawRect(rect, color, sf::Color::Transparent, 0.0f);
+        sf::RenderTarget& target() noexcept {
+            return *window;
         }
-
-        void drawInWorldRect(sf::IntRect rect,
-            sf::Color fillColor, sf::Color outlineColor, float outlineThickness) {
-            drawRect({toScreen(rect.top, rect.left), toScreen(rect.width, rect.height)},
-                fillColor, outlineColor, outlineThickness);
-        }
-
-        void drawInWorldRect(sf::IntRect rect, sf::Color color) {
-            drawInWorldRect(rect, color, sf::Color::Transparent, 0.0f);
-        }
-
-        void drawSprite(sf::Vector2f screenPosition, sf::Vector2f origin, const sf::Texture& texture, double colorMod = 1.0, float scale = 1.0);
     
         void drawText(sf::Vector2f position, std::string_view text, sf::Color color, int characterSize);
     private:

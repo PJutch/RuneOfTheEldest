@@ -15,41 +15,12 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Renderer.hpp"
 
-#include <SFML/Graphics/RectangleShape.hpp>
-#include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
 
 namespace render {
     Renderer::Renderer(std::shared_ptr<sf::RenderWindow> window_, std::shared_ptr<AssetManager> assets_) :
         assets_{std::move(assets_)},
         window{std::move(window_)} {}
-
-    void Renderer::drawRect(sf::FloatRect rect, sf::Color fillColor, sf::Color outlineColor, float outlineThickness) {
-        sf::RectangleShape rectShape{{rect.width, rect.height}};
-        rectShape.setPosition(rect.left, rect.top);
-
-        rectShape.setFillColor(fillColor);
-        rectShape.setOutlineColor(outlineColor);
-        rectShape.setOutlineThickness(outlineThickness);
-
-        window->draw(rectShape);
-    }
-
-    void Renderer::drawSprite(sf::Vector2f screenPosition, sf::Vector2f origin, const sf::Texture& texture, 
-                              double colorMod, float scale) {
-        sf::Sprite sprite;
-        sprite.setTexture(texture);
-
-        auto spriteColor = static_cast<sf::Uint8>(colorMod * 255);
-        sprite.setColor({spriteColor , spriteColor , spriteColor});
-
-        sprite.setScale(scale, scale);
-
-        sprite.setPosition(screenPosition);
-        sprite.setOrigin(origin);
-
-        window->draw(sprite);
-    }
 
     void Renderer::drawText(sf::Vector2f position, std::string_view string, sf::Color color, int characterSize) {
         sf::Text text;

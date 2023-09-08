@@ -16,6 +16,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "LevelUpScreen.hpp"
 
 #include "Renderer.hpp"
+#include "Primitives.hpp"
 
 #include "core/World.hpp"
 #include "core/XpManager.hpp"
@@ -36,11 +37,11 @@ namespace render {
         float leftBoundary = (screenSize.x - skillWidth * skills.size()) / 2;
         float skillXCenter = leftBoundary + skillWidth / 2;
         for (const core::Skill* skill : skills) {
-            renderer.drawRect({skillXCenter - skillWidth / 2, 300, skillHeight, 250},
+            drawRect(renderer.target(), {skillXCenter - skillWidth / 2, 300, skillHeight, 250},
                 sf::Color{32, 32, 32}, sf::Color{128, 128, 128}, 4.f);
 
             const sf::Texture& icon = skill->icon();
-            renderer.drawSprite({skillXCenter, 3 * screenSize.y / 8}, util::geometry_cast<float>(icon.getSize()) / 2.f,
+            drawSprite(renderer.target(), {skillXCenter, 3 * screenSize.y / 8}, util::geometry_cast<float>(icon.getSize()) / 2.f,
                 icon, 1.0, 8.0);
 
             renderer.drawText({skillXCenter, screenSize.y / 2}, skill->name(), sf::Color::White, 30);
