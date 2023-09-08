@@ -86,7 +86,6 @@ int main() {
 
         game.dungeonGenerator().splitChance(0.9);
         game.dungeonGenerator().minSize(5);
-        game.renderer().playerMap().seeEverything(false);
         // game.dungeonGenerator().roomGenerator().debugTiles();
 
         logger->info("Loading complete");

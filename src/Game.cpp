@@ -35,13 +35,15 @@ Game::Game(std::shared_ptr<core::World> newWorld,
            std::shared_ptr<sf::RenderWindow> window_,
            std::unique_ptr<render::Renderer> newRenderer,
            std::shared_ptr<render::Camera> camera_,
+           std::shared_ptr<render::PlayerMap> playerMap_,
            util::LoggerFactory& loggerFactory) :
         world{std::move(newWorld)},
         actorSpawner{std::move(actorSpawner_)},
         xpManager{std::move(xpManager_)},
         dungeonGenerator_{std::move(newDungeonGenerator)},
         window{std::move(window_)},
-        renderer_{std::move(newRenderer)}, camera{std::move(camera_)},
+        renderer_{std::move(newRenderer)}, 
+        camera{std::move(camera_)}, playerMap{std::move(playerMap_)},
         generationLogger{ loggerFactory.create("generation") } {}
 
 void Game::run() {
@@ -58,7 +60,7 @@ void Game::run() {
 
             sf::Time elapsedTime = clock.restart();
             camera->update(elapsedTime);
-            renderer().playerMap().update();
+            playerMap->update();
         }
 
         draw_();
@@ -107,8 +109,8 @@ void Game::generate() {
 
     generationLogger->info("Finished");
 
-    renderer().onGenerate();
     camera->reset();
+    playerMap->onGenerate();
     xpManager->onGenerate();
 }
 
@@ -118,7 +120,7 @@ void Game::draw_() {
         drawDeathScreen(renderer());
     } else {
         renderer().setWorldScreenView(camera->position().xy());
-        draw(renderer(), *world, camera->position().level);
+        draw(renderer(), *world, *playerMap, camera->position().level);
 
         renderer().setHudView();
         drawXpBar(renderer(), *xpManager);

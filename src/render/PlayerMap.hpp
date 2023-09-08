@@ -84,7 +84,7 @@ namespace render {
 			return seeEverything_;
 		}
 
-		std::span<const core::Sound> recentSounds() {
+		std::span<const core::Sound> recentSounds() const noexcept {
 			return recentSounds_;
 		}
 	private:

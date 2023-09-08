@@ -21,6 +21,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 namespace render {
 	class Renderer;
 	class Camera;
+	class PlayerMap;
 }
 
 #endif

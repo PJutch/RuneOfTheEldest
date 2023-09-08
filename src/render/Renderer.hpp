@@ -40,23 +40,8 @@ namespace render {
     class Renderer {
     public:
         /// Creates renderer and loads textures
-        Renderer(std::shared_ptr<Camera> camera,
-            std::shared_ptr<PlayerMap> playerMap,
-            std::shared_ptr<sf::RenderWindow> window,
-            std::shared_ptr<AssetManager> assets);
-
-        PlayerMap& playerMap() noexcept {
-            return *playerMap_;
-        }
-
-        const PlayerMap& playerMap() const noexcept {
-            return *playerMap_;
-        }
-
-        /// Notifies Renderer components such as PlayerMap about world generation
-        void onGenerate() {
-            playerMap_->onGenerate();
-        }
+        Renderer(std::shared_ptr<sf::RenderWindow> window,
+                 std::shared_ptr<AssetManager> assets);
 
         void clear() {
             window->clear(sf::Color::Black);
@@ -125,7 +110,6 @@ namespace render {
         void drawText(sf::Vector2f position, std::string_view text, sf::Color color, int characterSize);
     private:
         std::shared_ptr<AssetManager> assets_;
-        std::shared_ptr<PlayerMap> playerMap_;
 
         std::shared_ptr<sf::RenderWindow> window;
 

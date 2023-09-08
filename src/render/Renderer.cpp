@@ -20,11 +20,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <SFML/Graphics/Text.hpp>
 
 namespace render {
-    Renderer::Renderer(std::shared_ptr<Camera> camera,
-            std::shared_ptr<PlayerMap> newPlayerMap,
-            std::shared_ptr<sf::RenderWindow> window_,
-            std::shared_ptr<AssetManager> assets_) :
-        assets_{std::move(assets_)}, playerMap_{std::move(newPlayerMap)},
+    Renderer::Renderer(std::shared_ptr<sf::RenderWindow> window_, std::shared_ptr<AssetManager> assets_) :
+        assets_{std::move(assets_)},
         window{std::move(window_)} {}
 
     void Renderer::drawRect(sf::FloatRect rect, sf::Color fillColor, sf::Color outlineColor, float outlineThickness) {

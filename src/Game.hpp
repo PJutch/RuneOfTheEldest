@@ -38,6 +38,7 @@ public:
          std::shared_ptr<sf::RenderWindow> window,
          std::unique_ptr<render::Renderer> renderer,
          std::shared_ptr<render::Camera> camera,
+         std::shared_ptr<render::PlayerMap> playerMap,
          util::LoggerFactory& loggerFactory);
 
     [[nodiscard]] render::Renderer& renderer() noexcept {
@@ -68,6 +69,7 @@ private:
     std::shared_ptr<sf::RenderWindow> window;
     std::unique_ptr<render::Renderer> renderer_;
     std::shared_ptr<render::Camera> camera;
+    std::shared_ptr<render::PlayerMap> playerMap;
 
     std::shared_ptr<spdlog::logger> generationLogger;
 

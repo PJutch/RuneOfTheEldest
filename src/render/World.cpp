@@ -20,25 +20,26 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "core/World.hpp"
 
 namespace render {
-    void draw(Renderer& renderer, const core::World& world, int z) {
+    void draw(Renderer& renderer, const core::World& world, const render::PlayerMap& playerMap, int z) {
         for (int x = 0; x < world.tiles().shape().x; ++x)
             for (int y = 0; y < world.tiles().shape().y; ++y)
-                drawTile(renderer, world, {x, y, z});
+                drawTile(renderer, world, playerMap, {x, y, z});
 
         drawAreas(renderer, world, z);
 
-        for (const auto& actor : renderer.playerMap().seenActors())
-            draw(renderer, world, z, actor);
+        for (const auto& actor : playerMap.seenActors())
+            draw(renderer, world, playerMap, z, actor);
 
-        for (core::Sound sound : renderer.playerMap().recentSounds())
-            draw(renderer, world, sound);
+        for (core::Sound sound : playerMap.recentSounds())
+            draw(renderer, world, playerMap, sound);
     }
 
-    void drawTile(render::Renderer& renderer, const core::World& world, sf::Vector3i position) {
+    void drawTile(render::Renderer& renderer, const core::World& world, const render::PlayerMap& playerMap,
+                  sf::Vector3i position) {
         const sf::Texture& texture = renderer.assets().tileTexture(world.tiles()[position]);
         sf::Vector2f screenPos = renderer.toScreen(util::getXY(position));
 
-        switch (renderer.playerMap().tileState(position)) {
+        switch (playerMap.tileState(position)) {
         case PlayerMap::TileState::VISIBLE: renderer.drawSprite(screenPos, {0, 0}, texture); break;
         case PlayerMap::TileState::MEMORIZED: renderer.drawSprite(screenPos, {0, 0}, texture, 0.5); break;
         case PlayerMap::TileState::UNSEEN: break;
@@ -54,11 +55,12 @@ namespace render {
             renderer.drawInWorldRect(area, sf::Color::Transparent, sf::Color::Green, 1.0);
     }
 
-    void draw(render::Renderer& renderer, const core::World& world, int z, PlayerMap::SeenActor actor) {
+    void draw(render::Renderer& renderer, const core::World& world, const render::PlayerMap& playerMap, int z,
+              PlayerMap::SeenActor actor) {
         if (actor.position.z != z)
             return;
 
-        double colorMod = renderer.playerMap().canSee(actor.position) ? 1.0 : 0.5;
+        double colorMod = playerMap.canSee(actor.position) ? 1.0 : 0.5;
 
         sf::Vector2f spriteSize = util::geometry_cast<float>(actor.texture->getSize());
         sf::Vector2f tileSize = util::geometry_cast<float>(renderer.assets().tileSize());
@@ -76,8 +78,9 @@ namespace render {
             renderer.assets().aiStateIcon(actor.aiState), colorMod);
     }
 
-    void draw(render::Renderer& renderer, const core::World& world, core::Sound sound) {
-        if (renderer.playerMap().canSee(sound.position))
+    void draw(render::Renderer& renderer, const core::World& world, const render::PlayerMap& playerMap, 
+              core::Sound sound) {
+        if (playerMap.canSee(sound.position))
             return;
 
         if (sound.volume(world.player().position()) < 0.01)
