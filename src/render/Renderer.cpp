@@ -23,10 +23,9 @@ namespace render {
     Renderer::Renderer(std::shared_ptr<Camera> camera,
             std::shared_ptr<PlayerMap> newPlayerMap,
             std::shared_ptr<sf::RenderWindow> window_,
-            std::shared_ptr<util::Raycaster> raycaster_,
             std::shared_ptr<AssetManager> assets_) :
         camera_{std::move(camera)}, assets_{std::move(assets_)}, playerMap_{std::move(newPlayerMap)},
-        raycaster_{std::move(raycaster_)}, window{std::move(window_)} {}
+        window{std::move(window_)} {}
 
     void Renderer::drawRect(sf::FloatRect rect, sf::Color fillColor, sf::Color outlineColor, float outlineThickness) {
         sf::RectangleShape rectShape{{rect.width, rect.height}};

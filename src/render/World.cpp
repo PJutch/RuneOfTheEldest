@@ -57,9 +57,7 @@ namespace render {
     }
 
     void draw(render::Renderer& renderer, const core::World& world, PlayerMap::SeenActor actor) {
-        bool seen = renderer.playerMap().seeEverything()
-                 || renderer.raycaster().canSee(world.player().position(), actor.position);
-        double colorMod = seen ? 1.0 : 0.5;
+        double colorMod = renderer.playerMap().canSee(actor.position) ? 1.0 : 0.5;
 
         if (actor.position.z != renderer.camera().position().level)
             return;
@@ -81,7 +79,7 @@ namespace render {
     }
 
     void draw(render::Renderer& renderer, const core::World& world, core::Sound sound) {
-        if (renderer.raycaster().canSee(sound.position, world.player().position()))
+        if (renderer.playerMap().canSee(sound.position))
             return;
 
         if (sound.volume(world.player().position()) < 0.01)

@@ -56,6 +56,11 @@ namespace render {
 			return seenActors_;
 		}
 
+		[[nodiscard]] bool canSee(sf::Vector3i position) const noexcept {
+			return seeEverything()
+				|| raycaster->canSee(world->player().position(), position);
+		}
+
 		void onGenerate();
 
 		void update() {
@@ -71,11 +76,11 @@ namespace render {
 			recentSounds_.clear();
 		}
 
-		void seeEverything(bool newSeeEverything) {
+		void seeEverything(bool newSeeEverything) noexcept {
 			seeEverything_ = newSeeEverything;
 		}
 
-		bool seeEverything() {
+		bool seeEverything() const noexcept {
 			return seeEverything_;
 		}
 

@@ -43,7 +43,6 @@ namespace render {
         Renderer(std::shared_ptr<Camera> camera,
             std::shared_ptr<PlayerMap> playerMap,
             std::shared_ptr<sf::RenderWindow> window,
-            std::shared_ptr<util::Raycaster> raycaster,
             std::shared_ptr<AssetManager> assets);
 
         PlayerMap& playerMap() noexcept {
@@ -96,10 +95,6 @@ namespace render {
             return *assets_;
         }
 
-        util::Raycaster& raycaster() const noexcept {
-            return *raycaster_;
-        }
-
         [[nodiscard]] sf::Vector2f toScreen(sf::Vector2i worldVector) const noexcept {
             return toScreen(util::geometry_cast<float>(worldVector));
         }
@@ -141,8 +136,6 @@ namespace render {
         std::shared_ptr<Camera> camera_;
         std::shared_ptr<AssetManager> assets_;
         std::shared_ptr<PlayerMap> playerMap_;
-
-        std::shared_ptr<util::Raycaster> raycaster_;
 
         std::shared_ptr<sf::RenderWindow> window;
 
