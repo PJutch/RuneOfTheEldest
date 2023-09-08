@@ -18,9 +18,11 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "render/fwd.hpp"
 
+#include <SFML/Graphics/Font.hpp>
+
 namespace render {
     /// Renders "You died screen"
-    void drawDeathScreen(render::Renderer& renderer);
+    void drawDeathScreen(render::Renderer& renderer, const render::AssetManager& assets);
 }
 
 #endif

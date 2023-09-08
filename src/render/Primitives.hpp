@@ -19,8 +19,11 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "coords.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/Color.hpp>
+
+#include <string_view>
 
 namespace render {
     void drawRect(sf::RenderTarget& target, sf::FloatRect rect,
@@ -42,6 +45,9 @@ namespace render {
 
     void drawSprite(sf::RenderTarget& target, sf::Vector2f screenPosition, sf::Vector2f origin, 
                     const sf::Texture& texture, double colorMod = 1.0, float scale = 1.0);
+
+    void drawText(sf::RenderTarget& target, sf::Vector2f position, std::string_view string, 
+                  const sf::Font& font, sf::Color color, int characterSize);
 }
 
 #endif

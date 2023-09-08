@@ -15,24 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Renderer.hpp"
 
-#include <SFML/Graphics/Text.hpp>
-
 namespace render {
     Renderer::Renderer(std::shared_ptr<sf::RenderWindow> window_, std::shared_ptr<AssetManager> assets_) :
         assets_{std::move(assets_)},
         window{std::move(window_)} {}
-
-    void Renderer::drawText(sf::Vector2f position, std::string_view string, sf::Color color, int characterSize) {
-        sf::Text text;
-        text.setString(sf::String::fromUtf8(string.begin(), string.end()));
-        text.setFont(assets_->font());
-        text.setFillColor(color);
-        text.setCharacterSize(characterSize);
-
-        sf::FloatRect textBounds = text.getLocalBounds();
-        text.setOrigin(textBounds.width / 2, textBounds.height / 2);
-        text.setPosition(position);
-
-        window->draw(text);
-    }
 }

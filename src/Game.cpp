@@ -118,7 +118,7 @@ void Game::generate() {
 void Game::draw_() {
     renderer().clear();
     if (!world->player().isAlive()) {
-        drawDeathScreen(renderer());
+        drawDeathScreen(renderer(), *assets);
     } else {
         renderer().setWorldScreenView(camera->position().xy());
         draw(renderer(), *assets, *world, *playerMap, camera->position().level);
@@ -126,7 +126,7 @@ void Game::draw_() {
         renderer().setHudView();
         drawXpBar(renderer(), *xpManager);
         if (xpManager->canLevelUp())
-            drawLevelupScreen(renderer(), *world, *xpManager);
+            drawLevelupScreen(renderer(), *assets, *world, *xpManager);
     }
     renderer().display();
 }

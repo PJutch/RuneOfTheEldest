@@ -23,7 +23,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace render {
 	/// Draws skill selection screen
-	void drawLevelupScreen(render::Renderer& renderer, const core::World& world, const core::XpManager& xpManager);
+	void drawLevelupScreen(render::Renderer& renderer, const render::AssetManager& assets,
+						   const core::World& world, const core::XpManager& xpManager);
 
 	/// Handles events for skill selection
 	void handleLevelupScreenEvent(render::Renderer& renderer, core::XpManager& xpManager, sf::Event event);

@@ -17,6 +17,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Text.hpp>
 
 namespace render {
     void drawRect(sf::RenderTarget& target, sf::FloatRect rect, 
@@ -45,5 +46,20 @@ namespace render {
         sprite.setOrigin(origin);
 
         target.draw(sprite);
+    }
+
+    void drawText(sf::RenderTarget& target, sf::Vector2f position, std::string_view string, 
+                  const sf::Font& font, sf::Color color, int characterSize) {
+        sf::Text text;
+        text.setString(sf::String::fromUtf8(string.begin(), string.end()));
+        text.setFont(font);
+        text.setFillColor(color);
+        text.setCharacterSize(characterSize);
+
+        sf::FloatRect textBounds = text.getLocalBounds();
+        text.setOrigin(textBounds.width / 2, textBounds.height / 2);
+        text.setPosition(position);
+
+        target.draw(text);
     }
 }

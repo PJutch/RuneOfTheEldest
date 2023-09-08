@@ -34,8 +34,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <SFML/System/Vector2.hpp>
 #include <SFML/System/Vector3.hpp>
 
-#include <string_view>
-
 namespace render {
     /// Renders game world
     class Renderer {
@@ -71,8 +69,6 @@ namespace render {
         sf::RenderTarget& target() noexcept {
             return *window;
         }
-    
-        void drawText(sf::Vector2f position, std::string_view text, sf::Color color, int characterSize);
     private:
         std::shared_ptr<AssetManager> assets_;
 
