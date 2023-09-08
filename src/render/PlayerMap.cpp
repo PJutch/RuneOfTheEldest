@@ -23,15 +23,21 @@ namespace render {
 	PlayerMap::PlayerMap(std::shared_ptr<core::World> world_, std::shared_ptr<util::Raycaster> raycaster_) :
 		world{ std::move(world_) }, raycaster{std::move(raycaster_)} {}
 
+	const bool seeEverything = false;
+
 	void PlayerMap::onGenerate() {
 		seenActors_.clear();
 		clearSounds();
 
-		tileStates.assign(world->tiles().shape(), seeEverything_ ? TileState::VISIBLE : TileState::UNSEEN);
+		tileStates.assign(world->tiles().shape(), seeEverything ? TileState::VISIBLE : TileState::UNSEEN);
+	}
+
+	bool PlayerMap::canSee(sf::Vector3i position) const noexcept {
+		return seeEverything || raycaster->canSee(world->player().position(), position);
 	}
 
 	void PlayerMap::updateTiles() {
-		if (seeEverything_)
+		if (seeEverything)
 			return;
 
 		auto [shapeX, shapeY, shapeZ] = world->tiles().shape();
@@ -47,11 +53,11 @@ namespace render {
 
 	void PlayerMap::updateActors() {
 		std::erase_if(seenActors_, [this, &player = world->player(), &world = *world](auto actor) -> bool {
-			return seeEverything_ || raycaster->canSee(player.position(), actor.position);
+			return seeEverything || raycaster->canSee(player.position(), actor.position);
 		});
 
 		for (const auto& actor : world->actors())
-			if (actor->isAlive() && (seeEverything_ || raycaster->canSee(world->player().position(), actor->position())))
+			if (actor->isAlive() && (seeEverything || raycaster->canSee(world->player().position(), actor->position())))
 				seenActors_.emplace_back(actor->position(), actor->hp(), actor->maxHp(), 
 					                     actor->controller().aiState(), actor->texture() );
 	}

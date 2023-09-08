@@ -56,10 +56,7 @@ namespace render {
 			return seenActors_;
 		}
 
-		[[nodiscard]] bool canSee(sf::Vector3i position) const noexcept {
-			return seeEverything()
-				|| raycaster->canSee(world->player().position(), position);
-		}
+		[[nodiscard]] bool canSee(sf::Vector3i position) const noexcept;
 
 		void onGenerate();
 
@@ -76,20 +73,10 @@ namespace render {
 			recentSounds_.clear();
 		}
 
-		void seeEverything(bool newSeeEverything) noexcept {
-			seeEverything_ = newSeeEverything;
-		}
-
-		bool seeEverything() const noexcept {
-			return seeEverything_;
-		}
-
 		std::span<const core::Sound> recentSounds() const noexcept {
 			return recentSounds_;
 		}
 	private:
-		bool seeEverything_ = false;
-
 		util::Array3D<TileState> tileStates;
 		std::vector<SeenActor> seenActors_;
 
