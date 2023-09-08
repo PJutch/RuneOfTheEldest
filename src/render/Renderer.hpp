@@ -18,7 +18,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Camera/Camera.hpp"
 #include "View.hpp"
-#include "AssetManager.hpp"
 #include "PlayerMap.hpp"
 #include "coords.hpp"
 
@@ -39,8 +38,7 @@ namespace render {
     class Renderer {
     public:
         /// Creates renderer and loads textures
-        Renderer(std::shared_ptr<sf::RenderWindow> window,
-                 std::shared_ptr<AssetManager> assets);
+        Renderer(std::shared_ptr<sf::RenderWindow> window);
 
         void clear() {
             window->clear(sf::Color::Black);
@@ -70,8 +68,6 @@ namespace render {
             return *window;
         }
     private:
-        std::shared_ptr<AssetManager> assets_;
-
         std::shared_ptr<sf::RenderWindow> window;
 
         sf::View worldScreenView(sf::Vector2f cameraPos) noexcept {

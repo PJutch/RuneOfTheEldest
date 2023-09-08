@@ -16,7 +16,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Renderer.hpp"
 
 namespace render {
-    Renderer::Renderer(std::shared_ptr<sf::RenderWindow> window_, std::shared_ptr<AssetManager> assets_) :
-        assets_{std::move(assets_)},
+    Renderer::Renderer(std::shared_ptr<sf::RenderWindow> window_) :
         window{std::move(window_)} {}
 }
