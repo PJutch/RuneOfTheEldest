@@ -17,22 +17,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define RENDER_WORLD
 
 #include "render/fwd.hpp"
-#include "PlayerMap.hpp"
-
 #include "core/fwd.hpp"
-#include "core/Sound.hpp"
-
-#include <SFML/System/Vector2.hpp>
-#include <SFML/System/Vector3.hpp>
 
 namespace render {
     void draw(Renderer& renderer, const core::World& world, const render::PlayerMap& playerMap, int z);
-    void drawAreas(Renderer& renderer, const core::World& world, int level);
-    void drawTile(Renderer& renderer, const core::World& world, const render::PlayerMap& playerMap, sf::Vector3i position);
-    void draw(Renderer& renderer, const core::World& world, const render::PlayerMap& playerMap, int z, PlayerMap::SeenActor actor);
-    void draw(Renderer& renderer, const core::World& world, const render::PlayerMap& playerMap, core::Sound sound);
-    void drawHpBar(Renderer& renderer, sf::Vector2f screenPosition, sf::Vector2f origin, 
-                   double hp, double maxHp, sf::Vector2f maxSize, double colorMod = 1.0);
 }
 
 #endif
