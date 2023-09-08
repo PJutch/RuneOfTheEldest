@@ -20,6 +20,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "View.hpp"
 #include "AssetManager.hpp"
 #include "PlayerMap.hpp"
+#include "coords.hpp"
 
 #include "core/fwd.hpp"
 #include "core/AiState.hpp"
@@ -69,23 +70,6 @@ namespace render {
 
         const AssetManager& assets() const noexcept {
             return *assets_;
-        }
-
-        [[nodiscard]] sf::Vector2f toScreen(sf::Vector2i worldVector) const noexcept {
-            return toScreen(util::geometry_cast<float>(worldVector));
-        }
-
-        [[nodiscard]] sf::Vector2f toScreen(sf::Vector2f worldVector) const noexcept {
-            return toScreen(worldVector.x, worldVector.y);
-        }
-
-        [[nodiscard]] sf::Vector2f toScreen(float worldX, float worldY) const noexcept {
-            auto [tileX, tileY] = assets().tileSize();
-            return {worldX * tileX, worldY * tileY};
-        }
-
-        [[nodiscard]] sf::Vector2f toScreen(int worldX, int worldY) const noexcept {
-            return toScreen(sf::Vector2i{worldX, worldY});
         }
 
         void drawRect(sf::FloatRect rect,

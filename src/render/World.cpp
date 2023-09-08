@@ -16,6 +16,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "World.hpp"
 
 #include "Renderer.hpp"
+#include "coords.hpp"
 
 #include "core/World.hpp"
 
@@ -37,7 +38,7 @@ namespace render {
     void drawTile(render::Renderer& renderer, const core::World& world, const render::PlayerMap& playerMap,
                   sf::Vector3i position) {
         const sf::Texture& texture = renderer.assets().tileTexture(world.tiles()[position]);
-        sf::Vector2f screenPos = renderer.toScreen(util::getXY(position));
+        sf::Vector2f screenPos = toScreen(util::getXY(position));
 
         switch (playerMap.tileState(position)) {
         case PlayerMap::TileState::VISIBLE: renderer.drawSprite(screenPos, {0, 0}, texture); break;
@@ -67,7 +68,7 @@ namespace render {
         sf::Vector2f aiStateIconSize = util::geometry_cast<float>(renderer.assets().aiStateIcon(actor.aiState).getSize());
         sf::Vector2f maxHpBarSize{spriteSize.x, 2.f};
 
-        sf::Vector2f topLeft = renderer.toScreen(util::getXY(actor.position)) 
+        sf::Vector2f topLeft = toScreen(util::getXY(actor.position)) 
                              + util::bottomMiddle(tileSize)
                              - util::bottomMiddle(spriteSize);
 
@@ -87,7 +88,7 @@ namespace render {
             return;
 
         const auto& icon = renderer.assets().soundIcon(sound.type, sound.isSourceOnPlayerSide);
-        renderer.drawSprite(renderer.toScreen(util::getXY(sound.position)), {0, 0}, icon);
+        renderer.drawSprite(toScreen(util::getXY(sound.position)), {0, 0}, icon);
     }
 
     void drawHpBar(render::Renderer& renderer, sf::Vector2f screenPosition, sf::Vector2f origin,
