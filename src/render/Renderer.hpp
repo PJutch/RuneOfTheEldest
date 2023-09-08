@@ -43,20 +43,8 @@ namespace render {
         Renderer(std::shared_ptr<Camera> camera,
             std::shared_ptr<PlayerMap> playerMap,
             std::shared_ptr<sf::RenderWindow> window,
-            std::shared_ptr<core::World> world,
-            std::shared_ptr<core::XpManager> xpManager,
             std::shared_ptr<util::Raycaster> raycaster,
             std::shared_ptr<AssetManager> assets);
-
-        /// If true bsp areas created by dungeon generation are rendered
-        void renderAreas(bool newRenderAreas = true) noexcept {
-            renderAreas_ = newRenderAreas;
-        }
-
-        /// If true bsp areas created by dungeon generation are rendered
-        bool shouldRenderAreas() noexcept {
-            return renderAreas_;
-        }
 
         PlayerMap& playerMap() noexcept {
             return *playerMap_;
@@ -104,11 +92,7 @@ namespace render {
             return window->mapPixelToCoords(pixel);
         }
 
-        std::shared_ptr<AssetManager> assets() const noexcept {
-            return assets_;
-        }
-
-        const AssetManager& assetsRef() const noexcept {
+        const AssetManager& assets() const noexcept {
             return *assets_;
         }
 
@@ -125,7 +109,7 @@ namespace render {
         }
 
         [[nodiscard]] sf::Vector2f toScreen(float worldX, float worldY) const noexcept {
-            auto [tileX, tileY] = assets()->tileSize();
+            auto [tileX, tileY] = assets().tileSize();
             return {worldX * tileX, worldY * tileY};
         }
 
@@ -154,14 +138,9 @@ namespace render {
     
         void drawText(sf::Vector2f position, std::string_view text, sf::Color color, int characterSize);
     private:
-        bool renderAreas_ = false;
-
         std::shared_ptr<Camera> camera_;
         std::shared_ptr<AssetManager> assets_;
         std::shared_ptr<PlayerMap> playerMap_;
-
-        std::shared_ptr<core::World> world;
-        std::shared_ptr<core::XpManager> xpManager;
 
         std::shared_ptr<util::Raycaster> raycaster_;
 

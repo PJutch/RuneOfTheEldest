@@ -27,8 +27,7 @@ namespace render {
             for (int y = 0; y < world.tiles().shape().y; ++y)
                 drawTile(renderer, world, {x, y, renderer.camera().position().level});
 
-        if (renderer.shouldRenderAreas())
-            drawAreas(renderer, world, renderer.camera().position().level);
+        drawAreas(renderer, world, renderer.camera().position().level);
 
         for (const auto& actor : renderer.playerMap().seenActors())
             draw(renderer, world, actor);
@@ -38,7 +37,7 @@ namespace render {
     }
 
     void drawTile(render::Renderer& renderer, const core::World& world, sf::Vector3i position) {
-        const sf::Texture& texture = renderer.assetsRef().tileTexture(world.tiles()[position]);
+        const sf::Texture& texture = renderer.assets().tileTexture(world.tiles()[position]);
         sf::Vector2f screenPos = renderer.toScreen(util::getXY(position));
 
         switch (renderer.playerMap().tileState(position)) {
@@ -49,6 +48,10 @@ namespace render {
     }
 
     void drawAreas(render::Renderer& renderer, const core::World& world, int z) {
+        const bool shouldDraw = false;
+        if (!shouldDraw)
+            return;
+
         for (sf::IntRect area : world.areas(z))
             renderer.drawInWorldRect(area, sf::Color::Transparent, sf::Color::Green, 1.0);
     }
@@ -62,8 +65,8 @@ namespace render {
             return;
 
         sf::Vector2f spriteSize = util::geometry_cast<float>(actor.texture->getSize());
-        sf::Vector2f tileSize = util::geometry_cast<float>(renderer.assetsRef().tileSize());
-        sf::Vector2f aiStateIconSize = util::geometry_cast<float>(renderer.assetsRef().aiStateIcon(actor.aiState).getSize());
+        sf::Vector2f tileSize = util::geometry_cast<float>(renderer.assets().tileSize());
+        sf::Vector2f aiStateIconSize = util::geometry_cast<float>(renderer.assets().aiStateIcon(actor.aiState).getSize());
         sf::Vector2f maxHpBarSize{spriteSize.x, 2.f};
 
         sf::Vector2f topLeft = renderer.toScreen(util::getXY(actor.position)) 
@@ -74,7 +77,7 @@ namespace render {
         drawHpBar(renderer, topLeft + util::bottomLeft(spriteSize), util::bottomLeft(maxHpBarSize),
             actor.hp, actor.maxHp, maxHpBarSize, colorMod);
         renderer.drawSprite(topLeft + util::topRight(spriteSize), util::topRight(aiStateIconSize),
-            renderer.assetsRef().aiStateIcon(actor.aiState), colorMod);
+            renderer.assets().aiStateIcon(actor.aiState), colorMod);
     }
 
     void draw(render::Renderer& renderer, const core::World& world, core::Sound sound) {
@@ -84,7 +87,7 @@ namespace render {
         if (sound.volume(world.player().position()) < 0.01)
             return;
 
-        const auto& icon = renderer.assetsRef().soundIcon(sound.type, sound.isSourceOnPlayerSide);
+        const auto& icon = renderer.assets().soundIcon(sound.type, sound.isSourceOnPlayerSide);
         renderer.drawSprite(renderer.toScreen(util::getXY(sound.position)), {0, 0}, icon);
     }
 
