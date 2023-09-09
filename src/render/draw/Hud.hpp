@@ -22,7 +22,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <SFML/Graphics/RenderTarget.hpp>
 
 namespace render {
-	void drawXpBar(sf::RenderTarget& target, const core::XpManager& xpManager);
+	void drawHud(sf::RenderTarget& target, const core::World& world, const core::XpManager& xpManager);
 }
 
 #endif

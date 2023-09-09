@@ -103,21 +103,21 @@ namespace core {
 
 	double Actor::regen() {
 		double res = stats.regen;
-		for (const auto& skill : skills)
+		for (const auto& skill : skills_)
 			res *= skill->regenMul();
 		return res;
 	}
 
 	double Actor::damage(const Actor& target) {
 		double res = stats.damage;
-		for (const auto& skill : skills)
+		for (const auto& skill : skills_)
 			res *= skill->damageMul(target);
 		return res;
 	}
 
 	double Actor::turnDelay() {
 		double speedMod = 1;
-		for (const auto& skill : skills)
+		for (const auto& skill : skills_)
 			speedMod += skill->speedBonus();
 
 		return stats.turnDelay / speedMod;
@@ -125,28 +125,28 @@ namespace core {
 
 	double Actor::xpMul() const {
 		double res = 1;
-		for (const auto& skill : skills)
+		for (const auto& skill : skills_)
 			res *= skill->xpMul();
 		return res;
 	}
 
 	double Actor::evasion() {
 		double evasion = stats.evasion;
-		for (const auto& skill : skills)
+		for (const auto& skill : skills_)
 			evasion += skill->evasionBonus();
 		return evasion;
 	}
 
 	double Actor::accuracy() {
 		double accuracy = stats.accuracy;
-		for (const auto& skill : skills)
+		for (const auto& skill : skills_)
 			accuracy += skill->accuracyBonus();
 		return accuracy;
 	}
 
 	void Actor::updateHp() {
 		double newMul = 1;
-		for (const auto& skill : skills)
+		for (const auto& skill : skills_)
 			newMul *= skill->hpMul();
 
 		hp_ *= newMul / hpMul;

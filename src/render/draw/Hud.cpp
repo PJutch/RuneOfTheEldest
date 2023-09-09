@@ -19,15 +19,46 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "render/View.hpp"
 
 #include "core/XpManager.hpp"
+#include "core/World.hpp"
+#include "core/Actor.hpp"
 
 namespace render {
-    void drawXpBar(sf::RenderTarget& target, const core::XpManager& xpManager) {
-        target.setView(sf::View{{0.f, 0.f, 1.f, 1.f}});
+    namespace {
+        void drawXpBar(sf::RenderTarget& target, const core::XpManager& xpManager) {
+            target.setView(sf::View{{0.f, 0.f, 1.f, 1.f}});
 
-        auto xpPercent = static_cast<float>(xpManager.xpPercentUntilNextLvl());
-        sf::Vector2f size{xpPercent, 1.f / 128.f};
-        sf::FloatRect rect{0, 1.f - size.y, size.x, size.y};
+            auto xpPercent = static_cast<float>(xpManager.xpPercentUntilNextLvl());
+            sf::Vector2f size{xpPercent, 1.f / 128.f};
+            sf::FloatRect rect{0, 1.f - size.y, size.x, size.y};
 
-        drawRect(target, rect, {255, 128, 0});
+            drawRect(target, rect, {255, 128, 0});
+        }
+
+        void drawSkillIcons(sf::RenderTarget& target, const core::World& world) {
+            const auto& skills = world.player().skills();
+
+            target.setView(createFullscreenView(1000.f, target.getSize()));
+
+            sf::Vector2f screenSize = target.getView().getSize();
+            const sf::Vector2f iconSize{32.f, 32.f};
+            float padding = 4.f;
+            float skillXCenter = screenSize.x - padding - iconSize.x / 2;
+            for (const auto& skill : skills) {
+                const float iconY = 950.f;
+                drawRect(target, {sf::Vector2f{skillXCenter, iconY} - iconSize / 2.f, iconSize},
+                    sf::Color{32, 32, 32}, sf::Color{128, 128, 128}, 2.f);
+
+                const sf::Texture& icon = skill->icon();
+                sf::Vector2f iconCenter = util::geometry_cast<float>(icon.getSize()) / 2.f;
+                drawSprite(target, {skillXCenter, iconY}, iconCenter, icon, 1.0, 2.f);
+
+                skillXCenter -= iconSize.x + 2 * padding;
+            }
+        }
+    }
+
+    void drawHud(sf::RenderTarget& target, const core::World& world, const core::XpManager& xpManager) {
+        drawXpBar(target, xpManager);
+        drawSkillIcons(target, world);
     }
 }

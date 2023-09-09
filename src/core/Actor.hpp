@@ -166,8 +166,12 @@ namespace core {
 
 		void addSkill(std::unique_ptr<Skill> skill) {
 			skill->owner(weak_from_this());
-			skills.push_back(std::move(skill));
+			skills_.push_back(std::move(skill));
 			updateHp();
+		}
+
+		const std::vector<std::unique_ptr<Skill>>& skills() const noexcept {
+			return skills_;
 		}
 
 		double xpMul() const;
@@ -176,7 +180,7 @@ namespace core {
 	private:
 		Stats stats;
 		std::unique_ptr<Controller> controller_;
-		std::vector<std::unique_ptr<Skill>> skills;
+		std::vector<std::unique_ptr<Skill>> skills_;
 
 		double nextTurn_ = 0;
 		sf::Vector3i position_;
