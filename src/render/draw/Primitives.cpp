@@ -48,13 +48,19 @@ namespace render {
         target.draw(sprite);
     }
 
-    void drawText(sf::RenderTarget& target, sf::Vector2f position, std::string_view string, 
-                  const sf::Font& font, sf::Color color, int characterSize) {
+    sf::Text createText(std::string_view string, const sf::Font& font, sf::Color color, int characterSize) {
         sf::Text text;
         text.setString(sf::String::fromUtf8(string.begin(), string.end()));
         text.setFont(font);
         text.setFillColor(color);
         text.setCharacterSize(characterSize);
+
+        return text;
+    }
+
+    void drawText(sf::RenderTarget& target, sf::Vector2f position, std::string_view string, 
+                  const sf::Font& font, sf::Color color, int characterSize) {
+        auto text = createText(string, font, color, characterSize);
 
         sf::FloatRect textBounds = text.getLocalBounds();
         text.setOrigin(textBounds.width / 2, textBounds.height / 2);

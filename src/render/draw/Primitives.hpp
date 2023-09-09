@@ -22,6 +22,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/Text.hpp>
 
 #include <string_view>
 
@@ -45,6 +46,9 @@ namespace render {
 
     void drawSprite(sf::RenderTarget& target, sf::Vector2f screenPosition, sf::Vector2f origin, 
                     const sf::Texture& texture, double colorMod = 1.0, float scale = 1.0);
+
+    sf::Text createText(std::string_view string,
+        const sf::Font& font, sf::Color color, int characterSize);
 
     void drawText(sf::RenderTarget& target, sf::Vector2f position, std::string_view string, 
                   const sf::Font& font, sf::Color color, int characterSize);

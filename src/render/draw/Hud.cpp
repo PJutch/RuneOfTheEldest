@@ -34,7 +34,20 @@ namespace render {
             drawRect(target, rect, {255, 128, 0});
         }
 
-        void drawSkillIcons(sf::RenderTarget& target, const core::World& world) {
+        void drawSkillTooltip(sf::RenderTarget& target, const AssetManager& assets,
+                              const std::unique_ptr<core::Skill>& skill) { 
+            auto text = createText(skill->name(), assets.font(), sf::Color::White, 30);
+
+            auto tooltipSize = text.getLocalBounds().getSize() + sf::Vector2f{10.f, 10.f};
+            auto tooltipPos = target.mapPixelToCoords(sf::Mouse::getPosition()) - tooltipSize;
+
+            drawRect(target, {tooltipPos, tooltipSize}, sf::Color{32, 32, 32}, sf::Color{128, 128, 128}, 3.f);
+
+            text.setPosition(tooltipPos + sf::Vector2f{5.f, -5.f});
+            target.draw(text);
+        }
+
+        void drawSkillIcons(sf::RenderTarget& target, const AssetManager& assets, const core::World& world) {
             const auto& skills = world.player().skills();
 
             target.setView(createFullscreenView(1000.f, target.getSize()));
@@ -45,20 +58,25 @@ namespace render {
             float skillXCenter = screenSize.x - padding - iconSize.x / 2;
             for (const auto& skill : skills) {
                 const float iconY = 950.f;
-                drawRect(target, {sf::Vector2f{skillXCenter, iconY} - iconSize / 2.f, iconSize},
-                    sf::Color{32, 32, 32}, sf::Color{128, 128, 128}, 2.f);
+                sf::FloatRect skillRect{sf::Vector2f{skillXCenter, iconY} - iconSize / 2.f, iconSize};
+
+                drawRect(target, skillRect, sf::Color{32, 32, 32}, sf::Color{128, 128, 128}, 2.f);
 
                 const sf::Texture& icon = skill->icon();
                 sf::Vector2f iconCenter = util::geometry_cast<float>(icon.getSize()) / 2.f;
                 drawSprite(target, {skillXCenter, iconY}, iconCenter, icon, 1.0, 2.f);
+
+                if (skillRect.contains(target.mapPixelToCoords(sf::Mouse::getPosition())))
+                    drawSkillTooltip(target, assets, skill);
 
                 skillXCenter -= iconSize.x + 2 * padding;
             }
         }
     }
 
-    void drawHud(sf::RenderTarget& target, const core::World& world, const core::XpManager& xpManager) {
+    void drawHud(sf::RenderTarget& target, const AssetManager& assets, 
+                 const core::World& world, const core::XpManager& xpManager) {
         drawXpBar(target, xpManager);
-        drawSkillIcons(target, world);
+        drawSkillIcons(target, assets, world);
     }
 }
