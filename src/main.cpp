@@ -20,7 +20,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "generation/RoomGenerator/RandomSizeRoomGenerator.hpp"
 #include "generation/DungeonGenerator.hpp"
 
-#include "render/Renderer.hpp"
 #include "render/Camera/FreeCamera.hpp"
 #include "render/Camera/PlayerLockedCamera.hpp"
 #include "render/Camera/SwitchableCamera.hpp"

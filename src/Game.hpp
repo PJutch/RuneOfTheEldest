@@ -36,19 +36,10 @@ public:
          std::shared_ptr<core::XpManager> xpManager,
          std::unique_ptr<generation::DungeonGenerator> dungeonGenerator,
          std::shared_ptr<sf::RenderWindow> window,
-         std::unique_ptr<render::Renderer> renderer,
          std::shared_ptr<render::AssetManager> assets,
          std::shared_ptr<render::Camera> camera,
          std::shared_ptr<render::PlayerMap> playerMap,
          util::LoggerFactory& loggerFactory);
-
-    [[nodiscard]] render::Renderer& renderer() noexcept {
-        return *renderer_;
-    }
-
-    [[nodiscard]] const render::Renderer& renderer() const noexcept {
-        return *renderer_;
-    }
 
     [[nodiscard]] generation::DungeonGenerator& dungeonGenerator() noexcept {
         return *dungeonGenerator_;
@@ -68,7 +59,6 @@ private:
     std::unique_ptr<generation::DungeonGenerator> dungeonGenerator_;
 
     std::shared_ptr<sf::RenderWindow> window;
-    std::unique_ptr<render::Renderer> renderer_;
     std::shared_ptr<render::AssetManager> assets;
     std::shared_ptr<render::Camera> camera;
     std::shared_ptr<render::PlayerMap> playerMap;

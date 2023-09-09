@@ -15,18 +15,19 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "DeathScreen.hpp"
 
-#include "Renderer.hpp"
 #include "Primitives.hpp"
+#include "View.hpp"
+#include "AssetManager.hpp"
 
 namespace render {
-    void drawDeathScreen(render::Renderer& renderer, const render::AssetManager& assets) {
-        renderer.setHudView();
-        auto [screenX, screenY] = renderer.viewSize();
+    void drawDeathScreen(sf::RenderTarget& target, const render::AssetManager& assets) {
+        target.setView(hudView(target.getSize()));
+        auto [screenX, screenY] = target.getView().getSize();
 
         sf::Vector2f youDiedPos(screenX / 2, screenY / 2 - 150.f);
-        drawText(renderer.target(), youDiedPos, "You died", assets.font(), sf::Color::Red, 300);
+        drawText(target, youDiedPos, "You died", assets.font(), sf::Color::Red, 300);
 
         sf::Vector2f continuePos(screenX / 2, screenY / 2 + 100.f);
-        drawText(renderer.target(), continuePos, "Press any key to continue", assets.font(), sf::Color::Red, 50);
+        drawText(target, continuePos, "Press any key to continue", assets.font(), sf::Color::Red, 50);
     }
 }

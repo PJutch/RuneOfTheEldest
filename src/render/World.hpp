@@ -19,8 +19,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "render/fwd.hpp"
 #include "core/fwd.hpp"
 
+#include <SFML/Graphics/RenderTarget.hpp>
+
 namespace render {
-    void draw(Renderer& renderer, const AssetManager& assets,
+    void draw(sf::RenderTarget& target, const AssetManager& assets,
               const core::World& world, const render::PlayerMap& playerMap, int z);
 }
 

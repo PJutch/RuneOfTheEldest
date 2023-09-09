@@ -17,7 +17,7 @@ include(${PROJECT_SOURCE_DIR}/cmake/DefaultCompilerOptions.cmake)
 
 add_library(render STATIC)
 
-target_sources(render PRIVATE AssetManager.cpp Renderer.cpp PlayerMap.cpp 
+target_sources(render PRIVATE AssetManager.cpp  PlayerMap.cpp 
                               LevelUpScreen.cpp World.cpp DeathScreen.cpp Hud.cpp Primitives.cpp)
 
 add_subdirectory(Camera)

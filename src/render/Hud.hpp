@@ -19,8 +19,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "render/fwd.hpp"
 #include "core/fwd.hpp"
 
+#include <SFML/Graphics/RenderTarget.hpp>
+
 namespace render {
-	void drawXpBar(render::Renderer& renderer, const core::XpManager& xpManager);
+	void drawXpBar(sf::RenderTarget& target, const core::XpManager& xpManager);
 }
 
 #endif

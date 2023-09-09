@@ -19,8 +19,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "render/DeathScreen.hpp"
 #include "render/Hud.hpp"
 #include "render/LevelUpScreen.hpp"
+#include "render/Camera/Camera.hpp"
+#include "render/View.hpp"
 
-#include "render/Renderer.hpp"
 #include "generation/DungeonGenerator.hpp"
 
 #include "core/World.hpp"
@@ -33,7 +34,6 @@ Game::Game(std::shared_ptr<core::World> newWorld,
            std::shared_ptr<core::XpManager> xpManager_,
            std::unique_ptr<generation::DungeonGenerator> newDungeonGenerator,
            std::shared_ptr<sf::RenderWindow> window_,
-           std::unique_ptr<render::Renderer> newRenderer,
            std::shared_ptr<render::AssetManager> assets_,
            std::shared_ptr<render::Camera> camera_,
            std::shared_ptr<render::PlayerMap> playerMap_,
@@ -43,7 +43,7 @@ Game::Game(std::shared_ptr<core::World> newWorld,
     xpManager{std::move(xpManager_)},
     dungeonGenerator_{std::move(newDungeonGenerator)},
     window{std::move(window_)},
-    renderer_{std::move(newRenderer)}, assets{std::move(assets_)},
+    assets{std::move(assets_)}, 
     camera{std::move(camera_)}, playerMap{std::move(playerMap_)},
     generationLogger{ loggerFactory.create("generation") } {}
 
@@ -83,7 +83,7 @@ void Game::handleEvent(sf::Event event) {
         }
 
     if (xpManager->canLevelUp()) {
-        render::handleLevelupScreenEvent(renderer(), *xpManager, event);
+        render::handleLevelupScreenEvent(*window, *xpManager, event);
         return;
     }
        
@@ -116,17 +116,17 @@ void Game::generate() {
 }
 
 void Game::draw_() {
-    renderer().clear();
+    window->clear();
     if (!world->player().isAlive()) {
-        drawDeathScreen(renderer(), *assets);
+        render::drawDeathScreen(*window, *assets);
     } else {
-        renderer().setWorldScreenView(camera->position().xy());
-        draw(renderer(), *assets, *world, *playerMap, camera->position().level);
+        window->setView(render::worldScreenView(camera->position().xy(), window->getSize()));
+        render::draw(*window, *assets, *world, *playerMap, camera->position().level);
 
-        renderer().setHudView();
-        drawXpBar(renderer(), *xpManager);
+        window->setView(render::hudView(window->getSize()));
+        render::drawXpBar(*window, *xpManager);
         if (xpManager->canLevelUp())
-            drawLevelupScreen(renderer(), *assets, *world, *xpManager);
+            render::drawLevelupScreen(*window, *assets, *world, *xpManager);
     }
-    renderer().display();
+    window->display();
 }

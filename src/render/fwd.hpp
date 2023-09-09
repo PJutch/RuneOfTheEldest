@@ -19,7 +19,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 /// @file fwd.hpp Forward declarations for render classes
 
 namespace render {
-	class Renderer;
 	class Camera;
 	class PlayerMap;
 	class AssetManager;

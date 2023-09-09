@@ -15,19 +15,18 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Hud.hpp"
 
-#include "Renderer.hpp"
 #include "Primitives.hpp"
 
 #include "core/XpManager.hpp"
 
 namespace render {
-    void drawXpBar(Renderer& renderer, const core::XpManager& xpManager) {
+    void drawXpBar(sf::RenderTarget& target, const core::XpManager& xpManager) {
         double xpPercent = xpManager.xpPercentUntilNextLvl();
 
-        sf::Vector2f size{static_cast<float>(xpPercent * renderer.viewSize().x), 
-                          static_cast<float>(renderer.viewSize().y) / 128};
-        sf::FloatRect rect{0, renderer.viewSize().y - size.y, size.x, size.y};
+        sf::Vector2f size{static_cast<float>(xpPercent * target.getView().getSize().x),
+                          static_cast<float>(target.getView().getSize().y) / 128};
+        sf::FloatRect rect{0, target.getView().getSize().y - size.y, size.x, size.y};
 
-        drawRect(renderer.target(), rect, {255, 128, 0});
+        drawRect(target, rect, {255, 128, 0});
     }
 }

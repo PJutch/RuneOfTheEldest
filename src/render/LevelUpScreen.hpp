@@ -19,15 +19,16 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "render/fwd.hpp"
 #include "core/fwd.hpp"
 
+#include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Window/Event.hpp>
 
 namespace render {
 	/// Draws skill selection screen
-	void drawLevelupScreen(render::Renderer& renderer, const render::AssetManager& assets,
+	void drawLevelupScreen(sf::RenderTarget& target, const render::AssetManager& assets,
 						   const core::World& world, const core::XpManager& xpManager);
 
 	/// Handles events for skill selection
-	void handleLevelupScreenEvent(render::Renderer& renderer, core::XpManager& xpManager, sf::Event event);
+	void handleLevelupScreenEvent(sf::RenderTarget& target, core::XpManager& xpManager, sf::Event event);
 }
 
 #endif

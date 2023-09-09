@@ -22,7 +22,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace render {
     /// Renders "You died screen"
-    void drawDeathScreen(render::Renderer& renderer, const render::AssetManager& assets);
+    void drawDeathScreen(sf::RenderTarget& target, const render::AssetManager& assets);
 }
 
 #endif
