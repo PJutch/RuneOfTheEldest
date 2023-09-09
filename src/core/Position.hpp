@@ -13,18 +13,31 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef RENDER_WORLD
-#define RENDER_WORLD
+#ifndef POSITION_HPP_
+#define POSITION_HPP_
 
-#include "render/fwd.hpp"
-#include "core/fwd.hpp"
-#include "core/Position.hpp"
+#include <SFML/System/Vector2.hpp>
+#include <SFML/System/Vector3.hpp>
 
-#include <SFML/Graphics/RenderTarget.hpp>
+namespace core {
+	/// Position in World
+	template <typename T>
+	struct Position {
+		T x;
+		T y;
+		int z;
 
-namespace render {
-    void draw(sf::RenderTarget& target, const AssetManager& assets,
-              const core::World& world, const render::PlayerMap& playerMap, core::Position<float> cameraPos);
+		Position() = default;
+		Position(float x_, float y_, int z_) : x{x_}, y{y_}, z{z_} {}
+		explicit Position(sf::Vector3i position) : Position(static_cast<float>(position.x),
+			static_cast<float>(position.y),
+			position.z) {}
+
+		/// Horizontal components
+		sf::Vector2f xy() const noexcept {
+			return {x, y};
+		}
+	};
 }
 
 #endif

@@ -20,7 +20,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "render/Hud.hpp"
 #include "render/LevelUpScreen.hpp"
 #include "render/Camera/Camera.hpp"
-#include "render/View.hpp"
 
 #include "generation/DungeonGenerator.hpp"
 
@@ -120,8 +119,7 @@ void Game::draw_() {
     if (!world->player().isAlive()) {
         render::drawDeathScreen(*window, *assets);
     } else {
-        window->setView(render::worldScreenView(camera->position().xy(), window->getSize()));
-        render::draw(*window, *assets, *world, *playerMap, camera->position().level);
+        render::draw(*window, *assets, *world, *playerMap, camera->position());
 
         render::drawXpBar(*window, *xpManager);
         if (xpManager->canLevelUp())

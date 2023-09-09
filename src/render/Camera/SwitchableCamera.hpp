@@ -32,12 +32,12 @@ namespace render {
             cameras{ std::move(cameras_) } {}
 
         /// Uses current camera position
-        [[nodiscard]] Position position() const final {
+        [[nodiscard]] core::Position<float> position() const final {
             return currentCamera().position();
         }
 
         /// Moves current camera
-        void moveTo(Position newPosition) final {
+        void moveTo(core::Position<float> newPosition) final {
             currentCamera().moveTo(newPosition);
         }
 

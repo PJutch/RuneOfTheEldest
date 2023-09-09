@@ -36,12 +36,12 @@ namespace render {
 
     void FreeCamera::handleEvent(sf::Event event) {
         if (util::wasKeyPressed(event, sf::Keyboard::Comma) && event.key.shift) {
-            if (position().level > 0)
-                --position_.level;
+            if (position().z > 0)
+                --position_.z;
         }
         else if (util::wasKeyPressed(event, sf::Keyboard::Period) && event.key.shift) {
-            if (position().level + 1 < world->tiles().shape().z)
-                ++position_.level;
+            if (position().z + 1 < world->tiles().shape().z)
+                ++position_.z;
         }
     }
 }

@@ -26,7 +26,7 @@ namespace render {
     }
 
     void SwitchableCamera::nextCamera() noexcept {
-        Position oldPosition = currentCamera().position();
+        core::Position<float> oldPosition = currentCamera().position();
 
         ++currentCameraIndex;
         currentCameraIndex %= std::ssize(cameras);

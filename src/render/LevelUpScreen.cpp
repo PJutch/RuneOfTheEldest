@@ -54,7 +54,7 @@ namespace render {
         if (event.type != event.MouseButtonPressed)
             return;
 
-        target.setView(hudView(target.getSize()));
+        target.setView(createFullscreenView(1000.f, target.getSize()));
         sf::Vector2f clickPos = target.mapPixelToCoords({event.mouseButton.x, event.mouseButton.y});
 
         auto skills = xpManager.availableSkills();

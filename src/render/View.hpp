@@ -20,6 +20,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "coords.hpp"
 
+#include "core/Position.hpp"
+
 #include <SFML/Graphics/View.hpp>
 #include <SFML/System/Vector2.hpp>
 
@@ -44,8 +46,8 @@ namespace render {
         return sf::View{ center, {height * screenSize.x / screenSize.y, height} };
     }
 
-    inline sf::View worldScreenView(sf::Vector2f cameraPos, sf::Vector2u screenSize) noexcept {
-        return createFullscreenView(toScreen(cameraPos), 512.f, screenSize);
+    inline sf::View worldScreenView(core::Position<float> cameraPos, sf::Vector2u screenSize) noexcept {
+        return createFullscreenView(toScreen(cameraPos.xy()), 512.f, screenSize);
     }
 }
 

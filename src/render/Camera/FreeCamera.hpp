@@ -28,7 +28,7 @@ namespace render {
     public:
         FreeCamera(std::shared_ptr<core::World> world);
 
-        [[nodiscard]] Position position() const noexcept final {
+        [[nodiscard]] core::Position<float> position() const noexcept final {
             return position_;
         }
 
@@ -38,7 +38,7 @@ namespace render {
         }
 
         /// Moves to new point
-        void moveTo(Position newPosition) noexcept final {
+        void moveTo(core::Position<float> newPosition) noexcept final {
             position_ = newPosition;
         }
 
@@ -53,7 +53,7 @@ namespace render {
         /// Changes floor by <>
         void handleEvent(sf::Event event) final;
     private:
-        Position position_;
+        core::Position<float> position_;
 
         std::shared_ptr<core::World> world;
 

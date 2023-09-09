@@ -16,6 +16,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef CAMERA_HPP_
 #define CAMERA_HPP_
 
+#include "core/Position.hpp"
+
 #include <SFML/Window/Event.hpp>
 #include <SFML/System/Time.hpp>
 #include <SFML/System/Vector3.hpp>
@@ -25,29 +27,13 @@ namespace render {
     /// Interface for cameras. Determines point of view
     class Camera {
     public:
-        /// Position of the Camera
-        struct Position {
-            float x;
-            float y;
-            int level;
-
-            Position() = default;
-            Position(float x_, float y_, int level_) : x{ x_ }, y{ y_ }, level{ level_ } {}
-            explicit Position(sf::Vector3i position) : Position(static_cast<float>(position.x), 
-                                                                static_cast<float>(position.y), position.z) {}
-
-            [[nodiscard]] sf::Vector2f xy() const noexcept {
-                return { x, y };
-            }
-        };
-
         virtual ~Camera() = default;
 
         /// Position of the Camera
-        [[nodiscard]] virtual Position position() const = 0;
+        [[nodiscard]] virtual core::Position<float> position() const = 0;
 
         /// Moves Camera to new point. Called on switching Camera
-        virtual void moveTo(Position position) = 0;
+        virtual void moveTo(core::Position<float> position) = 0;
 
         /// Resets Camera state
         virtual void reset() = 0;

@@ -19,6 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "coords.hpp"
 #include "PlayerMap.hpp"
 #include "AssetManager.hpp"
+#include "View.hpp"
 
 #include "core/World.hpp"
 #include "core/Sound.hpp"
@@ -30,7 +31,7 @@ namespace render {
     namespace {
         void drawTile(sf::RenderTarget& target, const AssetManager& assets,
                       const core::World& world, const render::PlayerMap& playerMap,
-            sf::Vector3i position) {
+                      sf::Vector3i position) {
             const sf::Texture& texture = assets.tileTexture(world.tiles()[position]);
             sf::Vector2f screenPos = toScreen(util::getXY(position));
 
@@ -41,12 +42,12 @@ namespace render {
             }
         }
 
-        void drawAreas(sf::RenderTarget& target, const core::World& world, int z) {
+        void drawAreas(sf::RenderTarget& target, const core::World& world, core::Position<float> cameraPos) {
             const bool shouldDraw = false;
             if (!shouldDraw)
                 return;
 
-            for (sf::IntRect area : world.areas(z))
+            for (sf::IntRect area : world.areas(cameraPos.z))
                 drawInWorldRect(target, area, sf::Color::Transparent, sf::Color::Green, 1.0);
         }
 
@@ -76,9 +77,9 @@ namespace render {
         }
 
         void draw(sf::RenderTarget& target, const AssetManager& assets,
-                  const core::World& world, const render::PlayerMap& playerMap, int z,
-            PlayerMap::SeenActor actor) {
-            if (actor.position.z != z)
+                  const core::World& world, const render::PlayerMap& playerMap, core::Position<float> cameraPos,
+                  PlayerMap::SeenActor actor) {
+            if (actor.position.z != cameraPos.z)
                 return;
 
             double colorMod = playerMap.canSee(actor.position) ? 1.0 : 0.5;
@@ -101,15 +102,17 @@ namespace render {
     }
 
     void draw(sf::RenderTarget& target, const AssetManager& assets,
-              const core::World& world, const render::PlayerMap& playerMap, int z) {
+              const core::World& world, const render::PlayerMap& playerMap, core::Position<float> cameraPos) {
+        target.setView(createFullscreenView(toScreen(cameraPos.xy()), 512.f, target.getSize()));
+
         for (int x = 0; x < world.tiles().shape().x; ++x)
             for (int y = 0; y < world.tiles().shape().y; ++y)
-                drawTile(target, assets, world, playerMap, {x, y, z});
+                drawTile(target, assets, world, playerMap, {x, y, cameraPos.z});
 
-        drawAreas(target, world, z);
+        drawAreas(target, world, cameraPos);
 
         for (const auto& actor : playerMap.seenActors())
-            draw(target, assets, world, playerMap, z, actor);
+            draw(target, assets, world, playerMap, cameraPos, actor);
 
         for (core::Sound sound : playerMap.recentSounds())
             draw(target, assets, world, playerMap, sound);

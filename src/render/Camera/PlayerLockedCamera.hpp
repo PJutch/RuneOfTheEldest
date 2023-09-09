@@ -30,12 +30,12 @@ namespace render {
             world{ std::move(world_) } {}
 
         /// Uses player position
-        [[nodiscard]] Position position() const final {
-            return Position{ world->player().position() };
+        [[nodiscard]] core::Position<float> position() const final {
+            return core::Position<float>{ world->player().position() };
         }
 
         /// Can't move
-        void moveTo(Position) final {}
+        void moveTo(core::Position<float>) final {}
 
         /// Ignore reset
         void reset() final {}
