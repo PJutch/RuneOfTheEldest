@@ -16,10 +16,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "World.hpp"
 
 #include "Primitives.hpp"
-#include "coords.hpp"
-#include "PlayerMap.hpp"
-#include "AssetManager.hpp"
-#include "View.hpp"
+#include "render/coords.hpp"
+#include "render/PlayerMap.hpp"
+#include "render/AssetManager.hpp"
+#include "render/View.hpp"
 
 #include "core/World.hpp"
 #include "core/Sound.hpp"

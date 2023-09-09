@@ -16,7 +16,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "LevelUpScreen.hpp"
 
 #include "Primitives.hpp"
-#include "View.hpp"
+#include "render/View.hpp"
 
 #include "core/World.hpp"
 #include "core/XpManager.hpp"

@@ -15,10 +15,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Game.hpp"
 
-#include "render/World.hpp"
-#include "render/DeathScreen.hpp"
-#include "render/Hud.hpp"
-#include "render/LevelUpScreen.hpp"
+#include "render/draw/World.hpp"
+#include "render/draw/DeathScreen.hpp"
+#include "render/draw/Hud.hpp"
+#include "render/draw/LevelUpScreen.hpp"
 #include "render/Camera/Camera.hpp"
 
 #include "generation/DungeonGenerator.hpp"

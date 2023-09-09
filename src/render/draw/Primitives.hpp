@@ -16,7 +16,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef PRIMITIVES_HPP_
 #define PRIMITIVES_HPP_
 
-#include "coords.hpp"
+#include "render/coords.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Font.hpp>

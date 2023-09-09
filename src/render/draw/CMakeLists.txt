@@ -15,17 +15,11 @@
 
 include(${PROJECT_SOURCE_DIR}/cmake/DefaultCompilerOptions.cmake)
 
-add_library(render STATIC)
+add_library(draw STATIC)
 
-target_sources(render PRIVATE AssetManager.cpp PlayerMap.cpp)
+target_sources(draw PRIVATE LevelUpScreen.cpp World.cpp DeathScreen.cpp Hud.cpp Primitives.cpp)
 
-add_subdirectory(Camera)
-target_link_libraries(render PRIVATE Camera)
+setDefaultCompilerOptions(draw)
 
-add_subdirectory(draw)
-target_link_libraries(render PRIVATE draw)
-
-setDefaultCompilerOptions(render)
-
-target_include_directories(render PRIVATE ${PROJECT_SOURCE_DIR}/src)
-target_link_libraries(render PRIVATE dependencies util)
+target_include_directories(draw PRIVATE ${PROJECT_SOURCE_DIR}/src)
+target_link_libraries(draw PRIVATE render dependencies)
