@@ -21,13 +21,13 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace render {
     void drawDeathScreen(sf::RenderTarget& target, const render::AssetManager& assets) {
-        target.setView(hudView(target.getSize()));
-        auto [screenX, screenY] = target.getView().getSize();
+        target.setView(createFullscreenView(1000.f, target.getSize()));
+        sf::Vector2f center = target.getView().getSize() / 2.f;
 
-        sf::Vector2f youDiedPos(screenX / 2, screenY / 2 - 150.f);
-        drawText(target, youDiedPos, "You died", assets.font(), sf::Color::Red, 300);
+        sf::Vector2f youDiedPos  = center + sf::Vector2f{0.f, -150.f};
+        drawText(target, youDiedPos , "You died"                 , assets.font(), sf::Color::Red, 300);
 
-        sf::Vector2f continuePos(screenX / 2, screenY / 2 + 100.f);
-        drawText(target, continuePos, "Press any key to continue", assets.font(), sf::Color::Red, 50);
+        sf::Vector2f continuePos = center + sf::Vector2f{0.f,  100.f};
+        drawText(target, continuePos, "Press any key to continue", assets.font(), sf::Color::Red, 50 );
     }
 }

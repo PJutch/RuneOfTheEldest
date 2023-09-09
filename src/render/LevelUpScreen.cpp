@@ -23,31 +23,30 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace render {
     namespace {
-        const float skillWidth = 256;
-        const float skillHeight = 256;
+        const sf::Vector2f skillSize{256, 256};
     }
 
     void drawLevelupScreen(sf::RenderTarget& target, const render::AssetManager& assets,
                            const core::World& world, const core::XpManager& xpManager) {
-        target.setView(hudView(target.getSize()));
+        target.setView(createFullscreenView(1000.f, target.getSize()));
 
         auto skills = xpManager.availableSkills();
 
         sf::Vector2f screenSize = target.getView().getSize();
 
-        float leftBoundary = (screenSize.x - skillWidth * skills.size()) / 2;
-        float skillXCenter = leftBoundary + skillWidth / 2;
+        float leftBoundary = (screenSize.x - skillSize.x * skills.size()) / 2;
+        float skillXCenter = leftBoundary + skillSize.x / 2;
         for (const core::Skill* skill : skills) {
-            drawRect(target, {skillXCenter - skillWidth / 2, 300, skillHeight, 250},
+            drawRect(target, {skillXCenter - skillSize.x / 2, 300, skillSize.x, skillSize.y},
                 sf::Color{32, 32, 32}, sf::Color{128, 128, 128}, 4.f);
 
             const sf::Texture& icon = skill->icon();
-            drawSprite(target, {skillXCenter, 3 * screenSize.y / 8}, util::geometry_cast<float>(icon.getSize()) / 2.f,
-                icon, 1.0, 8.0);
+            sf::Vector2f iconCenter = util::geometry_cast<float>(icon.getSize()) / 2.f;
+            drawSprite(target, {skillXCenter, 0.375f * screenSize.y}, iconCenter, icon, 1.0, 8.0);
 
-            drawText(target, {skillXCenter, screenSize.y / 2}, skill->name(), assets.font(), sf::Color::White, 30);
+            drawText(target, {skillXCenter, 0.5f * screenSize.y}, skill->name(), assets.font(), sf::Color::White, 30);
 
-            skillXCenter += skillWidth;
+            skillXCenter += skillSize.x;
         }
     }
 
@@ -62,17 +61,17 @@ namespace render {
 
         sf::Vector2f screenSize = target.getView().getSize();
 
-        float leftBoundary = (screenSize.x - skillWidth * skills.size()) / 2;
-        float skillXCenter = leftBoundary + skillWidth / 2;
+        float leftBoundary = (screenSize.x - skillSize.x * skills.size()) / 2;
+        float skillXCenter = leftBoundary + skillSize.x / 2;
         for (const core::Skill* skill : skills) {
-            sf::FloatRect currentSkillRect{skillXCenter - skillWidth / 2, 300, skillWidth, skillHeight};
+            sf::FloatRect currentSkillRect{skillXCenter - skillSize.x / 2, 300, skillSize.x, skillSize.y};
 
             if (currentSkillRect.contains(clickPos)) {
                 xpManager.levelUp(skill);
                 return;
             }
 
-            skillXCenter += skillWidth;
+            skillXCenter += skillSize.x;
         }
     }
 }

@@ -47,10 +47,6 @@ namespace render {
     inline sf::View worldScreenView(sf::Vector2f cameraPos, sf::Vector2u screenSize) noexcept {
         return createFullscreenView(toScreen(cameraPos), 512.f, screenSize);
     }
-
-    inline sf::View hudView(sf::Vector2u screenSize) noexcept {
-        return createFullscreenView(1024.f, screenSize);
-    }
 }
 
 #endif

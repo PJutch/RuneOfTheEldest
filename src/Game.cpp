@@ -123,7 +123,6 @@ void Game::draw_() {
         window->setView(render::worldScreenView(camera->position().xy(), window->getSize()));
         render::draw(*window, *assets, *world, *playerMap, camera->position().level);
 
-        window->setView(render::hudView(window->getSize()));
         render::drawXpBar(*window, *xpManager);
         if (xpManager->canLevelUp())
             render::drawLevelupScreen(*window, *assets, *world, *xpManager);
