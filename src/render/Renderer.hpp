@@ -49,11 +49,11 @@ namespace render {
         }
 
         void setWorldScreenView(sf::Vector2f cameraPos) noexcept {
-            window->setView(worldScreenView(cameraPos));
+            window->setView(worldScreenView(cameraPos, window->getSize()));
         }
 
         void setHudView() noexcept {
-            window->setView(hudView());
+            window->setView(hudView(window->getSize()));
         }
 
         sf::Vector2f viewSize() const noexcept {
@@ -69,14 +69,6 @@ namespace render {
         }
     private:
         std::shared_ptr<sf::RenderWindow> window;
-
-        sf::View worldScreenView(sf::Vector2f cameraPos) noexcept {
-            return createFullscreenView(toScreen(cameraPos), 512, window->getSize());
-        }
-
-        sf::View hudView() noexcept {
-            return createFullscreenView(1024.f, window->getSize());
-        }
     };
 }
 

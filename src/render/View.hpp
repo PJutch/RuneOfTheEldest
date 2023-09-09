@@ -18,6 +18,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 /// @file View.hpp Utilities for sf::View creation
 
+#include "coords.hpp"
+
 #include <SFML/Graphics/View.hpp>
 #include <SFML/System/Vector2.hpp>
 
@@ -40,6 +42,14 @@ namespace render {
     [[nodiscard]] sf::View createFullscreenView(sf::Vector2f center,
         float height, sf::Vector2<T> screenSize) noexcept {
         return sf::View{ center, {height * screenSize.x / screenSize.y, height} };
+    }
+
+    inline sf::View worldScreenView(sf::Vector2f cameraPos, sf::Vector2u screenSize) noexcept {
+        return createFullscreenView(toScreen(cameraPos), 512.f, screenSize);
+    }
+
+    inline sf::View hudView(sf::Vector2u screenSize) noexcept {
+        return createFullscreenView(1024.f, screenSize);
     }
 }
 
