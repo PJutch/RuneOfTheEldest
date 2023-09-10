@@ -16,23 +16,23 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef TARGET_FULL_HP_SKILL_HPP_
 #define TARGET_FULL_HP_SKILL_HPP_
 
-#include "Skill.hpp"
+#include "Effect.hpp"
 
 #include "../Actor.hpp"
 
 namespace core {
 	/// @brief Applies if attacked Actor has full hp
 	/// @details Type in skill file is "targetFullHp"
-	class TargetFullHpSkill : public Skill {
+	class TargetFullHpSkill : public Effect {
 	public:
 		TargetFullHpSkill(double newDamageMul, const sf::Texture& icon_, std::string_view name_) :
-			Skill{icon_, name_}, damageMul_{newDamageMul} {}
+			Effect{icon_, name_}, damageMul_{newDamageMul} {}
 
 		double damageMul(const Actor& target) const final {
 			return target.hp() == target.maxHp() ? damageMul_ : 1;
 		}
 
-		std::unique_ptr<Skill> clone() const final {
+		std::unique_ptr<Effect> clone() const final {
 			return std::make_unique<TargetFullHpSkill>(*this);
 		}
 	private:

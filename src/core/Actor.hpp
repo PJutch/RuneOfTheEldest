@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "World.hpp"
 #include "Controller/Controller.hpp"
-#include "Skill/Skill.hpp"
+#include "Effect/Effect.hpp"
 #include "XpManager.hpp"
 
 #include "util/geometry.hpp"
@@ -164,14 +164,14 @@ namespace core {
 			return canMoveToOrAttack(position() + util::make3D(offset, 0), forceSwap);
 		}
 
-		void addSkill(std::unique_ptr<Skill> skill) {
-			skill->owner(weak_from_this());
-			skills_.push_back(std::move(skill));
+		void addEffect(std::unique_ptr<Effect> effect) {
+			effect->owner(weak_from_this());
+			effects_.push_back(std::move(effect));
 			updateHp();
 		}
 
-		const std::vector<std::unique_ptr<Skill>>& skills() const noexcept {
-			return skills_;
+		const std::vector<std::unique_ptr<Effect>>& effects() const noexcept {
+			return effects_;
 		}
 
 		double xpMul() const;
@@ -180,7 +180,7 @@ namespace core {
 	private:
 		Stats stats;
 		std::unique_ptr<Controller> controller_;
-		std::vector<std::unique_ptr<Skill>> skills_;
+		std::vector<std::unique_ptr<Effect>> effects_;
 
 		double nextTurn_ = 0;
 		sf::Vector3i position_;

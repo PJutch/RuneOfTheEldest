@@ -35,7 +35,7 @@ namespace render {
         }
 
         void drawSkillTooltip(sf::RenderTarget& target, const AssetManager& assets,
-                              const std::unique_ptr<core::Skill>& skill) { 
+                              const std::unique_ptr<core::Effect>& skill) {
             auto text = createText(skill->name(), assets.font(), sf::Color::White, 30);
 
             auto tooltipSize = text.getLocalBounds().getSize() + sf::Vector2f{10.f, 10.f};
@@ -48,7 +48,7 @@ namespace render {
         }
 
         void drawSkillIcons(sf::RenderTarget& target, const AssetManager& assets, const core::World& world) {
-            const auto& skills = world.player().skills();
+            const auto& skills = world.player().effects();
 
             target.setView(createFullscreenView(1000.f, target.getSize()));
 

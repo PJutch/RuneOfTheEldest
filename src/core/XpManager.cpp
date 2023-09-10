@@ -15,9 +15,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "XpManager.hpp"
 
-#include "Skill/UnconditionalSkill.hpp"
-#include "Skill/LowHpSkill.hpp"
-#include "Skill/TargetFullHpSkill.hpp"
+#include "Effect/UnconditionalSkill.hpp"
+#include "Effect/LowHpSkill.hpp"
+#include "Effect/TargetFullHpSkill.hpp"
 
 #include "Actor.hpp"
 
@@ -121,7 +121,7 @@ namespace core {
 	void XpManager::generateAvailableSkills() const {
 		logger->info("Selecting available skills...");
 		availableSkills_.resize(3);
-		for (const Skill*& skill : availableSkills_) {
+		for (const Effect*& skill : availableSkills_) {
 			auto iskill = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(skills) - 1}(*randomEngine);
 			skill = skills[iskill].get();
 			
@@ -129,11 +129,11 @@ namespace core {
 		}
 	}
 
-	void XpManager::levelUp(const Skill* skill) {
+	void XpManager::levelUp(const Effect* skill) {
 		logger->info("Finished level up");
 		logger->info("Player selected skill {}", skill->name());
 
-		world->player().addSkill(skill->clone());
+		world->player().addEffect(skill->clone());
 		availableSkills_.clear();
 
 		xp -= xpUntilNextLvl;

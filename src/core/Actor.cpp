@@ -103,51 +103,51 @@ namespace core {
 
 	double Actor::regen() {
 		double res = stats.regen;
-		for (const auto& skill : skills_)
-			res *= skill->regenMul();
+		for (const auto& effect : effects_)
+			res *= effect->regenMul();
 		return res;
 	}
 
 	double Actor::damage(const Actor& target) {
 		double res = stats.damage;
-		for (const auto& skill : skills_)
-			res *= skill->damageMul(target);
+		for (const auto& effect : effects_)
+			res *= effect->damageMul(target);
 		return res;
 	}
 
 	double Actor::turnDelay() {
 		double speedMod = 1;
-		for (const auto& skill : skills_)
-			speedMod += skill->speedBonus();
+		for (const auto& effect : effects_)
+			speedMod += effect->speedBonus();
 
 		return stats.turnDelay / speedMod;
 	}
 
 	double Actor::xpMul() const {
 		double res = 1;
-		for (const auto& skill : skills_)
-			res *= skill->xpMul();
+		for (const auto& effect : effects_)
+			res *= effect->xpMul();
 		return res;
 	}
 
 	double Actor::evasion() {
 		double evasion = stats.evasion;
-		for (const auto& skill : skills_)
-			evasion += skill->evasionBonus();
+		for (const auto& effect : effects_)
+			evasion += effect->evasionBonus();
 		return evasion;
 	}
 
 	double Actor::accuracy() {
 		double accuracy = stats.accuracy;
-		for (const auto& skill : skills_)
-			accuracy += skill->accuracyBonus();
+		for (const auto& effect : effects_)
+			accuracy += effect->accuracyBonus();
 		return accuracy;
 	}
 
 	void Actor::updateHp() {
 		double newMul = 1;
-		for (const auto& skill : skills_)
-			newMul *= skill->hpMul();
+		for (const auto& effect : effects_)
+			newMul *= effect->hpMul();
 
 		hp_ *= newMul / hpMul;
 		hpMul = newMul;

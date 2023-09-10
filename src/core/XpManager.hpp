@@ -16,7 +16,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef XP_MANAGER_HPP_
 #define XP_MANAGER_HPP_
 
-#include "Skill/Skill.hpp"
+#include "Effect/Effect.hpp"
 
 #include "World.hpp"
 
@@ -45,7 +45,7 @@ namespace core {
 		/// @details Randomly selects 3 skills for player.
 		/// Return same skills on each call.
 		/// Resets on level up
-		std::span<Skill const* const> availableSkills() const {
+		std::span<Effect const* const> availableSkills() const {
 			if (availableSkills_.empty())
 				generateAvailableSkills();
 			return availableSkills_;
@@ -55,7 +55,7 @@ namespace core {
 		/// @details Add clone of selected skill to player
 		/// Resets available skills
 		/// Increases xp requirements for next level
-		void levelUp(const Skill* skill);
+		void levelUp(const Effect* skill);
 
 		/// Returns colected percent of xp for next level
 		double xpPercentUntilNextLvl() const noexcept {
@@ -71,8 +71,8 @@ namespace core {
 		double xp = 0;
 		double xpUntilNextLvl = 1;
 
-		std::vector<std::unique_ptr<Skill>> skills;
-		mutable std::vector<const Skill*> availableSkills_;
+		std::vector<std::unique_ptr<Effect>> skills;
+		mutable std::vector<const Effect*> availableSkills_;
 
 		std::shared_ptr<World> world;
 		util::RandomEngine* randomEngine = nullptr;

@@ -13,8 +13,8 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef SKILL_HPP_
-#define SKILL_HPP_
+#ifndef EFFECT_HPP_
+#define EFFECT_HPP_
 
 #include <core/fwd.hpp>
 
@@ -26,11 +26,11 @@ namespace sf {
 #include <memory>
 
 namespace core {
-	/// Skill modifying Actor stats
-	class Skill {
+	/// Effect modifying Actor stats
+	class Effect {
 	public:
-		Skill(const sf::Texture& newIcon, std::string_view newName) : icon_{&newIcon}, name_{newName} {}
-		virtual ~Skill() = default;
+		Effect(const sf::Texture& newIcon, std::string_view newName) : icon_{&newIcon}, name_{newName} {}
+		virtual ~Effect() = default;
 
 		/// Actor regen multiplier
 		virtual double regenMul() const {
@@ -70,7 +70,7 @@ namespace core {
 		}
 
 		/// Copies this Skill
-		virtual std::unique_ptr<Skill> clone() const = 0;
+		virtual std::unique_ptr<Effect> clone() const = 0;
 
 		/// Sets Actor owning this skill
 		virtual void owner([[maybe_unused]] std::weak_ptr<Actor> newOwner) {}

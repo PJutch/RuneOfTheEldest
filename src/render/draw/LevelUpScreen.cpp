@@ -36,7 +36,7 @@ namespace render {
 
         float leftBoundary = (screenSize.x - skillSize.x * skills.size()) / 2;
         float skillXCenter = leftBoundary + skillSize.x / 2;
-        for (const core::Skill* skill : skills) {
+        for (const core::Effect* skill : skills) {
             drawRect(target, {skillXCenter - skillSize.x / 2, 300, skillSize.x, skillSize.y},
                 sf::Color{32, 32, 32}, sf::Color{128, 128, 128}, 4.f);
 
@@ -63,7 +63,7 @@ namespace render {
 
         float leftBoundary = (screenSize.x - skillSize.x * skills.size()) / 2;
         float skillXCenter = leftBoundary + skillSize.x / 2;
-        for (const core::Skill* skill : skills) {
+        for (const core::Effect* skill : skills) {
             sf::FloatRect currentSkillRect{skillXCenter - skillSize.x / 2, 300, skillSize.x, skillSize.y};
 
             if (currentSkillRect.contains(clickPos)) {
