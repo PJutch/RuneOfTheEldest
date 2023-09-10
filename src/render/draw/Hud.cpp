@@ -57,6 +57,9 @@ namespace render {
             float padding = 4.f;
             float skillXCenter = screenSize.x - padding - iconSize.x / 2;
             for (const auto& skill : skills) {
+                if (!skill->isSkill())
+                    continue;
+
                 const float iconY = 950.f;
                 sf::FloatRect skillRect{sf::Vector2f{skillXCenter, iconY} - iconSize / 2.f, iconSize};
 

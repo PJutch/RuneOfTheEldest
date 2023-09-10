@@ -28,7 +28,7 @@ namespace core {
 			               double newAccuracyBonus, double newEvasionBonus, 
 			               double newXpMul, double hpMul,
 			               const sf::Texture& icon_, std::string_view name_) :
-			Effect{icon_, name_}, hpMul_{hpMul}, regenMul_{newRegenMul}, damageMul_{newDamageMul},
+			Effect{icon_, name_, true}, hpMul_{hpMul}, regenMul_{newRegenMul}, damageMul_{newDamageMul},
 			accuracyBonus_{newAccuracyBonus}, evasionBonus_{newEvasionBonus},
 			speedBonus_{newSpeedBonus}, xpMul_{newXpMul} {}
 

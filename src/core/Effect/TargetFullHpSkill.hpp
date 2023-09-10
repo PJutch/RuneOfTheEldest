@@ -26,7 +26,7 @@ namespace core {
 	class TargetFullHpSkill : public Effect {
 	public:
 		TargetFullHpSkill(double newDamageMul, const sf::Texture& icon_, std::string_view name_) :
-			Effect{icon_, name_}, damageMul_{newDamageMul} {}
+			Effect{icon_, name_, true}, damageMul_{newDamageMul} {}
 
 		double damageMul(const Actor& target) const final {
 			return target.hp() == target.maxHp() ? damageMul_ : 1;

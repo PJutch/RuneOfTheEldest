@@ -29,7 +29,9 @@ namespace core {
 	/// Effect modifying Actor stats
 	class Effect {
 	public:
-		Effect(const sf::Texture& newIcon, std::string_view newName) : icon_{&newIcon}, name_{newName} {}
+		Effect(const sf::Texture& newIcon, std::string_view newName, bool isSkill) : 
+			icon_{&newIcon}, name_{newName}, isSkill_{isSkill} {}
+
 		virtual ~Effect() = default;
 
 		/// Actor regen multiplier
@@ -69,6 +71,14 @@ namespace core {
 			return 0;
 		}
 
+		/// Applies effects over time. Called in the end of the turn
+		virtual void update(double time) {}
+
+		/// Checks if effect should end
+		virtual bool shouldBeRemoved() const {
+			return false;
+		}
+
 		/// Copies this Skill
 		virtual std::unique_ptr<Effect> clone() const = 0;
 
@@ -84,9 +94,15 @@ namespace core {
 		[[nodiscard]] const std::string& name() const {
 			return name_;
 		}
+
+		/// Checks if Effect is Skill
+		[[nodiscard]] bool isSkill() {
+			return isSkill_;
+		}
 	private:
 		const sf::Texture* icon_;
 		std::string name_;
+		bool isSkill_;
 	};
 }
 

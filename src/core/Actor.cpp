@@ -34,6 +34,13 @@ namespace core {
 
 		hp_ += regen() * turnDelay();
 		hp_ = std::min(hp(), maxHp());
+
+		for (const auto& effect : effects())
+			effect->update(turnDelay());
+
+		std::erase_if(effects_, [](const auto& effect) {
+			return effect->shouldBeRemoved();
+		});
 	}
 
 	bool Actor::tryMoveTo(sf::Vector3i newPosition, bool forceSwap) {

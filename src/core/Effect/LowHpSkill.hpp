@@ -29,7 +29,7 @@ namespace core {
 		LowHpSkill(double newRegenMul, double newDamageMul, double newSpeedBonus, double newXpMul, 
 			       double newAccuracyBonus, double newEvasionBonus,
 			       const sf::Texture& icon_, std::string_view name_) :
-			Effect{icon_, name_}, regenMul_{newRegenMul}, damageMul_{newDamageMul},
+			Effect{icon_, name_, true}, regenMul_{newRegenMul}, damageMul_{newDamageMul},
 			accuracyBonus_{newAccuracyBonus}, evasionBonus_{newEvasionBonus},
 			speedBonus_{newSpeedBonus}, xpMul_{newXpMul} {}
 
