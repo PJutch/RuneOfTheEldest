@@ -15,107 +15,16 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "XpManager.hpp"
 
-#include "Effect/UnconditionalSkill.hpp"
-#include "Effect/LowHpSkill.hpp"
-#include "Effect/TargetFullHpSkill.hpp"
-
 #include "Actor.hpp"
 
-#include "util/parse.hpp"
-#include "util/Map.hpp"
-#include "util/filesystem.hpp"
-
-namespace {
-	std::string unknownParamsMessage(std::unordered_map<std::string, std::string> params) {
-		std::string message = "Unknown params: ";
-		for (auto [name, value] : params)
-			message += std::format("\"{}\" ", name);
-		return message;
-	}
-
-	class UnknownParamsError : public util::RuntimeError {
-	public:
-		UnknownParamsError(std::unordered_map<std::string, std::string> params,
-			               util::Stacktrace currentStacktrace = {}) noexcept :
-			RuntimeError{unknownParamsMessage(params), std::move(currentStacktrace)} {}
-	};
-
-	class UnknownSkillTypeError : public util::RuntimeError {
-	public:
-		UnknownSkillTypeError(std::string_view type, util::Stacktrace currentStacktrace = {}) noexcept :
-			RuntimeError{std::format("Unknown skill type \"{}\"", type), 
-			std::move(currentStacktrace)} {}
-	};
-}
-
 namespace core {
-	XpManager::XpManager(std::shared_ptr<World> world_, std::shared_ptr<render::AssetManager> assets, 
-		                 util::LoggerFactory& loggerFactory, util::RandomEngine& randomEngine_) :
-			world{std::move(world_)}, randomEngine{&randomEngine_}, logger{loggerFactory.create("xp")} {
-		logger->info("Loading...");
-		util::forEachFile("resources/Skills/", [this, &assets](std::ifstream& file, const std::filesystem::path& path) {
-			logger->info("Loading Skill spec from {} ...", path.generic_string());
-
-			auto params = util::parseMapping(file);
-
-			std::string type = "unconditional";
-			if (auto v = util::getAndErase(params, "type"))
-				type = *v;
-
-			double regenMul = 1;
-			double speedBonus = 0;
-			double accuracyBonus = 0;
-			double evasionBonus = 0;
-			double xpMul = 1;
-			double hpMul = 1;
-
-			if (type == "unconditional")
-				if (auto v = util::getAndErase(params, "hpMul"))
-					hpMul = util::parseReal(*v);
-
-			if (type != "targetFullHp") {
-				if (auto v = util::getAndErase(params, "regenMul"))
-					regenMul = util::parseReal(*v);
-
-				if (auto v = util::getAndErase(params, "speed"))
-					speedBonus = util::parseReal(*v);
-
-				if (auto v = util::getAndErase(params, "accuracy"))
-					accuracyBonus = util::parseReal(*v);
-
-				if (auto v = util::getAndErase(params, "evasion"))
-					evasionBonus = util::parseReal(*v);
-
-				if (auto v = util::getAndErase(params, "xpMul"))
-					xpMul = util::parseReal(*v);
-			}
-
-			double damageMul = 1;
-			if (auto v = util::getAndErase(params, "damageMul"))
-				damageMul = util::parseReal(*v);
-
-			const sf::Texture& icon = assets->texture(util::getAndEraseRequired(params, "icon"));
-			std::string name = util::getAndEraseRequired(params, "name");
-
-			if (!params.empty())
-				throw UnknownParamsError{params};
-
-			if (type == "unconditional")
-				skills.push_back(std::make_unique<UnconditionalSkill>(
-					regenMul, damageMul, speedBonus, 
-					accuracyBonus, evasionBonus, xpMul, hpMul,
-					icon, name));
-			else if (type == "lowHp")
-				skills.push_back(std::make_unique<LowHpSkill>(
-					regenMul, damageMul, speedBonus, accuracyBonus, evasionBonus, xpMul,
-					icon, name));
-			else if (type == "targetFullHp")
-				skills.push_back(std::make_unique<TargetFullHpSkill>(
-				    damageMul, icon, name)); 
-			else
-				throw UnknownSkillTypeError(type);
-		});
-		logger->info("Loaded");
+	XpManager::XpManager(std::shared_ptr<World> world_, std::shared_ptr<EffectManager> effects_,
+			             util::LoggerFactory& loggerFactory, util::RandomEngine& randomEngine_) :
+			world{std::move(world_)}, effects{effects_}, 
+		    randomEngine{&randomEngine_}, logger{loggerFactory.create("xp")} {
+		for (const auto& effect : *effects)
+			if (effect->isSkill())
+				skills.push_back(effect.get());
 	}
 
 	void XpManager::generateAvailableSkills() const {
@@ -123,7 +32,7 @@ namespace core {
 		availableSkills_.resize(3);
 		for (const Effect*& skill : availableSkills_) {
 			auto iskill = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(skills) - 1}(*randomEngine);
-			skill = skills[iskill].get();
+			skill = skills[iskill];
 			
 			logger->info("Selected skill #{} {}", iskill, skill->name());
 		}

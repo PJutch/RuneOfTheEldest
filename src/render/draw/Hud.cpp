@@ -17,6 +17,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Primitives.hpp"
 #include "render/View.hpp"
+#include "render/AssetManager.hpp"
 
 #include "core/XpManager.hpp"
 #include "core/World.hpp"

@@ -16,11 +16,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef XP_MANAGER_HPP_
 #define XP_MANAGER_HPP_
 
-#include "Effect/Effect.hpp"
+#include "EffectManager.hpp"
 
 #include "World.hpp"
-
-#include "render/AssetManager.hpp"
 
 #include "util/random.hpp"
 
@@ -30,7 +28,7 @@ namespace core {
 	public:
 		XpManager() = default;
 		XpManager(std::shared_ptr<World> world_) : world{std::move(world_)} {}
-		XpManager(std::shared_ptr<World> world, std::shared_ptr<render::AssetManager> assets, 
+		XpManager(std::shared_ptr<World> world, std::shared_ptr<EffectManager> assets,
 			      util::LoggerFactory& loggerFactory, util::RandomEngine& randomEngine_);
 
 		/// Add given amount of xp to player
@@ -71,7 +69,8 @@ namespace core {
 		double xp = 0;
 		double xpUntilNextLvl = 1;
 
-		std::vector<std::unique_ptr<Effect>> skills;
+		std::shared_ptr<EffectManager> effects;
+		std::vector<const Effect*> skills;
 		mutable std::vector<const Effect*> availableSkills_;
 
 		std::shared_ptr<World> world;
