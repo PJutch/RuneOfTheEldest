@@ -74,6 +74,12 @@ namespace core {
 		/// Applies effects over time. Called in the end of the turn
 		virtual void update(double time) {}
 
+		/// Called after loading all the effects
+		virtual void init(const EffectManager&) {}
+
+		/// Called when owner attacks another Actor
+		virtual void onAttack(Actor&) const {}
+
 		/// Checks if effect should end
 		virtual bool shouldBeRemoved() const {
 			return false;

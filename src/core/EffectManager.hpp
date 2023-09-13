@@ -53,6 +53,13 @@ namespace core {
 		auto cend() const {
 			return effects.cend();
 		}
+
+		const Effect* findEffect(std::string_view appliedEffectName) const {
+			auto iter = std::ranges::find(effects, appliedEffectName, [](const auto& effect) {
+				return effect->name();
+			});
+			return iter == effects.end() ? nullptr : iter->get();
+		}
 	private:
 		std::vector<std::unique_ptr<Effect>> effects;
 	};

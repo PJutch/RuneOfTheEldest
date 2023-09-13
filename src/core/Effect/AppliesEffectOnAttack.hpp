@@ -13,19 +13,35 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef CORE_FWD_HPP_
-#define CORE_FWD_HPP_
+#ifndef APPLIES_EFFECT_ON_ATTACK_HPP_
+#define APPLIES_EFFECT_ON_ATTACK_HPP_
 
-/// @file fwd.hpp Forward declarations for core classes
+#include "Effect.hpp"
+
+#include "../Actor.hpp"
 
 namespace core {
-	class World;
-	class Actor;
-	class ActorSpawner;
-	class PlayerController;
-	class Controller;
-	class XpManager;
-	class EffectManager;
+	/// Lose hp with time. Type name is poison.
+	class AppliesEffectOnAttack : public Effect {
+	public:
+		AppliesEffectOnAttack(std::string_view appliedEffect_, const sf::Texture& icon_, std::string_view name_) :
+			Effect{icon_, name_, false}, appliedEffectName{appliedEffect_} {}
+
+		void init(const EffectManager& effects) final {
+			effects.findEffect(appliedEffectName);
+		}
+
+		void onAttack(Actor& actor) const final {
+			actor.addEffect(appliedEffect->clone());
+		}
+
+		std::unique_ptr<Effect> clone() const final {
+			return std::make_unique<AppliesEffectOnAttack>(*this);
+		}
+	private:
+		std::string appliedEffectName;
+		const Effect* appliedEffect;
+	};
 }
 
 #endif

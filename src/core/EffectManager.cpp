@@ -19,6 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Effect/LowHpSkill.hpp"
 #include "Effect/TargetFullHpSkill.hpp"
 #include "Effect/Poison.hpp"
+#include "Effect/AppliesEffectOnAttack.hpp"
 
 #include "render/AssetManager.hpp"
 
@@ -101,23 +102,33 @@ namespace core {
 			else
 				throw UnknownSkillTypeError(type);
 		}
-	}
 
-	std::unique_ptr<Poison> createPoison(std::unordered_map<std::string, std::string>& params,
-										 std::string_view name, const sf::Texture& icon) {
-		double damageOverTime = 1;
-		double duration = 1;
+		std::unique_ptr<Poison> createPoison(std::unordered_map<std::string, std::string>& params,
+			std::string_view name, const sf::Texture& icon) {
+			double damageOverTime = 1;
+			double duration = 1;
 
-		if (auto v = util::getAndErase(params, "damageOverTime"))
-			damageOverTime = util::parseReal(*v);
+			if (auto v = util::getAndErase(params, "damageOverTime"))
+				damageOverTime = util::parseReal(*v);
 
-		if (auto v = util::getAndErase(params, "duration"))
-			duration = util::parseReal(*v);
+			if (auto v = util::getAndErase(params, "duration"))
+				duration = util::parseReal(*v);
 
-		if (!params.empty())
-			throw UnknownParamsError{params};
+			if (!params.empty())
+				throw UnknownParamsError{params};
 
-		return std::make_unique<Poison>(damageOverTime, duration, icon, name);
+			return std::make_unique<Poison>(damageOverTime, duration, icon, name);
+		}
+
+		std::unique_ptr<AppliesEffectOnAttack> createAppliesEffect(std::unordered_map<std::string, std::string>& params,
+			std::string_view name, const sf::Texture& icon) {
+			std::string appliedName = util::getAndEraseRequired(params, "applies");
+
+			if (!params.empty())
+				throw UnknownParamsError{params};
+
+			return std::make_unique<AppliesEffectOnAttack>(appliedName, icon, name);
+		}
 	}
 
 	EffectManager::EffectManager(std::shared_ptr<render::AssetManager> assets,
@@ -142,9 +153,16 @@ namespace core {
 				effects.push_back(createSkill(params, type, name, icon));
 			else if (type == "poison")
 				effects.push_back(createPoison(params, name, icon));
+			else if (type == "appliesEffectOnAttack")
+				effects.push_back(createAppliesEffect(params, name, icon));
 			else
 				throw UnknownSkillTypeError(type);
 		});
+
+		logger->info("Initializing...");
+		for (const auto& effect : effects)
+			effect->init(*this);
+
 		logger->info("Loaded");
 	}
 }
