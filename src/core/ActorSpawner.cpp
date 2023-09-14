@@ -46,14 +46,15 @@ namespace core {
 	}
 
 	ActorSpawner::ActorSpawner(std::shared_ptr<World> world_, std::shared_ptr<XpManager> xpManager_, 
+		                       std::shared_ptr<EffectManager> effectManager,
 		                       std::shared_ptr<render::PlayerMap> playerMap_,
 							   std::shared_ptr<render::AssetManager> assets, util::LoggerFactory& loggerFactory, 
 		                       util::RandomEngine& randomEngine_,
 							   std::shared_ptr<util::Raycaster> raycaster_) :
-			world{ std::move(world_) }, xpManager{ std::move(xpManager_) }, playerMap {std::move(playerMap_)},
+			world{ std::move(world_) }, xpManager{ std::move(xpManager_) }, playerMap{std::move(playerMap_)},
 			raycaster{ std::move(raycaster_) }, randomEngine{ &randomEngine_ }, logger{loggerFactory.create("actors")} {
 		logger->info("Loading...");
-		util::forEachFile("resources/Actors/", [this, &assets](std::ifstream& file, const std::filesystem::path& path) {
+		util::forEachFile("resources/Actors/", [&, this](std::ifstream& file, const std::filesystem::path& path) {
 			logger->info("Loading spec from {} ...", path.generic_string());
 
 			auto params = util::parseMapping(file);
@@ -78,6 +79,9 @@ namespace core {
 				actorData.back().minLevel = util::parseUint(*v);
 			if (auto v = util::getAndErase(params, "maxLevel"))
 				actorData.back().maxLevel = util::parseUint(*v);
+
+			if (auto v = util::getAndErase(params, "effect"))
+				actorData.back().effectToAdd = effectManager->findEffect(*v);
 
 			if (!params.empty())
 				throw UnknownParamsError{ params };
@@ -112,6 +116,8 @@ namespace core {
 						sf::Vector3i position = world->randomPositionAt(level, &World::isFree);
 						auto enemy = std::make_shared<Actor>(data.stats, position, world, xpManager, randomEngine);
 						enemy->controller(createController(enemy, data.controller));
+						if (data.effectToAdd)
+							enemy->addEffect(data.effectToAdd->clone());
 						world->addActor(std::move(enemy));
 					}
 			}

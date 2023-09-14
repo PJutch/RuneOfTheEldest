@@ -200,6 +200,8 @@ namespace core {
 		double hitChance(double accuracy) {
 			return accuracy / (accuracy + evasion());
 		}
+
+		void attack(Actor& other);
 	};
 }
 

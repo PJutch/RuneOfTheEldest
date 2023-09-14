@@ -55,13 +55,12 @@ namespace core {
 		auto other = world().actorAt(newPosition);
 		if (!other) {
 			position(newPosition);
-			world().makeSound({ Sound::Type::WALK, controller().isOnPlayerSide(), position() });
+			world().makeSound({Sound::Type::WALK, controller().isOnPlayerSide(), position()});
 			return true;
 		}
 
 		if (other->controller().isOnPlayerSide() != controller().isOnPlayerSide()) {
-			other->beAttacked(damage(*other), stats.accuracy);
-			world().makeSound({ Sound::Type::ATTACK, controller().isOnPlayerSide(), position()});
+			attack(*other);
 			return true;
 		}
 
@@ -158,5 +157,12 @@ namespace core {
 
 		hp_ *= newMul / hpMul;
 		hpMul = newMul;
+	}
+
+	void Actor::attack(Actor& other) {
+		other.beAttacked(damage(other), stats.accuracy);
+		for (const auto& effect : effects_)
+			effect->onAttack(other);
+		world().makeSound({Sound::Type::ATTACK, controller().isOnPlayerSide(), position()});
 	}
 }

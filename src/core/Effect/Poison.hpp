@@ -33,7 +33,7 @@ namespace core {
 		}
 
 		virtual bool shouldBeRemoved() const {
-			return duration > 0;
+			return duration <= 0;
 		}
 
 		std::unique_ptr<Effect> clone() const final {

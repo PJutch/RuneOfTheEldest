@@ -28,7 +28,7 @@ namespace core {
 			Effect{icon_, name_, false}, appliedEffectName{appliedEffect_} {}
 
 		void init(const EffectManager& effects) final {
-			effects.findEffect(appliedEffectName);
+			appliedEffect = effects.findEffect(appliedEffectName);
 		}
 
 		void onAttack(Actor& actor) const final {
@@ -40,7 +40,7 @@ namespace core {
 		}
 	private:
 		std::string appliedEffectName;
-		const Effect* appliedEffect;
+		const Effect* appliedEffect = nullptr;
 	};
 }
 
