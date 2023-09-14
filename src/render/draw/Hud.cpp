@@ -56,24 +56,42 @@ namespace render {
             sf::Vector2f screenSize = target.getView().getSize();
             const sf::Vector2f iconSize{32.f, 32.f};
             float padding = 4.f;
-            float skillXCenter = screenSize.x - padding - iconSize.x / 2;
-            for (const auto& skill : skills) {
-                if (!skill->isSkill())
-                    continue;
 
-                const float iconY = 950.f;
-                sf::FloatRect skillRect{sf::Vector2f{skillXCenter, iconY} - iconSize / 2.f, iconSize};
+            const float skillY = 950.f;
+            const float effectY = 50.f;
+
+            float rightmostXCenter = screenSize.x - padding - iconSize.x / 2;
+            float skillXCenter = rightmostXCenter;
+            float effectXCenter = rightmostXCenter;
+
+            for (const auto& skill : skills) {
+                float& x = skill->isSkill() ? skillXCenter : effectXCenter;
+                float y = skill->isSkill() ? skillY : effectY;
+
+                sf::FloatRect skillRect{sf::Vector2f{x, y} - iconSize / 2.f, iconSize};
 
                 drawRect(target, skillRect, sf::Color{32, 32, 32}, sf::Color{128, 128, 128}, 2.f);
 
                 const sf::Texture& icon = skill->icon();
                 sf::Vector2f iconCenter = util::geometry_cast<float>(icon.getSize()) / 2.f;
-                drawSprite(target, {skillXCenter, iconY}, iconCenter, icon, 1.0, 2.f);
+                drawSprite(target, {x, y}, iconCenter, icon, 1.0, 2.f);
+
+                x -= iconSize.x + 2 * padding;
+            }
+
+            skillXCenter = rightmostXCenter;
+            effectXCenter = rightmostXCenter;
+
+            for (const auto& skill : skills) {
+                float& x = skill->isSkill() ? skillXCenter : effectXCenter;
+                float y = skill->isSkill() ? skillY : effectY;
+
+                sf::FloatRect skillRect{sf::Vector2f{x, y} - iconSize / 2.f, iconSize};
 
                 if (skillRect.contains(target.mapPixelToCoords(sf::Mouse::getPosition())))
                     drawSkillTooltip(target, assets, skill);
 
-                skillXCenter -= iconSize.x + 2 * padding;
+                x -= iconSize.x + 2 * padding;
             }
         }
     }
