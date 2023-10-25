@@ -74,7 +74,7 @@ TEST(Actor, initialHp) {
 TEST(Actor, beDamaged) {
 	core::Actor actor = makeTestActor(5.0, 1.0, 1.0, 1);
 
-	actor.beDamaged(3);
+	actor.beDamaged(3, core::DamageType::PHYSICAL);
 
 	EXPECT_TRUE(actor.isAlive());
 	EXPECT_EQ(actor.hp(), 2);
@@ -87,7 +87,7 @@ TEST(Actor, beDamagedLethal) {
 	auto actor = makeSharedTestActor(5.0, 1.0, 1.0, 1, xpManager);
 	world->player(actor);
 
-	actor->beDamaged(7);
+	actor->beDamaged(7, core::DamageType::PHYSICAL);
 
 	EXPECT_FALSE(actor->isAlive());
 }
@@ -95,7 +95,7 @@ TEST(Actor, beDamagedLethal) {
 TEST(Actor, regen) {
 	core::Actor actor = makeTestActor(5.0, 1.0, 1.0, 2);
 
-	actor.beDamaged(3);
+	actor.beDamaged(3, core::DamageType::PHYSICAL);
 	actor.endTurn();
 
 	EXPECT_TRUE(actor.isAlive());
@@ -105,7 +105,7 @@ TEST(Actor, regen) {
 TEST(Actor, regenLimit) {
 	core::Actor actor = makeTestActor(5.0, 1.0, 1.0, 7);
 
-	actor.beDamaged(3);
+	actor.beDamaged(3, core::DamageType::PHYSICAL);
 	actor.endTurn();
 
 	EXPECT_TRUE(actor.isAlive());

@@ -28,7 +28,7 @@ namespace core {
 			Effect{icon_, name_, false}, damageOverTime{damageOverTime_}, duration{duration_} {}
 
 		void update(double time) final {
-			owner_.lock()->beDamaged(time * damageOverTime);
+			owner_.lock()->beDamaged(time * damageOverTime, DamageType::POISON);
 			duration -= time;
 		}
 

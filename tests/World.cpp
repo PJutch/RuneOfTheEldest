@@ -39,7 +39,7 @@ namespace {
 			actor_->endTurn();
 
 			if (actor_->nextTurn() > dieAfter)
-				actor_->beDamaged(std::numeric_limits<double>::infinity());
+				actor_->beDamaged(std::numeric_limits<double>::infinity(), core::DamageType::PHYSICAL);
 
 			return actor_->nextTurn() <= waitAfter;
 		}

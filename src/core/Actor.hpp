@@ -20,6 +20,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Controller/Controller.hpp"
 #include "Effect/Effect.hpp"
 #include "XpManager.hpp"
+#include "DamageType.hpp"
 
 #include "util/geometry.hpp"
 #include "util/random.hpp"
@@ -83,7 +84,7 @@ namespace core {
 			return hp() > 0;
 		}
 
-		void beDamaged(double damage) {
+		void beDamaged(double damage, DamageType type) {
 			if (!isAlive()) 
 				return;
 			hp_ -= damage;
@@ -93,7 +94,7 @@ namespace core {
 
 		void beAttacked(double damage, double accuracy) {
 			if (isAlive() && std::bernoulli_distribution{hitChance(accuracy)}(randomEngine()))
-				beDamaged(damage);
+				beDamaged(damage, DamageType::PHYSICAL);
 		}
 
 		/// Gets Actor HP
