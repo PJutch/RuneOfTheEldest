@@ -24,21 +24,21 @@ namespace core {
 	/// Default skill type.
 	class UnconditionalSkill : public Effect {
 	public:
-		UnconditionalSkill(double newRegenMul, double newDamageMul, double newSpeedBonus,
+		UnconditionalSkill(double newRegenBonus, double newDamageBonus, double newSpeedBonus,
 			               double newAccuracyBonus, double newEvasionBonus, 
-			               double newXpMul, double hpMul,
+			               double newXpMul, double newHpBonus,
 						   std::array<double, totalDamageTypes> defenceBonuses_,
 			               const sf::Texture& icon_, std::string_view name_) :
-			Effect{icon_, name_, true}, hpMul_{hpMul}, regenMul_{newRegenMul}, damageMul_{newDamageMul},
+			Effect{icon_, name_, true}, hpBonus_{newHpBonus}, regenBonus_{newRegenBonus}, damageBonus_{newDamageBonus},
 			accuracyBonus_{newAccuracyBonus}, evasionBonus_{newEvasionBonus},
 			speedBonus_{newSpeedBonus}, xpMul_{newXpMul}, defenceBonuses{defenceBonuses_} {}
 
-		double regenMul() const final {
-			return regenMul_;
+		double regenBonus() const final {
+			return regenBonus_;
 		}
 
-		double damageMul(const Actor&) const final {
-			return damageMul_;
+		double damageBonus(const Actor&) const final {
+			return damageBonus_;
 		}
 
 		double speedBonus() const final {
@@ -57,8 +57,8 @@ namespace core {
 			return xpMul_;
 		}
 
-		double hpMul() const final {
-			return hpMul_;
+		double hpBonus() const final {
+			return hpBonus_;
 		}
 
 		double defenceBonus(DamageType damageType) const final {
@@ -69,9 +69,9 @@ namespace core {
 			return std::make_unique<UnconditionalSkill>(*this);
 		}
 	private:
-		double hpMul_;
-		double regenMul_;
-		double damageMul_;
+		double hpBonus_;
+		double regenBonus_;
+		double damageBonus_;
 		double accuracyBonus_;
 		double evasionBonus_;
 		double speedBonus_;

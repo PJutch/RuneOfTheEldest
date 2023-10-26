@@ -26,17 +26,17 @@ namespace core {
 	class TargetFullHpSkill : public Effect {
 	public:
 		TargetFullHpSkill(double newDamageMul, const sf::Texture& icon_, std::string_view name_) :
-			Effect{icon_, name_, true}, damageMul_{newDamageMul} {}
+			Effect{icon_, name_, true}, damageBonus_{newDamageMul} {}
 
-		double damageMul(const Actor& target) const final {
-			return target.hp() == target.maxHp() ? damageMul_ : 1;
+		double damageBonus(const Actor& target) const final {
+			return target.hp() == target.maxHp() ? damageBonus_ : 1;
 		}
 
 		std::unique_ptr<Effect> clone() const final {
 			return std::make_unique<TargetFullHpSkill>(*this);
 		}
 	private:
-		double damageMul_;
+		double damageBonus_;
 	};
 }
 

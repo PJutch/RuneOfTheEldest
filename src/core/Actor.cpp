@@ -110,14 +110,14 @@ namespace core {
 	double Actor::regen() {
 		double res = stats.regen;
 		for (const auto& effect : effects_)
-			res *= effect->regenMul();
+			res += effect->regenBonus() * stats.regen;
 		return res;
 	}
 
 	double Actor::damage(const Actor& target) {
 		double res = stats.damage;
 		for (const auto& effect : effects_)
-			res *= effect->damageMul(target);
+			res += effect->damageBonus(target) * stats.damage;
 		return res;
 	}
 
@@ -160,7 +160,7 @@ namespace core {
 	void Actor::updateHp() {
 		double newMul = 1;
 		for (const auto& effect : effects_)
-			newMul *= effect->hpMul();
+			newMul += effect->hpBonus();
 
 		hp_ *= newMul / hpMul;
 		hpMul = newMul;

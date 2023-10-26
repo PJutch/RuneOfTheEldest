@@ -26,19 +26,19 @@ namespace core {
 	/// Type in skill file is "lowHp"
 	class LowHpSkill : public Effect {
 	public:
-		LowHpSkill(double newRegenMul, double newDamageMul, double newSpeedBonus, double newXpMul, 
+		LowHpSkill(double newRegenBonus, double newDamageBonus, double newSpeedBonus, double newXpMul,
 			       double newAccuracyBonus, double newEvasionBonus,
 			       const sf::Texture& icon_, std::string_view name_) :
-			Effect{icon_, name_, true}, regenMul_{newRegenMul}, damageMul_{newDamageMul},
+			Effect{icon_, name_, true}, regenBonus_{newRegenBonus}, damageBonus_{newDamageBonus},
 			accuracyBonus_{newAccuracyBonus}, evasionBonus_{newEvasionBonus},
 			speedBonus_{newSpeedBonus}, xpMul_{newXpMul} {}
 
-		double regenMul() const final {
-			return shouldApply() ? regenMul_ : 1;
+		double regenBonus() const final {
+			return shouldApply() ? regenBonus_ : 1;
 		}
 
-		double damageMul(const Actor&) const final {
-			return shouldApply() ? damageMul_ : 1;
+		double damageBonus(const Actor&) const final {
+			return shouldApply() ? damageBonus_ : 1;
 		}
 
 		double speedBonus() const final {
@@ -65,8 +65,8 @@ namespace core {
 			owner_ = std::move(newOwner);
 		}
 	private:
-		double regenMul_;
-		double damageMul_;
+		double regenBonus_;
+		double damageBonus_;
 		double accuracyBonus_;
 		double evasionBonus_;
 		double speedBonus_;

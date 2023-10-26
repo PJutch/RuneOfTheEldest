@@ -35,13 +35,13 @@ namespace core {
 
 		virtual ~Effect() = default;
 
-		/// Actor regen multiplier
-		virtual double regenMul() const {
+		/// Adds regenBonus() * stats.regen to actor regen
+		virtual double regenBonus() const {
 			return 1;
 		}
 
-		/// Actor damage multiplier
-		virtual double damageMul([[maybe_unused]] const Actor& target) const {
+		/// Adds damageBonus(target) * stats.damage to dealed damage
+		virtual double damageBonus([[maybe_unused]] const Actor& target) const {
 			return 1;
 		}
 
@@ -56,9 +56,9 @@ namespace core {
 			return 1;
 		}
 
-		/// @brief Actor max hp and hp multiplier
+		/// @brief Adds hpBonus() * stats.maxHp to actor maxHp
 		/// @warning Actor hp are recomputed only on skill addition
-		virtual double hpMul() const {
+		virtual double hpBonus() const {
 			return 1;
 		}
 

@@ -59,16 +59,16 @@ namespace core {
 			double accuracyBonus = 0;
 			double evasionBonus = 0;
 			double xpMul = 1;
-			double hpMul = 1;
+			double hpBonus = 1;
 			std::array<double, totalDamageTypes> defenceBonuses;
 			defenceBonuses.fill(0);
 
 			if (type == "unconditionalSkill")
-				if (auto v = util::getAndErase(params, "hpMul"))
-					hpMul = util::parseReal(*v);
+				if (auto v = util::getAndErase(params, "hpBonus"))
+					hpBonus = util::parseReal(*v);
 
 			if (type != "targetFullHpSkill") {
-				if (auto v = util::getAndErase(params, "regenMul"))
+				if (auto v = util::getAndErase(params, "regenBonus"))
 					regenMul = util::parseReal(*v);
 
 				if (auto v = util::getAndErase(params, "speed"))
@@ -90,7 +90,7 @@ namespace core {
 			}
 
 			double damageMul = 1;
-			if (auto v = util::getAndErase(params, "damageMul"))
+			if (auto v = util::getAndErase(params, "damageBonus"))
 				damageMul = util::parseReal(*v);
 
 			if (!params.empty())
@@ -99,7 +99,7 @@ namespace core {
 			if (type == "unconditionalSkill")
 				return std::make_unique<UnconditionalSkill>(
 					regenMul, damageMul, speedBonus,
-					accuracyBonus, evasionBonus, xpMul, hpMul, defenceBonuses,
+					accuracyBonus, evasionBonus, xpMul, hpBonus, defenceBonuses,
 					icon, name);
 			else if (type == "lowHpSkill")
 				return std::make_unique<LowHpSkill>(
