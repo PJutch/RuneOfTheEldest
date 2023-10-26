@@ -150,6 +150,13 @@ namespace core {
 		return accuracy;
 	}
 
+	double Actor::defence(DamageType damageType) {
+		double defence = 1;
+		for (const auto& effect : effects_)
+			defence += effect->defenceBonus(damageType);
+		return defence;
+	}
+
 	void Actor::updateHp() {
 		double newMul = 1;
 		for (const auto& effect : effects_)

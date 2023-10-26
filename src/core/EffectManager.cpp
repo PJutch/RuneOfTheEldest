@@ -21,6 +21,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Effect/Poison.hpp"
 #include "Effect/AppliesEffectOnAttack.hpp"
 
+#include "core/DamageType.hpp"
+
 #include "render/AssetManager.hpp"
 
 #include "util/parse.hpp"
@@ -58,6 +60,8 @@ namespace core {
 			double evasionBonus = 0;
 			double xpMul = 1;
 			double hpMul = 1;
+			std::array<double, totalDamageTypes> defenceBonuses;
+			defenceBonuses.fill(0);
 
 			if (type == "unconditionalSkill")
 				if (auto v = util::getAndErase(params, "hpMul"))
@@ -78,6 +82,11 @@ namespace core {
 
 				if (auto v = util::getAndErase(params, "xpMul"))
 					xpMul = util::parseReal(*v);
+
+				for (int i = 0; i < totalDamageTypes; ++i) {
+					if (auto v = util::getAndErase(params, damageTypeNames[i] + "DefenceBonus"))
+						defenceBonuses[i] = util::parseReal(*v);
+				}
 			}
 
 			double damageMul = 1;
@@ -90,7 +99,7 @@ namespace core {
 			if (type == "unconditionalSkill")
 				return std::make_unique<UnconditionalSkill>(
 					regenMul, damageMul, speedBonus,
-					accuracyBonus, evasionBonus, xpMul, hpMul,
+					accuracyBonus, evasionBonus, xpMul, hpMul, defenceBonuses,
 					icon, name);
 			else if (type == "lowHpSkill")
 				return std::make_unique<LowHpSkill>(

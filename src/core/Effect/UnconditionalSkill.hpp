@@ -27,10 +27,11 @@ namespace core {
 		UnconditionalSkill(double newRegenMul, double newDamageMul, double newSpeedBonus,
 			               double newAccuracyBonus, double newEvasionBonus, 
 			               double newXpMul, double hpMul,
+						   std::array<double, totalDamageTypes> defenceBonuses_,
 			               const sf::Texture& icon_, std::string_view name_) :
 			Effect{icon_, name_, true}, hpMul_{hpMul}, regenMul_{newRegenMul}, damageMul_{newDamageMul},
 			accuracyBonus_{newAccuracyBonus}, evasionBonus_{newEvasionBonus},
-			speedBonus_{newSpeedBonus}, xpMul_{newXpMul} {}
+			speedBonus_{newSpeedBonus}, xpMul_{newXpMul}, defenceBonuses{defenceBonuses_} {}
 
 		double regenMul() const final {
 			return regenMul_;
@@ -60,6 +61,10 @@ namespace core {
 			return hpMul_;
 		}
 
+		double defenceBonus(DamageType damageType) const final {
+			return defenceBonuses[static_cast<size_t>(damageType)];
+		}
+
 		std::unique_ptr<Effect> clone() const final {
 			return std::make_unique<UnconditionalSkill>(*this);
 		}
@@ -71,6 +76,7 @@ namespace core {
 		double evasionBonus_;
 		double speedBonus_;
 		double xpMul_;
+		std::array<double, totalDamageTypes> defenceBonuses;
 	};
 }
 

@@ -17,6 +17,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define EFFECT_HPP_
 
 #include <core/fwd.hpp>
+#include <core/DamageType.hpp>
 
 namespace sf {
 	class Texture;
@@ -68,6 +69,11 @@ namespace core {
 
 		/// Added to actor avasion
 		virtual double evasionBonus() const {
+			return 0;
+		}
+
+		/// Added to actor defence. Gets damage type
+		virtual double defenceBonus(DamageType) const {
 			return 0;
 		}
 

@@ -16,6 +16,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef DAMAGE_TYPE_HPP_
 #define DAMAGE_TYPE_HPP_
 
+#include <array>
+#include <string>
+
 namespace core {
 	/// Type of damage source
 	enum class DamageType {
@@ -25,6 +28,11 @@ namespace core {
 	};
 
 	static const int totalDamageTypes = static_cast<int>(DamageType::TOTAL);
+
+	inline const std::array<const std::string, totalDamageTypes> damageTypeNames{
+		"physical",
+		"poison"
+	};
 }
 
 #endif
