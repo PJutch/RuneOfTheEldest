@@ -14,6 +14,7 @@
 # If not, see <https://www.gnu.org/licenses/>.
 
 macro(fetchGit contentName file repository tag)
+    message("Fetching ${contentName} (file ${file}) from ${repository} with tag ${tag}")
     if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/../deps/${file}")
         FetchContent_Declare(
             ${contentName}
@@ -33,6 +34,7 @@ macro(fetchGit contentName file repository tag)
 endmacro()
 
 macro(fetchUrl contentName file url)
+    message("Fetching ${contentName} (file ${file}) from ${url}")
     if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/../deps/${file}")
         FetchContent_Declare(
             ${contentName}
