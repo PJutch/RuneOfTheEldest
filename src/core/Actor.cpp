@@ -145,7 +145,7 @@ namespace core {
 	}
 
 	double Actor::defence(DamageType damageType) {
-		return util::reduce(effects_, 1., std::plus<>{}, [damageType](const auto& effect) {
+		return util::reduce(effects_, stats.defences[static_cast<int>(damageType)], std::plus<>{}, [damageType](const auto& effect) {
 			return effect->defenceBonus(damageType);
 		});
 	}

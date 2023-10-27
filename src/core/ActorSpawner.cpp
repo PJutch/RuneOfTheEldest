@@ -68,6 +68,11 @@ namespace core {
 			actorData.back().stats.turnDelay = util::parseReal(util::getAndEraseRequired(params, "turnDelay"));
 			actorData.back().stats.xp = util::parseReal(util::getAndEraseRequired(params, "xp"));
 
+			for (int i = 0; i < totalDamageTypes; ++i) {
+				std::string paramName = damageTypeNames[i] + "Defence";
+				actorData.back().stats.defences[i] = util::parseReal(util::getAndEraseRequired(params, paramName));
+			}
+
 			if (auto v = util::getAndErase(params, "controller"))
 				actorData.back().controller = *v;
 

@@ -42,12 +42,12 @@ namespace {
 	auto testXpManager = std::make_shared<core::XpManager>();
 
 	core::Actor makeTestActor(double maxHp, double regen, double damage, double turnDelay) {
-		return core::Actor{ core::Actor::Stats{ maxHp, regen, damage, 1, 1, turnDelay, 0, nullptr }, nullptr, testXpManager, nullptr };
+		return core::Actor{core::Actor::Stats{ maxHp, regen, damage, 1, 1, {}, turnDelay, 0, nullptr }, nullptr, testXpManager, nullptr};
 	}
 
 	core::Actor makeTestActor(double maxHp, double regen, double damage, double turnDelay,
 		                      std::shared_ptr<core::XpManager> xpManager) {
-		return core::Actor{core::Actor::Stats{ maxHp, regen, damage, 1, 1, turnDelay, 0, nullptr }, nullptr, xpManager, nullptr};
+		return core::Actor{core::Actor::Stats{ maxHp, regen, damage, 1, 1, {}, turnDelay, 0, nullptr }, nullptr, xpManager, nullptr};
 	}
 
 	std::shared_ptr<core::Actor> makeSharedTestActor(double maxHp, double regen, double damage, double turnDelay) {
