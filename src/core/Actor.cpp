@@ -16,6 +16,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Actor.hpp"
 
 #include "util/geometry.hpp"
+#include "util/reduce.hpp"
 
 namespace core {
 	Actor::Actor(Stats stats_, sf::Vector3i newPosition,
@@ -108,59 +109,51 @@ namespace core {
 	}
 
 	double Actor::regen() {
-		double res = stats.regen;
-		for (const auto& effect : effects_)
-			res += effect->regenBonus() * stats.regen;
-		return res;
+		return stats.regen * util::reduce(effects_, 1., std::plus<>{}, [](const auto& effect) {
+			return effect->regenBonus();
+		});
 	}
 
 	double Actor::damage(const Actor& target) {
-		double res = stats.damage;
-		for (const auto& effect : effects_)
-			res += effect->damageBonus(target) * stats.damage;
-		return res;
+		return stats.damage * util::reduce(effects_, 1., std::plus<>{}, [&target](const auto& effect) {
+			return effect->damageBonus(target);
+		});
 	}
 
 	double Actor::turnDelay() {
-		double speedMod = 1;
-		for (const auto& effect : effects_)
-			speedMod += effect->speedBonus();
-
-		return stats.turnDelay / speedMod;
+		return stats.turnDelay / util::reduce(effects_, 1., std::plus<>{}, [](const auto& effect) {
+			return effect->speedBonus();
+		});
 	}
 
 	double Actor::xpMul() const {
-		double res = 1;
-		for (const auto& effect : effects_)
-			res *= effect->xpMul();
-		return res;
+		return util::reduce(effects_, 1., std::multiplies<>{}, [](const auto& effect) {
+			return effect->xpMul();
+		});
 	}
 
 	double Actor::evasion() {
-		double evasion = stats.evasion;
-		for (const auto& effect : effects_)
-			evasion += effect->evasionBonus();
-		return evasion;
+		return util::reduce(effects_, stats.evasion, std::plus<>{}, [](const auto& effect) {
+			return effect->evasionBonus();
+		});
 	}
 
 	double Actor::accuracy() {
-		double accuracy = stats.accuracy;
-		for (const auto& effect : effects_)
-			accuracy += effect->accuracyBonus();
-		return accuracy;
+		return util::reduce(effects_, stats.accuracy, std::plus<>{}, [](const auto& effect) {
+			return effect->accuracyBonus();
+		});
 	}
 
 	double Actor::defence(DamageType damageType) {
-		double defence = 1;
-		for (const auto& effect : effects_)
-			defence += effect->defenceBonus(damageType);
-		return defence;
+		return util::reduce(effects_, 1., std::plus<>{}, [damageType](const auto& effect) {
+			return effect->defenceBonus(damageType);
+		});
 	}
 
 	void Actor::updateHp() {
-		double newMul = 1;
-		for (const auto& effect : effects_)
-			newMul += effect->hpBonus();
+		double newMul = util::reduce(effects_, 1., std::plus<>{}, [](const auto& effect) {
+			return effect->hpBonus();
+		});
 
 		hp_ *= newMul / hpMul;
 		hpMul = newMul;
