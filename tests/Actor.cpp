@@ -58,6 +58,11 @@ namespace {
 			               nullptr, xpManager, nullptr};
 	}
 
+	core::Actor makeTestActor(double maxHp, std::array<double, core::totalDamageTypes> defences) {
+		return core::Actor{core::Actor::Stats{ maxHp, 0, 0, 1, 1, defences, 1.0, 0, nullptr },
+						   nullptr, testXpManager, nullptr};
+	}
+
 	std::shared_ptr<core::Actor> makeSharedTestActor(double maxHp, double regen, double damage, double turnDelay) {
 		return std::make_shared<core::Actor>(makeTestActor(maxHp, regen, damage, turnDelay));
 	}
@@ -98,6 +103,24 @@ TEST(Actor, beDamagedLethal) {
 	actor->beDamaged(7, core::DamageType::PHYSICAL);
 
 	EXPECT_FALSE(actor->isAlive());
+}
+
+TEST(Actor, beDamagedDefence) {
+	core::Actor actor = makeTestActor(5.0, {2, 1});
+
+	actor.beDamaged(4, core::DamageType::PHYSICAL);
+
+	EXPECT_TRUE(actor.isAlive());
+	EXPECT_EQ(actor.hp(), 3);
+}
+
+TEST(Actor, beDamagedNoDefence) {
+	core::Actor actor = makeTestActor(5.0, {2, 1});
+
+	actor.beDamaged(4, core::DamageType::POISON);
+
+	EXPECT_TRUE(actor.isAlive());
+	EXPECT_EQ(actor.hp(), 1);
 }
 
 TEST(Actor, regen) {
