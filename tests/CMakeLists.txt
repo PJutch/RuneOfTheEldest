@@ -16,7 +16,7 @@
 enable_testing()
 
 add_executable(tests geometry.cpp BasicRoomGenerator.cpp Area.cpp View.cpp Map.cpp World.cpp PlayerMap.cpp Actor.cpp
-                     Keyboard.cpp pathfinding.cpp raycast.cpp parse.cpp)
+                     Keyboard.cpp pathfinding.cpp raycast.cpp parse.cpp reduce.cpp)
 
 target_link_libraries(tests test_dependencies sources)
 

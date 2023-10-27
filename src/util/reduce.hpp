@@ -29,7 +29,8 @@ namespace util {
     template <typename T, typename Range, typename Result>
     concept ProjectsRange = std::convertible_to<std::invoke_result_t<T, std::ranges::range_value_t<Range>>, Result>;
 
-    template <typename T, std::ranges::forward_range Range,
+    template <std::ranges::forward_range Range, 
+              typename T = std::ranges::range_value_t<Range>,
               BinaryOp<T> Op = std::plus<>> 
         requires std::same_as<std::ranges::range_value_t<Range>, T>
     T reduce(const Range& range, T init = T{}, Op op = Op{}) {
