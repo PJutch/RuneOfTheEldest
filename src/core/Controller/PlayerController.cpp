@@ -21,8 +21,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/Keyboard.hpp"
 
 namespace core {
-	PlayerController::PlayerController(std::shared_ptr<Actor> player_, std::shared_ptr<render::PlayerMap> map_) :
-			player{ player_ }, map{ std::move(map_) } {
+	PlayerController::PlayerController(std::shared_ptr<Actor> player_, 
+		                               std::shared_ptr<util::Raycaster> raycaster_, 
+		                               std::shared_ptr<render::PlayerMap> map_) :
+			player{player_}, raycaster{std::move(raycaster_)}, map{std::move(map_)} {
 		wantsSwap(false);
 		isOnPlayerSide(true);
 		shouldInterruptOnDelete(true);
@@ -69,7 +71,7 @@ namespace core {
 
 	bool PlayerController::act() {
 		if (state == State::RESTING)
-			if (player.lock()->hp() < player.lock()->maxHp()) {
+			if (player.lock()->hp() < player.lock()->maxHp() && !canSeeEnemy()) {
 				player.lock()->endTurn();
 				return true;
 			} else {
@@ -99,5 +101,13 @@ namespace core {
 		if (std::optional<sf::Vector3i> newPos = player_->world().downStairs(player_->position()))
 			return player_->tryMoveTo(*newPos, true);
 		return false;
+	}
+
+	bool PlayerController::canSeeEnemy() const {
+		auto player_ = player.lock();
+		return std::ranges::any_of(player_->world().actors(), [this, &player_](const auto& actor) {
+			return !actor->controller().isOnPlayerSide() 
+				&& raycaster->canSee(player_->position(), actor->position());
+		});
 	}
 }

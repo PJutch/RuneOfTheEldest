@@ -33,7 +33,9 @@ namespace core {
 	/// Controlled by player Actor
 	class PlayerController : public Controller {
 	public:
-		PlayerController(std::shared_ptr<Actor> player, std::shared_ptr<render::PlayerMap> map);
+		PlayerController(std::shared_ptr<Actor> player, 
+						 std::shared_ptr<util::Raycaster> raycaster, 
+			             std::shared_ptr<render::PlayerMap> map);
 
 		/// Waits for player input
 		bool act() final;
@@ -48,6 +50,7 @@ namespace core {
 	private:
 		std::weak_ptr<Actor> player;
 		std::shared_ptr<render::PlayerMap> map;
+		std::shared_ptr<util::Raycaster> raycaster;
 
 		enum class State {
 			WAITING_TURN,
@@ -59,6 +62,8 @@ namespace core {
 
 		bool tryAscentStairs();
 		bool tryDescentStairs();
+
+		bool canSeeEnemy() const;
 
 		void endTurn() noexcept;
 	};

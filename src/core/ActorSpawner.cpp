@@ -104,7 +104,7 @@ namespace core {
 
 	std::unique_ptr<Controller> ActorSpawner::createController(std::shared_ptr<Actor> actor, std::string_view type) {
 		if (type == "player")
-			return std::make_unique<PlayerController>(actor, playerMap);
+			return std::make_unique<PlayerController>(actor, raycaster, playerMap);
 		else if (type == "enemy")
 			return std::make_unique<EnemyAi>(actor, raycaster);
 		else
