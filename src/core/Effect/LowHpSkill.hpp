@@ -27,11 +27,12 @@ namespace core {
 	class LowHpSkill : public Effect {
 	public:
 		LowHpSkill(double newRegenBonus, double newDamageBonus, double newSpeedBonus, double newXpMul,
-			       double newAccuracyBonus, double newEvasionBonus,
+			       double newAccuracyBonus, double newEvasionBonus, 
+				   std::array<double, totalDamageTypes> defenceBonuses_,
 			       const sf::Texture& icon_, std::string_view name_) :
 			Effect{icon_, name_, true}, regenBonus_{newRegenBonus}, damageBonus_{newDamageBonus},
 			accuracyBonus_{newAccuracyBonus}, evasionBonus_{newEvasionBonus},
-			speedBonus_{newSpeedBonus}, xpMul_{newXpMul} {}
+			speedBonus_{newSpeedBonus}, xpMul_{newXpMul}, defenceBonuses{defenceBonuses_} {}
 
 		double regenBonus() const final {
 			return shouldApply() ? regenBonus_ : 1;
@@ -57,6 +58,10 @@ namespace core {
 			return shouldApply() ? evasionBonus_ : 0;
 		}
 
+		double defenceBonus(DamageType damageType) const final {
+			return defenceBonuses[static_cast<size_t>(damageType)];
+		}
+
 		std::unique_ptr<Effect> clone() const final {
 			return std::make_unique<LowHpSkill>(*this);
 		}
@@ -71,6 +76,8 @@ namespace core {
 		double evasionBonus_;
 		double speedBonus_;
 		double xpMul_;
+
+		std::array<double, totalDamageTypes> defenceBonuses;
 
 		std::weak_ptr<Actor> owner_;
 

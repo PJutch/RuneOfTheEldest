@@ -54,7 +54,7 @@ namespace core {
 
 		std::unique_ptr<Effect> createSkill(std::unordered_map<std::string, std::string>& params,
 				std::string_view type, std::string_view name, const sf::Texture& icon) {
-			double regenMul = 1;
+			double regenBonus = 1;
 			double speedBonus = 0;
 			double accuracyBonus = 0;
 			double evasionBonus = 0;
@@ -69,7 +69,7 @@ namespace core {
 
 			if (type != "targetFullHpSkill") {
 				if (auto v = util::getAndErase(params, "regenBonus"))
-					regenMul = util::parseReal(*v);
+					regenBonus = util::parseReal(*v);
 
 				if (auto v = util::getAndErase(params, "speed"))
 					speedBonus = util::parseReal(*v);
@@ -89,25 +89,25 @@ namespace core {
 				}
 			}
 
-			double damageMul = 1;
+			double damageBonus = 1;
 			if (auto v = util::getAndErase(params, "damageBonus"))
-				damageMul = util::parseReal(*v);
+				damageBonus = util::parseReal(*v);
 
 			if (!params.empty())
 				throw UnknownParamsError{params};
 
 			if (type == "unconditionalSkill")
 				return std::make_unique<UnconditionalSkill>(
-					regenMul, damageMul, speedBonus,
+					regenBonus, damageBonus, speedBonus,
 					accuracyBonus, evasionBonus, xpMul, hpBonus, defenceBonuses,
 					icon, name);
 			else if (type == "lowHpSkill")
 				return std::make_unique<LowHpSkill>(
-					regenMul, damageMul, speedBonus, accuracyBonus, evasionBonus, xpMul,
+					regenBonus, damageBonus, speedBonus, accuracyBonus, evasionBonus, xpMul, defenceBonuses,
 					icon, name);
 			else if (type == "targetFullHpSkill")
 				return std::make_unique<TargetFullHpSkill>(
-					damageMul, icon, name);
+					damageBonus, icon, name);
 			else
 				throw UnknownSkillTypeError(type);
 		}
