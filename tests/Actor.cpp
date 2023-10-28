@@ -48,18 +48,18 @@ namespace {
 	}
 
 	core::Actor makeTestActor(double maxHp, double regen, double damage, double turnDelay) {
-		return core::Actor{core::Actor::Stats{ maxHp, regen, damage, 1, 1, defaultDefences(), turnDelay, 0, nullptr}, 
+		return core::Actor{core::Actor::Stats{ maxHp, regen, damage, 1, 1, defaultDefences(), turnDelay, 0, false, nullptr}, 
 			               nullptr, testXpManager, nullptr};
 	}
 
 	core::Actor makeTestActor(double maxHp, double regen, double damage, double turnDelay,
 		                      std::shared_ptr<core::XpManager> xpManager) {
-		return core::Actor{core::Actor::Stats{ maxHp, regen, damage, 1, 1, defaultDefences(), turnDelay, 0, nullptr }, 
+		return core::Actor{core::Actor::Stats{ maxHp, regen, damage, 1, 1, defaultDefences(), turnDelay, 0, false, nullptr },
 			               nullptr, xpManager, nullptr};
 	}
 
 	core::Actor makeTestActor(double maxHp, std::array<double, core::totalDamageTypes> defences) {
-		return core::Actor{core::Actor::Stats{ maxHp, 0, 0, 1, 1, defences, 1.0, 0, nullptr },
+		return core::Actor{core::Actor::Stats{ maxHp, 0, 0, 1, 1, defences, 1.0, 0, false, nullptr },
 						   nullptr, testXpManager, nullptr};
 	}
 

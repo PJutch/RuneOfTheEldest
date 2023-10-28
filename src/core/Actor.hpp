@@ -47,6 +47,8 @@ namespace core {
 
 			double xp;
 
+			bool hasRangedAttack;
+
 			const sf::Texture* texture;
 		};
 
@@ -180,6 +182,12 @@ namespace core {
 		double xpMul() const;
 
 		void updateHp();
+
+		bool hasRangedAttack() {
+			return stats.hasRangedAttack;
+		}
+
+		void attack(Actor& other);
 	private:
 		Stats stats;
 		std::unique_ptr<Controller> controller_;
@@ -204,8 +212,6 @@ namespace core {
 		double hitChance(double accuracy) {
 			return accuracy / (accuracy + evasion());
 		}
-
-		void attack(Actor& other);
 	};
 }
 

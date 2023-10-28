@@ -220,6 +220,25 @@ namespace util {
 		});
 		return result;
 	}
+
+	/// String required to be true of false isn't
+	class NotABoolError : public ParseError {
+	public:
+		NotABoolError(std::string_view parsed, Stacktrace currentStacktrace = {}) noexcept :
+			ParseError{"expected true or false", parsed, std::move(currentStacktrace)} {}
+	};
+
+	inline bool parseBool(std::string_view s) {
+		if (s.empty())
+			throw EmptyStringError{s};
+
+		if (s == "true")
+			return true;
+		else if (s == "false")
+			return false;
+		else
+			throw NotABoolError(s);
+	}
 }
 
 #endif

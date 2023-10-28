@@ -37,12 +37,12 @@ namespace core {
 
 		/// Adds regenBonus() * stats.regen to actor regen
 		virtual double regenBonus() const {
-			return 1;
+			return 0;
 		}
 
 		/// Adds damageBonus(target) * stats.damage to dealed damage
 		virtual double damageBonus([[maybe_unused]] const Actor& target) const {
-			return 1;
+			return 0;
 		}
 
 		/// @brief Bonus added to actor speed
@@ -59,7 +59,7 @@ namespace core {
 		/// @brief Adds hpBonus() * stats.maxHp to actor maxHp
 		/// @warning Actor hp are recomputed only on skill addition
 		virtual double hpBonus() const {
-			return 1;
+			return 0;
 		}
 
 		/// Added to actor accuracy

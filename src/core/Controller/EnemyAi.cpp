@@ -32,9 +32,14 @@ namespace core {
 		enemy_{ std::move(newEnemy) }, targetPosition{ enemy_.lock()->position() }, raycaster{std::move(raycaster_)} {}
 
 	bool EnemyAi::act() {
-		updateTarget();
-		travelToTarget();
-		enemy_.lock()->endTurn();
+		const auto enemyPtr = enemy_.lock();
+		if (canSeePlayer() && enemyPtr->hasRangedAttack()) {
+			enemyPtr->attack(enemyPtr->world().player());
+		} else {
+			updateTarget();
+			travelToTarget();
+		}
+		enemyPtr->endTurn();
 		return true;
 	}
 

@@ -77,6 +77,14 @@ TEST(parse, parseReal) {
 	EXPECT_THROW(util::parseReal("1e"), util::EmptyStringError);
 }
 
+TEST(parse, parseBool) {
+	EXPECT_TRUE(util::parseBool("true"));
+	EXPECT_FALSE(util::parseBool("false"));
+	EXPECT_THROW(util::parseBool(""), util::EmptyStringError);
+	EXPECT_THROW(util::parseBool("garbage"), util::NotABoolError);
+	EXPECT_THROW(util::parseBool("False"), util::NotABoolError);
+}
+
 TEST(parse, forEachStrippedLine) {
 	std::istringstream stream{"a\n  b \n c\n"};
 	util::forEachStrippedLine(stream, [](std::string_view line, int lineIndex) {

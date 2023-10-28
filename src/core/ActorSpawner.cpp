@@ -66,7 +66,12 @@ namespace core {
 			actorData.back().stats.accuracy = util::parseReal(util::getAndEraseRequired(params, "accuracy"));
 			actorData.back().stats.evasion = util::parseReal(util::getAndEraseRequired(params, "evasion"));
 			actorData.back().stats.turnDelay = util::parseReal(util::getAndEraseRequired(params, "turnDelay"));
+
 			actorData.back().stats.xp = util::parseReal(util::getAndEraseRequired(params, "xp"));
+			if (auto v = util::getAndErase(params, "hasRangedAttack"))
+				actorData.back().stats.hasRangedAttack = util::parseBool(*v);
+			else
+				actorData.back().stats.hasRangedAttack = false;
 
 			for (int i = 0; i < totalDamageTypes; ++i) {
 				std::string paramName = damageTypeNames[i] + "Defence";
