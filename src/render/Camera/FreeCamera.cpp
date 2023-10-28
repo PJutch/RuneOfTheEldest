@@ -15,10 +15,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "FreeCamera.hpp"
 
-#include <core/World.hpp>
+#include "core/World.hpp"
 
 #include "util/Keyboard.hpp"
-#include "util/geometry.hpp"
+#include "util/Direction.hpp"
 
 namespace render {
     FreeCamera::FreeCamera(std::shared_ptr<core::World> world_) : world{ std::move(world_) } {
@@ -31,7 +31,7 @@ namespace render {
 
         for (ptrdiff_t i = 1; i <= 9; ++i)
             if (sf::Keyboard::isKeyPressed(util::numpad(i)))
-                move(util::numpadDirections<float>[i - 1] * moved);
+                move(util::directions<float>[i - 1] * moved);
     }
 
     void FreeCamera::handleEvent(sf::Event event) {

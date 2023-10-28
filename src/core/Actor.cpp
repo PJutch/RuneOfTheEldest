@@ -15,7 +15,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Actor.hpp"
 
-#include "util/geometry.hpp"
+#include "util/Direction.hpp"
 #include "util/reduce.hpp"
 
 namespace core {

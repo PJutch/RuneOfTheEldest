@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "core/World.hpp"
 
 #include "Array3D.hpp"
-#include "geometry.hpp"
+#include "Direction.hpp"
 #include "assert.hpp"
 
 #include <queue>
@@ -66,7 +66,7 @@ namespace {
 			buffer[update.position].distance = update.distance;
 			buffer[update.position].prevOffset = update.prevOffset;
 
-			for (sf::Vector2i direction : util::directions<int>) {
+			for (sf::Vector2i direction : util::nonzeroDirections<int>) {
 				sf::Vector3i direction3D = util::make3D(direction, 0);
 				sf::Vector3i nextPos = update.position + direction3D;
 				if (world.tiles().isValidPosition(nextPos) && isPassable(world.tiles()[nextPos]))
