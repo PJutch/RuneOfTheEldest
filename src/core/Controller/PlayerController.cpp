@@ -48,9 +48,14 @@ namespace core {
 						endTurn();
 			}
 			else if (event.key.code == sf::Keyboard::Period) {
-				if (event.key.shift)
+				if (event.key.shift) {
 					if (tryDescentStairs())
 						endTurn();
+				} else {
+					state = State::RESTING;
+					map->clearSounds();
+					player.lock()->endTurn();
+				}
 			}
 			else if (util::isNumpad(event.key.code))
 				for (ptrdiff_t i = 1; i <= 9; ++i)
@@ -63,6 +68,15 @@ namespace core {
 	}
 
 	bool PlayerController::act() {
+		if (state == State::RESTING)
+			if (player.lock()->hp() < player.lock()->maxHp()) {
+				player.lock()->endTurn();
+				return true;
+			} else {
+				state = State::WAITING_INPUT;
+				return false;
+			}
+
 		if (state == State::ENDED_TURN) {
 			state = State::WAITING_TURN;
 			return true;

@@ -52,7 +52,8 @@ namespace core {
 		enum class State {
 			WAITING_TURN,
 			WAITING_INPUT,
-			ENDED_TURN
+			ENDED_TURN,
+			RESTING
 		};
 		State state = State::WAITING_TURN;
 
