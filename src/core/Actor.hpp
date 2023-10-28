@@ -147,6 +147,14 @@ namespace core {
 		/// @param forceSwap Forces swap even if other Actor doesn't want it
 		void tryMoveInDirection(sf::Vector2i direction, bool forceSwap);
 
+		/// @brief Tries to move as near to given direction as possible
+		/// @param forceSwap Forces swap even if other Actor doesn't want it
+		void tryRunAwayInDirection(sf::Vector2i direction, bool forceSwap);
+
+		/// @brief Tries to move as much from player as possible
+		/// @param forceSwap Forces swap even if other Actor doesn't want it
+		void tryRunAwayFromPlayer(bool forceSwap);
+
 		[[nodiscard]] World& world() noexcept {
 			return *world_;
 		}

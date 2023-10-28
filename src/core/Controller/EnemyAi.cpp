@@ -20,6 +20,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/pathfinding.hpp"
 #include "util/raycast.hpp"
 #include "util/geometry.hpp"
+#include "util/Direction.hpp"
 #include "util/assert.hpp"
 
 namespace {
@@ -32,14 +33,18 @@ namespace core {
 		enemy_{ std::move(newEnemy) }, targetPosition{ enemy_.lock()->position() }, raycaster{std::move(raycaster_)} {}
 
 	bool EnemyAi::act() {
-		const auto enemyPtr = enemy_.lock();
-		if (canSeePlayer() && enemyPtr->hasRangedAttack()) {
-			enemyPtr->attack(enemyPtr->world().player());
+		const auto enemy = enemy_.lock();
+		if (enemy->hasRangedAttack() && canSeePlayer()) {
+			auto& player = enemy->world().player();
+			if (util::distance(util::getXY(enemy->position()), util::getXY(player.position())) > 4)
+				enemy->attack(player);
+			else
+				enemy->tryRunAwayFromPlayer(false);
 		} else {
 			updateTarget();
 			travelToTarget();
 		}
-		enemyPtr->endTurn();
+		enemy->endTurn();
 		return true;
 	}
 

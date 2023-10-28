@@ -108,6 +108,27 @@ namespace core {
 		}
 	}
 
+	void Actor::tryRunAwayInDirection(sf::Vector2i direction, bool forceSwap) {
+		bool preferLeft = std::uniform_int_distribution<int>{0, 1}(randomEngine()) == 1;
+		
+		if (preferLeft) {
+			for (auto current : util::NearestDirectionsLeftBiasRange{direction}) {
+				TROTE_ASSERT(std::abs(current.x) <= 1 && std::abs(current.y) <= 1);
+				if (tryMove(current, forceSwap)) return;
+			}
+		} else {
+			for (auto current : util::NearestDirectionsRightBiasRange{direction}) {
+				TROTE_ASSERT(std::abs(current.x) <= 1 && std::abs(current.y) <= 1);
+				if (tryMove(current, forceSwap)) return;
+			}
+		}
+	}
+
+	void Actor::tryRunAwayFromPlayer(bool forceSwap) {
+		sf::Vector3i playerPos = world().player().position();
+		tryRunAwayInDirection(util::directionOf(util::getXY(position()) - util::getXY(playerPos)), false);
+	}
+
 	double Actor::regen() {
 		return stats.regen * util::reduce(effects_, 1., std::plus<>{}, [](const auto& effect) {
 			return effect->regenBonus();
