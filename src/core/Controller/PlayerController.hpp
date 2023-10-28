@@ -43,9 +43,17 @@ namespace core {
 		/// Moves on WSAD, tries to ascent/descent stairs by <>
 		void handleEvent(sf::Event event) final;
 
-		/// Add sound to PlayerMap
+		/// Adds sound to PlayerMap. Interrupts rest
 		void handleSound(Sound sound) {
 			map->handleSound(sound);
+			if (state == State::RESTING)
+				state = State::WAITING_TURN;
+		}
+
+		/// Interrupts rest
+		void handleDamaged(Sound sound) {
+			if (state == State::RESTING)
+				state = State::WAITING_TURN;
 		}
 	private:
 		std::weak_ptr<Actor> player;

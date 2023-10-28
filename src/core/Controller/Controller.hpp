@@ -57,6 +57,9 @@ namespace core {
 		/// Called when Actor hears a sound
 		virtual void handleSound([[maybe_unused]] Sound sound) {}
 
+		/// Called when Actor is damaged
+		virtual void handleDamaged() {}
+
 		/// Actor AiState
 		[[nodiscard]] virtual AiState aiState() const {
 			return AiState::NONE;
