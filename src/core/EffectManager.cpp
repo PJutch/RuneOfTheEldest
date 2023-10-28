@@ -54,12 +54,12 @@ namespace core {
 
 		std::unique_ptr<Effect> createSkill(std::unordered_map<std::string, std::string>& params,
 				std::string_view type, std::string_view name, const sf::Texture& icon) {
-			double regenBonus = 1;
+			double regenBonus = 0;
 			double speedBonus = 0;
 			double accuracyBonus = 0;
 			double evasionBonus = 0;
 			double xpMul = 1;
-			double hpBonus = 1;
+			double hpBonus = 0;
 			std::array<double, totalDamageTypes> defenceBonuses;
 			defenceBonuses.fill(0);
 
@@ -89,7 +89,7 @@ namespace core {
 				}
 			}
 
-			double damageBonus = 1;
+			double damageBonus = 0;
 			if (auto v = util::getAndErase(params, "damageBonus"))
 				damageBonus = util::parseReal(*v);
 
