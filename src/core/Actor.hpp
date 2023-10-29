@@ -22,6 +22,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "XpManager.hpp"
 #include "DamageType.hpp"
 
+#include "render/ParticleManager.hpp"
+#include "render/coords.hpp"
+
 #include "util/geometry.hpp"
 #include "util/random.hpp"
 
@@ -47,17 +50,21 @@ namespace core {
 
 			double xp;
 
-			bool hasRangedAttack;
-
 			const sf::Texture* texture;
+
+			bool hasRangedAttack;
+			const sf::Texture* projectileTexture;
+			sf::Time projectileFlightTime;
 		};
 
 		Actor() = default;
 		Actor(Stats stats, sf::Vector3i position, 
 			  std::shared_ptr<World> world, std::shared_ptr<XpManager> xpManager, 
+			  std::shared_ptr<render::ParticleManager> particles,
 			  util::RandomEngine* randomEngine);
 		Actor(Stats stats, 
 			  std::shared_ptr<World> world, std::shared_ptr<XpManager> xpManager, 
+			  std::shared_ptr<render::ParticleManager> particles,
 			  util::RandomEngine* randomEngine);
 
 		void controller(std::unique_ptr<Controller> newController) {
@@ -196,6 +203,15 @@ namespace core {
 		}
 
 		void attack(Actor& other);
+
+		void rangedAttack(Actor& other) {
+			attack(other);
+
+			auto pos1 = render::toScreen(util::geometry_cast<float>(util::getXY(position())) + sf::Vector2f{0.5f, 0.5f});
+			auto pos2 = render::toScreen(util::geometry_cast<float>(util::getXY(other.position())) + sf::Vector2f{0.5f, 0.5f});
+			particles->add(pos1, pos2, position().z,
+				           stats.projectileFlightTime, stats.projectileTexture);
+		}
 	private:
 		Stats stats;
 		std::unique_ptr<Controller> controller_;
@@ -208,6 +224,7 @@ namespace core {
 
 		std::shared_ptr<World> world_;
 		std::shared_ptr<XpManager> xpManager;
+		std::shared_ptr<render::ParticleManager> particles;
 		util::RandomEngine* randomEngine_;
 
 		double regen();

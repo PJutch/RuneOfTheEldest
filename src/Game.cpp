@@ -33,6 +33,7 @@ Game::Game(std::shared_ptr<core::World> newWorld,
            std::shared_ptr<core::XpManager> xpManager_,
            std::unique_ptr<generation::DungeonGenerator> newDungeonGenerator,
            std::shared_ptr<sf::RenderWindow> window_,
+           std::shared_ptr<render::ParticleManager> particles_,
            std::shared_ptr<render::AssetManager> assets_,
            std::shared_ptr<render::Camera> camera_,
            std::shared_ptr<render::PlayerMap> playerMap_,
@@ -42,6 +43,7 @@ Game::Game(std::shared_ptr<core::World> newWorld,
     xpManager{std::move(xpManager_)},
     dungeonGenerator_{std::move(newDungeonGenerator)},
     window{std::move(window_)},
+    particles{std::move(particles_)},
     assets{std::move(assets_)}, 
     camera{std::move(camera_)}, playerMap{std::move(playerMap_)},
     generationLogger{ loggerFactory.create("generation") } {}
@@ -61,6 +63,7 @@ void Game::run() {
             sf::Time elapsedTime = clock.restart();
             camera->update(elapsedTime);
             playerMap->update();
+            particles->update(elapsedTime);
         }
 
         draw_();
@@ -112,6 +115,7 @@ void Game::generate() {
     camera->reset();
     playerMap->onGenerate();
     xpManager->onGenerate();
+    particles->clear();
 }
 
 void Game::draw_() {
@@ -120,6 +124,7 @@ void Game::draw_() {
         render::drawDeathScreen(*window, *assets);
     } else {
         render::draw(*window, *assets, *world, *playerMap, camera->position());
+        particles->draw(*window, camera->position());
 
         render::drawHud(*window, *assets, *world, *xpManager);
         if (xpManager->canLevelUp())

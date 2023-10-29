@@ -36,6 +36,7 @@ public:
          std::shared_ptr<core::XpManager> xpManager,
          std::unique_ptr<generation::DungeonGenerator> dungeonGenerator,
          std::shared_ptr<sf::RenderWindow> window,
+         std::shared_ptr<render::ParticleManager> particles,
          std::shared_ptr<render::AssetManager> assets,
          std::shared_ptr<render::Camera> camera,
          std::shared_ptr<render::PlayerMap> playerMap,
@@ -59,6 +60,7 @@ private:
     std::unique_ptr<generation::DungeonGenerator> dungeonGenerator_;
 
     std::shared_ptr<sf::RenderWindow> window;
+    std::shared_ptr<render::ParticleManager> particles;
     std::shared_ptr<render::AssetManager> assets;
     std::shared_ptr<render::Camera> camera;
     std::shared_ptr<render::PlayerMap> playerMap;

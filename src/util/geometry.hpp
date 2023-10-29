@@ -24,6 +24,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <array>
 #include <type_traits>
+#include <numbers>
 #include <cmath>
 
 namespace util {
@@ -294,6 +295,21 @@ namespace util {
     template <typename T>
     auto distance(sf::Vector2<T> from, sf::Vector2<T> to) noexcept {
         return norm(to - from);
+    }
+
+    template <typename T>
+    sf::Vector2<T> lerp(sf::Vector2<T> from, sf::Vector2<T> to, T t) {
+        return from * (T{1} - t) + to * t;
+    }
+
+    template <typename T>
+    T polarAngle(sf::Vector2<T> v) {
+        return atan2(v.y, v.x);
+    }
+
+    template <typename T>
+    T toDegrees(T angle) {
+        return angle / std::numbers::pi_v<T> * T{180};
     }
 }
 

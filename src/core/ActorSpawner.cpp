@@ -48,10 +48,12 @@ namespace core {
 	ActorSpawner::ActorSpawner(std::shared_ptr<World> world_, std::shared_ptr<XpManager> xpManager_, 
 		                       std::shared_ptr<EffectManager> effectManager,
 		                       std::shared_ptr<render::PlayerMap> playerMap_,
+							   std::shared_ptr<render::ParticleManager> particles_,
 							   std::shared_ptr<render::AssetManager> assets, util::LoggerFactory& loggerFactory, 
 		                       util::RandomEngine& randomEngine_,
 							   std::shared_ptr<util::Raycaster> raycaster_) :
 			world{ std::move(world_) }, xpManager{ std::move(xpManager_) }, playerMap{std::move(playerMap_)},
+			particles{std::move(particles_)},
 			raycaster{ std::move(raycaster_) }, randomEngine{ &randomEngine_ }, logger{loggerFactory.create("actors")} {
 		logger->info("Loading...");
 		util::forEachFile("resources/Actors/", [&, this](std::ifstream& file, const std::filesystem::path& path) {
@@ -60,28 +62,33 @@ namespace core {
 			auto params = util::parseMapping(file);
 
 			actorData.emplace_back();
-			actorData.back().stats.maxHp = util::parseReal(util::getAndEraseRequired(params, "hp"));
-			actorData.back().stats.regen = util::parseReal(util::getAndEraseRequired(params, "regen"));
-			actorData.back().stats.damage = util::parseReal(util::getAndEraseRequired(params, "damage"));
-			actorData.back().stats.accuracy = util::parseReal(util::getAndEraseRequired(params, "accuracy"));
-			actorData.back().stats.evasion = util::parseReal(util::getAndEraseRequired(params, "evasion"));
-			actorData.back().stats.turnDelay = util::parseReal(util::getAndEraseRequired(params, "turnDelay"));
 
-			actorData.back().stats.xp = util::parseReal(util::getAndEraseRequired(params, "xp"));
-			if (auto v = util::getAndErase(params, "hasRangedAttack"))
-				actorData.back().stats.hasRangedAttack = util::parseBool(*v);
-			else
-				actorData.back().stats.hasRangedAttack = false;
+			Actor::Stats& currentStats = actorData.back().stats;
+			currentStats.maxHp = util::parseReal(util::getAndEraseRequired(params, "hp"));
+			currentStats.regen = util::parseReal(util::getAndEraseRequired(params, "regen"));
+			currentStats.damage = util::parseReal(util::getAndEraseRequired(params, "damage"));
+			currentStats.accuracy = util::parseReal(util::getAndEraseRequired(params, "accuracy"));
+			currentStats.evasion = util::parseReal(util::getAndEraseRequired(params, "evasion"));
+			currentStats.turnDelay = util::parseReal(util::getAndEraseRequired(params, "turnDelay"));
+
+			currentStats.xp = util::parseReal(util::getAndEraseRequired(params, "xp"));
+			if (auto v = util::getAndErase(params, "hasRangedAttack")) {
+				currentStats.hasRangedAttack = util::parseBool(*v);
+
+				currentStats.projectileFlightTime = sf::seconds(util::parseReal(util::getAndEraseRequired(params, "projectileFlightTime")));
+				currentStats.projectileTexture = &assets->texture(util::getAndEraseRequired(params, "projectileTexture"));
+			} else
+				currentStats.hasRangedAttack = false;
 
 			for (int i = 0; i < totalDamageTypes; ++i) {
 				std::string paramName = damageTypeNames[i] + "Defence";
-				actorData.back().stats.defences[i] = util::parseReal(util::getAndEraseRequired(params, paramName));
+				currentStats.defences[i] = util::parseReal(util::getAndEraseRequired(params, paramName));
 			}
 
 			if (auto v = util::getAndErase(params, "controller"))
 				actorData.back().controller = *v;
 
-			actorData.back().stats.texture = &assets->texture(util::getAndEraseRequired(params, "texture"));
+			currentStats.texture = &assets->texture(util::getAndEraseRequired(params, "texture"));
 			actorData.back().minOnLevel = util::parseUint(util::getAndEraseRequired(params, "minOnLevel"));
 			actorData.back().maxOnLevel = util::parseUint(util::getAndEraseRequired(params, "maxOnLevel"));
 
@@ -124,7 +131,7 @@ namespace core {
 					int count = std::uniform_int_distribution{ data.minOnLevel, data.maxOnLevel }(*randomEngine);
 					for (int i = 0; i < count; ++i) {
 						sf::Vector3i position = world->randomPositionAt(level, &World::isFree);
-						auto enemy = std::make_shared<Actor>(data.stats, position, world, xpManager, randomEngine);
+						auto enemy = std::make_shared<Actor>(data.stats, position, world, xpManager, particles, randomEngine);
 						enemy->controller(createController(enemy, data.controller));
 						if (data.effectToAdd)
 							enemy->addEffect(data.effectToAdd->clone());

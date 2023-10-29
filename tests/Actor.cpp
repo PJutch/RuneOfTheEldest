@@ -47,20 +47,24 @@ namespace {
 		return defences;
 	}
 
+	core::Actor::Stats makeTestStats(double maxHp, double regen, double damage, double turnDelay) {
+		return {maxHp, regen, damage, 1, 1, defaultDefences(), turnDelay, 0, nullptr, false, nullptr, sf::Time::Zero};
+	}
+
 	core::Actor makeTestActor(double maxHp, double regen, double damage, double turnDelay) {
-		return core::Actor{core::Actor::Stats{ maxHp, regen, damage, 1, 1, defaultDefences(), turnDelay, 0, false, nullptr}, 
-			               nullptr, testXpManager, nullptr};
+		return core::Actor{makeTestStats(maxHp, regen, damage, turnDelay),
+			               nullptr, testXpManager, nullptr, nullptr};
 	}
 
 	core::Actor makeTestActor(double maxHp, double regen, double damage, double turnDelay,
 		                      std::shared_ptr<core::XpManager> xpManager) {
-		return core::Actor{core::Actor::Stats{ maxHp, regen, damage, 1, 1, defaultDefences(), turnDelay, 0, false, nullptr },
-			               nullptr, xpManager, nullptr};
+		return core::Actor{makeTestStats(maxHp, regen, damage, turnDelay),
+			               nullptr, xpManager, nullptr, nullptr};
 	}
 
 	core::Actor makeTestActor(double maxHp, std::array<double, core::totalDamageTypes> defences) {
-		return core::Actor{core::Actor::Stats{ maxHp, 0, 0, 1, 1, defences, 1.0, 0, false, nullptr },
-						   nullptr, testXpManager, nullptr};
+		return core::Actor{core::Actor::Stats{ maxHp, 0, 0, 1, 1, defences, 1.0, 0, nullptr, false, nullptr, sf::Time::Zero },
+						   nullptr, testXpManager, nullptr, nullptr};
 	}
 
 	std::shared_ptr<core::Actor> makeSharedTestActor(double maxHp, double regen, double damage, double turnDelay) {
@@ -73,7 +77,8 @@ namespace {
 	}
 
 	std::shared_ptr<core::Actor> makeSharedTestActor(sf::Vector3i pos, std::shared_ptr<core::World> world) {
-		return std::make_shared<core::Actor>(core::Actor::Stats{ .maxHp = 1 }, pos, std::move(world), testXpManager, nullptr );
+		return std::make_shared<core::Actor>(core::Actor::Stats{ .maxHp = 1 }, pos, std::move(world), 
+				 							 testXpManager, nullptr, nullptr);
 	}
 }
 

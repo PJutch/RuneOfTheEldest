@@ -17,6 +17,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <gtest/gtest.h>
 
+#include <numbers>
+
 TEST(geometry, addX) {
     sf::Vector2i vec{5, 10};
     int dx = 14;
@@ -135,4 +137,20 @@ TEST(geometry, distanceNegativeComponents) {
 
 TEST(geometry, distanceIrrational) {
     EXPECT_EQ(util::distance(sf::Vector2i{ 2, 2 }, sf::Vector2i{ 3, 3 }), std::sqrt(2));
+}
+
+TEST(geometry, lerp) {
+    EXPECT_EQ(util::lerp(sf::Vector2f{1, 4}, sf::Vector2f{5, 8}, 0.25f), sf::Vector2f(2, 5));
+}
+
+TEST(geometry, polarAngle) {
+    EXPECT_FLOAT_EQ(util::polarAngle(sf::Vector2f{0, 3}), std::numbers::pi_v<float> / 2);
+    EXPECT_FLOAT_EQ(util::polarAngle(sf::Vector2f{std::sqrt(2.f), std::sqrt(2.f)}), std::numbers::pi_v<float> / 4);
+}
+
+TEST(geometry, toDegrees) {
+    EXPECT_FLOAT_EQ(util::toDegrees(std::numbers::pi_v<float> / 2), 90.f);
+    EXPECT_FLOAT_EQ(util::toDegrees(std::numbers::pi_v<float>), 180);
+    EXPECT_FLOAT_EQ(util::toDegrees(2 * std::numbers::pi_v<float>), 360);
+    EXPECT_FLOAT_EQ(util::toDegrees(5 * std::numbers::pi_v<float> / 4), 225);
 }

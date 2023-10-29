@@ -20,6 +20,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "render/PlayerMap.hpp"
 #include "render/AssetManager.hpp"
 #include "render/View.hpp"
+#include "render/coords.hpp"
 
 #include "core/World.hpp"
 #include "core/Sound.hpp"

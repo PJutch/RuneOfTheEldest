@@ -37,7 +37,7 @@ namespace core {
 		if (enemy->hasRangedAttack() && canSeePlayer()) {
 			auto& player = enemy->world().player();
 			if (util::distance(util::getXY(enemy->position()), util::getXY(player.position())) > 4)
-				enemy->attack(player);
+				enemy->rangedAttack(player);
 			else
 				enemy->tryRunAwayFromPlayer(false);
 		} else {

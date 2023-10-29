@@ -31,6 +31,7 @@ namespace core {
 		ActorSpawner(std::shared_ptr<World> world, std::shared_ptr<XpManager> xpManager, 
 			         std::shared_ptr<EffectManager> effectManager,
 			         std::shared_ptr<render::PlayerMap> playerMap,
+					 std::shared_ptr<render::ParticleManager> particles,
 			         std::shared_ptr<render::AssetManager> assets, util::LoggerFactory& loggerFactory, 
 			         util::RandomEngine& randomEngine,
 			         std::shared_ptr<util::Raycaster> raycaster);
@@ -40,6 +41,7 @@ namespace core {
 		std::shared_ptr<World> world;
 		std::shared_ptr<XpManager> xpManager;
 		std::shared_ptr<render::PlayerMap> playerMap;
+		std::shared_ptr<render::ParticleManager> particles;
 		std::shared_ptr<util::Raycaster> raycaster;
 		util::RandomEngine* randomEngine;
 
