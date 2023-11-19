@@ -13,29 +13,41 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef POSITION_HPP_
-#define POSITION_HPP_
+#ifndef SPELL_HPP_
+#define SPELL_HPP_
 
-#include <SFML/System/Vector2.hpp>
-#include <SFML/System/Vector3.hpp>
+#include <core/fwd.hpp>
+#include <core/DamageType.hpp>
+#include <core/Position.hpp>
+
+namespace sf {
+	class Texture;
+}
+
+#include <string>
+#include <memory>
 
 namespace core {
-	/// Position in World
-	template <typename T>
-	struct Position {
-		T x;
-		T y;
-		int z;
+	/// Spell that Actor can cast
+	class Spell {
+	public:
+		Spell(const sf::Texture& newIcon, std::string_view newName) : icon_{&newIcon}, name_{newName} {}
+		virtual ~Spell() = default;
 
-		Position() = default;
-		Position(T x_, T y_, int z_) : x{x_}, y{y_}, z{z_} {}
-		explicit Position(sf::Vector3i position) : 
-			Position(static_cast<T>(position.x), static_cast<T>(position.y), position.z) {}
+		virtual void cast(Actor& self, core::Position<int> target) = 0;
 
-		/// Horizontal components
-		sf::Vector2<T> xy() const noexcept {
-			return {x, y};
+		/// Skill icon for level up menu
+		[[nodiscard]] const sf::Texture& icon() const {
+			return *icon_;
 		}
+
+		/// Skill name for level up menu
+		[[nodiscard]] const std::string& name() const {
+			return name_;
+		}
+	private:
+		const sf::Texture* icon_;
+		std::string name_;
 	};
 }
 

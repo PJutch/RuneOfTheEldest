@@ -19,6 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Tile.hpp"
 #include "Sound.hpp"
 #include "fwd.hpp"
+#include "Position.hpp"
 
 #include "util/Array3D.hpp"
 #include "util/Map.hpp"
@@ -67,6 +68,19 @@ namespace core {
 		/// @brief Gets Actor at given position if it exist
 		/// @warning May return nullptr
 		[[nodiscard]] std::shared_ptr<const Actor> actorAt(sf::Vector3i position) const;
+
+
+		/// @brief Gets Actor at given position if it exist
+		/// @warning May return nullptr
+		[[nodiscard]] std::shared_ptr<Actor> actorAt(core::Position<int> position) {
+			return actorAt(util::make3D(position.xy(), position.z));
+		}
+
+		/// @brief Gets Actor at given position if it exist
+		/// @warning May return nullptr
+		[[nodiscard]] std::shared_ptr<const Actor> actorAt(core::Position<int> position) const {
+			return actorAt(util::make3D(position.xy(), position.z));
+		}
 
 		/// Updates actors until one of them decides to wait input
 		void update();

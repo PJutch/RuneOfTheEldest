@@ -24,7 +24,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "render/Camera/PlayerLockedCamera.hpp"
 #include "render/Camera/SwitchableCamera.hpp"
 
-#include "util/log.hpp"
+#include "util/log.hpp" 
 #include "util/Exception.hpp"
 #include "util/random.hpp"
 #include "util/raycast.hpp"
@@ -36,7 +36,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <boost/di.hpp>
 
-#include <cstdlib>
+#include <cstdlib> 
 
 sf::String createSfString(std::string_view string) {
     return sf::String::fromUtf8(std::ranges::begin(string), 

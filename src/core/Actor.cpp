@@ -184,7 +184,7 @@ namespace core {
 	}
 
 	void Actor::attack(Actor& other) {
-		other.beAttacked(damage(other), stats.accuracy);
+		other.beAttacked(damage(other), stats.accuracy, DamageType::PHYSICAL);
 		for (const auto& effect : effects_)
 			effect->onAttack(other);
 		world().makeSound({Sound::Type::ATTACK, controller().isOnPlayerSide(), position()});

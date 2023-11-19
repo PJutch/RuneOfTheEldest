@@ -46,7 +46,7 @@ namespace core {
 	}
 
 	ActorSpawner::ActorSpawner(std::shared_ptr<World> world_, std::shared_ptr<XpManager> xpManager_, 
-		                       std::shared_ptr<EffectManager> effectManager,
+		                       std::shared_ptr<EffectManager> effectManager, std::shared_ptr<SpellManager> spellManager,
 		                       std::shared_ptr<render::PlayerMap> playerMap_,
 							   std::shared_ptr<render::ParticleManager> particles_,
 							   std::shared_ptr<render::AssetManager> assets, util::LoggerFactory& loggerFactory, 
@@ -100,6 +100,9 @@ namespace core {
 			if (auto v = util::getAndErase(params, "effect"))
 				actorData.back().effectToAdd = effectManager->findEffect(*v);
 
+			if (auto v = util::getAndErase(params, "spell"))
+				actorData.back().spellToAdd = spellManager->findSpell(*v);
+
 			if (!params.empty())
 				throw UnknownParamsError{ params };
 		});
@@ -133,8 +136,12 @@ namespace core {
 						sf::Vector3i position = world->randomPositionAt(level, &World::isFree);
 						auto enemy = std::make_shared<Actor>(data.stats, position, world, xpManager, particles, randomEngine);
 						enemy->controller(createController(enemy, data.controller));
+
 						if (data.effectToAdd)
 							enemy->addEffect(data.effectToAdd->clone());
+						if (data.spellToAdd)
+							enemy->addSpell(data.spellToAdd);
+
 						world->addActor(std::move(enemy));
 					}
 			}

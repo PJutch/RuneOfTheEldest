@@ -17,6 +17,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define ACTOR_SPAWNER_HPP_
 
 #include "World.hpp"
+#include "SpellManager.hpp"
 #include "render/AssetManager.hpp"
 #include "render/PlayerMap.hpp"
 
@@ -29,7 +30,7 @@ namespace core {
 	class ActorSpawner {
 	public:
 		ActorSpawner(std::shared_ptr<World> world, std::shared_ptr<XpManager> xpManager, 
-			         std::shared_ptr<EffectManager> effectManager,
+			         std::shared_ptr<EffectManager> effectManager, std::shared_ptr<SpellManager> spellManager,
 			         std::shared_ptr<render::PlayerMap> playerMap,
 					 std::shared_ptr<render::ParticleManager> particles,
 			         std::shared_ptr<render::AssetManager> assets, util::LoggerFactory& loggerFactory, 
@@ -59,6 +60,7 @@ namespace core {
 			std::optional<int> maxLevel;
 
 			const Effect* effectToAdd = nullptr;
+			std::shared_ptr<Spell> spellToAdd = nullptr;
 		};
 		std::vector<ActorData> actorData;
 

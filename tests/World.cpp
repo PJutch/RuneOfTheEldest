@@ -122,7 +122,7 @@ TEST(World, actorAt) {
 	world.addActor(actor1);
 	world.addActor(actor2);
 
-	EXPECT_EQ(world.actorAt({2, 3, 4}), actor2);
+	EXPECT_EQ(world.actorAt(core::Position<int>{2, 3, 4}), actor2);
 }
 
 TEST(World, actorAtNull) {
@@ -130,7 +130,7 @@ TEST(World, actorAtNull) {
 	world.addActor(makeTestActor({ 0, 0, 0 }));
 	world.addActor(makeTestActor({ 2, 3, 4 }));
 
-	EXPECT_EQ(world.actorAt({ 2, 3, 11 }), nullptr);
+	EXPECT_EQ(world.actorAt(core::Position<int>{ 2, 3, 11 }), nullptr);
 }
 
 TEST(World, update) {

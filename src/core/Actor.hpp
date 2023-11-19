@@ -21,6 +21,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Effect/Effect.hpp"
 #include "XpManager.hpp"
 #include "DamageType.hpp"
+#include "Spell.hpp"
 
 #include "render/ParticleManager.hpp"
 #include "render/coords.hpp"
@@ -103,9 +104,9 @@ namespace core {
 				xpManager->addXp(stats.xp);
 		}
 
-		void beAttacked(double damage, double accuracy) {
+		void beAttacked(double damage, double accuracy, DamageType damageType) {
 			if (isAlive() && std::bernoulli_distribution{hitChance(accuracy)}(randomEngine()))
-				beDamaged(damage, DamageType::PHYSICAL);
+				beDamaged(damage, damageType);
 		}
 
 		/// Gets Actor HP
@@ -194,6 +195,14 @@ namespace core {
 			return effects_;
 		}
 
+		void addSpell(std::shared_ptr<Spell> spell) {
+			spells_.push_back(std::move(spell));
+		}
+
+		const std::vector<std::shared_ptr<Spell>>& spells() const noexcept {
+			return spells_;
+		}
+
 		double xpMul() const;
 
 		void updateHp();
@@ -216,6 +225,7 @@ namespace core {
 		Stats stats;
 		std::unique_ptr<Controller> controller_;
 		std::vector<std::unique_ptr<Effect>> effects_;
+		std::vector<std::shared_ptr<Spell>> spells_;
 
 		double nextTurn_ = 0;
 		sf::Vector3i position_;
