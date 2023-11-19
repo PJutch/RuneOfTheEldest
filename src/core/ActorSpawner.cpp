@@ -43,6 +43,18 @@ namespace core {
 				util::Stacktrace currentStacktrace = {}) noexcept :
 				LoadError{ unknownParamsMessage(params), std::move(currentStacktrace) } {}
 		};
+
+		class EffectNotFound : public LoadError {
+		public:
+			EffectNotFound(std::string_view name, util::Stacktrace currentStacktrace = {}) noexcept :
+				LoadError{std::format("Effect \"{}\" not found", name), std::move(currentStacktrace)} {}
+		};
+
+		class SpellNotFound : public LoadError {
+		public:
+			SpellNotFound(std::string_view name, util::Stacktrace currentStacktrace = {}) noexcept :
+				LoadError{std::format("Spell \"{}\" not found", name), std::move(currentStacktrace)} {}
+		};
 	}
 
 	ActorSpawner::ActorSpawner(std::shared_ptr<World> world_, std::shared_ptr<XpManager> xpManager_, 
@@ -98,10 +110,16 @@ namespace core {
 				actorData.back().maxLevel = util::parseUint(*v);
 
 			if (auto v = util::getAndErase(params, "effect"))
-				actorData.back().effectToAdd = effectManager->findEffect(*v);
+				if (auto effect = effectManager->findEffect(*v))
+					actorData.back().effectToAdd = effect;
+				else
+					throw EffectNotFound{*v};
 
 			if (auto v = util::getAndErase(params, "spell"))
-				actorData.back().spellToAdd = spellManager->findSpell(*v);
+				if (auto spell = spellManager->findSpell(*v))
+					actorData.back().spellToAdd = spell;
+				else
+					throw SpellNotFound{*v};
 
 			if (!params.empty())
 				throw UnknownParamsError{ params };
