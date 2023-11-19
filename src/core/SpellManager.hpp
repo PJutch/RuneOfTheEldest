@@ -32,10 +32,9 @@ namespace core {
 	class SpellManager {
 	public:
 		SpellManager() = default;
-		SpellManager(std::shared_ptr<render::AssetManager> assets,
-			         util::LoggerFactory& loggerFactory) {
-			
-		}
+		SpellManager(std::shared_ptr<render::AssetManager> assets, 
+			         std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles,
+			         util::LoggerFactory& loggerFactory);
 
 		auto begin() {
 			return spells.begin();

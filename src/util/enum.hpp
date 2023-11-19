@@ -13,33 +13,21 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef DAMAGE_TYPE_HPP_
-#define DAMAGE_TYPE_HPP_
+#ifndef ENUM_HPP_
+#define ENUM_HPP_
 
-#include <util/enum.hpp>
-
-#include <array>
+#include <unordered_map>
+#include <span>
 #include <string>
 
-namespace core {
-	/// Type of damage source
-	enum class DamageType {
-		PHYSICAL, ///< Normal attacks
-		POISON,   ///< Poison effect
-		MAGIC,    ///< Spell
-		TOTAL     ///< Technical enumerator. Should be last
-	};
-
-	static const int totalDamageTypes = static_cast<int>(DamageType::TOTAL);
-
-	inline const std::array<const std::string, totalDamageTypes> damageTypeNames{
-		"physical",
-		"poison",
-		"magic",
-	};
-
-	inline const std::unordered_map<std::string, DamageType> damageTypeByName
-		= util::nameMapFromNames<DamageType>(damageTypeNames);
+namespace util {
+	template <typename T>
+	std::unordered_map<std::string, T> nameMapFromNames(std::span<const std::string> names) {
+		std::unordered_map<std::string, T> res;
+		for (int i = 0; i < std::ssize(names); ++i)
+			res[names[i]] = T{i};
+		return res;
+	}
 }
 
 #endif
