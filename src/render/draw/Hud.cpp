@@ -94,11 +94,60 @@ namespace render {
                 x -= iconSize.x + 2 * padding;
             }
         }
+
+        void drawSpellTooltip(sf::RenderTarget& target, const AssetManager& assets,
+                              std::shared_ptr<core::Spell> skill) {
+            auto text = createText(skill->name(), assets.font(), sf::Color::White, 30);
+
+            auto tooltipSize = text.getLocalBounds().getSize() + sf::Vector2f{10.f, 10.f};
+            auto tooltipPos = target.mapPixelToCoords(sf::Mouse::getPosition()) - sf::Vector2f{0, tooltipSize.y};
+
+            drawRect(target, {tooltipPos, tooltipSize}, sf::Color{32, 32, 32}, sf::Color{128, 128, 128}, 3.f);
+
+            text.setPosition(tooltipPos + sf::Vector2f{5.f, -5.f});
+            target.draw(text);
+        }
+
+        void drawSpellIcons(sf::RenderTarget& target, const AssetManager& assets, const core::World& world) {
+            target.setView(createFullscreenView(1000.f, target.getSize()));
+
+            sf::Vector2f screenSize = target.getView().getSize();
+            const sf::Vector2f iconSize{32.f, 32.f};
+            float padding = 4.f;
+
+            float leftmostXCenter = padding + iconSize.x / 2;
+            float x = leftmostXCenter;
+            const float y = 950.f;
+
+            for (const auto& spell : world.player().spells()) {
+                sf::FloatRect skillRect{sf::Vector2f{x, y} - iconSize / 2.f, iconSize};
+
+                drawRect(target, skillRect, sf::Color{32, 32, 32}, sf::Color{128, 128, 128}, 2.f);
+
+                const sf::Texture& icon = spell->icon();
+                sf::Vector2f iconCenter = util::geometry_cast<float>(icon.getSize()) / 2.f;
+                drawSprite(target, {x, y}, iconCenter, icon, 1.0, 2.f);
+
+                x += iconSize.x + 2 * padding;
+            }
+
+            x = leftmostXCenter;
+
+            for (const auto& spell : world.player().spells()) {
+                sf::FloatRect skillRect{sf::Vector2f{x, y} - iconSize / 2.f, iconSize};
+
+                if (skillRect.contains(target.mapPixelToCoords(sf::Mouse::getPosition())))
+                    drawSpellTooltip(target, assets, spell);
+
+                x += iconSize.x + 2 * padding;
+            }
+        }
     }
 
     void drawHud(sf::RenderTarget& target, const AssetManager& assets, 
                  const core::World& world, const core::XpManager& xpManager) {
         drawXpBar(target, xpManager);
         drawSkillIcons(target, assets, world);
+        drawSpellIcons(target, assets, world);
     }
 }
