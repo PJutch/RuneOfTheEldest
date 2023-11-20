@@ -34,7 +34,11 @@ namespace core {
 		Spell(const sf::Texture& newIcon, std::string_view newName) : icon_{&newIcon}, name_{newName} {}
 		virtual ~Spell() = default;
 
-		virtual void cast(Actor& self, core::Position<int> target) = 0;
+		/// @brief Casts spell
+		/// @param self Casting Actor
+		/// @param target Tile selected by player
+		/// @returns true if should end turn
+		virtual bool cast(Actor& self, core::Position<int> target) = 0;
 
 		/// Skill icon for level up menu
 		[[nodiscard]] const sf::Texture& icon() const {

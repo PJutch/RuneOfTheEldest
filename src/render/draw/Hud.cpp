@@ -120,9 +120,9 @@ namespace render {
             const float y = 950.f;
 
             for (const auto& spell : world.player().spells()) {
-                sf::FloatRect skillRect{sf::Vector2f{x, y} - iconSize / 2.f, iconSize};
+                sf::FloatRect spellRect{sf::Vector2f{x, y} - iconSize / 2.f, iconSize};
 
-                drawRect(target, skillRect, sf::Color{32, 32, 32}, sf::Color{128, 128, 128}, 2.f);
+                drawRect(target, spellRect, sf::Color{32, 32, 32}, sf::Color{128, 128, 128}, 2.f);
 
                 const sf::Texture& icon = spell->icon();
                 sf::Vector2f iconCenter = util::geometry_cast<float>(icon.getSize()) / 2.f;
@@ -134,14 +134,36 @@ namespace render {
             x = leftmostXCenter;
 
             for (const auto& spell : world.player().spells()) {
-                sf::FloatRect skillRect{sf::Vector2f{x, y} - iconSize / 2.f, iconSize};
+                sf::FloatRect spellRect{sf::Vector2f{x, y} - iconSize / 2.f, iconSize};
 
-                if (skillRect.contains(target.mapPixelToCoords(sf::Mouse::getPosition())))
+                if (spellRect.contains(target.mapPixelToCoords(sf::Mouse::getPosition())))
                     drawSpellTooltip(target, assets, spell);
 
                 x += iconSize.x + 2 * padding;
             }
         }
+    }
+
+    std::optional<int> clickedSpell(sf::Vector2i clickPos, sf::RenderTarget& target, const core::Actor& player) {
+        target.setView(createFullscreenView(1000.f, target.getSize()));
+
+        sf::Vector2f screenSize = target.getView().getSize();
+        const sf::Vector2f iconSize{32.f, 32.f};
+        float padding = 4.f;
+
+        float leftmostXCenter = padding + iconSize.x / 2;
+        float x = leftmostXCenter;
+        const float y = 950.f;
+
+        for (int i = 0; i < std::ssize(player.spells()); ++i) {
+            sf::FloatRect spellRect{sf::Vector2f{x, y} - iconSize / 2.f, iconSize};
+
+            if (spellRect.contains(target.mapPixelToCoords(clickPos)))
+                return i;
+
+            x += iconSize.x + 2 * padding;
+        }
+        return std::nullopt;
     }
 
     void drawHud(sf::RenderTarget& target, const AssetManager& assets, 

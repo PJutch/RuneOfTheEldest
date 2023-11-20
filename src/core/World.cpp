@@ -21,7 +21,7 @@ namespace core {
 	std::shared_ptr<Actor> World::actorAt(sf::Vector3i position) {
 		auto iter = std::ranges::find_if(actors_, [position](std::shared_ptr<Actor> actor) {
 			return actor->isAlive() && actor->position() == position;
-			});
+		});
 
 		if (iter == actors_.end())
 			return nullptr;

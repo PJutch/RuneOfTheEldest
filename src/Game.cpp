@@ -19,14 +19,18 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "render/draw/DeathScreen.hpp"
 #include "render/draw/Hud.hpp"
 #include "render/draw/LevelUpScreen.hpp"
+#include "render/ParticleManager.hpp"
+#include "render/PlayerMap.hpp"
 #include "render/Camera/Camera.hpp"
 
 #include "generation/DungeonGenerator.hpp"
 
 #include "core/World.hpp"
 #include "core/ActorSpawner.hpp"
+#include "core/XpManager.hpp"
 
 #include "util/Keyboard.hpp"
+#include "util/raycast.hpp"
 
 Game::Game(std::shared_ptr<core::World> newWorld,
            std::unique_ptr<core::ActorSpawner> actorSpawner_,

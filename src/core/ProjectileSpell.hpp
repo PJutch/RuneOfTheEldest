@@ -51,16 +51,16 @@ namespace core {
 			            std::shared_ptr<World> world_, std::shared_ptr<render::ParticleManager> particles_) :
 			Spell{icon, name}, stats{stats_}, world{std::move(world_)}, particles{std::move(particles_)} {}
 
-		void cast(Actor& self, core::Position<int> target) final {
+		bool cast(Actor& self, core::Position<int> target) final {
 			auto other = world->actorAt(target);
 			if (!other)
-				return;
+				return false;
 
 			other->beAttacked(stats.damage, stats.accuracy, stats.damageType);
 			world->makeSound({Sound::Type::ATTACK, true, self.position()});
 			spawnParticle(core::Position<int>{self.position()}, target);
 
-			self.endTurn();
+			return true;
 		}
 	private:
 		Stats stats;

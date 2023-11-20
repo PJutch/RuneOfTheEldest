@@ -36,7 +36,7 @@ namespace render {
 
     inline void drawInWorldRect(sf::RenderTarget& target, sf::IntRect rect,
         sf::Color fillColor, sf::Color outlineColor, float outlineThickness) {
-        drawRect(target, {toScreen(rect.top, rect.left), toScreen(rect.width, rect.height)},
+        drawRect(target, {toScreen(rect.left, rect.top), toScreen(rect.width, rect.height)},
             fillColor, outlineColor, outlineThickness);
     }
 

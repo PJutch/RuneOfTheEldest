@@ -13,31 +13,23 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef POSITION_HPP_
-#define POSITION_HPP_
+#ifndef RENDER_CONTEXT_HPP_
+#define RENDER_CONTEXT_HPP_
 
-#include <SFML/System/Vector2.hpp>
-#include <SFML/System/Vector3.hpp>
+#include "render/fwd.hpp"
 
-namespace core {
-	/// Position in World
-	template <typename T>
-	struct Position {
-		T x;
-		T y;
-		int z;
+#include "SFML/Graphics/RenderWindow.hpp"
 
-		Position() = default;
-		Position(T x_, T y_, int z_) : x{x_}, y{y_}, z{z_} {}
-		Position(sf::Vector2<T> xy_, int z_) : x{xy_.x}, y{xy_.y}, z{z_} {}
-		explicit Position(sf::Vector3i position) : 
-			Position(static_cast<T>(position.x), static_cast<T>(position.y), position.z) {}
+#include <memory>
 
-		/// Horizontal components
-		sf::Vector2<T> xy() const noexcept {
-			return {x, y};
-		}
-	};
+namespace render {
+    struct Context {
+        std::shared_ptr<sf::RenderWindow> window;
+        std::shared_ptr<render::PlayerMap> playerMap;
+        std::shared_ptr<render::ParticleManager> particles;
+        std::shared_ptr<render::Camera> camera;
+        std::shared_ptr<render::AssetManager> assets;
+    };
 }
 
 #endif

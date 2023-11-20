@@ -21,6 +21,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <SFML/Window/Event.hpp>
 
+#include <optional>
+
 namespace core {
 	/// Controlls Actor actions
 	class Controller {

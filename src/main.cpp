@@ -23,6 +23,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "render/Camera/FreeCamera.hpp"
 #include "render/Camera/PlayerLockedCamera.hpp"
 #include "render/Camera/SwitchableCamera.hpp"
+#include "render/AssetManager.hpp"
+#include "render/PlayerMap.hpp"
 
 #include "util/log.hpp" 
 #include "util/Exception.hpp"

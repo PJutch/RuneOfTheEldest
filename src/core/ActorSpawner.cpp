@@ -18,6 +18,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Controller/EnemyAi.hpp"
 #include "Controller/PlayerController.hpp"
 
+#include "render/AssetManager.hpp"
+
 #include "util/parse.hpp"
 #include "util/filesystem.hpp"
 #include "util/Map.hpp"
@@ -59,13 +61,11 @@ namespace core {
 
 	ActorSpawner::ActorSpawner(std::shared_ptr<World> world_, std::shared_ptr<XpManager> xpManager_, 
 		                       std::shared_ptr<EffectManager> effectManager, std::shared_ptr<SpellManager> spellManager,
-		                       std::shared_ptr<render::PlayerMap> playerMap_,
-							   std::shared_ptr<render::ParticleManager> particles_,
-							   std::shared_ptr<render::AssetManager> assets, util::LoggerFactory& loggerFactory, 
+		                       render::Context renderContext_, util::LoggerFactory& loggerFactory,
 		                       util::RandomEngine& randomEngine_,
 							   std::shared_ptr<util::Raycaster> raycaster_) :
-			world{ std::move(world_) }, xpManager{ std::move(xpManager_) }, playerMap{std::move(playerMap_)},
-			particles{std::move(particles_)},
+			world{ std::move(world_) }, xpManager{ std::move(xpManager_) }, 
+			renderContext{std::move(renderContext_)},
 			raycaster{ std::move(raycaster_) }, randomEngine{ &randomEngine_ }, logger{loggerFactory.create("actors")} {
 		logger->info("Loading...");
 		util::forEachFile("resources/Actors/", [&, this](std::ifstream& file, const std::filesystem::path& path) {
@@ -88,7 +88,7 @@ namespace core {
 				currentStats.hasRangedAttack = util::parseBool(*v);
 
 				currentStats.projectileFlightTime = sf::seconds(util::parseReal(util::getAndEraseRequired(params, "projectileFlightTime")));
-				currentStats.projectileTexture = &assets->texture(util::getAndEraseRequired(params, "projectileTexture"));
+				currentStats.projectileTexture = &renderContext.assets->texture(util::getAndEraseRequired(params, "projectileTexture"));
 			} else
 				currentStats.hasRangedAttack = false;
 
@@ -100,7 +100,7 @@ namespace core {
 			if (auto v = util::getAndErase(params, "controller"))
 				actorData.back().controller = *v;
 
-			currentStats.texture = &assets->texture(util::getAndEraseRequired(params, "texture"));
+			currentStats.texture = &renderContext.assets->texture(util::getAndEraseRequired(params, "texture"));
 			actorData.back().minOnLevel = util::parseUint(util::getAndEraseRequired(params, "minOnLevel"));
 			actorData.back().maxOnLevel = util::parseUint(util::getAndEraseRequired(params, "maxOnLevel"));
 
@@ -137,7 +137,7 @@ namespace core {
 
 	std::unique_ptr<Controller> ActorSpawner::createController(std::shared_ptr<Actor> actor, std::string_view type) {
 		if (type == "player")
-			return std::make_unique<PlayerController>(actor, raycaster, playerMap);
+			return std::make_unique<PlayerController>(actor, raycaster, renderContext);
 		else if (type == "enemy")
 			return std::make_unique<EnemyAi>(actor, raycaster);
 		else
@@ -152,7 +152,8 @@ namespace core {
 					int count = std::uniform_int_distribution{ data.minOnLevel, data.maxOnLevel }(*randomEngine);
 					for (int i = 0; i < count; ++i) {
 						sf::Vector3i position = world->randomPositionAt(level, &World::isFree);
-						auto enemy = std::make_shared<Actor>(data.stats, position, world, xpManager, particles, randomEngine);
+						auto enemy = std::make_shared<Actor>(data.stats, position, world, xpManager, 
+							                                 renderContext.particles, randomEngine);
 						enemy->controller(createController(enemy, data.controller));
 
 						if (data.effectToAdd)

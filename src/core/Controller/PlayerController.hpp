@@ -21,7 +21,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "../fwd.hpp"
 #include "../World.hpp"
 
-#include "render/AssetManager.hpp"
+#include "render/Context.hpp"
 #include "render/PlayerMap.hpp"
 
 #include "util/geometry.hpp"
@@ -29,13 +29,15 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <SFML/Window/Event.hpp>
 
+#include <optional>
+
 namespace core {
 	/// Controlled by player Actor
 	class PlayerController : public Controller {
 	public:
 		PlayerController(std::shared_ptr<Actor> player, 
 						 std::shared_ptr<util::Raycaster> raycaster, 
-			             std::shared_ptr<render::PlayerMap> map);
+						 render::Context renderContext);
 
 		/// Waits for player input
 		bool act() final;
@@ -45,7 +47,7 @@ namespace core {
 
 		/// Adds sound to PlayerMap. Interrupts rest
 		void handleSound(Sound sound) {
-			map->handleSound(sound);
+			renderContext.playerMap->handleSound(sound);
 			if (state == State::RESTING)
 				state = State::WAITING_TURN;
 		}
@@ -57,8 +59,8 @@ namespace core {
 		}
 	private:
 		std::weak_ptr<Actor> player;
-		std::shared_ptr<render::PlayerMap> map;
 		std::shared_ptr<util::Raycaster> raycaster;
+		render::Context renderContext;
 
 		enum class State {
 			WAITING_TURN,
@@ -67,6 +69,8 @@ namespace core {
 			RESTING
 		};
 		State state = State::WAITING_TURN;
+
+		std::optional<int> currentSpell;
 
 		bool tryAscentStairs();
 		bool tryDescentStairs();

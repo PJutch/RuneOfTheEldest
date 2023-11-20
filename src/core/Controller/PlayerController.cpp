@@ -18,14 +18,21 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "../World.hpp"
 #include "../Actor.hpp"
 
+#include "render/Camera/Camera.hpp"
+#include "render/draw/Hud.hpp"
+#include "render/AssetManager.hpp"
+#include "render/PlayerMap.hpp"
+
 #include "util/Keyboard.hpp"
 #include "util/Direction.hpp"
+
+#include <iostream>
 
 namespace core {
 	PlayerController::PlayerController(std::shared_ptr<Actor> player_, 
 		                               std::shared_ptr<util::Raycaster> raycaster_, 
-		                               std::shared_ptr<render::PlayerMap> map_) :
-			player{player_}, raycaster{std::move(raycaster_)}, map{std::move(map_)} {
+		                               render::Context renderContext_) :
+			player{player_}, raycaster{std::move(raycaster_)}, renderContext{renderContext_} {
 		wantsSwap(false);
 		isOnPlayerSide(true);
 		shouldInterruptOnDelete(true);
@@ -34,7 +41,7 @@ namespace core {
 
 	void PlayerController::endTurn() noexcept {
 		state = State::ENDED_TURN;
-		map->clearSounds();
+		renderContext.playerMap->clearSounds();
 		player.lock()->endTurn();
 	}
 
@@ -56,7 +63,7 @@ namespace core {
 						endTurn();
 				} else {
 					state = State::RESTING;
-					map->clearSounds();
+					renderContext.playerMap->clearSounds();
 					player.lock()->endTurn();
 				}
 			}
@@ -67,6 +74,21 @@ namespace core {
 							endTurn();
 						return;
 					}
+		} else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+			auto player_ = player.lock();
+			if (auto newCurrentSpell = render::clickedSpell(
+				{event.mouseButton.x, event.mouseButton.y}, *renderContext.window, *player_
+			)) {
+				currentSpell = newCurrentSpell;
+			} else if (currentSpell) {
+				core::Position<int> target{render::mouseTile({event.mouseButton.x, event.mouseButton.y}, 
+					renderContext.camera->position(), *renderContext.window), player_->position().z};
+				std::cout << target.x << ' ' << target.y << ' ' << target.z << '\n';
+				if (player_->spells()[*currentSpell]->cast(*player_, target))
+					endTurn();
+			}
+		} else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Right) {
+			currentSpell = std::nullopt;
 		}
 	}
 

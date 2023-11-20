@@ -18,11 +18,14 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "World.hpp"
 #include "SpellManager.hpp"
-#include "render/AssetManager.hpp"
-#include "render/PlayerMap.hpp"
+#include "Effect/Effect.hpp"
+#include "Actor.hpp"
+
+#include "render/Context.hpp"
 
 #include "util/random.hpp"
 #include "util/Map.hpp"
+#include "util/raycast.hpp"
 
 #include <optional>
 
@@ -31,9 +34,7 @@ namespace core {
 	public:
 		ActorSpawner(std::shared_ptr<World> world, std::shared_ptr<XpManager> xpManager, 
 			         std::shared_ptr<EffectManager> effectManager, std::shared_ptr<SpellManager> spellManager,
-			         std::shared_ptr<render::PlayerMap> playerMap,
-					 std::shared_ptr<render::ParticleManager> particles,
-			         std::shared_ptr<render::AssetManager> assets, util::LoggerFactory& loggerFactory, 
+			         render::Context renderContext, util::LoggerFactory& loggerFactory,
 			         util::RandomEngine& randomEngine,
 			         std::shared_ptr<util::Raycaster> raycaster);
 
@@ -41,8 +42,7 @@ namespace core {
 	private:
 		std::shared_ptr<World> world;
 		std::shared_ptr<XpManager> xpManager;
-		std::shared_ptr<render::PlayerMap> playerMap;
-		std::shared_ptr<render::ParticleManager> particles;
+		render::Context renderContext;
 		std::shared_ptr<util::Raycaster> raycaster;
 		util::RandomEngine* randomEngine;
 

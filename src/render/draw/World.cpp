@@ -99,6 +99,9 @@ namespace render {
                 actor.hp, actor.maxHp, maxHpBarSize, colorMod);
             drawSprite(target, topLeft + util::topRight(spriteSize), util::topRight(aiStateIconSize),
                 assets.aiStateIcon(actor.aiState), colorMod);
+
+            drawInWorldRect(target, sf::IntRect{mouseTile(sf::Mouse::getPosition(), cameraPos, target),
+                {1, 1}}, sf::Color::Transparent, sf::Color::Red, 1.0);
         }
     }
 

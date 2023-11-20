@@ -18,14 +18,14 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 /// @file View.hpp Utilities for sf::View creation
 
-#include "coords.hpp"
-
 #include "core/Position.hpp"
 
 #include <SFML/Graphics/View.hpp>
 #include <SFML/System/Vector2.hpp>
 
 namespace render {
+    sf::Vector2f toScreen(sf::Vector2f) noexcept;
+
     /// @brief creates view
     /// Top left angle is at (0, 0)
     /// @param height Height of new view
