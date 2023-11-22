@@ -61,6 +61,10 @@ namespace render {
 				seenActors_.emplace_back(actor->position(), 
 										 actor->hp(), actor->maxHp(), 
 										 actor->mana(), actor->maxMana(),
-					                     actor->controller().aiState(), actor->texture() );
+					                     actor->controller().aiState(), actor->texture());
+
+		std::ranges::sort(seenActors_, {}, [](SeenActor actor) {
+			return actor.position.y;
+		});
 	}
 }
