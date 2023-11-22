@@ -23,7 +23,7 @@ namespace core {
 		         std::shared_ptr<World> newWorld, std::shared_ptr<XpManager> xpManager_,
 				 std::shared_ptr<render::ParticleManager> particles_,
 		         util::RandomEngine* newRandomEngine) :
-		stats{stats_}, position_{ newPosition }, hp_{ stats.maxHp }, 
+		stats{stats_}, position_{newPosition}, hp_{stats.maxHp}, mana_{stats.maxMana},
 		world_{ std::move(newWorld) }, xpManager{ std::move(xpManager_) },
 		particles{particles_}, randomEngine_ {newRandomEngine} {}
 
@@ -38,6 +38,9 @@ namespace core {
 
 		hp_ += regen() * turnDelay();
 		hp_ = std::min(hp(), maxHp());
+
+		mana_ += manaRegen() * turnDelay();
+		mana_ = std::min(mana(), maxMana());
 
 		for (const auto& effect : effects())
 			effect->update(turnDelay());
@@ -134,6 +137,12 @@ namespace core {
 
 	double Actor::regen() {
 		return stats.regen * util::reduce(effects_, 1., std::plus<>{}, [](const auto& effect) {
+			return effect->regenBonus();
+		});
+	}
+
+	double Actor::manaRegen() {
+		return stats.manaRegen * util::reduce(effects_, 1., std::plus<>{}, [](const auto& effect) {
 			return effect->regenBonus();
 		});
 	}

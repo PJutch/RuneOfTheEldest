@@ -48,7 +48,7 @@ namespace {
 	}
 
 	core::Actor::Stats makeTestStats(double maxHp, double regen, double damage, double turnDelay) {
-		return {maxHp, regen, damage, 1, 1, defaultDefences(), turnDelay, 0, nullptr, false, nullptr, sf::Time::Zero};
+		return {maxHp, regen, 0, 0, damage, 1, 1, defaultDefences(), turnDelay, 0, nullptr, false, nullptr, sf::Time::Zero};
 	}
 
 	core::Actor makeTestActor(double maxHp, double regen, double damage, double turnDelay) {
@@ -63,7 +63,7 @@ namespace {
 	}
 
 	core::Actor makeTestActor(double maxHp, std::array<double, core::totalDamageTypes> defences) {
-		return core::Actor{core::Actor::Stats{ maxHp, 0, 0, 1, 1, defences, 1.0, 0, nullptr, false, nullptr, sf::Time::Zero },
+		return core::Actor{core::Actor::Stats{ maxHp, 0, 0, 0, 0, 1, 1, defences, 1.0, 0, nullptr, false, nullptr, sf::Time::Zero },
 						   nullptr, testXpManager, nullptr, nullptr};
 	}
 

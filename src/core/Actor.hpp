@@ -40,6 +40,9 @@ namespace core {
 			double maxHp;
 			double regen;
 
+			double maxMana = 0;
+			double manaRegen = 0;
+
 			double damage;
 			double accuracy;
 
@@ -117,6 +120,27 @@ namespace core {
 		/// Gets max possible HP
 		[[nodiscard]] double maxHp() const noexcept {
 			return stats.maxHp * hpMul;
+		}
+
+		/// Gets Actor mana
+		[[nodiscard]] double mana() const noexcept {
+			return mana_;
+		}
+
+		/// Gets max possible mana
+		[[nodiscard]] double maxMana() const noexcept {
+			return stats.maxMana * manaMul;
+		}
+
+		/// @brief Tries to decreas Actor mana
+		/// @param dmana amount of mana to use
+		/// @returns true if Actor had enough mana
+		bool useMana(double dmana) noexcept {
+			if (mana_ < dmana)
+				return false;
+
+			mana_ -= dmana;
+			return true;
 		}
 
 		[[nodiscard]] const sf::Texture* texture() const noexcept {
@@ -232,12 +256,16 @@ namespace core {
 		double hp_;
 		double hpMul = 1;
 
+		double mana_;
+		double manaMul = 1;
+
 		std::shared_ptr<World> world_;
 		std::shared_ptr<XpManager> xpManager;
 		std::shared_ptr<render::ParticleManager> particles;
 		util::RandomEngine* randomEngine_;
 
 		double regen();
+		double manaRegen();
 		double damage(const Actor& target);
 		double accuracy();
 		double evasion();

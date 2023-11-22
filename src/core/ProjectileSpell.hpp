@@ -56,6 +56,9 @@ namespace core {
 			if (!other)
 				return false;
 
+			if (!self.useMana(1))
+				return false;
+
 			other->beAttacked(stats.damage, stats.accuracy, stats.damageType);
 			world->makeSound({Sound::Type::ATTACK, true, self.position()});
 			spawnParticle(core::Position<int>{self.position()}, target);

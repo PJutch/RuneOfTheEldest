@@ -76,8 +76,15 @@ namespace core {
 			actorData.emplace_back();
 
 			Actor::Stats& currentStats = actorData.back().stats;
+
 			currentStats.maxHp = util::parseReal(util::getAndEraseRequired(params, "hp"));
 			currentStats.regen = util::parseReal(util::getAndEraseRequired(params, "regen"));
+
+			if (auto v = util::getAndErase(params, "mana"))
+				currentStats.maxMana = util::parseReal(*v);
+			if (auto v = util::getAndErase(params, "manaRegen"))
+				currentStats.manaRegen = util::parseReal(*v);
+
 			currentStats.damage = util::parseReal(util::getAndEraseRequired(params, "damage"));
 			currentStats.accuracy = util::parseReal(util::getAndEraseRequired(params, "accuracy"));
 			currentStats.evasion = util::parseReal(util::getAndEraseRequired(params, "evasion"));
