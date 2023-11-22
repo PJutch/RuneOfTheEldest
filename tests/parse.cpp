@@ -152,3 +152,15 @@ TEST(parse, parseMappingComments) {
 	using namespace std::literals;
 	EXPECT_EQ(util::parseMapping(stream), (std::unordered_map{ std::pair{"ab"s, "cde"s}, std::pair{"fg"s, "hi"s} }));
 }
+
+TEST(parse, parseList) {
+	using namespace std::literals;
+	EXPECT_EQ(util::parseList("ab, cde"), (std::vector{"ab"sv, " cde"sv}));
+	EXPECT_EQ(util::parseList("ab,cde"), (std::vector{"ab"sv, "cde"sv}));
+	EXPECT_EQ(util::parseList("ab,"), (std::vector{"ab"sv}));
+	EXPECT_EQ(util::parseList("abc"), (std::vector{"abc"sv}));
+	EXPECT_EQ(util::parseList(""), (std::vector<std::string_view>{}));
+	EXPECT_EQ(util::parseList("a, b, c, d"), (std::vector{"a"sv, " b"sv, " c"sv, " d"sv}));
+	EXPECT_EQ(util::parseList(",,"), (std::vector{""sv, ""sv}));
+}
+

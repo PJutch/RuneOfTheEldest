@@ -239,6 +239,28 @@ namespace util {
 		else
 			throw NotABoolError(s);
 	}
+
+	/// @brief Parses comma-separated list
+	/// @detail Values are separated by commas
+	/// Commas aren't parts of values
+	/// Trailing commas are ignored (trailing commas before ws aren't)
+	/// Empty string gives empty list
+	/// Empty string gives empty list
+	inline std::vector<std::string_view> parseList(std::string_view s) {
+		std::vector<std::string_view> res;
+		auto prev = s.begin();
+		while (prev != s.end()) {
+			auto next = std::ranges::find(prev, s.end(), ',');
+
+			res.emplace_back(prev, next);
+
+			if (next == s.end())
+				break;
+			++next;
+			prev = next;
+		}
+		return res;
+	}
 }
 
 #endif
