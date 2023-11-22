@@ -43,6 +43,8 @@ namespace core {
 
 			double accuracy;
 
+			double manaUsage;
+
 			sf::Time flightTime;
 			const sf::Texture* projectileTexture;
 		};
@@ -56,7 +58,7 @@ namespace core {
 			if (!other)
 				return false;
 
-			if (!self.useMana(1))
+			if (!self.useMana(stats.manaUsage))
 				return false;
 
 			other->beAttacked(stats.damage, stats.accuracy, stats.damageType);

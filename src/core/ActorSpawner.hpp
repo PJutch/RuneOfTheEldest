@@ -60,7 +60,7 @@ namespace core {
 			std::optional<int> maxLevel;
 
 			const Effect* effectToAdd = nullptr;
-			std::shared_ptr<Spell> spellToAdd = nullptr;
+			std::vector<std::shared_ptr<Spell>> spellsToAdd;
 		};
 		std::vector<ActorData> actorData;
 

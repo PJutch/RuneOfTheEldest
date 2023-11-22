@@ -57,6 +57,8 @@ namespace core {
 
 			double accuracy = util::parseReal(util::getAndEraseRequired(params, "accuracy"));
 
+			double manaUsage = util::parseReal(util::getAndEraseRequired(params, "mana"));
+
 			const sf::Texture& icon = assets->texture(util::getAndEraseRequired(params, "icon"));
 			std::string name = util::getAndEraseRequired(params, "name");
 
@@ -67,7 +69,7 @@ namespace core {
 				throw UnknownParamsError{params};
 
 			return std::make_unique<ProjectileSpell>(
-				ProjectileSpell::Stats{damage, damageType, accuracy, flightTime, &projectileTexture},
+				ProjectileSpell::Stats{damage, damageType, accuracy, manaUsage, flightTime, &projectileTexture},
 				icon, name, world, particles
 			);
 		}

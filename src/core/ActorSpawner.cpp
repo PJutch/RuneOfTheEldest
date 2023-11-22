@@ -122,11 +122,12 @@ namespace core {
 				else
 					throw EffectNotFound{*v};
 
-			if (auto v = util::getAndErase(params, "spell"))
-				if (auto spell = spellManager->findSpell(*v))
-					actorData.back().spellToAdd = spell;
-				else
-					throw SpellNotFound{*v};
+			if (auto v = util::getAndErase(params, "spells"))
+				for (auto spellName : util::parseList(*v) | std::views::transform(util::strip))
+					if (auto spell = spellManager->findSpell(spellName))
+						actorData.back().spellsToAdd.push_back(std::move(spell));
+					else
+						throw SpellNotFound{spellName};
 
 			if (!params.empty())
 				throw UnknownParamsError{ params };
@@ -165,8 +166,8 @@ namespace core {
 
 						if (data.effectToAdd)
 							enemy->addEffect(data.effectToAdd->clone());
-						if (data.spellToAdd)
-							enemy->addSpell(data.spellToAdd);
+						for (auto spell : data.spellsToAdd)
+							enemy->addSpell(std::move(spell));
 
 						world->addActor(std::move(enemy));
 					}
