@@ -21,7 +21,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace generation {
     Area RandomSizeRoomGenerator::randomRoomIn(const Area& area) {
-        const int minSize = 5;
+        const int minSize = 2;
 
         int width = std::uniform_int_distribution
         { minSize, area.width() }(*randomEngine);

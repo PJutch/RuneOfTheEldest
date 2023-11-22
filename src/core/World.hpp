@@ -107,7 +107,7 @@ namespace core {
 		[[nodiscard]] sf::Vector3i randomPositionAt(int level, Pred&& pred) const {
 			return randomPositionAt(level, [&pred](const World& world, sf::Vector3i pos) {
 				return std::invoke(pred, world.tiles()[pos]);
-				});
+			});
 		}
 
 		/// @brief Random tile position (3D) at given level satisfying pred
