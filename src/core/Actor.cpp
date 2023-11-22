@@ -143,7 +143,7 @@ namespace core {
 
 	double Actor::manaRegen() {
 		return stats.manaRegen * util::reduce(effects_, 1., std::plus<>{}, [](const auto& effect) {
-			return effect->regenBonus();
+			return effect->manaRegenBonus();
 		});
 	}
 
@@ -184,12 +184,19 @@ namespace core {
 	}
 
 	void Actor::updateHp() {
-		double newMul = util::reduce(effects_, 1., std::plus<>{}, [](const auto& effect) {
+		double newMHpul = util::reduce(effects_, 1., std::plus<>{}, [](const auto& effect) {
 			return effect->hpBonus();
 		});
 
-		hp_ *= newMul / hpMul;
-		hpMul = newMul;
+		hp_ *= newMHpul / hpMul;
+		hpMul = newMHpul;
+
+		double newManaMul = util::reduce(effects_, 1., std::plus<>{}, [](const auto& effect) {
+			return effect->manaBonus();
+		});
+
+		mana_ *= newManaMul / hpMul;
+		manaMul = newManaMul;
 	}
 
 	void Actor::attack(Actor& other) {

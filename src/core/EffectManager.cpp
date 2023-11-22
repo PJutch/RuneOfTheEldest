@@ -53,23 +53,32 @@ namespace core {
 		};
 
 		std::unique_ptr<Effect> createSkill(std::unordered_map<std::string, std::string>& params,
-				std::string_view type, std::string_view name, const sf::Texture& icon) {
+			std::string_view type, std::string_view name, const sf::Texture& icon) {
 			double regenBonus = 0;
+			double manaRegenBonus = 0;
 			double speedBonus = 0;
 			double accuracyBonus = 0;
 			double evasionBonus = 0;
 			double xpMul = 1;
 			double hpBonus = 0;
+			double manaBonus = 0;
 			std::array<double, totalDamageTypes> defenceBonuses;
 			defenceBonuses.fill(0);
 
-			if (type == "unconditionalSkill")
+			if (type == "unconditionalSkill") {
 				if (auto v = util::getAndErase(params, "hpBonus"))
 					hpBonus = util::parseReal(*v);
+
+				if (auto v = util::getAndErase(params, "manaBonus"))
+					manaBonus = util::parseReal(*v);
+			}
 
 			if (type != "targetFullHpSkill") {
 				if (auto v = util::getAndErase(params, "regenBonus"))
 					regenBonus = util::parseReal(*v);
+
+				if (auto v = util::getAndErase(params, "manaRegenBonus"))
+					manaRegenBonus = util::parseReal(*v);
 
 				if (auto v = util::getAndErase(params, "speed"))
 					speedBonus = util::parseReal(*v);
@@ -98,16 +107,16 @@ namespace core {
 
 			if (type == "unconditionalSkill")
 				return std::make_unique<UnconditionalSkill>(
-					regenBonus, damageBonus, speedBonus,
-					accuracyBonus, evasionBonus, xpMul, hpBonus, defenceBonuses,
+					regenBonus, manaRegenBonus, damageBonus, speedBonus,
+					accuracyBonus, evasionBonus, xpMul, hpBonus, manaBonus, defenceBonuses,
 					icon, name);
 			else if (type == "lowHpSkill")
 				return std::make_unique<LowHpSkill>(
-					regenBonus, damageBonus, speedBonus, accuracyBonus, evasionBonus, xpMul, defenceBonuses,
+					regenBonus, manaRegenBonus, 
+					damageBonus, speedBonus, accuracyBonus, evasionBonus, xpMul, defenceBonuses,
 					icon, name);
 			else if (type == "targetFullHpSkill")
-				return std::make_unique<TargetFullHpSkill>(
-					damageBonus, icon, name);
+				return std::make_unique<TargetFullHpSkill>(damageBonus, icon, name);
 			else
 				throw UnknownSkillTypeError(type);
 		}

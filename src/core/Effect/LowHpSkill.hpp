@@ -26,16 +26,23 @@ namespace core {
 	/// Type in skill file is "lowHp"
 	class LowHpSkill : public Effect {
 	public:
-		LowHpSkill(double newRegenBonus, double newDamageBonus, double newSpeedBonus, double newXpMul,
+		LowHpSkill(double newRegenBonus, double newManaRegenBonus, 
+				   double newDamageBonus, double newSpeedBonus, double newXpMul,
 			       double newAccuracyBonus, double newEvasionBonus, 
 				   std::array<double, totalDamageTypes> defenceBonuses_,
 			       const sf::Texture& icon_, std::string_view name_) :
-			Effect{icon_, name_, true}, regenBonus_{newRegenBonus}, damageBonus_{newDamageBonus},
+			Effect{icon_, name_, true}, 
+			regenBonus_{newRegenBonus}, manaRegenBonus_{newManaRegenBonus}, 
+			damageBonus_{newDamageBonus},
 			accuracyBonus_{newAccuracyBonus}, evasionBonus_{newEvasionBonus},
 			speedBonus_{newSpeedBonus}, xpMul_{newXpMul}, defenceBonuses{defenceBonuses_} {}
 
 		double regenBonus() const final {
 			return shouldApply() ? regenBonus_ : 1;
+		}
+
+		double manaRegenBonus() const final {
+			return shouldApply() ? manaRegenBonus_ : 1;
 		}
 
 		double damageBonus(const Actor&) const final {
@@ -71,6 +78,7 @@ namespace core {
 		}
 	private:
 		double regenBonus_;
+		double manaRegenBonus_;
 		double damageBonus_;
 		double accuracyBonus_;
 		double evasionBonus_;

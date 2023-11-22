@@ -24,17 +24,24 @@ namespace core {
 	/// Default skill type.
 	class UnconditionalSkill : public Effect {
 	public:
-		UnconditionalSkill(double newRegenBonus, double newDamageBonus, double newSpeedBonus,
+		UnconditionalSkill(double newRegenBonus, double newManaRegenBonus, double newDamageBonus, double newSpeedBonus,
 			               double newAccuracyBonus, double newEvasionBonus, 
-			               double newXpMul, double newHpBonus,
+			               double newXpMul, double newHpBonus, double newManaBonus,
 						   std::array<double, totalDamageTypes> defenceBonuses_,
 			               const sf::Texture& icon_, std::string_view name_) :
-			Effect{icon_, name_, true}, hpBonus_{newHpBonus}, regenBonus_{newRegenBonus}, damageBonus_{newDamageBonus},
+			Effect{icon_, name_, true}, 
+			hpBonus_{newHpBonus}, regenBonus_{newRegenBonus}, 
+			manaBonus_{newManaBonus}, manaRegenBonus_{newManaRegenBonus},
+			damageBonus_{newDamageBonus},
 			accuracyBonus_{newAccuracyBonus}, evasionBonus_{newEvasionBonus},
 			speedBonus_{newSpeedBonus}, xpMul_{newXpMul}, defenceBonuses{defenceBonuses_} {}
 
 		double regenBonus() const final {
 			return regenBonus_;
+		}
+
+		double manaRegenBonus() const final {
+			return manaRegenBonus_;
 		}
 
 		double damageBonus(const Actor&) const final {
@@ -61,6 +68,10 @@ namespace core {
 			return hpBonus_;
 		}
 
+		double manaBonus() const final {
+			return manaBonus_;
+		}
+
 		double defenceBonus(DamageType damageType) const final {
 			return defenceBonuses[static_cast<size_t>(damageType)];
 		}
@@ -71,6 +82,8 @@ namespace core {
 	private:
 		double hpBonus_;
 		double regenBonus_;
+		double manaBonus_;
+		double manaRegenBonus_;
 		double damageBonus_;
 		double accuracyBonus_;
 		double evasionBonus_;
