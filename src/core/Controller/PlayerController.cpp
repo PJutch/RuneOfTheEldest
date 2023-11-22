@@ -26,8 +26,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/Keyboard.hpp"
 #include "util/Direction.hpp"
 
-#include <iostream>
-
 namespace core {
 	PlayerController::PlayerController(std::shared_ptr<Actor> player_, 
 		                               std::shared_ptr<util::Raycaster> raycaster_, 
@@ -83,7 +81,6 @@ namespace core {
 			} else if (currentSpell) {
 				core::Position<int> target{render::mouseTile({event.mouseButton.x, event.mouseButton.y}, 
 					renderContext.camera->position(), *renderContext.window), player_->position().z};
-				std::cout << target.x << ' ' << target.y << ' ' << target.z << '\n';
 				if (player_->spells()[*currentSpell]->cast(*player_, target))
 					endTurn();
 			}
