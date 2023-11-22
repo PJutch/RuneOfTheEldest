@@ -77,6 +77,23 @@ namespace render {
             drawRect(target, rect, color);
         }
 
+        void drawManaBar(sf::RenderTarget& target, sf::Vector2f screenPosition, sf::Vector2f origin,
+                         double mana, double maxMana, sf::Vector2f maxSize, double colorMod) {
+            if (maxMana == 0)
+                return;
+
+            double manaFraction = mana / maxMana;
+            sf::Color color{static_cast<sf::Uint8>((1 - manaFraction) * colorMod * 255),
+                            static_cast<sf::Uint8>(manaFraction * colorMod * 255), 
+                            static_cast<sf::Uint8>(manaFraction * colorMod * 255)};
+
+            sf::Vector2f size{static_cast<float>(manaFraction * maxSize.x), maxSize.y};
+            sf::FloatRect rect{screenPosition - origin, size};
+
+            drawRect(target, rect, color);
+        }
+
+
         void draw(sf::RenderTarget& target, const AssetManager& assets,
                   const core::World& world, const render::PlayerMap& playerMap, core::Position<float> cameraPos,
                   PlayerMap::SeenActor actor) {
@@ -97,6 +114,8 @@ namespace render {
             drawSprite(target, topLeft, {0, 0}, *actor.texture, colorMod);
             drawHpBar(target, topLeft + util::bottomLeft(spriteSize), util::bottomLeft(maxHpBarSize),
                 actor.hp, actor.maxHp, maxHpBarSize, colorMod);
+            drawManaBar(target, topLeft + util::bottomLeft(spriteSize), {0, -0.5f},
+                actor.mana, actor.maxMana, maxHpBarSize, colorMod);
             drawSprite(target, topLeft + util::topRight(spriteSize), util::topRight(aiStateIconSize),
                 assets.aiStateIcon(actor.aiState), colorMod);
 

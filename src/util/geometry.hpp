@@ -94,6 +94,12 @@ namespace util {
         return { T{}, size.y };
     }
 
+    /// Gets relative position of top left corner of the rect with given size 
+    template <typename T>
+    [[nodiscard]] sf::Vector2<T> topLeft(sf::Vector2<T> size) noexcept {
+        return {T{}, T{}};
+    }
+
     /// Gets relative position of top right corner of the rect with given size 
     template <typename T>
     [[nodiscard]] sf::Vector2<T> topRight(sf::Vector2<T> size) noexcept {

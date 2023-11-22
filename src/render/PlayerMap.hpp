@@ -42,8 +42,13 @@ namespace render {
 		/// Saves seen Actor state to draw it.
 		struct SeenActor {
 			sf::Vector3i position;
+
 			double hp;
 			double maxHp;
+
+			double mana;
+			double maxMana;
+
 			AiState aiState;
 			const sf::Texture* texture;
 		};
