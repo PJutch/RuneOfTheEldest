@@ -66,6 +66,11 @@ namespace core {
 		[[nodiscard]] virtual AiState aiState() const {
 			return AiState::NONE;
 		}
+
+		/// Selected spell index
+		virtual std::optional<int> currentSpell() const {
+			return std::nullopt;
+		}
 	protected:
 		void wantsSwap(bool newWantsSwap) noexcept {
 			wantsSwap_ = newWantsSwap;

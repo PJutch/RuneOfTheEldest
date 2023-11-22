@@ -77,15 +77,15 @@ namespace core {
 			if (auto newCurrentSpell = render::clickedSpell(
 				{event.mouseButton.x, event.mouseButton.y}, *renderContext.window, *player_
 			)) {
-				currentSpell = newCurrentSpell;
-			} else if (currentSpell) {
+				currentSpell_ = newCurrentSpell;
+			} else if (currentSpell_) {
 				core::Position<int> target{render::mouseTile({event.mouseButton.x, event.mouseButton.y}, 
 					renderContext.camera->position(), *renderContext.window), player_->position().z};
-				if (player_->spells()[*currentSpell]->cast(*player_, target))
+				if (player_->spells()[*currentSpell_]->cast(*player_, target))
 					endTurn();
 			}
 		} else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Right) {
-			currentSpell = std::nullopt;
+			currentSpell_ = std::nullopt;
 		}
 	}
 

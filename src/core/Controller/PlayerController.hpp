@@ -57,6 +57,10 @@ namespace core {
 			if (state == State::RESTING)
 				state = State::WAITING_TURN;
 		}
+
+		std::optional<int> currentSpell() const final {
+			return currentSpell_;
+		}
 	private:
 		std::weak_ptr<Actor> player;
 		std::shared_ptr<util::Raycaster> raycaster;
@@ -70,7 +74,7 @@ namespace core {
 		};
 		State state = State::WAITING_TURN;
 
-		std::optional<int> currentSpell;
+		std::optional<int> currentSpell_;
 
 		bool tryAscentStairs();
 		bool tryDescentStairs();

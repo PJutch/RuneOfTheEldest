@@ -119,10 +119,16 @@ namespace render {
             float x = leftmostXCenter;
             const float y = 950.f;
 
-            for (const auto& spell : world.player().spells()) {
+            for (int i = 0; i < std::ssize(world.player().spells()); ++ i) {
+                const auto& spell = world.player().spells()[i];
                 sf::FloatRect spellRect{sf::Vector2f{x, y} - iconSize / 2.f, iconSize};
 
-                drawRect(target, spellRect, sf::Color{32, 32, 32}, sf::Color{128, 128, 128}, 2.f);
+                sf::Color boundaryColor{128, 128, 128};
+                if (auto currentSpell = world.player().controller().currentSpell())
+                    if (i == currentSpell)
+                        boundaryColor = {255, 255, 0};
+
+                drawRect(target, spellRect, sf::Color{32, 32, 32}, boundaryColor, 2.f);
 
                 const sf::Texture& icon = spell->icon();
                 sf::Vector2f iconCenter = util::geometry_cast<float>(icon.getSize()) / 2.f;
