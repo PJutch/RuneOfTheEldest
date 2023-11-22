@@ -131,7 +131,7 @@ namespace util {
             return *this;
         }
 
-        auto operator ++(int) const noexcept {
+        auto operator ++(int) noexcept {
             auto copy = *this;
             ++current;
             return copy;
