@@ -72,6 +72,8 @@ namespace generation {
             splitY(area);
     }
 
+    const double more_passage_prob = 0.3;
+
     void DungeonGenerator::splitX(Area area) {
         TROTE_ASSERT(canSplit(area.width()));
 
@@ -79,10 +81,12 @@ namespace generation {
             { area.left() + minSize_, area.right() - minSize_ }(*randomEngine);
         auto [left, right] = area.splitX(boundary);
 
-        int passageY = std::uniform_int_distribution
-            { area.top(), area.bottom() - 2 }(*randomEngine);
-        left.addRightPassage(passageY);
-        right.addLeftPassage(passageY);
+        do {
+            int passageY = std::uniform_int_distribution
+            {area.top(), area.bottom() - 2}(*randomEngine);
+            left.addRightPassage(passageY);
+            right.addLeftPassage(passageY);
+        } while (std::bernoulli_distribution{more_passage_prob}(*randomEngine));
 
         areas.push(std::move(left));
         areas.push(std::move(right));
@@ -95,10 +99,12 @@ namespace generation {
             { area.top() + minSize_, area.bottom() - minSize_ }(*randomEngine);
         auto [top, bottom] = area.splitY(boundary);
 
-        int passageX = std::uniform_int_distribution
-            { area.left(), area.right() - 2 }(*randomEngine);
-        top.addBottomPassage(passageX);
-        bottom.addTopPassage(passageX);
+        do {
+            int passageX = std::uniform_int_distribution
+                { area.left(), area.right() - 2 }(*randomEngine);
+            top.addBottomPassage(passageX);
+            bottom.addTopPassage(passageX);
+        } while (std::bernoulli_distribution{more_passage_prob}(*randomEngine));
 
         areas.push(std::move(top));
         areas.push(std::move(bottom));
