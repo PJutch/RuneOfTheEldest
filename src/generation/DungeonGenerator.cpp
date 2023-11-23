@@ -46,33 +46,25 @@ namespace generation {
 
         world->addArea(area.bounds(), z);
 
-        if (!canSplit(area.width()) && !canSplit(area.height())) {
-            roomGenerator()(z, area);
-            return;
-        }
-
         if (std::uniform_real_distribution{}(*randomEngine) > splitChance_) {
             roomGenerator()(z, area);
             return;
         }
 
-        if (!canSplit(area.width())) {
-            splitY(area);
-            return;
+        if (std::uniform_real_distribution{}(*randomEngine) < 0.5) {
+            if (!canSplit(area.width()))
+                roomGenerator()(z, area);
+            else 
+                splitX(area);
+        } else {
+            if (!canSplit(area.height()))
+                roomGenerator()(z, area);
+            else
+                splitY(area);
         }
-
-        if (!canSplit(area.height())) {
-            splitX(area);
-            return;
-        }
-
-        if (std::uniform_real_distribution{}(*randomEngine) < 0.5)
-            splitX(area);
-        else
-            splitY(area);
     }
 
-    const double more_passage_prob = 0.3;
+    const double more_passage_prob = 0.5;
 
     void DungeonGenerator::splitX(Area area) {
         TROTE_ASSERT(canSplit(area.width()));
