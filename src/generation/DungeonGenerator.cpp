@@ -15,14 +15,14 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "DungeonGenerator.hpp"
 
+#include "RoomGenerator/RandomSizeRoomGenerator.hpp"
+
 #include "util/assert.hpp"
 #include "util/geometry.hpp"
 
 namespace generation {
-    DungeonGenerator::DungeonGenerator(std::unique_ptr<RoomGenerator> newRoomGenerator,
-        std::shared_ptr <core::World> world_,
-        util::RandomEngine& randomEngine_) :
-        roomGenerator_{ std::move(newRoomGenerator) }, world{ std::move(world_) }, randomEngine{ &randomEngine_ } {}
+    DungeonGenerator::DungeonGenerator(std::shared_ptr <core::World> world_, util::RandomEngine& randomEngine_) :
+        world{ std::move(world_) }, randomEngine{ &randomEngine_ } {}
 
     void DungeonGenerator::operator() () {
         for (int level = 0; level < world->tiles().shape().z; ++level)
@@ -30,35 +30,35 @@ namespace generation {
     }
 
     void DungeonGenerator::processLevel(int z) {
-        areas.emplace(util::shrinkTopLeft(world->tiles().horizontalBounds(), { 1, 1 }));
+        areas.emplace(util::shrinkTopLeft(world->tiles().horizontalBounds(), { 1, 1 }), z);
         while (!areas.empty()) {
             Area area = std::move(areas.front());
             areas.pop();
 
-            processArea(z, std::move(area));
+            processArea(std::move(area));
         }
     }
 
-    void DungeonGenerator::processArea(int z, Area area) {
+    void DungeonGenerator::processArea(Area area) {
         TROTE_ASSERT(world->tiles().isValidRect(area.bounds()));
         TROTE_ASSERT(area.width() >= minSize_);
         TROTE_ASSERT(area.height() >= minSize_);
 
-        world->addArea(area.bounds(), z);
+        world->addArea(area.bounds(), area.z());
 
         if (std::uniform_real_distribution{}(*randomEngine) > splitChance_) {
-            roomGenerator()(z, area);
+            generation::randomSizeRoom(*world, area, *randomEngine);
             return;
         }
 
         if (std::uniform_real_distribution{}(*randomEngine) < 0.5) {
             if (!canSplit(area.width()))
-                roomGenerator()(z, area);
+                generation::randomSizeRoom(*world, area, *randomEngine);
             else 
                 splitX(area);
         } else {
             if (!canSplit(area.height()))
-                roomGenerator()(z, area);
+                generation::randomSizeRoom(*world, area, *randomEngine);
             else
                 splitY(area);
         }

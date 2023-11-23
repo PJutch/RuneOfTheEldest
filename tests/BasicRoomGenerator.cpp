@@ -49,8 +49,7 @@ TEST(BasicRoomGenerator, generateRoom) {
     world->tiles().assign({ 10, 7, 1 }, Tile::WALL);
 
     sf::IntRect room{3, 2, 6, 5};
-    generation::BasicRoomGenerator generator{ world };
-    generator(0, generation::Area{ room });
+    generation::basicRoom(*world, generation::Area{ room, 0 });
 
     EXPECT_TRUE(hasSingleRoom(*world, 0, room));
 }
@@ -60,8 +59,7 @@ TEST(BasicRoomGenerator, generateRoomNearEdge) {
     world->tiles().assign({ 8, 7, 1 }, Tile::WALL);
 
     sf::IntRect room{1, 2, 7, 5};
-    generation::BasicRoomGenerator generator{ world };
-    generator(0, generation::Area{ room });
+    generation::basicRoom(*world, generation::Area{ room, 0});
 
     EXPECT_TRUE(hasSingleRoom(*world, 0, room));
 }
@@ -71,8 +69,7 @@ TEST(BasicRoomGenerator, generateRoom3x3) {
     world->tiles().assign({ 7, 7, 1 }, Tile::WALL);
 
     sf::IntRect room{3, 2, 3, 3};
-    generation::BasicRoomGenerator generator{ world };
-    generator(0, generation::Area{ room });
+    generation::basicRoom(*world, generation::Area{ room, 0});
 
     EXPECT_TRUE(hasSingleRoom(*world, 0, room));
 }
@@ -82,8 +79,7 @@ TEST(BasicRoomGenerator, generateRoom2x2) {
     world->tiles().assign({ 7, 7, 1 }, Tile::WALL);
 
     sf::IntRect room{3, 2, 2, 2};
-    generation::BasicRoomGenerator generator{ world };
-    generator(0, generation::Area{ room });
+    generation::basicRoom(*world, generation::Area{ room, 0});
 
     EXPECT_TRUE(hasSingleRoom(*world, 0, room));
 }
@@ -93,8 +89,7 @@ TEST(BasicRoomGenerator, generateRoom1x1) {
     world->tiles().assign({ 7, 7, 1 }, Tile::WALL);
 
     sf::IntRect room{3, 2, 1, 1};
-    generation::BasicRoomGenerator generator{world};
-    generator(0, generation::Area{ room });
+    generation::basicRoom(*world, generation::Area{ room, 0});
 
     EXPECT_TRUE(hasSingleRoom(*world, 0, room));
 }

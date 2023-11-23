@@ -30,9 +30,7 @@ namespace generation {
     /// Generates level using bsp
     class DungeonGenerator {
     public:
-        DungeonGenerator(std::unique_ptr<RoomGenerator> roomGenerator,
-            std::shared_ptr<core::World> world,
-            util::RandomEngine& randomEngine);
+        DungeonGenerator(std::shared_ptr<core::World> world, util::RandomEngine& randomEngine);
 
         /// Minimum size of the room
         void minSize(int newMinSize) noexcept {
@@ -44,18 +42,8 @@ namespace generation {
             splitChance_ = newSplitChance;
         }
 
-        [[nodiscard]] RoomGenerator& roomGenerator() noexcept {
-            return *roomGenerator_;
-        }
-
-        [[nodiscard]] const RoomGenerator& roomGenerator() const noexcept {
-            return *roomGenerator_;
-        }
-
         void operator() ();
     private:
-        std::unique_ptr<RoomGenerator> roomGenerator_;
-
         int minSize_ = 0;
         double splitChance_ = 0.0;
 
@@ -65,7 +53,7 @@ namespace generation {
         util::RandomEngine* randomEngine;
 
         void processLevel(int level);
-        void processArea(int level, Area area);
+        void processArea(Area area);
 
         [[nodiscard]] bool canSplit(int dimension) const noexcept {
             return dimension > 2 * minSize_;

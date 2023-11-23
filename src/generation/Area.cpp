@@ -17,8 +17,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace generation {
     std::pair<Area, Area> Area::splitX(int boundary) const noexcept {
-        Area leftHalf{ {left(), top(), boundary - left(), area.height} };
-        Area rightHalf{ {boundary, top(), right() - boundary, area.height} };
+        Area leftHalf{ {left(), top(), boundary - left(), area.height}, z() };
+        Area rightHalf{ {boundary, top(), right() - boundary, area.height}, z() };
 
         leftHalf.leftPassages_ = leftPassages_;
         rightHalf.rightPassages_ = rightPassages_;
@@ -39,8 +39,8 @@ namespace generation {
     }
 
     std::pair<Area, Area> Area::splitY(int boundary) const noexcept {
-        Area topHalf{ {left(), top(), area.width, boundary - top()} };
-        Area bottomHalf{ {left(), boundary, area.width, bottom() - boundary} };
+        Area topHalf{ {left(), top(), area.width, boundary - top()}, z()};
+        Area bottomHalf{ {left(), boundary, area.width, bottom() - boundary}, z()};
 
         topHalf.topPassages_ = topPassages_;
         bottomHalf.bottomPassages_ = bottomPassages_;

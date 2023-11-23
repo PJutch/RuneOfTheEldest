@@ -17,7 +17,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "core/ActorSpawner.hpp"
 
-#include "generation/RoomGenerator/RandomSizeRoomGenerator.hpp"
 #include "generation/DungeonGenerator.hpp"
 
 #include "render/Camera/FreeCamera.hpp"
@@ -79,7 +78,6 @@ int main() {
             boost::di::bind<sf::VideoMode>.to(videoMode),
             boost::di::bind<sf::RenderWindow>.to(renderWindow),
             boost::di::bind<util::RandomEngine>.to(randomEngine),
-            boost::di::bind<generation::RoomGenerator>.to<generation::RandomSizeRoomGenerator>(),
             boost::di::bind<render::Camera*[]>.to<render::PlayerLockedCamera, render::FreeCamera>(),
             boost::di::bind<render::Camera>.to<render::SwitchableCamera>()
         );
@@ -87,7 +85,6 @@ int main() {
 
         game.dungeonGenerator().splitChance(0.8);
         game.dungeonGenerator().minSize(2);
-        // game.dungeonGenerator().roomGenerator().debugTiles();
 
         logger->info("Loading complete");
         game.run();

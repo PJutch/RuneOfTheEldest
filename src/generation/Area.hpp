@@ -29,7 +29,7 @@ namespace generation {
     public:
         /// @brief Creates area
         /// @param area_ area bounding rect
-        explicit Area(sf::IntRect area_) : area{ area_ } {}
+        explicit Area(sf::IntRect area_, int newZ) : area{area_}, z_{newZ} {}
 
         /// Left side of the area (min x)
         [[nodiscard]] int left() const noexcept {
@@ -59,6 +59,11 @@ namespace generation {
         /// Width of the area (y size)
         [[nodiscard]] int height() const noexcept {
             return area.height;
+        }
+
+        /// z of the area
+        [[nodiscard]] int z() const noexcept {
+            return z_;
         }
 
         /// Area bounding rect
@@ -113,6 +118,7 @@ namespace generation {
         [[nodiscard]] std::pair<Area, Area> splitY(int boundary) const noexcept;
     private:
         sf::IntRect area;
+        int z_;
 
         std::vector<int> leftPassages_;
         std::vector<int> topPassages_;
