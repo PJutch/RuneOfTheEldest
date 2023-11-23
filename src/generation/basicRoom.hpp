@@ -19,17 +19,29 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Area.hpp"
 
 #include "core/fwd.hpp"
+#include "util/random.hpp"
 
 #include <memory>
 
 namespace generation {
-    /// @brief Generates room in the area
+    /// @brief Generates rectangular room in the area
     /// @details Room occupies all area except right and bottom sides
     ///       \n Generates Tile::EMPTY for passages in right and bottom sides
     /// @param debugTiles If true generates special colored tiles instead of Tile::EMPTY
     ///       \n Generates Tile::ROOM in main room
     ///       \n Generates Tile::ROOM_ENTRANCE for passage entrance
-    void basicRoom(core::World& world, Area area, bool debugTiles = false);
+    void rectRoom(core::World& world, Area area, bool debugTiles = false);
+
+    /// @brief Generates diamond shaped room in the area
+    /// @details Room occupies all area except right and bottom sides
+    ///       \n Generates Tile::EMPTY lines for passages
+    /// @param debugTiles If true generates special colored tiles instead of Tile::EMPTY
+    ///       \n Generates Tile::ROOM in main room
+    ///       \n Generates Tile::ROOM_ENTRANCE for passage entrance
+    void diamondRoom(core::World& world, Area area, bool debugTiles = false);
+
+    /// Choose one of room types randomly
+    void randomRoom(core::World& world, Area area, util::RandomEngine& engine, bool debugTiles = false);
 }
 
 #endif

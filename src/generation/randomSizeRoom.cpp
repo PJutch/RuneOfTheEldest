@@ -172,6 +172,6 @@ namespace generation {
         for (int x : area.bottomPassages())
             bottomPassage(world, area, room, x, debugTiles, randomEngine);
 
-        basicRoom(world, std::move(room), debugTiles);
+        randomRoom(world, std::move(room), randomEngine, debugTiles);
     }
 }
