@@ -21,6 +21,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/geometry.hpp"
 
 namespace generation {
+    namespace {
+        const bool debugTiles = false;
+    }
+
     DungeonGenerator::DungeonGenerator(std::shared_ptr <core::World> world_, util::RandomEngine& randomEngine_) :
         world{ std::move(world_) }, randomEngine{ &randomEngine_ } {}
 
@@ -47,18 +51,18 @@ namespace generation {
         world->addArea(area.bounds(), area.z());
 
         if (std::uniform_real_distribution{}(*randomEngine) > splitChance_) {
-            generation::randomSizeRoom(*world, area, *randomEngine);
+            generation::randomSizeRoom(*world, area, *randomEngine, debugTiles);
             return;
         }
 
         if (std::uniform_real_distribution{}(*randomEngine) < 0.5) {
             if (!canSplit(area.width()))
-                generation::randomSizeRoom(*world, area, *randomEngine);
+                generation::randomSizeRoom(*world, area, *randomEngine, debugTiles);
             else 
                 splitX(area);
         } else {
             if (!canSplit(area.height()))
-                generation::randomSizeRoom(*world, area, *randomEngine);
+                generation::randomSizeRoom(*world, area, *randomEngine, debugTiles);
             else
                 splitY(area);
         }
