@@ -16,7 +16,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef DUNGEON_GENERATOR_HPP_
 #define DUNGEON_GENERATOR_HPP_
 
-#include "RoomGenerator/RoomGenerator.hpp"
 #include "Area.hpp"
 
 #include "core/World.hpp"

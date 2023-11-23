@@ -15,7 +15,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "DungeonGenerator.hpp"
 
-#include "RoomGenerator/RandomSizeRoomGenerator.hpp"
+#include "randomSizeRoom.hpp"
 
 #include "util/assert.hpp"
 #include "util/geometry.hpp"

@@ -13,9 +13,10 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 If not, see <https://www.gnu.org/licenses/>. */
 
-#include "RandomSizeRoomGenerator.hpp"
+#include "randomSizeRoom.hpp"
 
-#include "../line.hpp"
+#include "line.hpp"
+#include "basicRoom.hpp"
 
 #include "core/World.hpp"
 
