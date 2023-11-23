@@ -18,7 +18,7 @@ include(${PROJECT_SOURCE_DIR}/cmake/DefaultCompilerOptions.cmake)
 add_library(generation STATIC)
 
 target_sources(generation PRIVATE DungeonGenerator.cpp
-                                  Area.cpp)
+                                  Area.cpp line.cpp)
 
 add_subdirectory(RoomGenerator)
 target_link_libraries(generation PRIVATE RoomGenerator)
