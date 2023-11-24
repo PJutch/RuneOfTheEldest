@@ -86,7 +86,7 @@ namespace generation {
             Buffer ids;
         };
 
-        void markComponent(core::World& world, sf::IntRect bounds, sf::Vector3i current, int id, Buffer& ids, int& size) {
+        void markComponent(const core::World& world, sf::IntRect bounds, sf::Vector3i current, int id, Buffer& ids, int& size) {
             if (!bounds.contains(util::getXY(current))
              || world.tiles()[current] != Tile::EMPTY 
              || ids[util::getXY(current)] != 0)
@@ -101,7 +101,7 @@ namespace generation {
                 }
         }
 
-        ComponentData findComponents(core::World& world, Area area) {
+        ComponentData findComponents(const core::World& world, Area area) {
             ComponentData res{area.bounds()};
             for (int x = area.left(); x < area.right() - 1; ++x)
                 for (int y = area.top(); y < area.bottom() - 1; ++y)
@@ -168,14 +168,19 @@ namespace generation {
                 connectVHV(pos1, pos2, world, area, randomEngine, debugTiles);
         }
 
+        template <typename T>
+        int randomIndex(std::vector<T> vec, util::RandomEngine& randomEngine) {
+            return std::uniform_int_distribution<int>(0, std::ssize(vec) - 1)(randomEngine);
+        }
+
         void connectComponents(ComponentData components, core::World& world, Area area,
-                        util::RandomEngine& randomEngine, bool debugTiles) {
+                               util::RandomEngine& randomEngine, bool debugTiles) {
             std::vector<int> aliases(std::ssize(components.sizes));
             std::iota(aliases.begin(), aliases.end(), 0);
 
             while (!allSame(aliases)) {
-                int i = std::uniform_int_distribution<int>(0, std::ssize(aliases) - 1)(randomEngine);
-                int j = std::uniform_int_distribution<int>(0, std::ssize(aliases) - 1)(randomEngine);
+                int i = randomIndex(aliases, randomEngine);
+                int j = randomIndex(aliases, randomEngine);
 
                 if (aliases[i] == aliases[j])
                     continue;
