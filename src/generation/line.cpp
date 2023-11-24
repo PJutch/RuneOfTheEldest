@@ -35,4 +35,20 @@ namespace generation {
         for (int y = top; y < bottom; ++y)
             world.tiles()[{x, y, z}] = tile;
     }
+
+    void horizontalLineInclusive(core::World& world, int z, int left, int right, int y, Tile tile) {
+        using std::swap;
+        if (left > right)
+            swap(left, right);
+
+        horizontalLine(world, z, left, right + 1, y, tile);
+    }
+
+    void verticalLineInclusive(core::World& world, int z, int top, int bottom, int x, Tile tile) {
+        using std::swap;
+        if (top > bottom)
+            swap(top, bottom);
+
+        verticalLine(world, z, top, bottom + 1, x, tile);
+    }
 }

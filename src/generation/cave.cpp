@@ -138,20 +138,26 @@ namespace generation {
             });
         }
 
+        sf::Vector3i randomPosIn(const core::World& world, Area area) {
+            return world.randomPositionAt(area.z(), [&](const core::World& world, sf::Vector3i pos) {
+                return area.bounds().contains(util::getXY(pos));
+            });
+        }
+
         void connectHVH(sf::Vector3i pos1, sf::Vector3i pos2, core::World& world, Area area,
                         util::RandomEngine& randomEngine, bool debugTiles) {
             int turnX = std::uniform_int_distribution{std::min(pos1.x, pos2.x), std::max(pos1.x, pos2.x)}(randomEngine);
-            horizontalLine(world, area.z(), pos1.x, turnX , pos1.y, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
-            verticalLine  (world, area.z(), pos1.y, pos2.y, turnX , debugTiles ? Tile::PASSAGE : Tile::EMPTY);
-            horizontalLine(world, area.z(), turnX , pos2.x, pos2.y, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+            horizontalLineInclusive(world, area.z(), pos1.x, turnX , pos1.y, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+            verticalLineInclusive  (world, area.z(), pos1.y, pos2.y, turnX , debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+            horizontalLineInclusive(world, area.z(), turnX , pos2.x, pos2.y, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
         }
 
         void connectVHV(sf::Vector3i pos1, sf::Vector3i pos2, core::World& world, Area area,
                         util::RandomEngine& randomEngine, bool debugTiles) {
             int turnY = std::uniform_int_distribution{std::min(pos1.y, pos2.y), std::max(pos1.y, pos2.y)}(randomEngine);
-            verticalLine  (world, area.z(), pos1.y, turnY , pos1.x, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
-            horizontalLine(world, area.z(), pos1.x, pos2.x, turnY , debugTiles ? Tile::PASSAGE : Tile::EMPTY);
-            verticalLine  (world, area.z(), turnY , pos2.y, pos2.x, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+            verticalLineInclusive(world, area.z(), pos1.y, turnY , pos1.x, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+            verticalLineInclusive(world, area.z(), pos1.x, pos2.x, turnY , debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+            verticalLineInclusive(world, area.z(), turnY , pos2.y, pos2.x, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
         }
 
         void connect(sf::Vector3i pos1, sf::Vector3i pos2, core::World& world, Area area, 
@@ -162,7 +168,7 @@ namespace generation {
                 connectVHV(pos1, pos2, world, area, randomEngine, debugTiles);
         }
 
-        void connectAll(ComponentData components, core::World& world, Area area,
+        void connectComponents(ComponentData components, core::World& world, Area area,
                         util::RandomEngine& randomEngine, bool debugTiles) {
             std::vector<int> aliases(std::ssize(components.sizes));
             std::iota(aliases.begin(), aliases.end(), 0);
@@ -183,6 +189,24 @@ namespace generation {
                         alias = aliases[i];
             }
         }
+
+        void connectPassages(core::World& world, Area area, util::RandomEngine& randomEngine, bool debugTiles) {
+            for (int y : area.leftPassages())
+                connect({area.left(), y, area.z()}, randomPosIn(world, area),
+                        world, area, randomEngine, debugTiles);
+
+            for (int y : area.rightPassages())
+                connect({area.right() - 1, y, area.z()}, randomPosIn(world, area),
+                    world, area, randomEngine, debugTiles);
+
+            for (int x : area.topPassages())
+                connect({x, area.top(), area.z()}, randomPosIn(world, area),
+                    world, area, randomEngine, debugTiles);
+
+            for (int x : area.bottomPassages())
+                connect({x, area.bottom() - 1, area.z()}, randomPosIn(world, area),
+                    world, area, randomEngine, debugTiles);
+        }
     }
 
     void cave(core::World& world, Area area, util::RandomEngine& randomEngine, bool debugTiles) {
@@ -195,6 +219,7 @@ namespace generation {
         if (debugComponents)
             paintDebugComponents(world, area, components.ids);
 
-        connectAll(components, world, area, randomEngine, debugTiles);
+        connectComponents(components, world, area, randomEngine, debugTiles);
+        connectPassages(world, area, randomEngine, debugTiles);
     }
 }

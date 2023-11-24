@@ -21,6 +21,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 namespace generation {
     void horizontalLine(core::World& world, int z, int left, int right, int y, Tile tile);
     void verticalLine(core::World& world, int z, int top, int bottom, int x, Tile tile);
+
+    void horizontalLineInclusive(core::World& world, int z, int left, int right, int y, Tile tile);
+    void verticalLineInclusive(core::World& world, int z, int top, int bottom, int x, Tile tile);
 }
 
 #endif
