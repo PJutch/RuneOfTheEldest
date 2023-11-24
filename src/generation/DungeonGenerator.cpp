@@ -16,6 +16,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "DungeonGenerator.hpp"
 
 #include "randomSizeRoom.hpp"
+#include "cave.hpp"
 
 #include "util/assert.hpp"
 #include "util/geometry.hpp"
@@ -52,6 +53,11 @@ namespace generation {
 
         if (std::uniform_real_distribution{}(*randomEngine) > splitChance_) {
             generation::randomSizeRoom(*world, area, *randomEngine, debugTiles);
+            return;
+        }
+
+        if (std::bernoulli_distribution{0.15}(*randomEngine)) {
+            generation::cave(*world, area, *randomEngine, debugTiles);
             return;
         }
 

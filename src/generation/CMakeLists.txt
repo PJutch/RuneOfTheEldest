@@ -19,7 +19,7 @@ add_library(generation STATIC)
 
 target_sources(generation PRIVATE DungeonGenerator.cpp
                                   Area.cpp line.cpp 
-                                  "basicRoom.cpp" "randomSizeRoom.cpp")
+                                  "basicRoom.cpp" "randomSizeRoom.cpp" "cave.cpp")
 
 setDefaultCompilerOptions(generation)
 
