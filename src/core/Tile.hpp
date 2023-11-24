@@ -22,11 +22,17 @@ If not, see <https://www.gnu.org/licenses/>. */
 enum class Tile {
     EMPTY,         ///< Empty floor tile
     WALL,          ///< Impassable wall
+
     ROOM,          ///< Debug only @see BasicRoomGenerator::debugTiles
     ROOM_ENTRANCE, ///< Debug only @see BasicRoomGenerator::debugTiles
     PASSAGE,       ///< Debug only @see RandomSizeRoomGenerator::debugTiles
     DOWN_STAIRS,   ///< Stairs leading to next level
     UP_STAIRS,     ///< Stairs leading to previous level
+
+    COMPONENT1,    ///< Debug only. Used to mark connected components. Should be consequent
+    COMPONENT2,    ///< Debug only. Used to mark connected components. Should be consequent
+    COMPONENT3,    ///< Debug only. Used to mark connected components. Should be consequent
+
     TOTAL_         ///< Technical enumerator. Should always be last
 };
 

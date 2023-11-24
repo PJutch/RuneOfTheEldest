@@ -74,10 +74,57 @@ namespace generation {
                             world.tiles()[{x, y, area.z()}] = Tile::WALL;
             }
         }
+
+        struct ComponentData {
+            ComponentData(sf::IntRect bounds) : ids{bounds} {}
+
+            std::vector<int> sizes;
+            Buffer ids;
+        };
+
+        void markComponent(core::World& world, sf::IntRect bounds, sf::Vector3i current, int id, Buffer& ids, int& size) {
+            if (!bounds.contains(util::getXY(current))
+             || world.tiles()[current] != Tile::EMPTY 
+             || ids[util::getXY(current)] != 0)
+                return;
+
+            ++size;
+            ids[util::getXY(current)] = id;
+            for (int dx = -1; dx <= 1; ++dx)
+                for (int dy = -1; dy <= 1; ++dy) {
+                    sf::Vector3i next{current.x + dx, current.y + dy, current.z};
+                    markComponent(world, bounds, next, id, ids, size);
+                }
+        }
+
+        ComponentData findComponents(core::World& world, Area area) {
+            ComponentData res{area.bounds()};
+            for (int x = area.left(); x < area.right() - 1; ++x)
+                for (int y = area.top(); y < area.bottom() - 1; ++y)
+                    if (world.tiles()[{x, y, area.z()}] == Tile::EMPTY && res.ids[{x, y}] == 0) {
+                        res.sizes.emplace_back();
+                        markComponent(world, area.bounds(), {x, y, area.z()},
+                                       std::ssize(res.sizes), res.ids, res.sizes.back());
+                    }
+            return res;
+        }
+
+        void paintDebugComponents(core::World& world, Area area, const Buffer& ids) {
+            for (int x = area.left(); x < area.right() - 1; ++x)
+                for (int y = area.top(); y < area.bottom() - 1; ++y)
+                    if (world.tiles()[{x, y, area.z()}] == Tile::EMPTY)
+                        world.tiles()[{x, y, area.z()}] = static_cast<Tile>(static_cast<int>(Tile::COMPONENT1) + ids[{x, y}] % 3);
+        }
     }
 
     void cave(core::World& world, Area area, util::RandomEngine& randomEngine, bool debugTiles) {
         randomFill(world, area, 0.5, randomEngine, debugTiles);
         smooth(world, area, 3, debugTiles);
+
+        auto [sizes, ids] = findComponents(world, area);
+
+        const bool debugComponents = true;
+        if (debugComponents)
+            paintDebugComponents(world, area, ids);
     }
 }

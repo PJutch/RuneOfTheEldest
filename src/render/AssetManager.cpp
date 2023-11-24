@@ -32,6 +32,9 @@ namespace render {
         fillTexture(tileTextureMut(Tile::ROOM), tileSize(), sf::Color::Red);
         fillTexture(tileTextureMut(Tile::ROOM_ENTRANCE), tileSize(), sf::Color::Magenta);
         fillTexture(tileTextureMut(Tile::PASSAGE), tileSize(), sf::Color::Blue);
+        fillTexture(tileTextureMut(Tile::COMPONENT1), tileSize(), sf::Color::Red);
+        fillTexture(tileTextureMut(Tile::COMPONENT2), tileSize(), sf::Color::Green);
+        fillTexture(tileTextureMut(Tile::COMPONENT3), tileSize(), sf::Color::Blue);
 
         loadTexture(aiStateIconMut(AiState::INACTIVE), "incative AI state icon", "resources/textures/AiStates/sleeping.png");
         loadTexture(aiStateIconMut(AiState::CHECKING), "checking AI state icon", "resources/textures/AiStates/curious.png");
