@@ -36,38 +36,32 @@ Game::Game(std::shared_ptr<core::World> newWorld,
            std::unique_ptr<core::ActorSpawner> actorSpawner_,
            std::shared_ptr<core::XpManager> xpManager_,
            std::unique_ptr<generation::DungeonGenerator> newDungeonGenerator,
-           std::shared_ptr<sf::RenderWindow> window_,
-           std::shared_ptr<render::ParticleManager> particles_,
-           std::shared_ptr<render::AssetManager> assets_,
-           std::shared_ptr<render::Camera> camera_,
-           std::shared_ptr<render::PlayerMap> playerMap_,
+           render::Context renderContext_,
+           std::shared_ptr<util::Raycaster> raycaster_,
            util::LoggerFactory& loggerFactory) :
     world{std::move(newWorld)},
     actorSpawner{std::move(actorSpawner_)},
     xpManager{std::move(xpManager_)},
     dungeonGenerator_{std::move(newDungeonGenerator)},
-    window{std::move(window_)},
-    particles{std::move(particles_)},
-    assets{std::move(assets_)}, 
-    camera{std::move(camera_)}, playerMap{std::move(playerMap_)},
+    renderContext{std::move(renderContext_)}, raycaster{std::move(raycaster_)},
     generationLogger{ loggerFactory.create("generation") } {}
 
 void Game::run() {
     generate();
 
     sf::Clock clock;
-	while (window->isOpen()) {
+	while (renderContext.window->isOpen()) {
         sf::Event event;
-        while (window->pollEvent(event))
+        while (renderContext.window->pollEvent(event))
             handleEvent(event);
 
         if (world->player().isAlive() && !xpManager->canLevelUp()) {
             world->update();
 
             sf::Time elapsedTime = clock.restart();
-            camera->update(elapsedTime);
-            playerMap->update();
-            particles->update(elapsedTime);
+            renderContext.camera->update(elapsedTime);
+            renderContext.playerMap->update();
+            renderContext.particles->update(elapsedTime);
         }
 
         draw_();
@@ -77,7 +71,7 @@ void Game::run() {
 void Game::handleEvent(sf::Event event) {
     if (event.type == sf::Event::Closed
      || util::wasKeyPressed(event, sf::Keyboard::Escape)) {
-        window->close();
+        renderContext.window->close();
         return;
     }
 
@@ -89,12 +83,12 @@ void Game::handleEvent(sf::Event event) {
         }
 
     if (xpManager->canLevelUp()) {
-        render::handleLevelupScreenEvent(*window, *xpManager, event);
+        render::handleLevelupScreenEvent(*renderContext.window, *xpManager, event);
         return;
     }
        
-    camera->handleEvent(event);
-    if (camera->shouldStealControl())
+    renderContext.camera->handleEvent(event);
+    if (renderContext.camera->shouldStealControl())
         return;
 
     world->player().controller().handleEvent(event);
@@ -116,23 +110,24 @@ void Game::generate() {
 
     generationLogger->info("Finished");
 
-    camera->reset();
-    playerMap->onGenerate();
+    renderContext.camera->reset();
+    renderContext.playerMap->onGenerate();
+    raycaster->clear();
     xpManager->onGenerate();
-    particles->clear();
+    renderContext.particles->clear();
 }
 
 void Game::draw_() {
-    window->clear();
+    renderContext.window->clear();
     if (!world->player().isAlive()) {
-        render::drawDeathScreen(*window, *assets);
+        render::drawDeathScreen(*renderContext.window, *renderContext.assets);
     } else {
-        render::draw(*window, *assets, *world, *playerMap, camera->position());
-        particles->draw(*window, camera->position());
+        render::draw(*renderContext.window, *renderContext.assets, *world, *renderContext.playerMap, renderContext.camera->position());
+        renderContext.particles->draw(*renderContext.window, renderContext.camera->position());
 
-        render::drawHud(*window, *assets, *world, *xpManager);
+        render::drawHud(*renderContext.window, *renderContext.assets, *world, *xpManager);
         if (xpManager->canLevelUp())
-            render::drawLevelupScreen(*window, *assets, *world, *xpManager);
+            render::drawLevelupScreen(*renderContext.window, *renderContext.assets, *world, *xpManager);
     }
-    window->display();
+    renderContext.window->display();
 }

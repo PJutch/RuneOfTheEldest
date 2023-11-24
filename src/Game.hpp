@@ -17,9 +17,11 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define GAME_HPP_
 
 #include "core/fwd.hpp"
-#include "render/fwd.hpp"
 #include "generation/fwd.hpp"
 
+#include "render/Context.hpp"
+
+#include "util/raycast.hpp"
 #include "util/random.hpp"
 #include "util/log.hpp"
 
@@ -35,11 +37,8 @@ public:
          std::unique_ptr<core::ActorSpawner> enemySpawner,
          std::shared_ptr<core::XpManager> xpManager,
          std::unique_ptr<generation::DungeonGenerator> dungeonGenerator,
-         std::shared_ptr<sf::RenderWindow> window,
-         std::shared_ptr<render::ParticleManager> particles,
-         std::shared_ptr<render::AssetManager> assets,
-         std::shared_ptr<render::Camera> camera,
-         std::shared_ptr<render::PlayerMap> playerMap,
+         render::Context renderContext,
+         std::shared_ptr<util::Raycaster> raycaster,
          util::LoggerFactory& loggerFactory);
 
     [[nodiscard]] generation::DungeonGenerator& dungeonGenerator() noexcept {
@@ -59,11 +58,8 @@ private:
 
     std::unique_ptr<generation::DungeonGenerator> dungeonGenerator_;
 
-    std::shared_ptr<sf::RenderWindow> window;
-    std::shared_ptr<render::ParticleManager> particles;
-    std::shared_ptr<render::AssetManager> assets;
-    std::shared_ptr<render::Camera> camera;
-    std::shared_ptr<render::PlayerMap> playerMap;
+    render::Context renderContext;
+    std::shared_ptr<util::Raycaster> raycaster;
 
     std::shared_ptr<spdlog::logger> generationLogger;
 

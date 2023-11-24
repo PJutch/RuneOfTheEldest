@@ -34,6 +34,11 @@ namespace util {
 
 		/// Checks if tile at to can be seen from tile at from
 		bool canSee(sf::Vector3i from, sf::Vector3i to);
+
+		/// Clears cache to prevent bugs
+		void clear() {
+			cache.clear();
+		}
 	private:
 		std::shared_ptr<core::World> world;
 
