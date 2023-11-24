@@ -29,7 +29,7 @@ namespace core {
 			Effect{icon_, name_, true}, damageBonus_{newDamageMul} {}
 
 		double damageBonus(const Actor& target) const final {
-			return target.hp() == target.maxHp() ? damageBonus_ : 1;
+			return target.hp() == target.maxHp() ? damageBonus_ : 0;
 		}
 
 		std::unique_ptr<Effect> clone() const final {

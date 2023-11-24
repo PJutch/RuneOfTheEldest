@@ -38,15 +38,15 @@ namespace core {
 			speedBonus_{newSpeedBonus}, xpMul_{newXpMul}, defenceBonuses{defenceBonuses_} {}
 
 		double regenBonus() const final {
-			return shouldApply() ? regenBonus_ : 1;
+			return shouldApply() ? regenBonus_ : 0;
 		}
 
 		double manaRegenBonus() const final {
-			return shouldApply() ? manaRegenBonus_ : 1;
+			return shouldApply() ? manaRegenBonus_ : 0;
 		}
 
 		double damageBonus(const Actor&) const final {
-			return shouldApply() ? damageBonus_ : 1;
+			return shouldApply() ? damageBonus_ : 0;
 		}
 
 		double speedBonus() const final {
