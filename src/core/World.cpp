@@ -63,9 +63,12 @@ namespace core {
 	}
 
 	void World::generateStairs() {
+		const int max_tries = 1000;
 		for (int z = 1; z < tiles().shape().z; ++z)
 			for (int i = 0; i < 3; ++i)
-				addStairs(randomPositionAt(z - 1, &isEmpty), randomPositionAt(z, &isEmpty));
+				if (auto pos1 = randomPositionAt(z - 1, max_tries, &isEmpty))
+					if (auto pos2 = randomPositionAt(z, max_tries, &isEmpty))
+						addStairs(*pos1, *pos2);
 	}
 
 	void World::addStairs(sf::Vector3i pos1, sf::Vector3i pos2) {

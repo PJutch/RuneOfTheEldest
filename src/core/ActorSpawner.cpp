@@ -155,23 +155,23 @@ namespace core {
 	void ActorSpawner::spawn() {
 		logger->info("Spawning...");
 		for (int level = 0; level < world->tiles().shape().z; ++level)
-			for (const ActorData& data : actorData) 
+			for (const ActorData& data : actorData)
 				if (data.minLevel <= level && (!data.maxLevel || level <= data.maxLevel)) {
-					int count = std::uniform_int_distribution{ data.minOnLevel, data.maxOnLevel }(*randomEngine);
-					for (int i = 0; i < count; ++i) {
-						sf::Vector3i position = world->randomPositionAt(level, &World::isFree);
-						auto enemy = std::make_shared<Actor>(data.stats, position, world, xpManager, 
-							                                 renderContext.particles, randomEngine);
-						enemy->controller(createController(enemy, data.controller));
+					int count = std::uniform_int_distribution{data.minOnLevel, data.maxOnLevel}(*randomEngine);
+					for (int i = 0; i < count; ++i)
+						if (auto position = world->randomPositionAt(level, 1000, &World::isFree)) {
+							auto enemy = std::make_shared<Actor>(data.stats, *position, world, xpManager,
+								renderContext.particles, randomEngine);
+							enemy->controller(createController(enemy, data.controller));
 
-						if (data.effectToAdd)
-							enemy->addEffect(data.effectToAdd->clone());
-						for (auto spell : data.spellsToAdd)
-							enemy->addSpell(std::move(spell));
+							if (data.effectToAdd)
+								enemy->addEffect(data.effectToAdd->clone());
+							for (auto spell : data.spellsToAdd)
+								enemy->addSpell(std::move(spell));
 
-						world->addActor(std::move(enemy));
-					}
-			}
+							world->addActor(std::move(enemy));
+						}
+				}
 		logger->info("Spawned");
 	}
 }

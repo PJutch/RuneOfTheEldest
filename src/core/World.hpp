@@ -110,6 +110,18 @@ namespace core {
 			});
 		}
 
+
+		/// @brief Random tile position (3D) at given level satisfying pred
+		/// @details randomPosition(engine) distrbution filtered by pred(pos, *this)
+		/// @param tries Max amount of positions to check before returning nullopt
+		template <typename Pred>
+			requires std::convertible_to<std::invoke_result_t<Pred, Tile>, bool>
+		[[nodiscard]] std::optional<sf::Vector3i> randomPositionAt(int level, int tries, Pred&& pred) const {
+			return randomPositionAt(level, tries, [&pred](const World& world, sf::Vector3i pos) {
+				return std::invoke(pred, world.tiles()[pos]);
+			});
+		}
+
 		/// @brief Random tile position (3D) at given level satisfying pred
 		/// @details randomPosition(engine) distrbution filtered by pred(pos, *this)
 		template <typename Pred>
@@ -120,6 +132,20 @@ namespace core {
 				pos = randomPositionAt(level);
 			} while (!std::invoke(pred, *this, pos));
 			return pos;
+		}
+
+		/// @brief Random tile position (3D) at given level satisfying pred
+		/// @details randomPosition(engine) distrbution filtered by pred(pos, *this)
+		/// @param tries Max amount of positions to check before returning nullopt
+		template <typename Pred>
+			requires std::convertible_to<std::invoke_result_t<Pred, const World&, sf::Vector3i>, bool>
+		[[nodiscard]] std::optional<sf::Vector3i> randomPositionAt(int level, int tries, Pred&& pred) const {
+			for (int i = 0; i < tries; ++i) {
+				sf::Vector3i pos = randomPositionAt(level);
+				if (std::invoke(pred, *this, pos))
+					return pos;
+			}
+			return std::nullopt;
 		}
 
 		/// Returns at(position) destination if it's Tile::UP_STAIRS
