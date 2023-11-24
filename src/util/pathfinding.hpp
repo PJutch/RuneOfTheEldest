@@ -18,11 +18,22 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "core/fwd.hpp"
 
+#include "Array3D.hpp"
+
 #include <SFML/System/Vector3.hpp>
 
 namespace util {
-	/// Computes next move to perform to move from position to target
-	sf::Vector3i nextStep(const core::World& world, sf::Vector3i position, sf::Vector3i target);
+	struct PathNode {
+		int distance = std::numeric_limits<int>::max();
+		sf::Vector3i prevOffset{0, 0, 0};
+	};
+
+	using PathBuffer = util::Array3D<PathNode>;
+
+	/// @brief Computes next move to perform to move from position to target
+	/// @param buffer Buffer reused to prevent allocating memory
+	sf::Vector3i nextStep(const core::World& world, sf::Vector3i position, sf::Vector3i target, 
+		                  PathBuffer* buffer = nullptr);
 }
 
 #endif

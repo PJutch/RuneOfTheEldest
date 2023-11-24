@@ -29,8 +29,11 @@ namespace {
 }
 
 namespace core {
-	EnemyAi::EnemyAi(std::weak_ptr<Actor> newEnemy, std::shared_ptr<util::Raycaster> raycaster_) :
-		enemy_{ std::move(newEnemy) }, targetPosition{ enemy_.lock()->position() }, raycaster{std::move(raycaster_)} {}
+	EnemyAi::EnemyAi(std::weak_ptr<Actor> newEnemy, 
+		             std::shared_ptr<util::Raycaster> raycaster_, 
+		             std::shared_ptr<util::PathBuffer> pathBuffer_) :
+		enemy_{ std::move(newEnemy) }, targetPosition{ enemy_.lock()->position() }, 
+		raycaster{std::move(raycaster_)}, pathBuffer{std::move(pathBuffer_)} {}
 
 	bool EnemyAi::act() {
 		const auto enemy = enemy_.lock();
@@ -98,7 +101,7 @@ namespace core {
 		auto enemy = enemy_.lock();
 
 		wantsSwap(true);
-		sf::Vector3i nextStep_ = util::nextStep(enemy->world(), enemy->position(), targetPosition);
+		sf::Vector3i nextStep_ = util::nextStep(enemy->world(), enemy->position(), targetPosition, pathBuffer.get());
 		if (nextStep_.z == 0)
 			enemy->tryMoveInDirection(util::getXY(nextStep_), false);
 		else

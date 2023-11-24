@@ -25,6 +25,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "util/random.hpp"
 #include "util/raycast.hpp"
+#include "util/pathfinding.hpp"
 
 #include <SFML/System/Vector3.hpp>
 
@@ -35,7 +36,8 @@ namespace core {
 	/// AI controlling enemy
 	class EnemyAi : public Controller {
 	public:
-		EnemyAi(std::weak_ptr<Actor> enemy, std::shared_ptr<util::Raycaster> raycaster);
+		EnemyAi(std::weak_ptr<Actor> enemy, std::shared_ptr<util::Raycaster> raycaster, 
+			    std::shared_ptr<util::PathBuffer> pathBuffer);
 
 		/// Chases or attacks Player
 		bool act() final;
@@ -56,6 +58,7 @@ namespace core {
 		bool wandering = false;
 
 		std::shared_ptr<util::Raycaster> raycaster;
+		std::shared_ptr<util::PathBuffer> pathBuffer;
 
 		bool canSeePlayer() const noexcept;
 

@@ -30,8 +30,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 namespace core {
 	PlayerController::PlayerController(std::shared_ptr<Actor> player_, 
 		                               std::shared_ptr<util::Raycaster> raycaster_, 
+									   std::shared_ptr<util::PathBuffer> pathBuffer_,
 		                               render::Context renderContext_) :
-			player{player_}, raycaster{std::move(raycaster_)}, renderContext{renderContext_} {
+			player{player_}, raycaster{std::move(raycaster_)}, pathBuffer{std::move(pathBuffer_)}, 
+		    renderContext{renderContext_} {
 		wantsSwap(false);
 		isOnPlayerSide(true);
 		shouldInterruptOnDelete(true);
@@ -86,13 +88,16 @@ namespace core {
 					endTurn();
 			} else {
 				if (!canSeeEnemy()) {
-					state = State::TRAVELING;
-					travelTarget = {
+					core::Position<int> newTarget {
 						render::mouseTile({event.mouseButton.x, event.mouseButton.y},
 						renderContext.camera->position(), *renderContext.window), player_->position().z
 					};
 
-					moveToTarget();
+					if (player_->world().tiles().isValidPosition(static_cast<sf::Vector3i>(newTarget))) {
+						state = State::TRAVELING;
+						travelTarget = newTarget;
+						moveToTarget();
+					}
 				}
 			}
 		} else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Right) {
@@ -103,7 +108,7 @@ namespace core {
 	bool PlayerController::moveToTarget() {
 		auto player_ = player.lock();
 		sf::Vector3i nextStep_ = util::nextStep(player_->world(), player_->position(),
-			static_cast<sf::Vector3i>(travelTarget));
+				static_cast<sf::Vector3i>(travelTarget), &player_->world().pathBuffer());
 		if (player_->tryMove(nextStep_, false)) {
 			player_->endTurn();
 			return true;

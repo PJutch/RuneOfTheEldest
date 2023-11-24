@@ -36,7 +36,7 @@ namespace core {
 			         std::shared_ptr<EffectManager> effectManager, std::shared_ptr<SpellManager> spellManager,
 			         render::Context renderContext, util::LoggerFactory& loggerFactory,
 			         util::RandomEngine& randomEngine,
-			         std::shared_ptr<util::Raycaster> raycaster);
+			         std::shared_ptr<util::Raycaster> raycaster, std::shared_ptr<util::PathBuffer> pathBuffer);
 
 		void spawn();
 	private:
@@ -44,6 +44,7 @@ namespace core {
 		std::shared_ptr<XpManager> xpManager;
 		render::Context renderContext;
 		std::shared_ptr<util::Raycaster> raycaster;
+		std::shared_ptr<util::PathBuffer> pathBuffer;
 		util::RandomEngine* randomEngine;
 
 		std::shared_ptr<spdlog::logger> logger;

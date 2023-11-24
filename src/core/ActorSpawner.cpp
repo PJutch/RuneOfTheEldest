@@ -63,10 +63,11 @@ namespace core {
 		                       std::shared_ptr<EffectManager> effectManager, std::shared_ptr<SpellManager> spellManager,
 		                       render::Context renderContext_, util::LoggerFactory& loggerFactory,
 		                       util::RandomEngine& randomEngine_,
-							   std::shared_ptr<util::Raycaster> raycaster_) :
+							   std::shared_ptr<util::Raycaster> raycaster_, std::shared_ptr<util::PathBuffer> pathBuffer_) :
 			world{ std::move(world_) }, xpManager{ std::move(xpManager_) }, 
 			renderContext{std::move(renderContext_)},
-			raycaster{ std::move(raycaster_) }, randomEngine{ &randomEngine_ }, logger{loggerFactory.create("actors")} {
+			raycaster{ std::move(raycaster_) }, pathBuffer{std::move(pathBuffer_)},
+		    randomEngine{ &randomEngine_ }, logger{loggerFactory.create("actors")} {
 		logger->info("Loading...");
 		util::forEachFile("resources/Actors/", [&, this](std::ifstream& file, const std::filesystem::path& path) {
 			logger->info("Loading spec from {} ...", path.generic_string());
@@ -145,9 +146,9 @@ namespace core {
 
 	std::unique_ptr<Controller> ActorSpawner::createController(std::shared_ptr<Actor> actor, std::string_view type) {
 		if (type == "player")
-			return std::make_unique<PlayerController>(actor, raycaster, renderContext);
+			return std::make_unique<PlayerController>(actor, raycaster, pathBuffer, renderContext);
 		else if (type == "enemy")
-			return std::make_unique<EnemyAi>(actor, raycaster);
+			return std::make_unique<EnemyAi>(actor, raycaster, pathBuffer);
 		else
 			throw UnknownControllerError{ type };
 	}

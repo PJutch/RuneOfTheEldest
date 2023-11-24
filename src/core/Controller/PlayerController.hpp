@@ -37,6 +37,7 @@ namespace core {
 	public:
 		PlayerController(std::shared_ptr<Actor> player, 
 						 std::shared_ptr<util::Raycaster> raycaster, 
+						 std::shared_ptr<util::PathBuffer> pathBuffer,
 						 render::Context renderContext);
 
 		/// Waits for player input
@@ -64,6 +65,7 @@ namespace core {
 	private:
 		std::weak_ptr<Actor> player;
 		std::shared_ptr<util::Raycaster> raycaster;
+		std::shared_ptr<util::PathBuffer> pathBuffer;
 		render::Context renderContext;
 
 		enum class State {
