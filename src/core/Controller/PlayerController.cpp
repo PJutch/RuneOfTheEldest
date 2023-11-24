@@ -25,6 +25,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "util/Keyboard.hpp"
 #include "util/Direction.hpp"
+#include "util/pathfinding.hpp"
 
 namespace core {
 	PlayerController::PlayerController(std::shared_ptr<Actor> player_, 
@@ -83,9 +84,32 @@ namespace core {
 					renderContext.camera->position(), *renderContext.window), player_->position().z};
 				if (player_->spells()[*currentSpell_]->cast(*player_, target))
 					endTurn();
+			} else {
+				if (!canSeeEnemy()) {
+					state = State::TRAVELING;
+					travelTarget = {
+						render::mouseTile({event.mouseButton.x, event.mouseButton.y},
+						renderContext.camera->position(), *renderContext.window), player_->position().z
+					};
+
+					moveToTarget();
+				}
 			}
 		} else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Right) {
 			currentSpell_ = std::nullopt;
+		}
+	}
+
+	bool PlayerController::moveToTarget() {
+		auto player_ = player.lock();
+		sf::Vector3i nextStep_ = util::nextStep(player_->world(), player_->position(),
+			static_cast<sf::Vector3i>(travelTarget));
+		if (player_->tryMove(nextStep_, false)) {
+			player_->endTurn();
+			return true;
+		} else {
+			state = State::WAITING_INPUT;
+			return false;
 		}
 	}
 
@@ -94,6 +118,14 @@ namespace core {
 			if (player.lock()->hp() < player.lock()->maxHp() && !canSeeEnemy()) {
 				player.lock()->endTurn();
 				return true;
+			} else {
+				state = State::WAITING_INPUT;
+				return false;
+			}
+
+		if (state == State::TRAVELING)
+			if (!canSeeEnemy()) {
+				return moveToTarget();
 			} else {
 				state = State::WAITING_INPUT;
 				return false;

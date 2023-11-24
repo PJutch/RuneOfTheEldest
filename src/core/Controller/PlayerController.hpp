@@ -70,11 +70,14 @@ namespace core {
 			WAITING_TURN,
 			WAITING_INPUT,
 			ENDED_TURN,
-			RESTING
+			RESTING,
+			TRAVELING
 		};
 		State state = State::WAITING_TURN;
 
 		std::optional<int> currentSpell_;
+
+		core::Position<int> travelTarget;
 
 		bool tryAscentStairs();
 		bool tryDescentStairs();
@@ -82,6 +85,8 @@ namespace core {
 		bool canSeeEnemy() const;
 
 		void endTurn() noexcept;
+
+		bool moveToTarget();
 	};
 }
 

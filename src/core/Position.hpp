@@ -37,6 +37,11 @@ namespace core {
 		sf::Vector2<T> xy() const noexcept {
 			return {x, y};
 		}
+
+		template <typename T>
+		explicit operator sf::Vector3<T>() {
+			return {static_cast<T>(x), static_cast<T>(y), static_cast<T>(z)};
+		}
 	};
 }
 
