@@ -44,7 +44,7 @@ namespace render {
         }
 
         void drawAreas(sf::RenderTarget& target, const core::World& world, core::Position<float> cameraPos) {
-            const bool shouldDraw = true;
+            const bool shouldDraw = false;
             if (!shouldDraw)
                 return;
 

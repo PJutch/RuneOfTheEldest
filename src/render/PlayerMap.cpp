@@ -23,7 +23,7 @@ namespace render {
 	PlayerMap::PlayerMap(std::shared_ptr<core::World> world_, std::shared_ptr<util::Raycaster> raycaster_) :
 		world{ std::move(world_) }, raycaster{std::move(raycaster_)} {}
 
-	const bool seeEverything = true;
+	const bool seeEverything = false;
 
 	void PlayerMap::onGenerate() {
 		seenActors_.clear();
