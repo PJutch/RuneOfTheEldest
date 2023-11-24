@@ -15,7 +15,11 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "cave.hpp"
 
+#include "line.hpp"
+
 #include "core/World.hpp"
+
+#include <numeric>
 
 namespace generation {
     namespace {
@@ -115,16 +119,82 @@ namespace generation {
                     if (world.tiles()[{x, y, area.z()}] == Tile::EMPTY)
                         world.tiles()[{x, y, area.z()}] = static_cast<Tile>(static_cast<int>(Tile::COMPONENT1) + ids[{x, y}] % 3);
         }
+
+        template <typename Range>
+        bool allSame(const Range& range) {
+            if (range.begin() == range.end())
+                return true;
+
+            return std::ranges::all_of(range, [&range](const auto& elem) {
+                return elem == *range.begin();
+            });
+        }
+
+        sf::Vector3i randomPosIn(const core::World& world, Area area, int id, const Buffer& ids, const std::vector<int>& aliases) {
+            return world.randomPositionAt(area.z(), [&](const core::World& world, sf::Vector3i pos) {
+                return area.bounds().contains(util::getXY(pos))
+                    && ids[util::getXY(pos)] != 0
+                    && aliases[ids[util::getXY(pos)] - 1] == id;
+            });
+        }
+
+        void connectHVH(sf::Vector3i pos1, sf::Vector3i pos2, core::World& world, Area area,
+                        util::RandomEngine& randomEngine, bool debugTiles) {
+            int turnX = std::uniform_int_distribution{std::min(pos1.x, pos2.x), std::max(pos1.x, pos2.x)}(randomEngine);
+            horizontalLine(world, area.z(), pos1.x, turnX , pos1.y, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+            verticalLine  (world, area.z(), pos1.y, pos2.y, turnX , debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+            horizontalLine(world, area.z(), turnX , pos2.x, pos2.y, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+        }
+
+        void connectVHV(sf::Vector3i pos1, sf::Vector3i pos2, core::World& world, Area area,
+                        util::RandomEngine& randomEngine, bool debugTiles) {
+            int turnY = std::uniform_int_distribution{std::min(pos1.y, pos2.y), std::max(pos1.y, pos2.y)}(randomEngine);
+            verticalLine  (world, area.z(), pos1.y, turnY , pos1.x, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+            horizontalLine(world, area.z(), pos1.x, pos2.x, turnY , debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+            verticalLine  (world, area.z(), turnY , pos2.y, pos2.x, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+        }
+
+        void connect(sf::Vector3i pos1, sf::Vector3i pos2, core::World& world, Area area, 
+                     util::RandomEngine& randomEngine, bool debugTiles) {
+            if (std::bernoulli_distribution{0.5}(randomEngine))
+                connectHVH(pos1, pos2, world, area, randomEngine, debugTiles);
+            else
+                connectVHV(pos1, pos2, world, area, randomEngine, debugTiles);
+        }
+
+        void connectAll(ComponentData components, core::World& world, Area area,
+                        util::RandomEngine& randomEngine, bool debugTiles) {
+            std::vector<int> aliases(std::ssize(components.sizes));
+            std::iota(aliases.begin(), aliases.end(), 0);
+
+            while (!allSame(aliases)) {
+                int i = std::uniform_int_distribution<int>(0, std::ssize(aliases) - 1)(randomEngine);
+                int j = std::uniform_int_distribution<int>(0, std::ssize(aliases) - 1)(randomEngine);
+
+                if (aliases[i] == aliases[j])
+                    continue;
+
+                connect(randomPosIn(world, area, aliases[i], components.ids, aliases),
+                        randomPosIn(world, area, aliases[j], components.ids, aliases),
+                        world, area, randomEngine, debugTiles);
+
+                for (int& alias : aliases)
+                    if (alias == aliases[j])
+                        alias = aliases[i];
+            }
+        }
     }
 
     void cave(core::World& world, Area area, util::RandomEngine& randomEngine, bool debugTiles) {
         randomFill(world, area, 0.5, randomEngine, debugTiles);
         smooth(world, area, 3, debugTiles);
 
-        auto [sizes, ids] = findComponents(world, area);
+        auto components = findComponents(world, area);
 
-        const bool debugComponents = true;
+        const bool debugComponents = false;
         if (debugComponents)
-            paintDebugComponents(world, area, ids);
+            paintDebugComponents(world, area, components.ids);
+
+        connectAll(components, world, area, randomEngine, debugTiles);
     }
 }
