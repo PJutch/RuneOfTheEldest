@@ -22,18 +22,24 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <SFML/System/Vector3.hpp>
 
-namespace util {
-	struct PathNode {
-		int distance = std::numeric_limits<int>::max();
-		sf::Vector3i prevOffset{0, 0, 0};
-	};
+#include <optional>
 
-	using PathBuffer = util::Array3D<PathNode>;
+namespace util {
+	struct PathBuffer {
+		struct Node {
+			int distance = std::numeric_limits<int>::max();
+			sf::Vector3i prevOffset{0, 0, 0};
+			bool onPath = false;
+		};
+
+		util::Array3D<Node> buffer;
+		std::optional<sf::Vector3i> lastTarget;
+	};
 
 	/// @brief Computes next move to perform to move from position to target
 	/// @param buffer Buffer reused to prevent allocating memory
 	sf::Vector3i nextStep(const core::World& world, sf::Vector3i position, sf::Vector3i target, 
-		                  PathBuffer* buffer = nullptr);
+		                  PathBuffer& buffer);
 }
 
 #endif

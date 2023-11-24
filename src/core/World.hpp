@@ -24,7 +24,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/Array3D.hpp"
 #include "util/Map.hpp"
 #include "util/random.hpp"
-#include "util/pathfinding.hpp"
 
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/System/Vector3.hpp>
@@ -188,11 +187,6 @@ namespace core {
 		Actor& player() noexcept {
 			return *player_;
 		}
-
-		/// Shared PathBuffer to prevent it's reallocation
-		util::PathBuffer& pathBuffer() noexcept {
-			return pathBuffer_;
-		}
 	private:
 		util::Array3D<Tile> tiles_;
 
@@ -203,8 +197,6 @@ namespace core {
 
 		std::vector<std::shared_ptr<Actor>> actors_;
 		std::shared_ptr<Actor> player_;
-
-		util::PathBuffer pathBuffer_;
 
 		util::RandomEngine* randomEngine = nullptr;
 

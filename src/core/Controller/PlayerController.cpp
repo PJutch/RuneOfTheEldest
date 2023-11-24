@@ -29,10 +29,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace core {
 	PlayerController::PlayerController(std::shared_ptr<Actor> player_, 
-		                               std::shared_ptr<util::Raycaster> raycaster_, 
-									   std::shared_ptr<util::PathBuffer> pathBuffer_,
+		                               std::shared_ptr<util::Raycaster> raycaster_,
 		                               render::Context renderContext_) :
-			player{player_}, raycaster{std::move(raycaster_)}, pathBuffer{std::move(pathBuffer_)}, 
+			player{player_}, raycaster{std::move(raycaster_)}, pathBuffer{std::make_unique<util::PathBuffer>()},
 		    renderContext{renderContext_} {
 		wantsSwap(false);
 		isOnPlayerSide(true);
@@ -108,7 +107,7 @@ namespace core {
 	bool PlayerController::moveToTarget() {
 		auto player_ = player.lock();
 		sf::Vector3i nextStep_ = util::nextStep(player_->world(), player_->position(),
-				static_cast<sf::Vector3i>(travelTarget), &player_->world().pathBuffer());
+				static_cast<sf::Vector3i>(travelTarget), *pathBuffer);
 		if (player_->tryMove(nextStep_, false)) {
 			player_->endTurn();
 			return true;

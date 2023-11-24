@@ -26,6 +26,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "util/geometry.hpp"
 #include "util/raycast.hpp"
+#include "util/pathfinding.hpp"
 
 #include <SFML/Window/Event.hpp>
 
@@ -36,8 +37,7 @@ namespace core {
 	class PlayerController : public Controller {
 	public:
 		PlayerController(std::shared_ptr<Actor> player, 
-						 std::shared_ptr<util::Raycaster> raycaster, 
-						 std::shared_ptr<util::PathBuffer> pathBuffer,
+						 std::shared_ptr<util::Raycaster> raycaster,
 						 render::Context renderContext);
 
 		/// Waits for player input
@@ -65,7 +65,7 @@ namespace core {
 	private:
 		std::weak_ptr<Actor> player;
 		std::shared_ptr<util::Raycaster> raycaster;
-		std::shared_ptr<util::PathBuffer> pathBuffer;
+		std::unique_ptr<util::PathBuffer> pathBuffer;
 		render::Context renderContext;
 
 		enum class State {

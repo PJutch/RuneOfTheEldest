@@ -40,7 +40,7 @@ namespace util {
 			}
 		};
 
-		void findPath(const core::World& world, sf::Vector3i from, sf::Vector3i to, PathBuffer& buffer) {
+		void findPath(const core::World& world, sf::Vector3i from, sf::Vector3i to, util::Array3D<PathBuffer::Node>& buffer) {
 			buffer.assign(world.tiles().shape(), {});
 
 			std::priority_queue<PathUpdate, std::vector<PathUpdate>, std::greater<>> queue;
@@ -77,21 +77,25 @@ namespace util {
 		}
 	}
 
-	sf::Vector3i nextStep(const core::World& world, sf::Vector3i position, sf::Vector3i target, PathBuffer* buffer) {
+	sf::Vector3i nextStep(const core::World& world, sf::Vector3i position, sf::Vector3i target, PathBuffer& buffer) {
 		TROTE_ASSERT(world.tiles().isValidPosition(position));
 		TROTE_ASSERT(world.tiles().isValidPosition(target));
 
-		PathBuffer ownBuffer;
-		if (!buffer)
-			buffer = &ownBuffer;
-		findPath(world, position, target, *buffer);
+		if (!buffer.lastTarget || *buffer.lastTarget != target || !buffer.buffer[position].onPath) {
+			findPath(world, position, target, buffer.buffer);
+			buffer.lastTarget = target;
+		}
+
+		buffer.buffer[position].onPath = true;
 
 		sf::Vector3i current = target;
 		while (true) {
-			sf::Vector3i prevOffset = (*buffer)[current].prevOffset;
+			buffer.buffer[current].onPath = true;
+
+			sf::Vector3i prevOffset = buffer.buffer[current].prevOffset;
 
 			if (current + prevOffset == position)
-				return -(*buffer)[current].prevOffset;
+				return -buffer.buffer[current].prevOffset;
 
 			if (prevOffset == sf::Vector3i{0, 0, 0})
 				return { 0, 0, 0 };
@@ -100,5 +104,9 @@ namespace util {
 		}
 
 		TROTE_ASSERT(false, "unreachable");
+	}
+
+	std::unique_ptr<PathBuffer> makePathBuffer() {
+		return std::make_unique<PathBuffer>();
 	}
 }

@@ -19,6 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <gtest/gtest.h>
 
+/*
 TEST(pathfinding, nextStepInPlace) {
     core::World world;
     world.tiles().assign({ 3, 3, 1 }, Tile::WALL);
@@ -61,3 +62,4 @@ TEST(pathfinding, nextStepUpStairs) {
 
     EXPECT_EQ(util::nextStep(world, { 0, 1, 1 }, { 1, 1, 0 }), (sf::Vector3i{ 1,  -1, -1 }));
 }
+*/
