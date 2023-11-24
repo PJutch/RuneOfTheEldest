@@ -25,7 +25,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace util {
     /// If true assertions are enabled
-    const bool enableAssertions = true;
+    const bool enableAssertions = false;
 
     /// @brief Generates message for assertion failed
     /// @param condition Stringified condition
@@ -44,17 +44,6 @@ namespace util {
         AssertionFailed(std::string_view condition, std::string_view message = "", Stacktrace stacktace_ = {}) :
             LogicError{ assertion_message(condition, message), std::move(stacktace_) } {}
     };
-
-    /// @brief Assertion implementation
-    /// @param condition Evaluated condition
-    /// @param condition_str Stringified condition
-    /// @param message   User provided message
-    /// @throws AssertionFailed if condition is false
-    inline void assert_impl(bool condition, std::string_view condition_str, std::string_view message = "") {
-        if (enableAssertions)
-            if (!condition)
-                throw AssertionFailed(condition_str, message);
-    }
 }
 
 /// @brief Assertion macro
@@ -62,6 +51,10 @@ namespace util {
 /// @param condition Condition to check
 /// @param ... User provided message
 /// @throws AssertionFailed if condition evaluates to false
-#define TROTE_ASSERT(condition, ...) ::util::assert_impl(condition, #condition __VA_OPT__(,) __VA_ARGS__)
+#define TROTE_ASSERT(condition, ...) do { \
+    if (::util::enableAssertions) \
+        if (!(condition)) \
+            throw ::util::AssertionFailed(#condition __VA_OPT__(,) __VA_ARGS__); \
+} while (false);
 
 #endif
