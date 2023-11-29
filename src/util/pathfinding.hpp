@@ -141,6 +141,94 @@ namespace util {
 		                  PathBuffer& buffer) {
 		return nextStep(world, position, target, buffer, &isPassable);
 	}
+
+	struct ExplorePathUpdate {
+		int distance;
+		sf::Vector3i position;
+		sf::Vector3i prevOffset;
+
+		friend auto operator <=> (const ExplorePathUpdate& lhs, const ExplorePathUpdate& rhs) noexcept {
+			return lhs.distance <=> rhs.distance;
+		}
+	};
+
+	/// @brief finds path (may be not shortest) to a tile satisfying isTarget
+	/// @returns lastTarget to found target position
+	template <typename IsTarget>
+		requires std::convertible_to<std::invoke_result_t<IsTarget, const core::World&, sf::Vector3i>, bool>
+	std::optional<sf::Vector3i> findExplorePath(const core::World& world, sf::Vector3i from, 
+		             util::Array3D<PathBuffer::Node>& buffer, const IsTarget& isTarget) {
+		buffer.assign(world.tiles().shape(), {});
+
+		std::priority_queue<ExplorePathUpdate, std::vector<ExplorePathUpdate>, std::greater<>> queue;
+		queue.emplace(0, from, sf::Vector3i{0, 0, 0});
+
+		while (!queue.empty()) {
+			ExplorePathUpdate update = queue.top();
+			queue.pop();
+
+			TROTE_ASSERT(world.tiles().isValidPosition(update.position));
+
+			if (update.distance >= buffer[update.position].distance)
+				continue;
+
+			buffer[update.position].distance = update.distance;
+			buffer[update.position].prevOffset = update.prevOffset;
+
+			if (isTarget(world, update.position))
+				return update.position;
+
+			for (sf::Vector2i direction : util::nonzeroDirections<int>) {
+				sf::Vector3i direction3D = util::make3D(direction, 0);
+				sf::Vector3i nextPos = update.position + direction3D;
+				if (world.tiles().isValidPosition(nextPos) && isPassable(world.tiles()[nextPos]))
+					queue.emplace(update.distance + 1, nextPos, -direction3D);
+			}
+
+			if (auto destination = world.upStairs(update.position))
+				queue.emplace(update.distance + 1, *destination, update.position - *destination);
+
+			if (auto destination = world.downStairs(update.position))
+				queue.emplace(update.distance + 1, *destination, update.position - *destination);
+		}
+
+		return std::nullopt;
+	}
+
+	/// @brief Computes next move to tile satisfying isTarget
+	/// @param buffer Buffer reused to prevent allocating memory
+	template <typename IsTarget>
+		requires std::convertible_to<std::invoke_result_t<IsTarget, const core::World&, sf::Vector3i>, bool>
+	std::optional<sf::Vector3i> nextExploreStep(const core::World& world, sf::Vector3i position,
+		                                        PathBuffer& buffer, const IsTarget& isTarget) {
+		TROTE_ASSERT(world.tiles().isValidPosition(position));
+
+		if (!buffer.lastTarget || !isTarget(world, *buffer.lastTarget) || !buffer.buffer[position].onPath) {
+			if (auto target = findExplorePath(world, position, buffer.buffer, isTarget))
+				buffer.lastTarget = target;
+			else
+				return std::nullopt;
+		}
+
+		buffer.buffer[position].onPath = true;
+
+		sf::Vector3i current = *buffer.lastTarget;
+		while (true) {
+			buffer.buffer[current].onPath = true;
+
+			sf::Vector3i prevOffset = buffer.buffer[current].prevOffset;
+
+			if (current + prevOffset == position)
+				return -buffer.buffer[current].prevOffset;
+
+			if (prevOffset == sf::Vector3i{0, 0, 0})
+				return sf::Vector3i{0, 0, 0};
+
+			current += prevOffset;
+		}
+
+		TROTE_ASSERT(false, "unreachable");
+	}
 }
 
 #endif

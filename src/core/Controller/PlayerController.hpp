@@ -73,7 +73,8 @@ namespace core {
 			WAITING_INPUT,
 			ENDED_TURN,
 			RESTING,
-			TRAVELING
+			TRAVELING,
+			EXPLORING
 		};
 		State state = State::WAITING_TURN;
 
@@ -89,6 +90,7 @@ namespace core {
 		void endTurn() noexcept;
 
 		bool moveToTarget();
+		bool explore();
 	};
 }
 

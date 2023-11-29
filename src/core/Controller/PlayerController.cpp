@@ -56,8 +56,7 @@ namespace core {
 				if (event.key.shift)
 					if (tryAscentStairs())
 						endTurn();
-			}
-			else if (event.key.code == sf::Keyboard::Period) {
+			} else if (event.key.code == sf::Keyboard::Period) {
 				if (event.key.shift) {
 					if (tryDescentStairs())
 						endTurn();
@@ -66,14 +65,17 @@ namespace core {
 					renderContext.playerMap->clearSounds();
 					player.lock()->endTurn();
 				}
-			}
-			else if (util::isNumpad(event.key.code))
+			} else if (event.key.code == sf::Keyboard::O) {
+				state = State::EXPLORING;
+				explore();
+			} else if (util::isNumpad(event.key.code)) {
 				for (ptrdiff_t i = 1; i <= 9; ++i)
 					if (sf::Keyboard::isKeyPressed(util::numpad(i))) {
 						if (player.lock()->tryMove(util::directions<int>[i - 1], true))
 							endTurn();
 						return;
 					}
+			}
 		} else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
 			auto player_ = player.lock();
 			if (auto newCurrentSpell = render::clickedSpell(
@@ -122,6 +124,25 @@ namespace core {
 		}
 	}
 
+	bool PlayerController::explore() {
+		auto player_ = player.lock();
+		if (auto nextStep = util::nextExploreStep(player_->world(), player_->position(), *pathBuffer,
+			[&playerMap = *renderContext.playerMap](const core::World& world, sf::Vector3i pos) {
+			return playerMap.tileState(pos) == render::PlayerMap::TileState::UNSEEN;
+		})) {
+			if (player_->tryMove(*nextStep, false)) {
+				renderContext.playerMap->update();
+				player_->endTurn();
+				return true;
+			} else {
+				state = State::WAITING_INPUT;
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+
 	bool PlayerController::act() {
 		if (state == State::RESTING)
 			if (player.lock()->hp() < player.lock()->maxHp() && !canSeeEnemy()) {
@@ -135,6 +156,14 @@ namespace core {
 		if (state == State::TRAVELING)
 			if (!canSeeEnemy()) {
 				return moveToTarget();
+			} else {
+				state = State::WAITING_INPUT;
+				return false;
+			}
+
+		if (state == State::EXPLORING)
+			if (!canSeeEnemy()) {
+				return explore();
 			} else {
 				state = State::WAITING_INPUT;
 				return false;
