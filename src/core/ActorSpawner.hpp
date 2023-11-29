@@ -17,7 +17,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define ACTOR_SPAWNER_HPP_
 
 #include "World.hpp"
-#include "SpellManager.hpp"
+#include "Spell/Manager.hpp"
 #include "Effect/Effect.hpp"
 #include "Actor.hpp"
 

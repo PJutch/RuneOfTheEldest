@@ -21,7 +21,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Effect/Effect.hpp"
 #include "XpManager.hpp"
 #include "DamageType.hpp"
-#include "Spell.hpp"
+#include "Spell/Spell.hpp"
 
 #include "render/ParticleManager.hpp"
 #include "render/coords.hpp"

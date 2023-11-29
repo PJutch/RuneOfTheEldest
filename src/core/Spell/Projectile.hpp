@@ -16,15 +16,16 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef PROJECTILE_SPELL_HPP_
 #define PROJECTILE_SPELL_HPP_
 
-#include <core/fwd.hpp>
-#include <core/DamageType.hpp>
-#include <core/Position.hpp>
-#include <core/World.hpp>
-#include <core/Spell.hpp>
-#include <core/Actor.hpp>
+#include "Spell.hpp"
 
-#include <render/ParticleManager.hpp>
-#include <render/coords.hpp>
+#include "core/fwd.hpp"
+#include "core/DamageType.hpp"
+#include "core/Position.hpp"
+#include "core/World.hpp"
+#include "core/Actor.hpp"
+
+#include "render/ParticleManager.hpp"
+#include "render/coords.hpp"
 
 namespace sf {
 	class Texture;
