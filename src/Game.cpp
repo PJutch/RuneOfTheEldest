@@ -37,14 +37,24 @@ Game::Game(std::shared_ptr<core::World> newWorld,
            std::shared_ptr<core::XpManager> xpManager_,
            std::unique_ptr<generation::DungeonGenerator> newDungeonGenerator,
            render::Context renderContext_,
-           std::shared_ptr<util::Raycaster> raycaster_,
+           std::shared_ptr<util::Raycaster> raycaster,
            util::LoggerFactory& loggerFactory) :
-    world{std::move(newWorld)},
-    actorSpawner{std::move(actorSpawner_)},
-    xpManager{std::move(xpManager_)},
-    dungeonGenerator_{std::move(newDungeonGenerator)},
-    renderContext{std::move(renderContext_)}, raycaster{std::move(raycaster_)},
-    generationLogger{ loggerFactory.create("generation") } {}
+        world{std::move(newWorld)},
+        actorSpawner{std::move(actorSpawner_)},
+        xpManager{std::move(xpManager_)},
+        dungeonGenerator_{std::move(newDungeonGenerator)},
+        renderContext{std::move(renderContext_)},
+        generationLogger{ loggerFactory.create("generation") } {
+    addOnGenerateListener([camera = renderContext.camera]() { camera->reset(); });
+    addOnGenerateListener([playerMap = renderContext.playerMap]() { playerMap->onGenerate(); });
+    addOnGenerateListener([particles = renderContext.particles]() { particles->clear(); });
+    addOnGenerateListener([raycaster = std::move(raycaster)]() { raycaster->clear(); });
+    addOnGenerateListener([xpManager = xpManager]() { xpManager->onGenerate(); });
+
+    addOnUpdateListener([camera = renderContext.camera](sf::Time elapsedTime) { camera->update(elapsedTime); });
+    addOnUpdateListener([playerMap = renderContext.playerMap](sf::Time) { playerMap->update(); });
+    addOnUpdateListener([particles = renderContext.particles](sf::Time elapsedTime) { particles->update(elapsedTime); });
+}
 
 void Game::run() {
     generate();
@@ -59,9 +69,7 @@ void Game::run() {
             world->update();
 
             sf::Time elapsedTime = clock.restart();
-            renderContext.camera->update(elapsedTime);
-            renderContext.playerMap->update();
-            renderContext.particles->update(elapsedTime);
+            onUpdate(elapsedTime);
         }
 
         draw_();
@@ -110,11 +118,7 @@ void Game::generate() {
 
     generationLogger->info("Finished");
 
-    renderContext.camera->reset();
-    renderContext.playerMap->onGenerate();
-    raycaster->clear();
-    xpManager->onGenerate();
-    renderContext.particles->clear();
+    onGenerate();
 }
 
 void Game::draw_() {

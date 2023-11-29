@@ -22,6 +22,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "render/Context.hpp"
 
 #include "util/raycast.hpp"
+#include "util/Signal.hpp"
 #include "util/random.hpp"
 #include "util/log.hpp"
 
@@ -51,6 +52,14 @@ public:
 
     /// Generates world and runs game loop until exit
     void run();
+
+    void addOnGenerateListener(auto listener) {
+        onGenerate.addListener(std::move(listener));
+    }
+
+    void addOnUpdateListener(auto listener) {
+        onUpdate.addListener(std::move(listener));
+    }
 private:
     std::shared_ptr<core::World> world;
     std::unique_ptr<core::ActorSpawner> actorSpawner;
@@ -59,9 +68,11 @@ private:
     std::unique_ptr<generation::DungeonGenerator> dungeonGenerator_;
 
     render::Context renderContext;
-    std::shared_ptr<util::Raycaster> raycaster;
 
     std::shared_ptr<spdlog::logger> generationLogger;
+
+    util::Signal<> onGenerate;
+    util::Signal<sf::Time> onUpdate;
 
     void handleEvent(sf::Event event);
     void generate();
