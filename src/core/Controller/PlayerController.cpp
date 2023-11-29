@@ -109,6 +109,7 @@ namespace core {
 		sf::Vector3i nextStep_ = util::nextStep(player_->world(), player_->position(),
 				static_cast<sf::Vector3i>(travelTarget), *pathBuffer);
 		if (player_->tryMove(nextStep_, false)) {
+			renderContext.playerMap->update();
 			player_->endTurn();
 			return true;
 		} else {
