@@ -17,7 +17,7 @@ include(${PROJECT_SOURCE_DIR}/cmake/DefaultCompilerOptions.cmake)
 
 add_library(util STATIC)
 
-target_sources(util PRIVATE pathfinding.cpp raycast.cpp)
+target_sources(util PRIVATE  raycast.cpp)
 
 setDefaultCompilerOptions(util)
 

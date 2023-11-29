@@ -107,7 +107,11 @@ namespace core {
 	bool PlayerController::moveToTarget() {
 		auto player_ = player.lock();
 		sf::Vector3i nextStep_ = util::nextStep(player_->world(), player_->position(),
-				static_cast<sf::Vector3i>(travelTarget), *pathBuffer);
+				static_cast<sf::Vector3i>(travelTarget), *pathBuffer, 
+				[&playerMap = *renderContext.playerMap](const core::World& world, sf::Vector3i pos) {
+			return isPassable(world.tiles()[pos]) && playerMap.tileState(pos) != render::PlayerMap::TileState::UNSEEN;
+		});
+
 		if (player_->tryMove(nextStep_, false)) {
 			renderContext.playerMap->update();
 			player_->endTurn();
