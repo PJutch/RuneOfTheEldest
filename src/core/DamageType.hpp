@@ -24,11 +24,12 @@ If not, see <https://www.gnu.org/licenses/>. */
 namespace core {
 	/// Type of damage source
 	enum class DamageType {
-		PHYSICAL, ///< Normal attacks
-		POISON,   ///< Poison effect
-		MAGIC,    ///< Spell
-		ELECTRICITY, ///< Lightning spell
-		TOTAL     ///< Technical enumerator. Should be last
+		PHYSICAL,    ///< Normal attacks
+		POISON,      ///< Poison effect
+		MAGIC,       ///< Spell
+		ELECTRICITY, ///< Lightning spells
+		DEATH,       ///< Necromantic spells
+		TOTAL        ///< Technical enumerator. Should be last
 	};
 
 	static const int totalDamageTypes = static_cast<int>(DamageType::TOTAL);
@@ -37,7 +38,8 @@ namespace core {
 		"physical",
 		"poison",
 		"magic",
-		"electricity"
+		"electricity",
+		"death"
 	};
 
 	inline const std::unordered_map<std::string, DamageType> damageTypeByName
