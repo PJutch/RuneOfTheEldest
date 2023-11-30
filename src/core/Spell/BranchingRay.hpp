@@ -110,7 +110,7 @@ namespace core {
 			spawnRay(core::Position<int>{prev.position()}, core::Position<int>{next.position()});
 
 			for (const auto& actor : world->actors())
-				if (actor->isAlive() && actor->position().z == next.position().z 
+				if (actor.get() != &next && actor.get() != &prev && actor->isAlive() && actor->position().z == next.position().z
 				 && std::bernoulli_distribution{stats.chainChance}(*randomEngine))
 					attack(next, *actor);
 		}
