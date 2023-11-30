@@ -21,6 +21,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "render/fwd.hpp"
 
 #include "util/log.hpp"
+#include "util/raycast.hpp"
+#include "util/random.hpp"
 
 #include <algorithm>
 #include <string_view>
@@ -34,6 +36,7 @@ namespace core {
 		SpellManager() = default;
 		SpellManager(std::shared_ptr<render::AssetManager> assets, 
 			         std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles,
+					 std::shared_ptr<util::Raycaster> raycaster, util::RandomEngine& randomEngine,
 			         util::LoggerFactory& loggerFactory);
 
 		auto begin() {

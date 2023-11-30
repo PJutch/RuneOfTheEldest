@@ -18,6 +18,8 @@ If not, see < https://www.gnu.org/licenses/>. */
 
 #include "core/Position.hpp"
 
+#include "util/geometry.hpp"
+
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/System/Vector2.hpp>
@@ -28,8 +30,18 @@ If not, see < https://www.gnu.org/licenses/>. */
 namespace render {
 	class ParticleManager {
 	public:
-		void add(sf::Vector2f firstPos, sf::Vector2f lastPos, int z, sf::Time maxLifetime, const sf::Texture* texture) {
-			particles.emplace_back(firstPos, lastPos, z, sf::Time::Zero, maxLifetime, texture);
+		void add(sf::Vector2f firstPos, sf::Vector2f lastPos, int z, float rotation,
+				 sf::Time maxLifetime, const sf::Texture* texture) {
+			particles.emplace_back(firstPos, lastPos, z, rotation, sf::Time::Zero, maxLifetime, texture);
+		}
+
+		void add(sf::Vector2f firstPos, sf::Vector2f lastPos, int z,
+				 sf::Time maxLifetime, const sf::Texture* texture) {
+			add(firstPos, lastPos, z, util::toDegrees(util::polarAngle(lastPos - firstPos)) + 90.f, maxLifetime, texture);
+		}
+
+		void add(sf::Vector2f pos, int z, float rotation, sf::Time maxLifetime, const sf::Texture* texture) {
+			add(pos, pos, z, rotation, maxLifetime, texture);
 		}
 
 		void update(sf::Time elapsedTime);
@@ -44,6 +56,8 @@ namespace render {
 			sf::Vector2f firstPos;
 			sf::Vector2f lastPos;
 			int z;
+
+			float rotation;
 
 			sf::Time livedTime;
 			sf::Time maxLifetime;

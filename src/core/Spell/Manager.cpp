@@ -16,6 +16,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Manager.hpp"
 #include "Projectile.hpp"
 #include "FallingProjectile.hpp"
+#include "BranchingRay.hpp"
 
 #include "core/DamageType.hpp"
 
@@ -46,15 +47,29 @@ namespace core {
 		class UnknownSkillTypeError : public util::RuntimeError {
 		public:
 			UnknownSkillTypeError(std::string_view type, util::Stacktrace currentStacktrace = {}) noexcept :
-				RuntimeError{std::format("Unknown skill type \"{}\"", type),
+				RuntimeError{std::format("Unknown spell type \"{}\"", type),
 				std::move(currentStacktrace)} {}
 		};
+
+		class UnknownDamageTypeError : public util::RuntimeError {
+		public:
+			UnknownDamageTypeError(std::string_view damageType, util::Stacktrace currentStacktrace = {}) noexcept :
+				RuntimeError{std::format("Unknown damage type \"{}\"", damageType),
+				std::move(currentStacktrace)} {}
+		};
+
+		DamageType getDamageType(const std::string& name) {
+			if (auto v = util::getOptional(damageTypeByName, name))
+				return *v;
+			else
+				throw UnknownDamageTypeError{name};
+		}
 
 		std::unique_ptr<ProjectileSpell> createProjectileSpell(std::unordered_map<std::string, std::string>& params, 
 			    std::shared_ptr<render::AssetManager> assets, 
 			    std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles) {
 			double damage = util::parseReal(util::getAndEraseRequired(params, "damage"));
-			DamageType damageType = damageTypeByName.at(util::getAndEraseRequired(params, "damageType"));
+			DamageType damageType = getDamageType(util::getAndEraseRequired(params, "damageType"));
 
 			double accuracy = util::parseReal(util::getAndEraseRequired(params, "accuracy"));
 
@@ -79,7 +94,7 @@ namespace core {
 				std::shared_ptr<render::AssetManager> assets,
 				std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles) {
 			double damage = util::parseReal(util::getAndEraseRequired(params, "damage"));
-			DamageType damageType = damageTypeByName.at(util::getAndEraseRequired(params, "damageType"));
+			DamageType damageType = getDamageType(util::getAndEraseRequired(params, "damageType"));
 
 			double accuracy = util::parseReal(util::getAndEraseRequired(params, "accuracy"));
 
@@ -100,10 +115,40 @@ namespace core {
 				icon, name, world, particles
 			);
 		}
+
+		std::unique_ptr<BranchingRaySpell> createBranchingRaySpell(std::unordered_map<std::string, std::string>& params,
+			    std::shared_ptr<render::AssetManager> assets,
+				std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles, 
+				std::shared_ptr<util::Raycaster> raycaster, util::RandomEngine& randomEngine) {
+			double damage = util::parseReal(util::getAndEraseRequired(params, "damage"));
+
+			DamageType damageType = getDamageType(util::getAndEraseRequired(params, "damageType"));
+
+			double accuracy = util::parseReal(util::getAndEraseRequired(params, "accuracy"));
+
+			double manaUsage = util::parseReal(util::getAndEraseRequired(params, "mana"));
+
+			const sf::Texture& icon = assets->texture(util::getAndEraseRequired(params, "icon"));
+			std::string name = util::getAndEraseRequired(params, "name");
+
+			double chainChance = util::parseReal(util::getAndEraseRequired(params, "chainChance"));
+
+			sf::Time visibleTime = sf::seconds(util::parseReal(util::getAndEraseRequired(params, "visibleTime")));
+			const sf::Texture& rayTexture = assets->texture(util::getAndEraseRequired(params, "rayTexture"));
+
+			if (!params.empty())
+				throw UnknownParamsError{params};
+
+			return std::make_unique<BranchingRaySpell>(
+				BranchingRaySpell::Stats{damage, damageType, accuracy, manaUsage, chainChance, visibleTime, &rayTexture},
+				icon, name, world, particles, raycaster, randomEngine
+			);
+		}
 	}
 
 	SpellManager::SpellManager(std::shared_ptr<render::AssetManager> assets,
 							   std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles,
+							   std::shared_ptr<util::Raycaster> raycaster, util::RandomEngine& randomEngine,
 		                       util::LoggerFactory& loggerFactory) {
 		auto logger = loggerFactory.create("effects");
 		logger->info("Loading...");
@@ -116,6 +161,8 @@ namespace core {
 				spells.push_back(createProjectileSpell(params, assets, world, particles));
 			} else if (type == "fallingProjectile") {
 				spells.push_back(createFallingProjectileSpell(params, assets, world, particles));
+			} else if (type == "branchingRay") {
+				spells.push_back(createBranchingRaySpell(params, assets, world, particles, raycaster, randomEngine));
 			}
 		});
 

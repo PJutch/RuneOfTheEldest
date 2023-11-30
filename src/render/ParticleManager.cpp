@@ -50,7 +50,7 @@ namespace render {
 
 			sprite.setOrigin(util::geometry_cast<float>(particle.texture->getSize()) / 2.f);
 
-			sprite.setRotation(util::toDegrees(util::polarAngle(particle.lastPos - particle.firstPos)) + 90.f);
+			sprite.setRotation(particle.rotation);
 
 			target.draw(sprite);
 		}

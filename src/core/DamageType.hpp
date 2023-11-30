@@ -27,6 +27,7 @@ namespace core {
 		PHYSICAL, ///< Normal attacks
 		POISON,   ///< Poison effect
 		MAGIC,    ///< Spell
+		ELECTRICITY, ///< Lightning spell
 		TOTAL     ///< Technical enumerator. Should be last
 	};
 
@@ -36,6 +37,7 @@ namespace core {
 		"physical",
 		"poison",
 		"magic",
+		"electricity"
 	};
 
 	inline const std::unordered_map<std::string, DamageType> damageTypeByName
