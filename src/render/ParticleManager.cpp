@@ -32,27 +32,41 @@ namespace render {
 		for (Particle& particle : particles)
 			particle.livedTime += elapsedTime;
 
+		for (auto& particle : customParticles)
+			particle->update(elapsedTime);
+
 		std::erase_if(particles, [](const Particle& p) {
 			return p.livedTime > p.maxLifetime;
+		});
+
+		std::erase_if(customParticles, [](const auto& p) {
+			return p->shouldBeDeleted();
 		});
 	}
 
 	void ParticleManager::draw(sf::RenderTarget& target, core::Position<float> cameraPos) const {
 		for (const Particle& particle : particles) {
-			if (particle.z != cameraPos.z)
-				return;
-
-			sf::Sprite sprite;
-			sprite.setTexture(*particle.texture);
-
-			sprite.setPosition(util::lerp(particle.firstPos, particle.lastPos,
-										  particle.livedTime / particle.maxLifetime));
-
-			sprite.setOrigin(util::geometry_cast<float>(particle.texture->getSize()) / 2.f);
-
-			sprite.setRotation(particle.rotation);
-
-			target.draw(sprite);
+			auto pos = util::lerp(particle.firstPos, particle.lastPos, particle.livedTime / particle.maxLifetime);
+			drawParticle(target, cameraPos, {pos, particle.z}, particle.rotation, particle.texture);
 		}
+
+		for (auto& particle : customParticles)
+			particle->draw(target, cameraPos);
+	}
+
+	void ParticleManager::drawParticle(sf::RenderTarget& target,
+			core::Position<float> cameraPos, core::Position<float> pos,
+			float rotation, const sf::Texture* texture) const {
+		if (pos.z != cameraPos.z)
+			return;
+
+		sf::Sprite sprite;
+
+		sprite.setTexture(*texture);
+		sprite.setPosition(pos.xy());
+		sprite.setOrigin(util::geometry_cast<float>(texture->getSize()) / 2.f);
+		sprite.setRotation(rotation);
+
+		target.draw(sprite);
 	}
 }

@@ -79,6 +79,7 @@ namespace core {
 		State state = State::WAITING_TURN;
 
 		std::optional<int> currentSpell_;
+		std::shared_ptr<Spell> castSpell;
 
 		core::Position<int> travelTarget;
 

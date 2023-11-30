@@ -55,19 +55,23 @@ namespace core {
 			                   std::shared_ptr<World> world_, std::shared_ptr<render::ParticleManager> particles_) :
 			Spell{icon, name}, stats{stats_}, world{std::move(world_)}, particles{std::move(particles_)} {}
 
-		bool cast(Actor& self, core::Position<int> target) final {
+		bool cast(std::shared_ptr<Actor>  self, core::Position<int> target) final {
 			auto other = world->actorAt(target);
 			if (!other)
 				return false;
 
-			if (!self.useMana(stats.manaUsage))
+			if (!self->useMana(stats.manaUsage))
 				return false;
 
 			other->beAttacked(stats.damage, stats.accuracy, stats.damageType);
-			world->makeSound({Sound::Type::ATTACK, true, self.position()});
+			world->makeSound({Sound::Type::ATTACK, true, self->position()});
 			spawnParticle(target);
 
 			return true;
+		}
+
+		[[nodiscard]] std::shared_ptr<Spell> clone() const final {
+			return std::make_shared<FallingProjectileSpell>(*this);
 		}
 	private:
 		Stats stats;

@@ -60,17 +60,21 @@ namespace core {
 			Spell{icon, name}, stats{stats_}, world{std::move(world_)}, 
 			particles{std::move(particles_)}, raycaster{std::move(raycaster_)}, randomEngine{&randomEngine_} {}
 
-		bool cast(Actor& self, core::Position<int> target) final {
+		bool cast(std::shared_ptr<Actor> self, core::Position<int> target) final {
 			auto other = world->actorAt(target);
 			if (!other)
 				return false;
 
-			if (!self.useMana(stats.manaUsage))
+			if (!self->useMana(stats.manaUsage))
 				return false;
 
-			attack(self, *other);
+			attack(*self, *other);
 
 			return true;
+		}
+
+		[[nodiscard]] std::shared_ptr<Spell> clone() const final {
+			return std::make_shared<BranchingRaySpell>(*this);
 		}
 	private:
 		Stats stats;

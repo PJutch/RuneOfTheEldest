@@ -167,8 +167,8 @@ namespace core {
 
 							if (data.effectToAdd)
 								enemy->addEffect(data.effectToAdd->clone());
-							for (auto spell : data.spellsToAdd)
-								enemy->addSpell(std::move(spell));
+							for (const auto& spell : data.spellsToAdd)
+								enemy->addSpell(spell->clone());
 
 							world->addActor(std::move(enemy));
 						}

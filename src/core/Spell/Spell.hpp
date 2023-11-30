@@ -38,7 +38,16 @@ namespace core {
 		/// @param self Casting Actor
 		/// @param target Tile selected by player
 		/// @returns true if should end turn
-		virtual bool cast(Actor& self, core::Position<int> target) = 0;
+		virtual bool cast(std::shared_ptr<Actor> self, core::Position<int> target) = 0;
+
+		/// @brief tries to coninue casting spell
+		/// @returns true if actually continued
+		virtual bool continueCast() {
+			return false;
+		}
+
+		/// interrupts continuous casting
+		virtual void interrupt() {}
 
 		/// Skill icon for level up menu
 		[[nodiscard]] const sf::Texture& icon() const {
@@ -49,6 +58,8 @@ namespace core {
 		[[nodiscard]] const std::string& name() const {
 			return name_;
 		}
+
+		[[nodiscard]] virtual std::shared_ptr<Spell> clone() const = 0;
 	private:
 		const sf::Texture* icon_;
 		std::string name_;

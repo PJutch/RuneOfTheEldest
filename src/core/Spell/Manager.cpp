@@ -17,6 +17,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Projectile.hpp"
 #include "FallingProjectile.hpp"
 #include "BranchingRay.hpp"
+#include "ChargingRay.hpp"
 
 #include "core/DamageType.hpp"
 
@@ -144,6 +145,34 @@ namespace core {
 				icon, name, world, particles, raycaster, randomEngine
 			);
 		}
+
+
+		std::unique_ptr<ChargingRaySpell> createChargingRaySpell(std::unordered_map<std::string, std::string>& params,
+				std::shared_ptr<render::AssetManager> assets,
+				std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles,
+				std::shared_ptr<util::Raycaster> raycaster) {
+			double damage = util::parseReal(util::getAndEraseRequired(params, "damage"));
+			DamageType damageType = getDamageType(util::getAndEraseRequired(params, "damageType"));
+			double damageGrowthMul = util::parseReal(util::getAndEraseRequired(params, "damageGrowthMul"));
+
+			double accuracy = util::parseReal(util::getAndEraseRequired(params, "accuracy"));
+
+			double manaUsage = util::parseReal(util::getAndEraseRequired(params, "mana"));
+
+			const sf::Texture& icon = assets->texture(util::getAndEraseRequired(params, "icon"));
+			std::string name = util::getAndEraseRequired(params, "name");
+			
+			sf::Time minVisibleTime = sf::seconds(util::parseReal(util::getAndEraseRequired(params, "minVisibleTime")));
+			const sf::Texture& rayTexture = assets->texture(util::getAndEraseRequired(params, "rayTexture"));
+
+			if (!params.empty())
+				throw UnknownParamsError{params};
+
+			return std::make_unique<ChargingRaySpell>(
+				ChargingRaySpell::Stats{damage, damageType, damageGrowthMul, accuracy, manaUsage, minVisibleTime, &rayTexture},
+				icon, name, world, particles, raycaster
+			);
+		}
 	}
 
 	SpellManager::SpellManager(std::shared_ptr<render::AssetManager> assets,
@@ -163,6 +192,8 @@ namespace core {
 				spells.push_back(createFallingProjectileSpell(params, assets, world, particles));
 			} else if (type == "branchingRay") {
 				spells.push_back(createBranchingRaySpell(params, assets, world, particles, raycaster, randomEngine));
+			} else if (type == "chargingRay") {
+				spells.push_back(createChargingRaySpell(params, assets, world, particles, raycaster));
 			}
 		});
 

@@ -40,6 +40,10 @@ namespace core {
 	}
 
 	void PlayerController::endTurn() noexcept {
+		if (castSpell) {
+			castSpell->interrupt();
+			castSpell = nullptr;
+		}
 		state = State::ENDED_TURN;
 		renderContext.playerMap->clearSounds();
 		player.lock()->endTurn();
@@ -50,9 +54,16 @@ namespace core {
 			return;
 
 		if (event.type == sf::Event::KeyPressed) {
-			if (event.key.code == sf::Keyboard::Numpad5)
+			if (event.key.code == sf::Keyboard::Numpad5) {
+				if (castSpell) {
+					castSpell->continueCast();
+					state = State::ENDED_TURN;
+					renderContext.playerMap->clearSounds();
+					player.lock()->endTurn();
+					return;
+				}
 				endTurn();
-			else if (event.key.code == sf::Keyboard::Comma) {
+			} else if (event.key.code == sf::Keyboard::Comma) {
 				if (event.key.shift)
 					if (tryAscentStairs())
 						endTurn();
@@ -85,8 +96,12 @@ namespace core {
 			} else if (currentSpell_) {
 				core::Position<int> target{render::mouseTile({event.mouseButton.x, event.mouseButton.y}, 
 					renderContext.camera->position(), *renderContext.window), player_->position().z};
-				if (player_->spells()[*currentSpell_]->cast(*player_, target))
-					endTurn();
+				if (auto spell = player_->spells()[*currentSpell_]; spell->cast(player_, target)) {
+					castSpell = spell;
+					state = State::ENDED_TURN;
+					renderContext.playerMap->clearSounds();
+					player.lock()->endTurn();
+				}
 			} else {
 				if (!canSeeEnemy()) {
 					core::Position<int> newTarget {

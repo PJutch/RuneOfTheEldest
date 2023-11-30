@@ -26,10 +26,18 @@ If not, see < https://www.gnu.org/licenses/>. */
 #include <SFML/System/Time.hpp>
 
 #include <vector>
+#include <memory>
 
 namespace render {
 	class ParticleManager {
 	public:
+		class CustomParticle {
+		public:
+			virtual void update(sf::Time elapsedTime) = 0;
+			virtual void draw(sf::RenderTarget& target, core::Position<float> cameraPos) const = 0;
+			virtual bool shouldBeDeleted() const = 0;
+		};
+
 		void add(sf::Vector2f firstPos, sf::Vector2f lastPos, int z, float rotation,
 				 sf::Time maxLifetime, const sf::Texture* texture) {
 			particles.emplace_back(firstPos, lastPos, z, rotation, sf::Time::Zero, maxLifetime, texture);
@@ -44,6 +52,10 @@ namespace render {
 			add(pos, pos, z, rotation, maxLifetime, texture);
 		}
 
+		void add(std::unique_ptr<CustomParticle> customParticle) {
+			customParticles.push_back(std::move(customParticle));
+		}
+
 		void update(sf::Time elapsedTime);
 
 		void draw(sf::RenderTarget& target, core::Position<float> cameraPos) const;
@@ -51,6 +63,10 @@ namespace render {
 		void clear() {
 			particles.clear();
 		}
+
+		void drawParticle(sf::RenderTarget& target, 
+			core::Position<float> cameraPos, core::Position<float> pos, 
+			float rotation, const sf::Texture* texture) const;
 	private:
 		struct Particle {
 			sf::Vector2f firstPos;
@@ -65,6 +81,8 @@ namespace render {
 			const sf::Texture* texture;
 		};
 		std::vector<Particle> particles;
+
+		std::vector<std::unique_ptr<CustomParticle>> customParticles;
 	};
 }
 
