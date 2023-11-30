@@ -15,6 +15,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Manager.hpp"
 #include "Projectile.hpp"
+#include "FallingProjectile.hpp"
 
 #include "core/DamageType.hpp"
 
@@ -73,6 +74,32 @@ namespace core {
 				icon, name, world, particles
 			);
 		}
+
+		std::unique_ptr<FallingProjectileSpell> createFallingProjectileSpell(std::unordered_map<std::string, std::string>& params,
+				std::shared_ptr<render::AssetManager> assets,
+				std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles) {
+			double damage = util::parseReal(util::getAndEraseRequired(params, "damage"));
+			DamageType damageType = damageTypeByName.at(util::getAndEraseRequired(params, "damageType"));
+
+			double accuracy = util::parseReal(util::getAndEraseRequired(params, "accuracy"));
+
+			double manaUsage = util::parseReal(util::getAndEraseRequired(params, "mana"));
+
+			const sf::Texture& icon = assets->texture(util::getAndEraseRequired(params, "icon"));
+			std::string name = util::getAndEraseRequired(params, "name");
+
+			float fallHeight = util::parseReal(util::getAndEraseRequired(params, "fallHeight"));
+			sf::Time fallTime = sf::seconds(util::parseReal(util::getAndEraseRequired(params, "fallTime")));
+			const sf::Texture& projectileTexture = assets->texture(util::getAndEraseRequired(params, "projectileTexture"));
+
+			if (!params.empty())
+				throw UnknownParamsError{params};
+
+			return std::make_unique<FallingProjectileSpell>(
+				FallingProjectileSpell::Stats{damage, damageType, accuracy, manaUsage, fallHeight, fallTime, &projectileTexture},
+				icon, name, world, particles
+			);
+		}
 	}
 
 	SpellManager::SpellManager(std::shared_ptr<render::AssetManager> assets,
@@ -83,7 +110,13 @@ namespace core {
 		util::forEachFile("resources/Spells/", [&, this](std::ifstream& file, const std::filesystem::path& path) {
 			logger->info("Loading Skill spec from {} ...", path.generic_string());
 			auto params = util::parseMapping(file);
-			spells.push_back(createProjectileSpell(params, assets, world, particles));
+
+			std::string type = util::getAndEraseRequired(params, "type");
+			if (type == "projectile") {
+				spells.push_back(createProjectileSpell(params, assets, world, particles));
+			} else if (type == "fallingProjectile") {
+				spells.push_back(createFallingProjectileSpell(params, assets, world, particles));
+			}
 		});
 
 		logger->info("Loaded");
