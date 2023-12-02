@@ -100,9 +100,10 @@ namespace core {
 			} else
 				currentStats.hasRangedAttack = false;
 
+			currentStats.defences.fill(1);
 			for (int i = 0; i < totalDamageTypes; ++i) {
-				std::string paramName = damageTypeNames[i] + "Defence";
-				currentStats.defences[i] = util::parseReal(util::getAndEraseRequired(params, paramName));
+				if (auto v = util::getAndErase(params, damageTypeNames[i] + "Defence"))
+					currentStats.defences[i] = util::parseReal(*v);
 			}
 
 			if (auto v = util::getAndErase(params, "controller"))
