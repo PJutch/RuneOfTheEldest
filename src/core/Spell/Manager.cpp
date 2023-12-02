@@ -18,6 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "FallingProjectile.hpp"
 #include "BranchingRay.hpp"
 #include "ChargingRay.hpp"
+#include "ExplodingProjectile.hpp"
 
 #include "core/DamageType.hpp"
 
@@ -146,7 +147,6 @@ namespace core {
 			);
 		}
 
-
 		std::unique_ptr<ChargingRaySpell> createChargingRaySpell(std::unordered_map<std::string, std::string>& params,
 				std::shared_ptr<render::AssetManager> assets,
 				std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles,
@@ -173,6 +173,39 @@ namespace core {
 				icon, name, world, particles, raycaster
 			);
 		}
+
+		std::unique_ptr<ExplodingProjectileSpell> createExplodingProjectileSpell(
+			    std::unordered_map<std::string, std::string>& params,
+				std::shared_ptr<render::AssetManager> assets,
+				std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles,
+				std::shared_ptr<util::Raycaster> raycaster) {
+			double damage = util::parseReal(util::getAndEraseRequired(params, "damage"));
+			DamageType damageType = getDamageType(util::getAndEraseRequired(params, "damageType"));
+
+			double accuracy = util::parseReal(util::getAndEraseRequired(params, "accuracy"));
+
+			double explosionRadius = util::parseReal(util::getAndEraseRequired(params, "explosionRadius"));
+
+			double manaUsage = util::parseReal(util::getAndEraseRequired(params, "mana"));
+
+			const sf::Texture& icon = assets->texture(util::getAndEraseRequired(params, "icon"));
+			std::string name = util::getAndEraseRequired(params, "name");
+
+			sf::Time flightTime = sf::seconds(util::parseReal(util::getAndEraseRequired(params, "flightTime")));
+			const sf::Texture& projectileTexture = assets->texture(util::getAndEraseRequired(params, "projectileTexture"));
+
+			sf::Time explosionFrameLength = sf::seconds(util::parseReal(util::getAndEraseRequired(params, "explosionFrameLength")));
+			const sf::Texture& explosionAnimation = assets->texture(util::getAndEraseRequired(params, "explosionAnimation"));
+
+			if (!params.empty())
+				throw UnknownParamsError{params};
+
+			return std::make_unique<ExplodingProjectileSpell>(
+				ExplodingProjectileSpell::Stats{damage, damageType, accuracy, explosionRadius, manaUsage, 
+					flightTime, &projectileTexture, explosionFrameLength, &explosionAnimation},
+				icon, name, world, particles, raycaster
+			);
+		}
 	}
 
 	SpellManager::SpellManager(std::shared_ptr<render::AssetManager> assets,
@@ -194,6 +227,8 @@ namespace core {
 				spells.push_back(createBranchingRaySpell(params, assets, world, particles, raycaster, randomEngine));
 			} else if (type == "chargingRay") {
 				spells.push_back(createChargingRaySpell(params, assets, world, particles, raycaster));
+			} else if (type == "explodingProjectile") {
+				spells.push_back(createExplodingProjectileSpell(params, assets, world, particles, raycaster));
 			}
 		});
 

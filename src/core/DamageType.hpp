@@ -28,7 +28,8 @@ namespace core {
 		POISON,      ///< Poison effect
 		MAGIC,       ///< Spell
 		ELECTRICITY, ///< Lightning spells
-		DEATH,       ///< Necromantic spells
+		DEATH,       ///< Dark spells
+		FIRE,        ///< Fire spells
 		TOTAL        ///< Technical enumerator. Should be last
 	};
 
@@ -39,7 +40,8 @@ namespace core {
 		"poison",
 		"magic",
 		"electricity",
-		"death"
+		"death",
+		"fire"
 	};
 
 	inline const std::unordered_map<std::string, DamageType> damageTypeByName
