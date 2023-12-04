@@ -19,6 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "BranchingRay.hpp"
 #include "ChargingRay.hpp"
 #include "ExplodingProjectile.hpp"
+#include "Ring.hpp"
 
 #include "core/DamageType.hpp"
 
@@ -206,6 +207,35 @@ namespace core {
 				icon, name, world, particles, raycaster
 			);
 		}
+
+		std::unique_ptr<RingSpell> createRingSpell(
+				std::unordered_map<std::string, std::string>& params,
+				std::shared_ptr<render::AssetManager> assets,
+				std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles,
+				std::shared_ptr<util::Raycaster> raycaster) {
+			double damage = util::parseReal(util::getAndEraseRequired(params, "damage"));
+			DamageType damageType = getDamageType(util::getAndEraseRequired(params, "damageType"));
+
+			double accuracy = util::parseReal(util::getAndEraseRequired(params, "accuracy"));
+
+			double radius = util::parseReal(util::getAndEraseRequired(params, "radius"));
+
+			double manaUsage = util::parseReal(util::getAndEraseRequired(params, "mana"));
+
+			const sf::Texture& icon = assets->texture(util::getAndEraseRequired(params, "icon"));
+			std::string name = util::getAndEraseRequired(params, "name");
+
+			sf::Time visibleTime = sf::seconds(util::parseReal(util::getAndEraseRequired(params, "visibleTime")));
+			const sf::Texture& texture = assets->texture(util::getAndEraseRequired(params, "texture"));
+
+			if (!params.empty())
+				throw UnknownParamsError{params};
+
+			return std::make_unique<RingSpell>(
+				RingSpell::Stats{damage, damageType, accuracy, radius, manaUsage, visibleTime, &texture},
+				icon, name, world, particles, raycaster
+			);
+		}
 	}
 
 	SpellManager::SpellManager(std::shared_ptr<render::AssetManager> assets,
@@ -229,6 +259,8 @@ namespace core {
 				spells.push_back(createChargingRaySpell(params, assets, world, particles, raycaster));
 			} else if (type == "explodingProjectile") {
 				spells.push_back(createExplodingProjectileSpell(params, assets, world, particles, raycaster));
+			} else if (type == "ring") {
+				spells.push_back(createRingSpell(params, assets, world, particles, raycaster));
 			}
 		});
 

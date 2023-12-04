@@ -30,6 +30,7 @@ namespace core {
 		ELECTRICITY, ///< Lightning spells
 		DEATH,       ///< Dark spells
 		FIRE,        ///< Fire spells
+		COLD,        ///< Freezing spells
 		TOTAL        ///< Technical enumerator. Should be last
 	};
 
@@ -41,7 +42,8 @@ namespace core {
 		"magic",
 		"electricity",
 		"death",
-		"fire"
+		"fire",
+		"cold"
 	};
 
 	inline const std::unordered_map<std::string, DamageType> damageTypeByName
