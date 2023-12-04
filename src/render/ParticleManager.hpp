@@ -62,6 +62,7 @@ namespace render {
 
 		void clear() {
 			particles.clear();
+			customParticles.clear();
 		}
 
 		void drawParticle(sf::RenderTarget& target, 

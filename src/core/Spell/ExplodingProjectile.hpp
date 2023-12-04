@@ -105,8 +105,8 @@ namespace core {
 				sf::Sprite sprite(*animation, frameRect());
 
 				sprite.setPosition(position.xy());
-				sprite.setOrigin(textureRadius() / 2, textureRadius() / 2);
-				sprite.setScale(2.f * tileRadius * util::geometry_cast<float>(render::tileSize) / textureRadius());
+				sprite.setOrigin(textureRadius(), textureRadius());
+				sprite.setScale(tileRadius / textureRadius() * util::geometry_cast<float>(render::tileSize));
 
 				target.draw(sprite);
 			}
@@ -136,7 +136,7 @@ namespace core {
 			}
 
 			float textureRadius() const {
-				return animation->getSize().y;
+				return static_cast<float>(animation->getSize().y) / 2.f;
 			}
 		};
 
