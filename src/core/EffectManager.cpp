@@ -20,6 +20,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Effect/TargetFullHpSkill.hpp"
 #include "Effect/Poison.hpp"
 #include "Effect/AppliesEffectOnAttack.hpp"
+#include "Effect/SpeedEffect.hpp"
 
 #include "core/DamageType.hpp"
 
@@ -147,6 +148,17 @@ namespace core {
 
 			return std::make_unique<AppliesEffectOnAttack>(appliedName, icon, name);
 		}
+
+		std::unique_ptr<SpeedEffect> createSpeedEffect(std::unordered_map<std::string, std::string>& params,
+												  std::string_view name, const sf::Texture& icon) { 
+			double speedBonus = util::parseReal(util::getAndEraseRequired(params, "speedBonus"));
+			double duration = util::parseReal(util::getAndEraseRequired(params, "duration"));
+
+			if (!params.empty())
+				throw UnknownParamsError{params};
+
+			return std::make_unique<SpeedEffect>(speedBonus, duration, icon, name);
+		}
 	}
 
 	EffectManager::EffectManager(std::shared_ptr<render::AssetManager> assets,
@@ -173,6 +185,8 @@ namespace core {
 				effects.push_back(createPoison(params, name, icon));
 			else if (type == "appliesEffectOnAttack")
 				effects.push_back(createAppliesEffect(params, name, icon));
+			else if (type == "speedEffect")
+				effects.push_back(createSpeedEffect(params, name, icon));
 			else
 				throw UnknownSkillTypeError(type);
 		});

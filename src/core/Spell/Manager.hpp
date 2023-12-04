@@ -34,7 +34,7 @@ namespace core {
 	class SpellManager {
 	public:
 		SpellManager() = default;
-		SpellManager(std::shared_ptr<render::AssetManager> assets, 
+		SpellManager(std::shared_ptr<core::EffectManager> effectManager, std::shared_ptr<render::AssetManager> assets,
 			         std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles,
 					 std::shared_ptr<util::Raycaster> raycaster, util::RandomEngine& randomEngine,
 			         util::LoggerFactory& loggerFactory);

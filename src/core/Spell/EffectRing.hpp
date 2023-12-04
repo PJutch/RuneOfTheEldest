@@ -13,8 +13,8 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef RING_HPP_
-#define RING_HPP_
+#ifndef EFFECT_RING_HPP_
+#define EFFECT_RING_HPP_
 
 #include "Spell.hpp"
 
@@ -40,11 +40,10 @@ namespace sf {
 #include <memory>
 
 namespace core {
-	class RingSpell : public Spell {
+	class EffectRingSpell : public Spell {
 	public:
 		struct Stats {
-			double damage;
-			DamageType damageType;
+			const Effect* effect;
 
 			double accuracy;
 
@@ -56,11 +55,11 @@ namespace core {
 			const sf::Texture* texture;
 		};
 
-		RingSpell(Stats stats_, const sf::Texture& icon, std::string_view name,
+		EffectRingSpell(Stats stats_, const sf::Texture& icon, std::string_view name,
 			std::shared_ptr<World> world_, std::shared_ptr<render::ParticleManager> particles_,
-			std::shared_ptr<util::Raycaster> raycaster_) :
+			std::shared_ptr<util::Raycaster> raycaster_, util::RandomEngine* randomEngine_) :
 			Spell{icon, name}, stats{stats_}, world{std::move(world_)},
-			particles{std::move(particles_)}, raycaster{std::move(raycaster_)} {}
+			particles{std::move(particles_)}, raycaster{std::move(raycaster_)}, randomEngine{randomEngine_} {}
 
 		bool cast(std::shared_ptr<Actor> self, core::Position<int>) final {
 			if (!self->useMana(stats.manaUsage)) {
@@ -68,9 +67,11 @@ namespace core {
 			}
 
 			for (const auto& actor : world->actors()) {
-				if (util::distance(util::getXY(actor->position()), util::getXY(self->position())) <= stats.radius
-				 && raycaster->canSee(self->position(), actor->position())) {
-					actor->beAttacked(stats.damage, stats.accuracy, stats.damageType);
+				if (actor.get() != self.get()
+				 && util::distance(util::getXY(actor->position()), util::getXY(self->position())) <= stats.radius
+				 && raycaster->canSee(self->position(), actor->position())
+				 && std::bernoulli_distribution{actor->hitChance(stats.accuracy)}(*randomEngine)) {
+					actor->addEffect(stats.effect->clone());
 					world->makeSound({Sound::Type::ATTACK, true, actor->position()});
 				}
 			}
@@ -81,7 +82,7 @@ namespace core {
 		}
 
 		[[nodiscard]] std::shared_ptr<Spell> clone() const final {
-			return std::make_shared<RingSpell>(*this);
+			return std::make_shared<EffectRingSpell>(*this);
 		}
 	private:
 		class Ring : public render::ParticleManager::CustomParticle {
@@ -132,6 +133,7 @@ namespace core {
 		std::shared_ptr<World> world;
 		std::shared_ptr<render::ParticleManager> particles;
 		std::shared_ptr<util::Raycaster> raycaster;
+		util::RandomEngine* randomEngine;
 
 		void spawnRing(core::Position<int> self) {
 			auto pos = render::toScreen(util::geometry_cast<float>(self.xy()) + sf::Vector2f{0.5f, 0.5f});

@@ -245,6 +245,10 @@ namespace core {
 			particles->add(pos1, pos2, position().z,
 				           stats.projectileFlightTime, stats.projectileTexture);
 		}
+
+		double hitChance(double accuracy) {
+			return accuracy / (accuracy + evasion());
+		}
 	private:
 		Stats stats;
 		std::unique_ptr<Controller> controller_;
@@ -271,10 +275,6 @@ namespace core {
 		double evasion();
 		double turnDelay();
 		double defence(DamageType damageType);
-
-		double hitChance(double accuracy) {
-			return accuracy / (accuracy + evasion());
-		}
 	};
 }
 

@@ -154,9 +154,11 @@ namespace core {
 	}
 
 	double Actor::turnDelay() {
-		return stats.turnDelay / util::reduce(effects_, 1., std::plus<>{}, [](const auto& effect) {
+		double speed = util::reduce(effects_, 0., std::plus<>{}, [](const auto& effect) {
 			return effect->speedBonus();
 		});
+
+		return stats.turnDelay * (speed >= 0 ? 1 / (speed + 1) : 1 - speed);
 	}
 
 	double Actor::xpMul() const {

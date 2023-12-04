@@ -19,7 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "BranchingRay.hpp"
 #include "ChargingRay.hpp"
 #include "ExplodingProjectile.hpp"
-#include "Ring.hpp"
+#include "EffectRing.hpp"
 
 #include "core/DamageType.hpp"
 
@@ -208,13 +208,13 @@ namespace core {
 			);
 		}
 
-		std::unique_ptr<RingSpell> createRingSpell(
+		std::unique_ptr<EffectRingSpell> createRingSpell(
 				std::unordered_map<std::string, std::string>& params,
+				std::shared_ptr<core::EffectManager> effectManager,
 				std::shared_ptr<render::AssetManager> assets,
 				std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles,
-				std::shared_ptr<util::Raycaster> raycaster) {
-			double damage = util::parseReal(util::getAndEraseRequired(params, "damage"));
-			DamageType damageType = getDamageType(util::getAndEraseRequired(params, "damageType"));
+				std::shared_ptr<util::Raycaster> raycaster, util::RandomEngine* randomEngine) {
+			const Effect* effect = effectManager->findEffect(util::getAndEraseRequired(params, "effect"));
 
 			double accuracy = util::parseReal(util::getAndEraseRequired(params, "accuracy"));
 
@@ -231,14 +231,15 @@ namespace core {
 			if (!params.empty())
 				throw UnknownParamsError{params};
 
-			return std::make_unique<RingSpell>(
-				RingSpell::Stats{damage, damageType, accuracy, radius, manaUsage, visibleTime, &texture},
-				icon, name, world, particles, raycaster
+			return std::make_unique<EffectRingSpell>(
+				EffectRingSpell::Stats{effect, accuracy, radius, manaUsage, visibleTime, &texture},
+				icon, name, world, particles, raycaster, randomEngine
 			);
 		}
 	}
 
-	SpellManager::SpellManager(std::shared_ptr<render::AssetManager> assets,
+	SpellManager::SpellManager(std::shared_ptr<core::EffectManager> effectManager, 
+							   std::shared_ptr<render::AssetManager> assets,
 							   std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles,
 							   std::shared_ptr<util::Raycaster> raycaster, util::RandomEngine& randomEngine,
 		                       util::LoggerFactory& loggerFactory) {
@@ -260,7 +261,7 @@ namespace core {
 			} else if (type == "explodingProjectile") {
 				spells.push_back(createExplodingProjectileSpell(params, assets, world, particles, raycaster));
 			} else if (type == "ring") {
-				spells.push_back(createRingSpell(params, assets, world, particles, raycaster));
+				spells.push_back(createRingSpell(params, effectManager, assets, world, particles, raycaster, &randomEngine));
 			}
 		});
 
