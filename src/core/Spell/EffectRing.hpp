@@ -34,6 +34,8 @@ namespace sf {
 	class Texture;
 }
 
+#include <boost/describe.hpp>
+
 #include "SFML/Graphics/Sprite.hpp"
 
 #include <string>
@@ -49,7 +51,7 @@ namespace core {
 
 			double radius;
 
-			double manaUsage;
+			double mana;
 
 			sf::Time visibleTime;
 			const sf::Texture* texture;
@@ -57,12 +59,12 @@ namespace core {
 
 		EffectRingSpell(Stats stats_, const sf::Texture& icon, std::string_view name,
 			std::shared_ptr<World> world_, std::shared_ptr<render::ParticleManager> particles_,
-			std::shared_ptr<util::Raycaster> raycaster_, util::RandomEngine* randomEngine_) :
+			std::shared_ptr<util::Raycaster> raycaster_, util::RandomEngine& randomEngine_) :
 			Spell{icon, name}, stats{stats_}, world{std::move(world_)},
-			particles{std::move(particles_)}, raycaster{std::move(raycaster_)}, randomEngine{randomEngine_} {}
+			particles{std::move(particles_)}, raycaster{std::move(raycaster_)}, randomEngine{&randomEngine_} {}
 
 		bool cast(std::shared_ptr<Actor> self, core::Position<int>) final {
-			if (!self->useMana(stats.manaUsage)) {
+			if (!self->useMana(stats.mana)) {
 				return false;
 			}
 
@@ -141,6 +143,10 @@ namespace core {
 						   stats.visibleTime, stats.texture));
 		}
 	};
+
+	BOOST_DESCRIBE_STRUCT(EffectRingSpell::Stats, (), (
+		effect, accuracy, radius, mana, visibleTime, texture
+	))
 }
 
 #endif

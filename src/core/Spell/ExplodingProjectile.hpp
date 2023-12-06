@@ -36,6 +36,8 @@ namespace sf {
 
 #include "SFML/Graphics/Sprite.hpp"
 
+#include <boost/describe.hpp>
+
 #include <string>
 #include <memory>
 
@@ -50,7 +52,7 @@ namespace core {
 
 			double explosionRadius;
 
-			double manaUsage;
+			double mana;
 
 			sf::Time flightTime;
 			const sf::Texture* projectileTexture;
@@ -66,7 +68,7 @@ namespace core {
 			particles{std::move(particles_)}, raycaster{std::move(raycaster_)} {}
 
 		bool cast(std::shared_ptr<Actor> self, core::Position<int> target) final {
-			if (!self->useMana(stats.manaUsage)) {
+			if (!self->useMana(stats.mana)) {
 				return false;
 			}
 
@@ -155,6 +157,11 @@ namespace core {
 				stats.flightTime, stats.explosionFrameLength, stats.explosionAnimation));
 		}
 	};
+
+	BOOST_DESCRIBE_STRUCT(ExplodingProjectileSpell::Stats, (), (
+		damage, damageType, accuracy, explosionRadius, mana, 
+		flightTime, projectileTexture, explosionFrameLength, explosionAnimation
+	))
 }
 
 #endif

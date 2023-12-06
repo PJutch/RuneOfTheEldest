@@ -31,6 +31,8 @@ namespace sf {
 	class Texture;
 }
 
+#include <boost/describe.hpp>
+
 #include <string>
 #include <memory>
 
@@ -44,7 +46,7 @@ namespace core {
 
 			double accuracy;
 
-			double manaUsage;
+			double mana;
 
 			float fallHeight;
 			sf::Time fallTime;
@@ -60,7 +62,7 @@ namespace core {
 			if (!other)
 				return false;
 
-			if (!self->useMana(stats.manaUsage))
+			if (!self->useMana(stats.mana))
 				return false;
 
 			other->beAttacked(stats.damage, stats.accuracy, stats.damageType);
@@ -87,6 +89,11 @@ namespace core {
 			particles->add(pos1, pos2, target.z, stats.fallTime, stats.projectileTexture);
 		}
 	};
+
+	BOOST_DESCRIBE_STRUCT(FallingProjectileSpell::Stats, (), (
+		damage, damageType, accuracy, mana, 
+		fallHeight, fallTime, projectileTexture
+	))
 }
 
 #endif

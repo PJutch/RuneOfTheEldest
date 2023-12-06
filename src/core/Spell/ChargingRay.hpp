@@ -34,6 +34,8 @@ namespace sf {
 	class Texture;
 }
 
+#include <boost/describe.hpp>
+
 #include <string>
 #include <memory>
 
@@ -47,7 +49,7 @@ namespace core {
 
 			double accuracy;
 
-			double manaUsage;
+			double mana;
 
 			sf::Time minVisibleTime;
 			const sf::Texture* rayTexture;
@@ -155,7 +157,7 @@ namespace core {
 
 			return target_->isAlive()
 				&& raycaster->canSee(self_->position(), target_->position())
-				&& self_->mana() >= stats.manaUsage;
+				&& self_->mana() >= stats.mana;
 		}
 
 		bool attack() {
@@ -166,7 +168,7 @@ namespace core {
 			auto self_ = self.lock();
 			auto target_ = target.lock();
 
-			if (!self_->useMana(stats.manaUsage)) {
+			if (!self_->useMana(stats.mana)) {
 				return false;
 			}
 
@@ -178,6 +180,10 @@ namespace core {
 			return true;
 		}
 	};
+
+	BOOST_DESCRIBE_STRUCT(ChargingRaySpell::Stats, (), (
+		damage, damageType, damageGrowthMul, accuracy, mana, minVisibleTime, rayTexture
+	))
 }
 
 #endif

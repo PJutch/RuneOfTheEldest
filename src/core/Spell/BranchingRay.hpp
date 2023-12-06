@@ -34,6 +34,8 @@ namespace sf {
 	class Texture;
 }
 
+#include <boost/describe.hpp>
+
 #include <string>
 #include <memory>
 
@@ -46,7 +48,7 @@ namespace core {
 
 			double accuracy;
 
-			double manaUsage;
+			double mana;
 
 			double chainChance;
 
@@ -65,7 +67,7 @@ namespace core {
 			if (!other)
 				return false;
 
-			if (!self->useMana(stats.manaUsage))
+			if (!self->useMana(stats.mana))
 				return false;
 
 			attack(*self, *other);
@@ -115,6 +117,10 @@ namespace core {
 					attack(next, *actor);
 		}
 	};
+
+	BOOST_DESCRIBE_STRUCT(BranchingRaySpell::Stats, (), (
+		damage, damageType, accuracy, mana, chainChance, visibleTime, rayTexture
+	))
 }
 
 #endif

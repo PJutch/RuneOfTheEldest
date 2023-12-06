@@ -31,6 +31,8 @@ namespace sf {
 	class Texture;
 }
 
+#include <boost/describe.hpp>
+
 #include <string>
 #include <memory>
 
@@ -44,7 +46,7 @@ namespace core {
 
 			double accuracy;
 
-			double manaUsage;
+			double mana;
 
 			sf::Time flightTime;
 			const sf::Texture* projectileTexture;
@@ -59,7 +61,7 @@ namespace core {
 			if (!other)
 				return false;
 
-			if (!self->useMana(stats.manaUsage))
+			if (!self->useMana(stats.mana))
 				return false;
 
 			other->beAttacked(stats.damage, stats.accuracy, stats.damageType);
@@ -84,6 +86,8 @@ namespace core {
 			particles->add(pos1, pos2, self.z, stats.flightTime, stats.projectileTexture);
 		}
 	};
+
+	BOOST_DESCRIBE_STRUCT(ProjectileSpell::Stats, (), (damage, damageType, accuracy, mana, flightTime, projectileTexture))
 }
 
 #endif

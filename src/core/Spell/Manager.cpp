@@ -29,6 +29,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/Map.hpp"
 #include "util/filesystem.hpp"
 
+#include <boost/mp11.hpp>
+
 #include <memory>
 
 namespace core {
@@ -68,84 +70,106 @@ namespace core {
 				throw UnknownDamageTypeError{name};
 		}
 
-		std::unique_ptr<ProjectileSpell> createProjectileSpell(std::unordered_map<std::string, std::string>& params, 
-			    std::shared_ptr<render::AssetManager> assets, 
-			    std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles) {
-			double damage = util::parseReal(util::getAndEraseRequired(params, "damage"));
-			DamageType damageType = getDamageType(util::getAndEraseRequired(params, "damageType"));
+		template <typename T>
+		struct parseImpl {};
 
-			double accuracy = util::parseReal(util::getAndEraseRequired(params, "accuracy"));
+		template <std::floating_point T>
+		struct parseImpl<T> {
+			static T parse(std::string_view s, EffectManager&, render::AssetManager&) {
+				return util::parseReal<T>(s);
+			}
+		};
 
-			double manaUsage = util::parseReal(util::getAndEraseRequired(params, "mana"));
+		template <>
+		struct parseImpl<DamageType> {
+			static DamageType parse(std::string_view sv, EffectManager&, render::AssetManager&) {
+				std::string str{sv};
+				return getDamageType(str);
+			}
+		};
 
-			const sf::Texture& icon = assets->texture(util::getAndEraseRequired(params, "icon"));
-			std::string name = util::getAndEraseRequired(params, "name");
+		template <>
+		struct parseImpl<const sf::Texture*> {
+			static const sf::Texture* parse(std::string_view s, EffectManager&, render::AssetManager& assets) {
+				return &assets.texture(s);
+			}
+		};
 
-			sf::Time flightTime = sf::seconds(util::parseReal(util::getAndEraseRequired(params, "flightTime")));
-			const sf::Texture& projectileTexture = assets->texture(util::getAndEraseRequired(params, "projectileTexture"));
+		template <>
+		struct parseImpl<sf::Time> {
+			static sf::Time parse(std::string_view s, EffectManager&, render::AssetManager&) {
+				return sf::seconds(util::parseReal(s));
+			}
+		};
 
-			if (!params.empty())
-				throw UnknownParamsError{params};
+		template <>
+		struct parseImpl<const Effect*> {
+			static const Effect* parse(std::string_view s, EffectManager& effects, render::AssetManager&) {
+				return effects.findEffect(s);
+			}
+		};
 
-			return std::make_unique<ProjectileSpell>(
-				ProjectileSpell::Stats{damage, damageType, accuracy, manaUsage, flightTime, &projectileTexture},
-				icon, name, world, particles
-			);
+		template <typename Loaded>
+		Loaded loadStruct(std::unordered_map<std::string, std::string>& params, 
+				EffectManager& effects, render::AssetManager& assets) {
+			using members = boost::describe::describe_members<Loaded, boost::describe::mod_public>;
+			Loaded loaded;
+			boost::mp11::mp_for_each<members>([&](auto desc) {
+				using Member = std::remove_cvref_t<decltype(loaded.*desc.pointer)>;
+				auto valueStr = util::getAndEraseRequired(params, desc.name);
+				loaded.*desc.pointer = parseImpl<Member>::parse(valueStr, effects, assets);
+			});
+			return loaded;
 		}
 
-		std::unique_ptr<FallingProjectileSpell> createFallingProjectileSpell(std::unordered_map<std::string, std::string>& params,
-				std::shared_ptr<render::AssetManager> assets,
-				std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles) {
-			double damage = util::parseReal(util::getAndEraseRequired(params, "damage"));
-			DamageType damageType = getDamageType(util::getAndEraseRequired(params, "damageType"));
-
-			double accuracy = util::parseReal(util::getAndEraseRequired(params, "accuracy"));
-
-			double manaUsage = util::parseReal(util::getAndEraseRequired(params, "mana"));
-
-			const sf::Texture& icon = assets->texture(util::getAndEraseRequired(params, "icon"));
-			std::string name = util::getAndEraseRequired(params, "name");
-
-			float fallHeight = util::parseReal(util::getAndEraseRequired(params, "fallHeight"));
-			sf::Time fallTime = sf::seconds(util::parseReal(util::getAndEraseRequired(params, "fallTime")));
-			const sf::Texture& projectileTexture = assets->texture(util::getAndEraseRequired(params, "projectileTexture"));
-
-			if (!params.empty())
-				throw UnknownParamsError{params};
-
-			return std::make_unique<FallingProjectileSpell>(
-				FallingProjectileSpell::Stats{damage, damageType, accuracy, manaUsage, fallHeight, fallTime, &projectileTexture},
-				icon, name, world, particles
-			);
-		}
-
-		std::unique_ptr<BranchingRaySpell> createBranchingRaySpell(std::unordered_map<std::string, std::string>& params,
-			    std::shared_ptr<render::AssetManager> assets,
-				std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles, 
+		template <typename Result>
+			requires std::constructible_from<Result, typename Result::Stats,
+				const sf::Texture&, std::string_view,
+				std::shared_ptr<World>, std::shared_ptr<render::ParticleManager>>
+		std::unique_ptr<Result> makeSpell(typename Result::Stats stats,
+				const sf::Texture& icon, std::string_view name,
+				std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles,
 				std::shared_ptr<util::Raycaster> raycaster, util::RandomEngine& randomEngine) {
-			double damage = util::parseReal(util::getAndEraseRequired(params, "damage"));
+			return std::make_unique<Result>(stats, icon, name, world, particles);
+		}
 
-			DamageType damageType = getDamageType(util::getAndEraseRequired(params, "damageType"));
+		template <typename Result>
+			requires std::constructible_from<Result, typename Result::Stats,
+				const sf::Texture&, std::string_view,
+				std::shared_ptr<World>, std::shared_ptr<render::ParticleManager>,
+				std::shared_ptr<util::Raycaster>>
+		std::unique_ptr<Result> makeSpell(typename Result::Stats stats,
+				const sf::Texture& icon, std::string_view name,
+				std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles,
+				std::shared_ptr<util::Raycaster> raycaster, util::RandomEngine& randomEngine) {
+			return std::make_unique<Result>(stats, icon, name, world, particles, raycaster);
+		}
 
-			double accuracy = util::parseReal(util::getAndEraseRequired(params, "accuracy"));
+		template <typename Result> 
+			requires std::constructible_from<Result, typename Result::Stats,
+				const sf::Texture&, std::string_view,
+				std::shared_ptr<World>, std::shared_ptr<render::ParticleManager>,
+				std::shared_ptr<util::Raycaster>, util::RandomEngine&>
+		std::unique_ptr<Result> makeSpell(typename Result::Stats stats,
+				const sf::Texture& icon, std::string_view name,
+				std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles,
+				std::shared_ptr<util::Raycaster> raycaster, util::RandomEngine& randomEngine) {
+			return std::make_unique<Result>(stats, icon, name, world, particles, raycaster, randomEngine);
+		}
 
-			double manaUsage = util::parseReal(util::getAndEraseRequired(params, "mana"));
-
+		template <typename Loaded>
+		std::unique_ptr<Loaded> loadSpell(std::unordered_map<std::string, std::string>& params,
+				std::shared_ptr<EffectManager> effects, std::shared_ptr<render::AssetManager> assets,
+				std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles,
+				std::shared_ptr<util::Raycaster> raycaster, util::RandomEngine& randomEngine) {
 			const sf::Texture& icon = assets->texture(util::getAndEraseRequired(params, "icon"));
 			std::string name = util::getAndEraseRequired(params, "name");
-
-			double chainChance = util::parseReal(util::getAndEraseRequired(params, "chainChance"));
-
-			sf::Time visibleTime = sf::seconds(util::parseReal(util::getAndEraseRequired(params, "visibleTime")));
-			const sf::Texture& rayTexture = assets->texture(util::getAndEraseRequired(params, "rayTexture"));
+			auto stats = loadStruct<typename Loaded::Stats>(params, *effects, *assets);
 
 			if (!params.empty())
 				throw UnknownParamsError{params};
 
-			return std::make_unique<BranchingRaySpell>(
-				BranchingRaySpell::Stats{damage, damageType, accuracy, manaUsage, chainChance, visibleTime, &rayTexture},
-				icon, name, world, particles, raycaster, randomEngine
-			);
+			return makeSpell<Loaded>(stats, icon, name, world, particles, raycaster, randomEngine);
 		}
 
 		std::unique_ptr<ChargingRaySpell> createChargingRaySpell(std::unordered_map<std::string, std::string>& params,
@@ -174,68 +198,6 @@ namespace core {
 				icon, name, world, particles, raycaster
 			);
 		}
-
-		std::unique_ptr<ExplodingProjectileSpell> createExplodingProjectileSpell(
-			    std::unordered_map<std::string, std::string>& params,
-				std::shared_ptr<render::AssetManager> assets,
-				std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles,
-				std::shared_ptr<util::Raycaster> raycaster) {
-			double damage = util::parseReal(util::getAndEraseRequired(params, "damage"));
-			DamageType damageType = getDamageType(util::getAndEraseRequired(params, "damageType"));
-
-			double accuracy = util::parseReal(util::getAndEraseRequired(params, "accuracy"));
-
-			double explosionRadius = util::parseReal(util::getAndEraseRequired(params, "explosionRadius"));
-
-			double manaUsage = util::parseReal(util::getAndEraseRequired(params, "mana"));
-
-			const sf::Texture& icon = assets->texture(util::getAndEraseRequired(params, "icon"));
-			std::string name = util::getAndEraseRequired(params, "name");
-
-			sf::Time flightTime = sf::seconds(util::parseReal(util::getAndEraseRequired(params, "flightTime")));
-			const sf::Texture& projectileTexture = assets->texture(util::getAndEraseRequired(params, "projectileTexture"));
-
-			sf::Time explosionFrameLength = sf::seconds(util::parseReal(util::getAndEraseRequired(params, "explosionFrameLength")));
-			const sf::Texture& explosionAnimation = assets->texture(util::getAndEraseRequired(params, "explosionAnimation"));
-
-			if (!params.empty())
-				throw UnknownParamsError{params};
-
-			return std::make_unique<ExplodingProjectileSpell>(
-				ExplodingProjectileSpell::Stats{damage, damageType, accuracy, explosionRadius, manaUsage, 
-					flightTime, &projectileTexture, explosionFrameLength, &explosionAnimation},
-				icon, name, world, particles, raycaster
-			);
-		}
-
-		std::unique_ptr<EffectRingSpell> createRingSpell(
-				std::unordered_map<std::string, std::string>& params,
-				std::shared_ptr<core::EffectManager> effectManager,
-				std::shared_ptr<render::AssetManager> assets,
-				std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles,
-				std::shared_ptr<util::Raycaster> raycaster, util::RandomEngine* randomEngine) {
-			const Effect* effect = effectManager->findEffect(util::getAndEraseRequired(params, "effect"));
-
-			double accuracy = util::parseReal(util::getAndEraseRequired(params, "accuracy"));
-
-			double radius = util::parseReal(util::getAndEraseRequired(params, "radius"));
-
-			double manaUsage = util::parseReal(util::getAndEraseRequired(params, "mana"));
-
-			const sf::Texture& icon = assets->texture(util::getAndEraseRequired(params, "icon"));
-			std::string name = util::getAndEraseRequired(params, "name");
-
-			sf::Time visibleTime = sf::seconds(util::parseReal(util::getAndEraseRequired(params, "visibleTime")));
-			const sf::Texture& texture = assets->texture(util::getAndEraseRequired(params, "texture"));
-
-			if (!params.empty())
-				throw UnknownParamsError{params};
-
-			return std::make_unique<EffectRingSpell>(
-				EffectRingSpell::Stats{effect, accuracy, radius, manaUsage, visibleTime, &texture},
-				icon, name, world, particles, raycaster, randomEngine
-			);
-		}
 	}
 
 	SpellManager::SpellManager(std::shared_ptr<core::EffectManager> effectManager, 
@@ -251,17 +213,17 @@ namespace core {
 
 			std::string type = util::getAndEraseRequired(params, "type");
 			if (type == "projectile") {
-				spells.push_back(createProjectileSpell(params, assets, world, particles));
+				spells.push_back(loadSpell<ProjectileSpell>(params, effectManager, assets, world, particles, raycaster, randomEngine));
 			} else if (type == "fallingProjectile") {
-				spells.push_back(createFallingProjectileSpell(params, assets, world, particles));
+				spells.push_back(loadSpell<FallingProjectileSpell>(params, effectManager, assets, world, particles, raycaster, randomEngine));
 			} else if (type == "branchingRay") {
-				spells.push_back(createBranchingRaySpell(params, assets, world, particles, raycaster, randomEngine));
+				spells.push_back(loadSpell<BranchingRaySpell>(params, effectManager, assets, world, particles, raycaster, randomEngine));
 			} else if (type == "chargingRay") {
-				spells.push_back(createChargingRaySpell(params, assets, world, particles, raycaster));
+				spells.push_back(loadSpell<ChargingRaySpell>(params, effectManager, assets, world, particles, raycaster, randomEngine));
 			} else if (type == "explodingProjectile") {
-				spells.push_back(createExplodingProjectileSpell(params, assets, world, particles, raycaster));
+				spells.push_back(loadSpell<ExplodingProjectileSpell>(params, effectManager, assets, world, particles, raycaster, randomEngine));
 			} else if (type == "ring") {
-				spells.push_back(createRingSpell(params, effectManager, assets, world, particles, raycaster, &randomEngine));
+				spells.push_back(loadSpell<EffectRingSpell>(params, effectManager, assets, world, particles, raycaster, randomEngine));
 			}
 		});
 
