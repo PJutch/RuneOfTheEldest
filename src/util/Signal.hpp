@@ -28,16 +28,16 @@ namespace util {
             listeners.push_back(std::move(listener));
         }
 
-        template <typename... Args>
-        void operator() (Args&&... args) {
+        template <typename... Args2>
+        void operator() (Args2&&... args) {
             for (auto& listener : listeners)
-                listener(std::forward<Args>(args)...);
+                listener(std::forward<Args2>(args)...);
         }
 
-        template <typename... Args>
-        void operator() (Args&&... args) const {
+        template <typename... Args2>
+        void operator() (Args2&&... args) const {
             for (const auto& listener : listeners)
-                listener(std::forward<Args>(args)...);
+                listener(std::forward<Args2>(args)...);
         }
     private:
         std::vector<std::function<void(Args...)>> listeners;
