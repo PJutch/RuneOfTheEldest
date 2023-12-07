@@ -56,14 +56,14 @@ namespace util {
 		}
 
 		/// @warning Check position by yourself
-		[[nodiscard]] T& operator[] (sf::Vector3i position) noexcept {
+		[[nodiscard]] T& operator[] (sf::Vector3i position) {
 			TROTE_ASSERT(isValidPosition(position));
 			auto pos = util::geometry_cast<ptrdiff_t>(position);
 			return elements[pos.z * shape_.x * shape_.y + pos.x * shape_.y + pos.y];
 		}
 
 		/// @warning Check position by yourself
-		[[nodiscard]] const T& operator[] (sf::Vector3i position) const noexcept {
+		[[nodiscard]] const T& operator[] (sf::Vector3i position) const {
 			TROTE_ASSERT(isValidPosition(position));
 			auto pos = util::geometry_cast<ptrdiff_t>(position);
 			return elements[pos.z * shape_.x * shape_.y + pos.x * shape_.y + pos.y];
