@@ -38,9 +38,9 @@ namespace core {
 			return {x, y};
 		}
 
-		template <typename T>
-		explicit operator sf::Vector3<T>() {
-			return {static_cast<T>(x), static_cast<T>(y), static_cast<T>(z)};
+		template <typename U>
+		explicit operator sf::Vector3<U>() {
+			return {static_cast<U>(x), static_cast<U>(y), static_cast<U>(z)};
 		}
 	};
 }
