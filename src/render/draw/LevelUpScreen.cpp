@@ -27,8 +27,7 @@ namespace render {
         const sf::Vector2f skillSize{256, 256};
     }
 
-    void drawLevelupScreen(sf::RenderTarget& target, const render::AssetManager& assets,
-                           const core::World& world, const core::XpManager& xpManager) {
+    void drawLevelupScreen(sf::RenderTarget& target, const render::AssetManager& assets, const core::XpManager& xpManager) {
         target.setView(createFullscreenView(1000.f, target.getSize()));
 
         auto skills = xpManager.availableSkills();

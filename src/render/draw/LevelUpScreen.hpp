@@ -24,8 +24,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace render {
 	/// Draws skill selection screen
-	void drawLevelupScreen(sf::RenderTarget& target, const render::AssetManager& assets,
-						   const core::World& world, const core::XpManager& xpManager);
+	void drawLevelupScreen(sf::RenderTarget& target, const render::AssetManager& assets, const core::XpManager& xpManager);
 
 	/// Handles events for skill selection
 	void handleLevelupScreenEvent(sf::RenderTarget& target, core::XpManager& xpManager, sf::Event event);

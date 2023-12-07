@@ -131,7 +131,7 @@ void Game::draw_() {
 
         render::drawHud(*renderContext.window, *renderContext.assets, *world, *xpManager);
         if (xpManager->canLevelUp())
-            render::drawLevelupScreen(*renderContext.window, *renderContext.assets, *world, *xpManager);
+            render::drawLevelupScreen(*renderContext.window, *renderContext.assets, *xpManager);
     }
     renderContext.window->display();
 }

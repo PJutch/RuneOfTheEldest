@@ -116,8 +116,6 @@ namespace core {
 			}
 
 			void draw(sf::RenderTarget& target, core::Position<float> cameraPos) const {
-				auto particles = particleManager.lock();
-
 				auto selfPos = spell->self.lock()->position();
 
 				auto pos1 = render::toScreen(util::geometry_cast<float>(util::getXY(selfPos)) + sf::Vector2f{0.5f, 0.5f});
@@ -131,7 +129,7 @@ namespace core {
 				float segmentLen = spell->stats.rayTexture->getSize().y;
 				for (float d = 0; d < distance; d += segmentLen) {
 					sf::Vector2f pos = util::lerp(pos1, pos2, d / distance);
-					particles->drawParticle(target, cameraPos, {pos, selfPos.z}, rotation, spell->stats.rayTexture);
+					particleManager.lock()->drawParticle(target, cameraPos, {pos, selfPos.z}, rotation, spell->stats.rayTexture);
 				}
 			}
 

@@ -131,7 +131,7 @@ namespace generation {
         }
 
         sf::Vector3i randomPosIn(const core::World& world, Area area, int id, const Buffer& ids, const std::vector<int>& aliases) {
-            return world.randomPositionAt(area.z(), [&](const core::World& world, sf::Vector3i pos) {
+            return world.randomPositionAt(area.z(), [&](const core::World&, sf::Vector3i pos) {
                 return area.bounds().contains(util::getXY(pos))
                     && ids[util::getXY(pos)] != 0
                     && aliases[ids[util::getXY(pos)] - 1] == id;
@@ -139,7 +139,7 @@ namespace generation {
         }
 
         sf::Vector3i randomPosIn(const core::World& world, Area area) {
-            return world.randomPositionAt(area.z(), [&](const core::World& world, sf::Vector3i pos) {
+            return world.randomPositionAt(area.z(), [&](const core::World&, sf::Vector3i pos) {
                 return area.bounds().contains(util::getXY(pos));
             });
         }
@@ -169,8 +169,8 @@ namespace generation {
         }
 
         template <typename T>
-        int randomIndex(std::vector<T> vec, util::RandomEngine& randomEngine) {
-            return std::uniform_int_distribution<int>(0, std::ssize(vec) - 1)(randomEngine);
+        ptrdiff_t randomIndex(std::vector<T> vec, util::RandomEngine& randomEngine) {
+            return std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(vec) - 1}(randomEngine);
         }
 
         void connectComponents(ComponentData components, core::World& world, Area area,
