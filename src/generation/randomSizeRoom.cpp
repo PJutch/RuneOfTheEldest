@@ -135,7 +135,7 @@ namespace generation {
                 int turnY = std::uniform_int_distribution
                 {area.top(), room.bottom() - 2}(randomEngine);
                 verticalLine(world, room.z(), area.top(), turnY + 1, x, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
-                bendedVerticalPassage(world, room, x, turnY, debugTiles, randomEngine);
+                bendedHorizontalPassage(world, room, x, turnY, debugTiles, randomEngine);
             }
         }
 
@@ -150,7 +150,7 @@ namespace generation {
                 int turnY = std::uniform_int_distribution
                 {room.top(), area.bottom() - 2}(randomEngine);
                 verticalLine(world, room.z(), turnY, area.bottom(), x, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
-                bendedVerticalPassage(world, room, x, turnY, debugTiles, randomEngine);
+                bendedHorizontalPassage(world, room, x, turnY, debugTiles, randomEngine);
             }
         }
     }

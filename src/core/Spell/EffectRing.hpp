@@ -58,8 +58,8 @@ namespace core {
 		};
 
 		EffectRingSpell(Stats stats_, const sf::Texture& icon, std::string_view name,
-			std::shared_ptr<World> world_, std::shared_ptr<render::ParticleManager> particles_,
-			std::shared_ptr<util::Raycaster> raycaster_, util::RandomEngine& randomEngine_) :
+				std::shared_ptr<World> world_, std::shared_ptr<render::ParticleManager> particles_,
+				std::shared_ptr<util::Raycaster> raycaster_, util::RandomEngine& randomEngine_) :
 			Spell{icon, name}, stats{stats_}, world{std::move(world_)},
 			particles{std::move(particles_)}, raycaster{std::move(raycaster_)}, randomEngine{&randomEngine_} {}
 
@@ -91,8 +91,8 @@ namespace core {
 		public:
 			Ring(core::Position<float> position_, float maxTileRadius_,
 				 sf::Time maxLifetime_, const sf::Texture* texture_) :
-				position{position_}, maxLifetime{maxLifetime_}, maxTileRadius{maxTileRadius_},
-				texture{texture_} {}
+				position{position_}, maxLifetime{maxLifetime_}, 
+				texture{texture_}, maxTileRadius{maxTileRadius_} {}
 
 			void update(sf::Time elapsedTime) final {
 				lifetime += elapsedTime;

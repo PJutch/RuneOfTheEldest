@@ -93,8 +93,8 @@ namespace core {
 		public:
 			Explosion(core::Position<float> position_, float tileRadius_,
 					sf::Time delay, sf::Time frameLength_, const sf::Texture* animation_) :
-				tileRadius{tileRadius_}, position{position_},
-				frameLength{frameLength_}, animation{animation_}, lifetime{-delay} {}
+				position{position_},
+				frameLength{frameLength_}, animation{animation_}, tileRadius{tileRadius_}, lifetime{-delay} {}
 
 			void update(sf::Time elapsedTime) final {
 				lifetime += elapsedTime;
