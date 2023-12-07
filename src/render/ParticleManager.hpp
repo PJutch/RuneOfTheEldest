@@ -33,6 +33,8 @@ namespace render {
 	public:
 		class CustomParticle {
 		public:
+			virtual ~CustomParticle() = default;
+
 			virtual void update(sf::Time elapsedTime) = 0;
 			virtual void draw(sf::RenderTarget& target, core::Position<float> cameraPos) const = 0;
 			virtual bool shouldBeDeleted() const = 0;

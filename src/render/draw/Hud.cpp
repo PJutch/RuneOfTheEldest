@@ -111,7 +111,6 @@ namespace render {
         void drawSpellIcons(sf::RenderTarget& target, const AssetManager& assets, const core::World& world) {
             target.setView(createFullscreenView(1000.f, target.getSize()));
 
-            sf::Vector2f screenSize = target.getView().getSize();
             const sf::Vector2f iconSize{32.f, 32.f};
             float padding = 4.f;
 
@@ -153,7 +152,6 @@ namespace render {
     std::optional<int> clickedSpell(sf::Vector2i clickPos, sf::RenderTarget& target, const core::Actor& player) {
         target.setView(createFullscreenView(1000.f, target.getSize()));
 
-        sf::Vector2f screenSize = target.getView().getSize();
         const sf::Vector2f iconSize{32.f, 32.f};
         float padding = 4.f;
 

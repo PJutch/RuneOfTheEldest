@@ -89,7 +89,7 @@ namespace core {
 		}
 
 		/// Applies effects over time. Called in the end of the turn
-		virtual void update(double time) {}
+		virtual void update([[maybe_unused]] double time) {}
 
 		/// Called after loading all the effects
 		virtual void init(const EffectManager&) {}

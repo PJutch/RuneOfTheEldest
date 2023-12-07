@@ -95,7 +95,7 @@ namespace core {
 
 			float distance = util::distance(pos1, pos2);
 
-			float segmentLen = stats.rayTexture->getSize().y;
+			auto segmentLen = static_cast<float>(stats.rayTexture->getSize().y);
 			for (float d = 0; d < distance; d += segmentLen) {
 				sf::Vector2f pos = util::lerp(pos1, pos2, d / distance);
 				particles->add(pos, prev.z, rotation, stats.visibleTime, stats.rayTexture);

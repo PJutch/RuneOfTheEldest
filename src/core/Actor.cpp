@@ -132,7 +132,7 @@ namespace core {
 
 	void Actor::tryRunAwayFromPlayer(bool forceSwap) {
 		sf::Vector3i playerPos = world().player().position();
-		tryRunAwayInDirection(util::directionOf(util::getXY(position()) - util::getXY(playerPos)), false);
+		tryRunAwayInDirection(util::directionOf(util::getXY(position()) - util::getXY(playerPos)), forceSwap);
 	}
 
 	double Actor::regen() {

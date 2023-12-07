@@ -95,7 +95,7 @@ namespace render {
 
 
         void draw(sf::RenderTarget& target, const AssetManager& assets,
-                  const core::World& world, const render::PlayerMap& playerMap, core::Position<float> cameraPos,
+                  const render::PlayerMap& playerMap, core::Position<float> cameraPos,
                   PlayerMap::SeenActor actor) {
             if (actor.position.z != cameraPos.z)
                 return;
@@ -103,12 +103,11 @@ namespace render {
             double colorMod = playerMap.canSee(actor.position) ? 1.0 : 0.5;
 
             sf::Vector2f spriteSize = util::geometry_cast<float>(actor.texture->getSize());
-            sf::Vector2f tileSize = util::geometry_cast<float>(assets.tileSize());
             sf::Vector2f aiStateIconSize = util::geometry_cast<float>(assets.aiStateIcon(actor.aiState).getSize());
             sf::Vector2f maxHpBarSize{spriteSize.x, 2.f};
 
             sf::Vector2f topLeft = toScreen(util::getXY(actor.position))
-                + util::bottomMiddle(tileSize)
+                + util::bottomMiddle(util::geometry_cast<float>(render::tileSize))
                 - util::bottomMiddle(spriteSize);
 
             drawSprite(target, topLeft, {0, 0}, *actor.texture, colorMod);
@@ -135,9 +134,9 @@ namespace render {
         drawAreas(target, world, cameraPos);
 
         for (const auto& actor : playerMap.seenActors())
-            draw(target, assets, world, playerMap, cameraPos, actor);
+            draw(target, assets, playerMap, cameraPos, actor);
 
-        for (core::Sound sound : playerMap.recentSounds())
+        for (const core::Sound& sound : playerMap.recentSounds())
             draw(target, assets, world, playerMap, sound);
     }
 }

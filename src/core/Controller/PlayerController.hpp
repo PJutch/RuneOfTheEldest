@@ -54,7 +54,7 @@ namespace core {
 		}
 
 		/// Interrupts rest
-		void handleDamaged(Sound sound) {
+		void handleDamaged(Sound) {
 			if (state == State::RESTING)
 				state = State::WAITING_TURN;
 		}
