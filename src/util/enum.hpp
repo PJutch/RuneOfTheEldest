@@ -16,9 +16,15 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef ENUM_HPP_
 #define ENUM_HPP_
 
+#include "util/case.hpp"
+
+#include <boost/describe.hpp>
+#include <boost/mp11.hpp>
+
 #include <unordered_map>
 #include <span>
 #include <string>
+#include <type_traits>
 
 namespace util {
 	template <typename T>
@@ -28,6 +34,32 @@ namespace util {
 			res[names[i]] = T{i};
 		return res;
 	}
+
+	template <typename E>
+	std::unordered_map<std::string, E> makeNameMap() {
+		std::unordered_map<std::string, E> res;
+		using Values = boost::describe::describe_enumerators<E>;
+		boost::mp11::mp_for_each<Values>([&](auto D) {
+			res[util::toLower(D.name)] = D.value;
+		});
+		return res;
+	}
+
+	template <typename T> requires std::is_enum_v<T>
+	inline const int nEnumerators = nEnumeratorsImpl(std::type_identity<T>{});
 }
+
+/// returns 10 argument
+#define TROTE_ARG_10(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, ...) a10
+
+/// returns number of arguments
+#define TROTE_N_ARGS(...) TROTE_ARG_10(__VA_ARGS__ __VA_OPT__(,) 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+
+/// defines enum, boost.describe description and 
+#define TROTE_DEFINE_ENUM(name, ...) \
+	BOOST_DEFINE_ENUM(name __VA_OPT__(,) __VA_ARGS__) \
+    constexpr int nEnumeratorsImpl(std::type_identity<name>) { \
+		return TROTE_N_ARGS(__VA_ARGS__); \
+	}
 
 #endif

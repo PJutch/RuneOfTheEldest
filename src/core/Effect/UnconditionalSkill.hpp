@@ -27,7 +27,7 @@ namespace core {
 		UnconditionalSkill(double newRegenBonus, double newManaRegenBonus, double newDamageBonus, double newSpeedBonus,
 			               double newAccuracyBonus, double newEvasionBonus, 
 			               double newXpMul, double newHpBonus, double newManaBonus,
-						   std::array<double, totalDamageTypes> defenceBonuses_,
+						   std::array<double, util::nEnumerators<DamageType>> defenceBonuses_,
 			               const sf::Texture& icon_, std::string_view name_) :
 			Effect{icon_, name_, true}, 
 			hpBonus_{newHpBonus}, regenBonus_{newRegenBonus}, 
@@ -89,7 +89,7 @@ namespace core {
 		double evasionBonus_;
 		double speedBonus_;
 		double xpMul_;
-		std::array<double, totalDamageTypes> defenceBonuses;
+		std::array<double, util::nEnumerators<DamageType>> defenceBonuses;
 	};
 }
 

@@ -42,7 +42,7 @@ namespace {
 	auto testXpManager = std::make_shared<core::XpManager>();
 
 	auto defaultDefences() {
-		std::array<double, core::totalDamageTypes> defences;
+		std::array<double, util::nEnumerators<core::DamageType>> defences;
 		defences.fill(1);
 		return defences;
 	}
@@ -62,7 +62,7 @@ namespace {
 			               nullptr, xpManager, nullptr, nullptr};
 	}
 
-	core::Actor makeTestActor(double maxHp, std::array<double, core::totalDamageTypes> defences) {
+	core::Actor makeTestActor(double maxHp, std::array<double, util::nEnumerators<core::DamageType>> defences) {
 		return core::Actor{core::Actor::Stats{ maxHp, 0, 0, 0, 0, 1, 1, defences, 1.0, 0, nullptr, false, nullptr, sf::Time::Zero },
 						   nullptr, testXpManager, nullptr, nullptr};
 	}

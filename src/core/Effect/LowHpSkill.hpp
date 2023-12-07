@@ -29,7 +29,7 @@ namespace core {
 		LowHpSkill(double newRegenBonus, double newManaRegenBonus, 
 				   double newDamageBonus, double newSpeedBonus, double newXpMul,
 			       double newAccuracyBonus, double newEvasionBonus, 
-				   std::array<double, totalDamageTypes> defenceBonuses_,
+				   std::array<double, util::nEnumerators<DamageType>> defenceBonuses_,
 			       const sf::Texture& icon_, std::string_view name_) :
 			Effect{icon_, name_, true}, 
 			regenBonus_{newRegenBonus}, manaRegenBonus_{newManaRegenBonus}, 
@@ -85,7 +85,7 @@ namespace core {
 		double speedBonus_;
 		double xpMul_;
 
-		std::array<double, totalDamageTypes> defenceBonuses;
+		std::array<double, util::nEnumerators<DamageType>> defenceBonuses;
 
 		std::weak_ptr<Actor> owner_;
 

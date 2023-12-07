@@ -29,6 +29,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/parse.hpp"
 #include "util/Map.hpp"
 #include "util/filesystem.hpp"
+#include "util/case.hpp"
 
 namespace core {
 	namespace {
@@ -63,7 +64,7 @@ namespace core {
 			double xpMul = 1;
 			double hpBonus = 0;
 			double manaBonus = 0;
-			std::array<double, totalDamageTypes> defenceBonuses;
+			std::array<double, util::nEnumerators<DamageType>> defenceBonuses;
 			defenceBonuses.fill(0);
 
 			if (type == "unconditionalSkill") {
@@ -93,10 +94,11 @@ namespace core {
 				if (auto v = util::getAndErase(params, "xpMul"))
 					xpMul = util::parseReal(*v);
 
-				for (int i = 0; i < totalDamageTypes; ++i) {
-					if (auto v = util::getAndErase(params, damageTypeNames[i] + "DefenceBonus"))
-						defenceBonuses[i] = util::parseReal(*v);
-				}
+				boost::mp11::mp_for_each<boost::describe::describe_enumerators<DamageType>>([&](auto D) {
+					using namespace std::literals;
+					if (auto v = util::getAndErase(params, util::toLower(D.name) + "DefenceBonus"s))
+						defenceBonuses[static_cast<int>(D.value)] = util::parseReal(*v);
+				});
 			}
 
 			double damageBonus = 0;

@@ -23,6 +23,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/parse.hpp"
 #include "util/filesystem.hpp"
 #include "util/Map.hpp"
+#include <util/case.hpp>
+
+#include <boost/describe.hpp>
+#include <boost/mp11.hpp>
 
 namespace core {
 	namespace {
@@ -101,10 +105,11 @@ namespace core {
 				currentStats.hasRangedAttack = false;
 
 			currentStats.defences.fill(1);
-			for (int i = 0; i < totalDamageTypes; ++i) {
-				if (auto v = util::getAndErase(params, damageTypeNames[i] + "Defence"))
-					currentStats.defences[i] = util::parseReal(*v);
-			}
+			boost::mp11::mp_for_each<boost::describe::describe_enumerators<DamageType>>([&](auto D) {
+				using namespace std::literals;
+				if (auto v = util::getAndErase(params, util::toLower(D.name) + "Defence"s))
+					currentStats.defences[static_cast<int>(D.value)] = util::parseReal(*v);
+			});
 
 			if (auto v = util::getAndErase(params, "controller"))
 				actorData.back().controller = *v;

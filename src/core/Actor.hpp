@@ -48,7 +48,7 @@ namespace core {
 
 			double evasion;
 
-			std::array<double, totalDamageTypes> defences;
+			std::array<double, util::nEnumerators<DamageType>> defences;
 
 			double turnDelay;
 
