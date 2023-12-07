@@ -20,7 +20,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 namespace core {
 	XpManager::XpManager(std::shared_ptr<World> world_, std::shared_ptr<EffectManager> effects_,
 			             util::LoggerFactory& loggerFactory, util::RandomEngine& randomEngine_) :
-			world{std::move(world_)}, effects{effects_}, 
+			effects{std::move(effects_)}, world{std::move(world_)},
 		    randomEngine{&randomEngine_}, logger{loggerFactory.create("xp")} {
 		for (const auto& effect : *effects)
 			if (effect->isSkill())

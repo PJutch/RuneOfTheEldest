@@ -52,7 +52,7 @@ namespace core {
 			double mana;
 
 			sf::Time minVisibleTime;
-			const sf::Texture* rayTexture;
+			const sf::Texture* rayTexture = nullptr;
 		};
 
 		ChargingRaySpell(Stats stats_, const sf::Texture& icon, std::string_view name,

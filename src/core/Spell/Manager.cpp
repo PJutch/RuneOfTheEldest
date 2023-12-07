@@ -129,7 +129,7 @@ namespace core {
 		std::unique_ptr<Result> makeSpell(typename Result::Stats stats,
 				const sf::Texture& icon, std::string_view name,
 				std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles,
-				std::shared_ptr<util::Raycaster> raycaster, util::RandomEngine& randomEngine) {
+				std::shared_ptr<util::Raycaster>, util::RandomEngine&) {
 			return std::make_unique<Result>(stats, icon, name, world, particles);
 		}
 
@@ -141,7 +141,7 @@ namespace core {
 		std::unique_ptr<Result> makeSpell(typename Result::Stats stats,
 				const sf::Texture& icon, std::string_view name,
 				std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles,
-				std::shared_ptr<util::Raycaster> raycaster, util::RandomEngine& randomEngine) {
+				std::shared_ptr<util::Raycaster> raycaster, util::RandomEngine&) {
 			return std::make_unique<Result>(stats, icon, name, world, particles, raycaster);
 		}
 

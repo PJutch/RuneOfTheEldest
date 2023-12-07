@@ -50,7 +50,7 @@ namespace core {
 
 			float fallHeight;
 			sf::Time fallTime;
-			const sf::Texture* projectileTexture;
+			const sf::Texture* projectileTexture = nullptr;
 		};
 
 		FallingProjectileSpell(Stats stats_, const sf::Texture& icon, std::string_view name,

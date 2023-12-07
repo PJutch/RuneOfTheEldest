@@ -53,7 +53,7 @@ namespace core {
 			double chainChance;
 
 			sf::Time visibleTime;
-			const sf::Texture* rayTexture;
+			const sf::Texture* rayTexture = nullptr;
 		};
 
 		BranchingRaySpell(Stats stats_, const sf::Texture& icon, std::string_view name,

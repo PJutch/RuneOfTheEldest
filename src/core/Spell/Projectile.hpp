@@ -49,7 +49,7 @@ namespace core {
 			double mana;
 
 			sf::Time flightTime;
-			const sf::Texture* projectileTexture;
+			const sf::Texture* projectileTexture = nullptr;
 		};
 
 		ProjectileSpell(Stats stats_, const sf::Texture& icon, std::string_view name, 

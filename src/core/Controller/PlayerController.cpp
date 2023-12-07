@@ -32,7 +32,7 @@ namespace core {
 		                               std::shared_ptr<util::Raycaster> raycaster_,
 		                               render::Context renderContext_) :
 			player{player_}, raycaster{std::move(raycaster_)}, pathBuffer{std::make_unique<util::PathBuffer>()},
-		    renderContext{renderContext_} {
+			renderContext{renderContext_}, travelTarget{player_->position()} {
 		wantsSwap(false);
 		isOnPlayerSide(true);
 		shouldInterruptOnDelete(true);
@@ -159,7 +159,8 @@ namespace core {
 	}
 
 	bool PlayerController::act() {
-		if (state == State::RESTING)
+		switch (state) {
+		case State::RESTING: 
 			if (player.lock()->hp() < player.lock()->maxHp() && !canSeeEnemy()) {
 				player.lock()->endTurn();
 				return true;
@@ -167,31 +168,29 @@ namespace core {
 				state = State::WAITING_INPUT;
 				return false;
 			}
-
-		if (state == State::TRAVELING)
+		case State::TRAVELING:
 			if (!canSeeEnemy()) {
 				return moveToTarget();
 			} else {
 				state = State::WAITING_INPUT;
 				return false;
 			}
-
-		if (state == State::EXPLORING)
+		case State::EXPLORING:
 			if (!canSeeEnemy()) {
 				return explore();
 			} else {
 				state = State::WAITING_INPUT;
 				return false;
 			}
-
-		if (state == State::ENDED_TURN) {
+		case State::ENDED_TURN:
 			state = State::WAITING_TURN;
 			return true;
-		}
-
-		if (state == State::WAITING_TURN)
+		case State::WAITING_TURN:
 			state = State::WAITING_INPUT;
-		return false;
+			return false;
+		default:
+			return false;
+		}
 	}
 
 	bool PlayerController::tryAscentStairs() {

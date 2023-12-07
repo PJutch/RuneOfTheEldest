@@ -123,18 +123,20 @@ namespace core {
 			if (auto v = util::getAndErase(params, "maxLevel"))
 				actorData.back().maxLevel = util::parseUint(*v);
 
-			if (auto v = util::getAndErase(params, "effect"))
+			if (auto v = util::getAndErase(params, "effect")) {
 				if (auto effect = effectManager->findEffect(*v))
 					actorData.back().effectToAdd = effect;
 				else
 					throw EffectNotFound{*v};
+			}
 
-			if (auto v = util::getAndErase(params, "spells"))
+			if (auto v = util::getAndErase(params, "spells")) {
 				for (auto spellName : util::parseList(*v) | std::views::transform(util::strip))
 					if (auto spell = spellManager->findSpell(spellName))
 						actorData.back().spellsToAdd.push_back(std::move(spell));
 					else
 						throw SpellNotFound{spellName};
+			}
 
 			if (!params.empty())
 				throw UnknownParamsError{ params };

@@ -54,7 +54,7 @@ namespace core {
 			double mana;
 
 			sf::Time visibleTime;
-			const sf::Texture* texture;
+			const sf::Texture* texture = nullptr;
 		};
 
 		EffectRingSpell(Stats stats_, const sf::Texture& icon, std::string_view name,
@@ -91,8 +91,8 @@ namespace core {
 		public:
 			Ring(core::Position<float> position_, float maxTileRadius_,
 				 sf::Time maxLifetime_, const sf::Texture* texture_) :
-				position{position_}, maxTileRadius{maxTileRadius_},
-				maxLifetime{maxLifetime_}, texture{texture_} {}
+				position{position_}, maxLifetime{maxLifetime_}, maxTileRadius{maxTileRadius_},
+				texture{texture_} {}
 
 			void update(sf::Time elapsedTime) final {
 				lifetime += elapsedTime;
