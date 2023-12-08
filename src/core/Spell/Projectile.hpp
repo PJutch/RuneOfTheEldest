@@ -18,6 +18,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Spell.hpp"
 
+#include "ActorImpact.hpp"
+
 #include "core/fwd.hpp"
 #include "core/DamageType.hpp"
 #include "core/Position.hpp"
@@ -41,10 +43,7 @@ namespace core {
 	class ProjectileSpell : public Spell {
 	public:
 		struct Stats {
-			double damage;
-			DamageType damageType;
-
-			double accuracy;
+			ActorImpact impact;
 
 			double mana;
 
@@ -64,7 +63,7 @@ namespace core {
 			if (!self->useMana(stats.mana))
 				return false;
 
-			other->beAttacked(stats.damage, stats.accuracy, stats.damageType);
+			stats.impact.apply(*other);
 			world->makeSound({Sound::Type::ATTACK, true, self->position()});
 			spawnParticle(core::Position<int>{self->position()}, target);
 
@@ -87,7 +86,7 @@ namespace core {
 		}
 	};
 
-	BOOST_DESCRIBE_STRUCT(ProjectileSpell::Stats, (), (damage, damageType, accuracy, mana, flightTime, projectileTexture))
+	BOOST_DESCRIBE_STRUCT(ProjectileSpell::Stats, (), (impact, mana, flightTime, projectileTexture))
 }
 
 #endif

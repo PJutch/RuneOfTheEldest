@@ -111,18 +111,19 @@ namespace core {
 			}
 		};
 
-		template <typename Loaded>
-		Loaded loadStruct(std::unordered_map<std::string, std::string>& params, 
-				EffectManager& effects, render::AssetManager& assets) {
-			using members = boost::describe::describe_members<Loaded, boost::describe::mod_public>;
-			Loaded loaded;
-			boost::mp11::mp_for_each<members>([&](auto desc) {
-				using Member = std::remove_cvref_t<decltype(loaded.*desc.pointer)>;
-				auto valueStr = util::getAndEraseRequired(params, desc.name);
-				loaded.*desc.pointer = parseImpl<Member>::parse(valueStr, effects, assets);
-			});
-			return loaded;
-		}
+		class ParseNotImplemented : public util::RuntimeError {
+		public:
+			ParseNotImplemented(std::string_view type, util::Stacktrace currentStacktrace = {}) noexcept :
+				RuntimeError{std::format("Parse not implemented for {}", type),
+							 std::move(currentStacktrace)} {}
+		};
+
+		template <>
+		struct parseImpl<ActorImpact> {
+			static ActorImpact parse(std::string_view s, EffectManager& effects, render::AssetManager&) {
+				throw ParseNotImplemented{"ActorImpact"};
+			}
+		};
 
 		template <typename Result>
 			requires std::constructible_from<Result, 
@@ -199,6 +200,29 @@ namespace core {
 			return std::make_unique<Result>(stats, icon, name, world, particles, playerMap, raycaster);
 		}
 
+		class UnknownActorImpact : public util::RuntimeError {
+		public:
+			UnknownActorImpact(util::Stacktrace currentStacktrace = {}) noexcept :
+				RuntimeError{"Unable to deduce ActorImpact constructor. Try adding damage or effect",
+							 std::move(currentStacktrace)} {}
+		};
+
+		ActorImpact loadImpact(std::unordered_map<std::string, std::string>& params, EffectManager& effects) {
+			double accuracy = util::parseReal(util::getAndEraseRequired(params, "accuracy"));
+
+			if (auto damageIter = params.find("damage"), damageTypeIter = params.find("damageType");
+					damageIter != params.end() && damageTypeIter != params.end()) {
+				ActorImpact impact{util::parseReal(damageIter->second), getDamageType(damageTypeIter->second), accuracy};
+				params.erase(damageIter);
+				params.erase(damageTypeIter);
+				return impact;
+			} else if (auto v = util::getAndErase(params, "effect")) {
+				return {effects.findEffect(*v), accuracy};
+			} else {
+				throw UnknownActorImpact{};
+			}
+		}
+
 		template <typename Loaded>
 		std::unique_ptr<Loaded> loadSpell(std::unordered_map<std::string, std::string>& params,
 				std::shared_ptr<EffectManager> effects, std::shared_ptr<render::AssetManager> assets,
@@ -207,7 +231,23 @@ namespace core {
 				std::shared_ptr<util::Raycaster> raycaster, util::RandomEngine& randomEngine) {
 			const sf::Texture& icon = assets->texture(util::getAndEraseRequired(params, "icon"));
 			std::string name = util::getAndEraseRequired(params, "name");
-			auto stats = loadStruct<typename Loaded::Stats>(params, *effects, *assets);
+
+			using Stats = typename Loaded::Stats;
+			Stats stats;
+
+			using members = boost::describe::describe_members<Stats, boost::describe::mod_public>;
+			boost::mp11::mp_for_each<members>([&](auto desc) {
+				using Member = std::remove_cvref_t<decltype(stats.*desc.pointer)>;
+
+				if (desc.name != "impact") {
+					auto valueStr = util::getAndEraseRequired(params, desc.name);
+					stats.*desc.pointer = parseImpl<Member>::parse(valueStr, *effects, *assets);
+				}
+			});
+
+			if constexpr (requires { stats.impact; }) {
+				stats.impact = loadImpact(params, *effects);
+			}
 
 			if (!params.empty())
 				throw UnknownParamsError{params};

@@ -107,9 +107,15 @@ namespace core {
 				xpManager->addXp(stats.xp);
 		}
 
-		void beAttacked(double damage, double accuracy, DamageType damageType) {
-			if (isAlive() && std::bernoulli_distribution{hitChance(accuracy)}(randomEngine()))
+		/// @brief Attacks this actor with given damage and accuracy
+		/// @returns true if hit
+		bool beAttacked(double damage, double accuracy, DamageType damageType) {
+			if (isAlive() && std::bernoulli_distribution{hitChance(accuracy)}(randomEngine())) {
 				beDamaged(damage, damageType);
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 		/// Gets Actor HP
