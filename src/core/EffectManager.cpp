@@ -21,6 +21,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Effect/Poison.hpp"
 #include "Effect/AppliesEffectOnAttack.hpp"
 #include "Effect/SpeedEffect.hpp"
+#include "Effect/FireDefenceEffect.hpp"
 
 #include "core/DamageType.hpp"
 
@@ -161,6 +162,17 @@ namespace core {
 
 			return std::make_unique<SpeedEffect>(speedBonus, duration, icon, name);
 		}
+
+		std::unique_ptr<FireDefenceEffect> createFireDefenceEffect(std::unordered_map<std::string, std::string>& params,
+				std::string_view name, const sf::Texture& icon) {
+			double defenceBonus = util::parseReal(util::getAndEraseRequired(params, "defenceBonus"));
+			double duration = util::parseReal(util::getAndEraseRequired(params, "duration"));
+
+			if (!params.empty())
+				throw UnknownParamsError{params};
+
+			return std::make_unique<FireDefenceEffect>(defenceBonus, duration, icon, name);
+		}
 	}
 
 	EffectManager::EffectManager(std::shared_ptr<render::AssetManager> assets,
@@ -189,6 +201,8 @@ namespace core {
 				effects.push_back(createAppliesEffect(params, name, icon));
 			else if (type == "speedEffect")
 				effects.push_back(createSpeedEffect(params, name, icon));
+			else if(type == "fireDefenceEffect")
+				effects.push_back(createFireDefenceEffect(params, name, icon));
 			else
 				throw UnknownSkillTypeError(type);
 		});

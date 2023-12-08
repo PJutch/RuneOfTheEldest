@@ -200,11 +200,10 @@ namespace core {
 			return std::make_unique<Result>(stats, icon, name, world, particles, playerMap, raycaster);
 		}
 
-		class UnknownActorImpact : public util::RuntimeError {
+		class UnknownEffect : public util::RuntimeError {
 		public:
-			UnknownActorImpact(util::Stacktrace currentStacktrace = {}) noexcept :
-				RuntimeError{"Unable to deduce ActorImpact constructor. Try adding damage or effect",
-							 std::move(currentStacktrace)} {}
+			UnknownEffect(std::string_view effect, util::Stacktrace currentStacktrace = {}) noexcept :
+				RuntimeError{std::format("Effect \"{}\" not found", effect), std::move(currentStacktrace)} {}
 		};
 
 		ActorImpact loadImpact(std::unordered_map<std::string, std::string>& params, EffectManager& effects) {
@@ -217,7 +216,10 @@ namespace core {
 			}
 			
 			if (auto v = util::getAndErase(params, "effect")) {
-				impact.effect(effects.findEffect(*v));
+				if (auto effect = effects.findEffect(*v))
+					impact.effect(effect);
+				else
+					throw UnknownEffect{*v};
 			}
 
 			return impact;
