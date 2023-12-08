@@ -21,6 +21,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "ExplodingProjectile.hpp"
 #include "EffectRing.hpp"
 #include "Teleport.hpp"
+#include "Dig.hpp"
 
 #include "core/DamageType.hpp"
 
@@ -129,6 +130,7 @@ namespace core {
 			std::unique_ptr<Result> makeSpell(typename Result::Stats stats,
 				const sf::Texture& icon, std::string_view name,
 				std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager>,
+				std::shared_ptr<render::PlayerMap>,
 				std::shared_ptr<util::Raycaster>, util::RandomEngine&) {
 			return std::make_unique<Result>(stats, icon, name, world);
 		}
@@ -140,6 +142,7 @@ namespace core {
 		std::unique_ptr<Result> makeSpell(typename Result::Stats stats,
 				const sf::Texture& icon, std::string_view name,
 				std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles,
+				std::shared_ptr<render::PlayerMap>,
 				std::shared_ptr<util::Raycaster>, util::RandomEngine&) {
 			return std::make_unique<Result>(stats, icon, name, world, particles);
 		}
@@ -152,6 +155,7 @@ namespace core {
 		std::unique_ptr<Result> makeSpell(typename Result::Stats stats,
 				const sf::Texture& icon, std::string_view name,
 				std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles,
+				std::shared_ptr<render::PlayerMap>,
 				std::shared_ptr<util::Raycaster> raycaster, util::RandomEngine&) {
 			return std::make_unique<Result>(stats, icon, name, world, particles, raycaster);
 		}
@@ -164,14 +168,42 @@ namespace core {
 		std::unique_ptr<Result> makeSpell(typename Result::Stats stats,
 				const sf::Texture& icon, std::string_view name,
 				std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles,
+				std::shared_ptr<render::PlayerMap>,
 				std::shared_ptr<util::Raycaster> raycaster, util::RandomEngine& randomEngine) {
 			return std::make_unique<Result>(stats, icon, name, world, particles, raycaster, randomEngine);
+		}
+
+		template <typename Result>
+			requires std::constructible_from<Result, typename Result::Stats,
+				const sf::Texture&, std::string_view,
+				std::shared_ptr<World>, std::shared_ptr<render::ParticleManager>,
+				std::shared_ptr<render::PlayerMap>>
+		std::unique_ptr<Result> makeSpell(typename Result::Stats stats,
+				const sf::Texture& icon, std::string_view name,
+				std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles,
+				std::shared_ptr<render::PlayerMap> playerMap,
+				std::shared_ptr<util::Raycaster>, util::RandomEngine&) {
+			return std::make_unique<Result>(stats, icon, name, world, particles, playerMap);
+		}
+
+		template <typename Result>
+			requires std::constructible_from<Result, typename Result::Stats,
+				const sf::Texture&, std::string_view,
+				std::shared_ptr<World>, std::shared_ptr<render::ParticleManager>,
+				std::shared_ptr<render::PlayerMap>, std::shared_ptr<util::Raycaster>>
+		std::unique_ptr<Result> makeSpell(typename Result::Stats stats,
+				const sf::Texture& icon, std::string_view name,
+				std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles,
+				std::shared_ptr<render::PlayerMap> playerMap,
+				std::shared_ptr<util::Raycaster> raycaster, util::RandomEngine&) {
+			return std::make_unique<Result>(stats, icon, name, world, particles, playerMap, raycaster);
 		}
 
 		template <typename Loaded>
 		std::unique_ptr<Loaded> loadSpell(std::unordered_map<std::string, std::string>& params,
 				std::shared_ptr<EffectManager> effects, std::shared_ptr<render::AssetManager> assets,
 				std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles,
+				std::shared_ptr<render::PlayerMap> playerMap,
 				std::shared_ptr<util::Raycaster> raycaster, util::RandomEngine& randomEngine) {
 			const sf::Texture& icon = assets->texture(util::getAndEraseRequired(params, "icon"));
 			std::string name = util::getAndEraseRequired(params, "name");
@@ -180,13 +212,14 @@ namespace core {
 			if (!params.empty())
 				throw UnknownParamsError{params};
 
-			return makeSpell<Loaded>(stats, icon, name, world, particles, raycaster, randomEngine);
+			return makeSpell<Loaded>(stats, icon, name, world, particles, playerMap, raycaster, randomEngine);
 		}
 	}
 
 	SpellManager::SpellManager(std::shared_ptr<core::EffectManager> effectManager, 
 							   std::shared_ptr<render::AssetManager> assets,
 							   std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager> particles,
+							   std::shared_ptr<render::PlayerMap> playerMap,
 							   std::shared_ptr<util::Raycaster> raycaster, util::RandomEngine& randomEngine,
 		                       util::LoggerFactory& loggerFactory) {
 		auto logger = loggerFactory.create("effects");
@@ -197,19 +230,21 @@ namespace core {
 
 			std::string type = util::getAndEraseRequired(params, "type");
 			if (type == "projectile") {
-				spells.push_back(loadSpell<ProjectileSpell>(params, effectManager, assets, world, particles, raycaster, randomEngine));
+				spells.push_back(loadSpell<ProjectileSpell>(params, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
 			} else if (type == "fallingProjectile") {
-				spells.push_back(loadSpell<FallingProjectileSpell>(params, effectManager, assets, world, particles, raycaster, randomEngine));
+				spells.push_back(loadSpell<FallingProjectileSpell>(params, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
 			} else if (type == "branchingRay") {
-				spells.push_back(loadSpell<BranchingRaySpell>(params, effectManager, assets, world, particles, raycaster, randomEngine));
+				spells.push_back(loadSpell<BranchingRaySpell>(params, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
 			} else if (type == "chargingRay") {
-				spells.push_back(loadSpell<ChargingRaySpell>(params, effectManager, assets, world, particles, raycaster, randomEngine));
+				spells.push_back(loadSpell<ChargingRaySpell>(params, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
 			} else if (type == "explodingProjectile") {
-				spells.push_back(loadSpell<ExplodingProjectileSpell>(params, effectManager, assets, world, particles, raycaster, randomEngine));
+				spells.push_back(loadSpell<ExplodingProjectileSpell>(params, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
 			} else if (type == "ring") {
-				spells.push_back(loadSpell<EffectRingSpell>(params, effectManager, assets, world, particles, raycaster, randomEngine));
+				spells.push_back(loadSpell<EffectRingSpell>(params, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
 			} else if (type == "teleport") {
-				spells.push_back(loadSpell<TeleportSpell>(params, effectManager, assets, world, particles, raycaster, randomEngine));
+				spells.push_back(loadSpell<TeleportSpell>(params, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
+			} else if (type == "dig") {
+				spells.push_back(loadSpell<DigSpell>(params, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
 			}
 		});
 

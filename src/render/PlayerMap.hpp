@@ -70,6 +70,8 @@ namespace render {
 			updateActors();
 		}
 
+		void updateTiles();
+
 		void handleSound(core::Sound sound) {
 			recentSounds_.push_back(sound);
 		}
@@ -90,7 +92,6 @@ namespace render {
 		std::shared_ptr<core::World> world;
 		std::shared_ptr<util::Raycaster> raycaster;
 
-		void updateTiles();
 		void updateActors();
 	};
 }
