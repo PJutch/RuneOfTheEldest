@@ -18,6 +18,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Spell.hpp"
 
+#include "ActorImpact.hpp"
+
 #include "core/fwd.hpp"
 #include "core/DamageType.hpp"
 #include "core/Position.hpp"
@@ -43,10 +45,7 @@ namespace core {
 	class BranchingRaySpell : public Spell {
 	public:
 		struct Stats {
-			double damage;
-			DamageType damageType;
-
-			double accuracy;
+			ActorImpact impact;
 
 			double mana;
 
@@ -107,7 +106,7 @@ namespace core {
 				return;
 			}
 
-			next.beAttacked(stats.damage, stats.accuracy, stats.damageType);
+			stats.impact.apply(next);
 			world->makeSound({Sound::Type::ATTACK, true, prev.position()});
 			spawnRay(core::Position<int>{prev.position()}, core::Position<int>{next.position()});
 
@@ -118,9 +117,7 @@ namespace core {
 		}
 	};
 
-	BOOST_DESCRIBE_STRUCT(BranchingRaySpell::Stats, (), (
-		damage, damageType, accuracy, mana, chainChance, visibleTime, rayTexture
-	))
+	BOOST_DESCRIBE_STRUCT(BranchingRaySpell::Stats, (), (impact, mana, chainChance, visibleTime, rayTexture))
 }
 
 #endif

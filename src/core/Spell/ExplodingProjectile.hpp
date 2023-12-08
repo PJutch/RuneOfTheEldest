@@ -18,6 +18,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Spell.hpp"
 
+#include "ActorImpact.hpp"
+
 #include "core/fwd.hpp"
 #include "core/DamageType.hpp"
 #include "core/Position.hpp"
@@ -45,10 +47,7 @@ namespace core {
 	class ExplodingProjectileSpell : public Spell {
 	public:
 		struct Stats {
-			double damage;
-			DamageType damageType;
-
-			double accuracy;
+			ActorImpact impact;
 
 			double explosionRadius;
 
@@ -75,7 +74,7 @@ namespace core {
 			for (const auto& actor : world->actors()) {
 				if (util::distance(util::getXY(actor->position()), target.xy()) <= stats.explosionRadius
 				 && raycaster->canSee(static_cast<sf::Vector3i>(target), actor->position())) {
-					actor->beAttacked(stats.damage, stats.accuracy, stats.damageType);
+					stats.impact.apply(*actor);
 					world->makeSound({Sound::Type::ATTACK, true, actor->position()});
 				}
 			}
@@ -159,7 +158,7 @@ namespace core {
 	};
 
 	BOOST_DESCRIBE_STRUCT(ExplodingProjectileSpell::Stats, (), (
-		damage, damageType, accuracy, explosionRadius, mana, 
+		impact, explosionRadius, mana, 
 		flightTime, projectileTexture, explosionFrameLength, explosionAnimation
 	))
 }

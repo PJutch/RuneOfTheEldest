@@ -19,7 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "BranchingRay.hpp"
 #include "ChargingRay.hpp"
 #include "ExplodingProjectile.hpp"
-#include "EffectRing.hpp"
+#include "Ring.hpp"
 #include "Teleport.hpp"
 #include "Dig.hpp"
 
@@ -280,7 +280,7 @@ namespace core {
 			} else if (type == "explodingProjectile") {
 				spells.push_back(loadSpell<ExplodingProjectileSpell>(params, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
 			} else if (type == "ring") {
-				spells.push_back(loadSpell<EffectRingSpell>(params, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
+				spells.push_back(loadSpell<RingSpell>(params, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
 			} else if (type == "teleport") {
 				spells.push_back(loadSpell<TeleportSpell>(params, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
 			} else if (type == "dig") {

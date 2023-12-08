@@ -13,10 +13,12 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef EFFECT_RING_HPP_
-#define EFFECT_RING_HPP_
+#ifndef RING_SPELL_HPP_
+#define RING_SPELL_HPP_
 
 #include "Spell.hpp"
+
+#include "ActorImpact.hpp"
 
 #include "core/fwd.hpp"
 #include "core/DamageType.hpp"
@@ -42,10 +44,10 @@ namespace sf {
 #include <memory>
 
 namespace core {
-	class EffectRingSpell : public Spell {
+	class RingSpell : public Spell {
 	public:
 		struct Stats {
-			const Effect* effect;
+			ActorImpact impact;
 
 			double accuracy;
 
@@ -57,7 +59,7 @@ namespace core {
 			const sf::Texture* texture = nullptr;
 		};
 
-		EffectRingSpell(Stats stats_, const sf::Texture& icon, std::string_view name,
+		RingSpell(Stats stats_, const sf::Texture& icon, std::string_view name,
 				std::shared_ptr<World> world_, std::shared_ptr<render::ParticleManager> particles_,
 				std::shared_ptr<util::Raycaster> raycaster_, util::RandomEngine& randomEngine_) :
 			Spell{icon, name}, stats{stats_}, world{std::move(world_)},
@@ -71,9 +73,8 @@ namespace core {
 			for (const auto& actor : world->actors()) {
 				if (actor.get() != self.get()
 				 && util::distance(util::getXY(actor->position()), util::getXY(self->position())) <= stats.radius
-				 && raycaster->canSee(self->position(), actor->position())
-				 && std::bernoulli_distribution{actor->hitChance(stats.accuracy)}(*randomEngine)) {
-					actor->addEffect(stats.effect->clone());
+				 && raycaster->canSee(self->position(), actor->position())) {
+					stats.impact.apply(*actor);
 					world->makeSound({Sound::Type::ATTACK, true, actor->position()});
 				}
 			}
@@ -84,7 +85,7 @@ namespace core {
 		}
 
 		[[nodiscard]] std::shared_ptr<Spell> clone() const final {
-			return std::make_shared<EffectRingSpell>(*this);
+			return std::make_shared<RingSpell>(*this);
 		}
 	private:
 		class Ring : public render::ParticleManager::CustomParticle {
@@ -144,9 +145,7 @@ namespace core {
 		}
 	};
 
-	BOOST_DESCRIBE_STRUCT(EffectRingSpell::Stats, (), (
-		effect, accuracy, radius, mana, visibleTime, texture
-	))
+	BOOST_DESCRIBE_STRUCT(RingSpell::Stats, (), (impact, radius, mana, visibleTime, texture))
 }
 
 #endif
