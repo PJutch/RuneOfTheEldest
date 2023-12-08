@@ -208,19 +208,19 @@ namespace core {
 		};
 
 		ActorImpact loadImpact(std::unordered_map<std::string, std::string>& params, EffectManager& effects) {
-			double accuracy = util::parseReal(util::getAndEraseRequired(params, "accuracy"));
+			ActorImpact impact;
+			impact.accuracy(util::parseReal(util::getAndEraseRequired(params, "accuracy")));
 
-			if (auto damageIter = params.find("damage"), damageTypeIter = params.find("damageType");
-					damageIter != params.end() && damageTypeIter != params.end()) {
-				ActorImpact impact{util::parseReal(damageIter->second), getDamageType(damageTypeIter->second), accuracy};
-				params.erase(damageIter);
-				params.erase(damageTypeIter);
-				return impact;
-			} else if (auto v = util::getAndErase(params, "effect")) {
-				return {effects.findEffect(*v), accuracy};
-			} else {
-				throw UnknownActorImpact{};
+			if (auto damageStr = util::getAndErase(params, "damage")) {
+				auto damageType = getDamageType(util::getAndEraseRequired(params, "damageType"));
+				impact.damage(util::parseReal(*damageStr), damageType);
 			}
+			
+			if (auto v = util::getAndErase(params, "effect")) {
+				impact.effect(effects.findEffect(*v));
+			}
+
+			return impact;
 		}
 
 		template <typename Loaded>

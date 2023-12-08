@@ -24,24 +24,37 @@ namespace core {
     public:
         ActorImpact() = default;
 
-        ActorImpact(double damage_, DamageType damageType_, double accuracy_) :
-            damage{damage_}, damageType{damageType_}, accuracy{accuracy_} {}
+        ActorImpact(double newDamage, DamageType newDamageType, double newAccuracy) :
+            damage_{newDamage}, damageType_{newDamageType}, accuracy_{newAccuracy} {}
 
-        ActorImpact(const Effect* effect_, double accuracy_) :
-            effect{effect_}, accuracy{accuracy_} {}
+        ActorImpact(const Effect* newEffect, double newAccuracy) :
+            effect_{newEffect}, accuracy_{newAccuracy} {}
 
         void apply(core::Actor& actor) const {
-            if (actor.beAttacked(damage, accuracy, damageType) && effect) {
-                actor.addEffect(effect->clone());
+            if (actor.beAttacked(damage_, accuracy_, damageType_) && effect_) {
+                actor.addEffect(effect_->clone());
             }
         }
+
+        void accuracy(double newAccuracy) {
+            accuracy_ = newAccuracy;
+        }
+
+        void damage(double newDamage, DamageType newDamageType) {
+            damage_ = newDamage;
+            damageType_ = newDamageType;
+        }
+
+        void effect(const Effect* newEffect) {
+            effect_ = newEffect;
+        }
     private:
-        double damage = 0.0;
-        DamageType damageType = DamageType::PHYSICAL;
+        double damage_ = 0.0;
+        DamageType damageType_ = DamageType::PHYSICAL;
 
-        const Effect* effect = nullptr;
+        const Effect* effect_ = nullptr;
 
-        double accuracy = 0.0;
+        double accuracy_ = 0.0;
     };
 }
 
