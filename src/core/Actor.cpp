@@ -207,4 +207,13 @@ namespace core {
 			effect->onAttack(other);
 		world().makeSound({Sound::Type::ATTACK, controller().isOnPlayerSide(), position()});
 	}
+
+	double Actor::recievedDamageMul(DamageType damageType) {
+		double defence_ = defence(damageType);
+		if (defence_ >= 0) {
+			return 1 / (defence_ + 1);
+		} else {
+			return 1 - defence_;
+		}
+	}
 }

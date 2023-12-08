@@ -102,7 +102,8 @@ namespace core {
 		void beDamaged(double damage, DamageType type) {
 			if (!isAlive()) 
 				return;
-			hp_ -= damage / defence(type);
+
+			hp_ -= damage * recievedDamageMul(type);
 			if (!isAlive())
 				xpManager->addXp(stats.xp);
 		}
@@ -281,6 +282,7 @@ namespace core {
 		double evasion();
 		double turnDelay();
 		double defence(DamageType damageType);
+		double recievedDamageMul(DamageType damageType);
 	};
 }
 

@@ -104,7 +104,7 @@ namespace core {
 			} else
 				currentStats.hasRangedAttack = false;
 
-			currentStats.defences.fill(1);
+			currentStats.defences.fill(0);
 			boost::mp11::mp_for_each<boost::describe::describe_enumerators<DamageType>>([&](auto D) {
 				using namespace std::literals;
 				if (auto v = util::getAndErase(params, util::toLower(D.name) + "Defence"s))
