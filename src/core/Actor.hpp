@@ -256,6 +256,11 @@ namespace core {
 		double hitChance(double accuracy) {
 			return accuracy / (accuracy + evasion());
 		}
+
+		void heal(double healed) {
+			hp_ += healed;
+			hp_ = std::min(hp(), maxHp());
+		}
 	private:
 		Stats stats;
 		std::unique_ptr<Controller> controller_;

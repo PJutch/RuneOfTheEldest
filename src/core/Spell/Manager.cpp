@@ -22,6 +22,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Ring.hpp"
 #include "Teleport.hpp"
 #include "Dig.hpp"
+#include "Heal.hpp"
 
 #include "core/DamageType.hpp"
 
@@ -126,9 +127,19 @@ namespace core {
 		};
 
 		template <typename Result>
+			requires std::constructible_from<Result, typename Result::Stats, const sf::Texture&, std::string_view>
+		std::unique_ptr<Result> makeSpell(typename Result::Stats stats,
+				const sf::Texture& icon, std::string_view name,
+				std::shared_ptr<World>, std::shared_ptr<render::ParticleManager>,
+				std::shared_ptr<render::PlayerMap>,
+				std::shared_ptr<util::Raycaster>, util::RandomEngine&) {
+			return std::make_unique<Result>(stats, icon, name);
+		}
+
+		template <typename Result>
 			requires std::constructible_from<Result, 
 				typename Result::Stats, const sf::Texture&, std::string_view, std::shared_ptr<World>>
-			std::unique_ptr<Result> makeSpell(typename Result::Stats stats,
+		std::unique_ptr<Result> makeSpell(typename Result::Stats stats,
 				const sf::Texture& icon, std::string_view name,
 				std::shared_ptr<World> world, std::shared_ptr<render::ParticleManager>,
 				std::shared_ptr<render::PlayerMap>,
@@ -287,6 +298,8 @@ namespace core {
 				spells.push_back(loadSpell<TeleportSpell>(params, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
 			} else if (type == "dig") {
 				spells.push_back(loadSpell<DigSpell>(params, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
+			} else if (type == "heal") {
+				spells.push_back(loadSpell<HealSpell>(params, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
 			}
 		});
 
