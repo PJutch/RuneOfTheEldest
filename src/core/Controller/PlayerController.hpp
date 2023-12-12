@@ -49,13 +49,13 @@ namespace core {
 		/// Adds sound to PlayerMap. Interrupts rest
 		void handleSound(Sound sound) {
 			renderContext.playerMap->handleSound(sound);
-			if (state == State::RESTING)
+			if (isResting())
 				state = State::WAITING_TURN;
 		}
 
 		/// Interrupts rest
 		void handleDamaged(Sound) {
-			if (state == State::RESTING)
+			if (isResting())
 				state = State::WAITING_TURN;
 		}
 
@@ -72,7 +72,9 @@ namespace core {
 			WAITING_TURN,
 			WAITING_INPUT,
 			ENDED_TURN,
-			RESTING,
+			WAITING_HP,
+			WAITING_MANA,
+			WAITING_HP_OR_MANA,
 			TRAVELING,
 			EXPLORING
 		};
@@ -94,6 +96,15 @@ namespace core {
 
 		bool moveToTarget();
 		bool explore();
+
+		void startResting();
+		bool shouldRest() const;
+
+		bool isResting() const {
+			return state == State::WAITING_HP_OR_MANA
+				|| state == State::WAITING_HP
+				|| state == State::WAITING_MANA;
+		}
 	};
 }
 

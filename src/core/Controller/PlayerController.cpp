@@ -73,9 +73,7 @@ namespace core {
 					if (tryDescentStairs())
 						endTurn();
 				} else {
-					state = State::RESTING;
-					renderContext.playerMap->clearSounds();
-					player.lock()->endTurn();
+					startResting();
 				}
 			} else if (event.key.code == sf::Keyboard::O) {
 				state = State::EXPLORING;
@@ -168,16 +166,46 @@ namespace core {
 		}
 	}
 
+	void PlayerController::startResting() {
+		auto player_ = player.lock();
+		if (player_->hp() < player_->maxHp() && player_->mana() < player_->maxMana()) {
+			state = State::WAITING_HP_OR_MANA;
+		} else if (player_->hp() < player_->maxHp()) {
+			state = State::WAITING_HP;
+		} else if (player_->mana() < player_->maxMana()) {
+			state = State::WAITING_MANA;
+		}
+		renderContext.playerMap->clearSounds();
+		player_->endTurn();
+	}
+
+	bool PlayerController::shouldRest() const {
+		auto player_ = player.lock();
+		switch (state) {
+		case State::WAITING_HP_OR_MANA:
+			return player_->hp() < player_->maxHp() && player_->mana() < player_->maxMana();
+		case State::WAITING_HP: 
+			return player_->hp() < player_->maxHp();
+		case State::WAITING_MANA:
+			return player_->mana() < player_->maxMana();
+		default:
+			return false;
+		}
+	}
+
 	bool PlayerController::act() {
 		switch (state) {
-		case State::RESTING: 
-			if (player.lock()->hp() < player.lock()->maxHp() && !canSeeEnemy()) {
+		case State::WAITING_HP_OR_MANA:
+		case State::WAITING_HP:
+		case State::WAITING_MANA: {
+			if (shouldRest()) {
 				player.lock()->endTurn();
 				return true;
 			} else {
 				state = State::WAITING_INPUT;
 				return false;
 			}
+		}
 		case State::TRAVELING:
 			if (!canSeeEnemy()) {
 				return moveToTarget();
