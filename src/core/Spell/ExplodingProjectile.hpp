@@ -66,9 +66,9 @@ namespace core {
 			Spell{icon, name}, stats{stats_}, world{std::move(world_)},
 			particles{std::move(particles_)}, raycaster{std::move(raycaster_)} {}
 
-		bool cast(std::shared_ptr<Actor> self, core::Position<int> target) final {
+		CastResult cast(std::shared_ptr<Actor> self, core::Position<int> target) final {
 			if (!self->useMana(stats.mana)) {
-				return false;
+				return CastResult::FAILURE;
 			}
 
 			for (const auto& actor : world->actors()) {
@@ -81,7 +81,7 @@ namespace core {
 
 			spawnParticles(static_cast<core::Position<int>>(self->position()), target);
 
-			return true;
+			return CastResult::SUCCESS;
 		}
 
 		[[nodiscard]] std::shared_ptr<Spell> clone() const final {

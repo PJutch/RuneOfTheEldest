@@ -34,11 +34,27 @@ namespace core {
 		Spell(const sf::Texture& newIcon, std::string_view newName) : icon_{&newIcon}, name_{newName} {}
 		virtual ~Spell() = default;
 
+		/// Feedback for gui
+		enum class CastResult {
+			NOT_SUPPORTED, ///< Can't use on selected target
+			FAILURE,       ///< Can't use in given conditions
+			SUCCESS        ///< Used succesfully
+		};
+
 		/// @brief Casts spell
 		/// @param self Casting Actor
 		/// @param target Tile selected by player
-		/// @returns true if should end turn
-		virtual bool cast(std::shared_ptr<Actor> self, core::Position<int> target) = 0;
+		/// @returns Feedback for gui
+		virtual CastResult cast([[maybe_unused]] std::shared_ptr<Actor> self, [[maybe_unused]] core::Position<int> target) {
+			return CastResult::NOT_SUPPORTED;
+		}
+
+		/// @brief Casts spell
+		/// @param self Casting Actor
+		/// @returns Feedback for gui
+		virtual CastResult cast([[maybe_unused]] std::shared_ptr<Actor> self) {
+			return CastResult::NOT_SUPPORTED;
+		}
 
 		/// @brief tries to coninue casting spell
 		/// @returns true if actually continued

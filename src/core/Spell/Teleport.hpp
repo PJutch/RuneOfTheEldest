@@ -45,15 +45,15 @@ namespace core {
 		TeleportSpell(Stats stats_, const sf::Texture& icon, std::string_view name, std::shared_ptr<World> world_) :
 			Spell{icon, name}, stats{stats_}, world{std::move(world_)} {}
 
-		bool cast(std::shared_ptr<Actor> self, core::Position<int>) final {
+		CastResult cast(std::shared_ptr<Actor> self) final {
 			if (!self->useMana(stats.mana))
-				return false;
+				return CastResult::FAILURE;
 
 			self->position(world->randomPositionAt(self->position().z, [](const core::World& world, sf::Vector3i pos) {
 				return world.isFree(pos);
 			}));
 
-			return true;
+			return CastResult::SUCCESS;
 		}
 
 		[[nodiscard]] std::shared_ptr<Spell> clone() const final {

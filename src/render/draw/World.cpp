@@ -93,6 +93,10 @@ namespace render {
             drawRect(target, rect, color);
         }
 
+        void drawCurrentTile(sf::RenderTarget& target, core::Position<float> cameraPos) {
+            auto tile = mouseTile(sf::Mouse::getPosition(), cameraPos, target).xy();
+            drawInWorldRect(target, sf::IntRect{tile, {1, 1}}, sf::Color::Transparent, sf::Color::Red, 1.0);
+        }
 
         void draw(sf::RenderTarget& target, const AssetManager& assets,
                   const render::PlayerMap& playerMap, core::Position<float> cameraPos,
@@ -117,9 +121,6 @@ namespace render {
                 actor.mana, actor.maxMana, maxHpBarSize, colorMod);
             drawSprite(target, topLeft + util::topRight(spriteSize), util::topRight(aiStateIconSize),
                 assets.aiStateIcon(actor.aiState), colorMod);
-
-            drawInWorldRect(target, sf::IntRect{mouseTile(sf::Mouse::getPosition(), cameraPos, target),
-                {1, 1}}, sf::Color::Transparent, sf::Color::Red, 1.0);
         }
     }
 
@@ -138,5 +139,7 @@ namespace render {
 
         for (const core::Sound& sound : playerMap.recentSounds())
             draw(target, assets, world, playerMap, sound);
+
+        drawCurrentTile(target, cameraPos);
     }
 }

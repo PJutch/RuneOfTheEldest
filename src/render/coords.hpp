@@ -49,11 +49,11 @@ namespace render {
     }
 
     /// Gets mouse pos in tile space
-    [[nodiscard]] inline sf::Vector2i mouseTile(sf::Vector2i mousePixel, core::Position<float> cameraPos, 
+    [[nodiscard]] inline core::Position<int> mouseTile(sf::Vector2i mousePixel, core::Position<float> cameraPos, 
             const sf::RenderTarget& target) {
         auto [mouseX, mouseY] = target.mapPixelToCoords(mousePixel, 
             createFullscreenView(toScreen(cameraPos.xy()), 512.f, target.getSize()));
-        return util::geometry_cast<int>(fromScreen({mouseX, mouseY}));
+        return {util::geometry_cast<int>(fromScreen({mouseX, mouseY})), cameraPos.z};
     }
 }
 #endif

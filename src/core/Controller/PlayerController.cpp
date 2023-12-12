@@ -39,11 +39,12 @@ namespace core {
 		player_->world().player(player_);
 	}
 
-	void PlayerController::endTurn() noexcept {
+	void PlayerController::endTurn(std::shared_ptr<Spell> newCastSpell) noexcept {
 		if (castSpell) {
 			castSpell->interrupt();
-			castSpell = nullptr;
 		}
+		castSpell = std::move(newCastSpell);
+
 		state = State::ENDED_TURN;
 		renderContext.playerMap->clearSounds();
 		player.lock()->endTurn();
@@ -87,37 +88,46 @@ namespace core {
 						return;
 					}
 			}
-		} else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
-			auto player_ = player.lock();
-			if (auto newCurrentSpell = render::clickedSpell(
-				{event.mouseButton.x, event.mouseButton.y}, *renderContext.window, *player_
-			)) {
-				currentSpell_ = newCurrentSpell;
-			} else if (currentSpell_) {
-				core::Position<int> target{render::mouseTile({event.mouseButton.x, event.mouseButton.y}, 
-					renderContext.camera->position(), *renderContext.window), player_->position().z};
-				if (auto spell = player_->spells()[*currentSpell_]; spell->cast(player_, target)) {
-					castSpell = spell;
-					state = State::ENDED_TURN;
-					renderContext.playerMap->clearSounds();
-					player.lock()->endTurn();
-				}
-			} else {
-				if (!canSeeEnemy()) {
-					core::Position<int> newTarget {
-						render::mouseTile({event.mouseButton.x, event.mouseButton.y},
-						renderContext.camera->position(), *renderContext.window), player_->position().z
-					};
+		} else if (event.type == sf::Event::MouseButtonPressed) {
+			if (event.mouseButton.button == sf::Mouse::Left) {
+				handleClick({event.mouseButton.x, event.mouseButton.y});
+			} else if (event.mouseButton.button == sf::Mouse::Right) {
+				currentSpell_ = std::nullopt;
+			}
+		}
+	}
 
-					if (player_->world().tiles().isValidPosition(static_cast<sf::Vector3i>(newTarget))) {
-						state = State::TRAVELING;
-						travelTarget = newTarget;
-						moveToTarget();
-					}
+	void PlayerController::handleClick(sf::Vector2i clickPos) {
+		auto player_ = player.lock();
+		if (auto newCurrentSpell = render::clickedSpell(clickPos, *renderContext.window, *player_)) {
+			auto spell = player_->spells()[*newCurrentSpell];
+			switch (spell->cast(player_)) {
+			case Spell::CastResult::SUCCESS:
+				endTurn(spell);
+				break;
+			case Spell::CastResult::FAILURE:
+				break;
+			case Spell::CastResult::NOT_SUPPORTED:
+				currentSpell_ = newCurrentSpell;
+				break;
+			default:
+				TROTE_ASSERT(false, "unreachable");
+			}
+		} else if (currentSpell_) {
+			auto target = render::mouseTile(clickPos, renderContext.camera->position(), *renderContext.window);
+			auto spell = player_->spells()[*currentSpell_];
+			if (spell->cast(player_, target) == Spell::CastResult::SUCCESS) {
+				endTurn(spell);
+			}
+		} else {
+			if (!canSeeEnemy()) {
+				auto newTarget = render::mouseTile(clickPos, renderContext.camera->position(), *renderContext.window);
+				if (player_->world().tiles().isValidPosition(static_cast<sf::Vector3i>(newTarget))) {
+					state = State::TRAVELING;
+					travelTarget = newTarget;
+					moveToTarget();
 				}
 			}
-		} else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Right) {
-			currentSpell_ = std::nullopt;
 		}
 	}
 

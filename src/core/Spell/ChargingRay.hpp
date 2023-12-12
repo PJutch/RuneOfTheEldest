@@ -61,10 +61,10 @@ namespace core {
 			Spell{icon, name}, stats{stats_}, world{std::move(world_)},
 			particles{std::move(particles_)}, raycaster{std::move(raycaster_)} {}
 
-		bool cast(std::shared_ptr<Actor> self_, core::Position<int> targetPos) final {
+		CastResult cast(std::shared_ptr<Actor> self_, core::Position<int> targetPos) final {
 			auto target_ = world->actorAt(targetPos);
 			if (!target_)
-				return false;
+				return CastResult::FAILURE;
 
 			if (target_ != target.lock() || self_ != self.lock()) {
 				target = std::move(target_);
@@ -73,7 +73,7 @@ namespace core {
 				isCasted = true;
 				particles->add(std::make_unique<Ray>(shared_from_this(), particles));
 			}
-			return attack();
+			return attack() ? CastResult::SUCCESS : CastResult::FAILURE;
 		}
 
 		bool continueCast() final {

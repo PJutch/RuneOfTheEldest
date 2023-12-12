@@ -61,17 +61,17 @@ namespace core {
 			Spell{icon, name}, stats{stats_}, world{std::move(world_)}, 
 			particles{std::move(particles_)}, raycaster{std::move(raycaster_)}, randomEngine{&randomEngine_} {}
 
-		bool cast(std::shared_ptr<Actor> self, core::Position<int> target) final {
+		CastResult cast(std::shared_ptr<Actor> self, core::Position<int> target) final {
 			auto other = world->actorAt(target);
 			if (!other)
-				return false;
+				return CastResult::FAILURE;
 
 			if (!self->useMana(stats.mana))
-				return false;
+				return CastResult::FAILURE;
 
 			attack(*self, *other);
 
-			return true;
+			return CastResult::SUCCESS;
 		}
 
 		[[nodiscard]] std::shared_ptr<Spell> clone() const final {

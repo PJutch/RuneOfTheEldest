@@ -83,12 +83,14 @@ namespace core {
 
 		core::Position<int> travelTarget;
 
+		void handleClick(sf::Vector2i clickPos);
+
 		bool tryAscentStairs();
 		bool tryDescentStairs();
 
 		bool canSeeEnemy() const;
 
-		void endTurn() noexcept;
+		void endTurn(std::shared_ptr<Spell> castSpell = nullptr) noexcept;
 
 		bool moveToTarget();
 		bool explore();
