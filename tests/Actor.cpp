@@ -43,7 +43,7 @@ namespace {
 
 	auto defaultDefences() {
 		std::array<double, util::nEnumerators<core::DamageType>> defences;
-		defences.fill(1);
+		defences.fill(0);
 		return defences;
 	}
 
@@ -111,7 +111,7 @@ TEST(Actor, beDamagedLethal) {
 }
 
 TEST(Actor, beDamagedDefence) {
-	core::Actor actor = makeTestActor(5.0, {2, 1});
+	core::Actor actor = makeTestActor(5.0, {1, 0});
 
 	actor.beDamaged(4, core::DamageType::PHYSICAL);
 
@@ -120,7 +120,7 @@ TEST(Actor, beDamagedDefence) {
 }
 
 TEST(Actor, beDamagedNoDefence) {
-	core::Actor actor = makeTestActor(5.0, {2, 1});
+	core::Actor actor = makeTestActor(5.0, {1, 0});
 
 	actor.beDamaged(4, core::DamageType::POISON);
 
