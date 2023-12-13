@@ -20,8 +20,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Effect/TargetFullHpSkill.hpp"
 #include "Effect/Poison.hpp"
 #include "Effect/AppliesEffectOnAttack.hpp"
-#include "Effect/SpeedEffect.hpp"
+#include "Effect/TempBonus.hpp"
 #include "Effect/FireDefenceEffect.hpp"
+#include "Effect/ConditionalBonus.hpp"
 
 #include "core/DamageType.hpp"
 
@@ -55,8 +56,7 @@ namespace core {
 				std::move(currentStacktrace)} {}
 		};
 
-		std::unique_ptr<Effect> createSkill(std::unordered_map<std::string, std::string>& params,
-			std::string_view type, std::string_view name, const sf::Texture& icon) {
+		ConditionalBonus::Bonuses loadBonuses(std::unordered_map<std::string, std::string>& params) {
 			double regenBonus = 0;
 			double manaRegenBonus = 0;
 			double speedBonus = 0;
@@ -65,42 +65,39 @@ namespace core {
 			double xpMul = 1;
 			double hpBonus = 0;
 			double manaBonus = 0;
+
+			if (auto v = util::getAndErase(params, "hpBonus"))
+				hpBonus = util::parseReal(*v);
+
+			if (auto v = util::getAndErase(params, "manaBonus"))
+				manaBonus = util::parseReal(*v);
+
+			if (auto v = util::getAndErase(params, "regenBonus"))
+				regenBonus = util::parseReal(*v);
+
+			if (auto v = util::getAndErase(params, "manaRegenBonus"))
+				manaRegenBonus = util::parseReal(*v);
+
+			if (auto v = util::getAndErase(params, "speed"))
+				speedBonus = util::parseReal(*v);
+
+			if (auto v = util::getAndErase(params, "accuracy"))
+				accuracyBonus = util::parseReal(*v);
+
+			if (auto v = util::getAndErase(params, "evasion"))
+				evasionBonus = util::parseReal(*v);
+
+			if (auto v = util::getAndErase(params, "xpMul"))
+				xpMul = util::parseReal(*v);
+
 			std::array<double, util::nEnumerators<DamageType>> defenceBonuses;
 			defenceBonuses.fill(0);
 
-			if (type == "unconditionalSkill") {
-				if (auto v = util::getAndErase(params, "hpBonus"))
-					hpBonus = util::parseReal(*v);
-
-				if (auto v = util::getAndErase(params, "manaBonus"))
-					manaBonus = util::parseReal(*v);
-			}
-
-			if (type != "targetFullHpSkill") {
-				if (auto v = util::getAndErase(params, "regenBonus"))
-					regenBonus = util::parseReal(*v);
-
-				if (auto v = util::getAndErase(params, "manaRegenBonus"))
-					manaRegenBonus = util::parseReal(*v);
-
-				if (auto v = util::getAndErase(params, "speed"))
-					speedBonus = util::parseReal(*v);
-
-				if (auto v = util::getAndErase(params, "accuracy"))
-					accuracyBonus = util::parseReal(*v);
-
-				if (auto v = util::getAndErase(params, "evasion"))
-					evasionBonus = util::parseReal(*v);
-
-				if (auto v = util::getAndErase(params, "xpMul"))
-					xpMul = util::parseReal(*v);
-
-				boost::mp11::mp_for_each<boost::describe::describe_enumerators<DamageType>>([&](auto D) {
-					using namespace std::literals;
-					if (auto v = util::getAndErase(params, util::toLower(D.name) + "DefenceBonus"s))
-						defenceBonuses[static_cast<int>(D.value)] = util::parseReal(*v);
-				});
-			}
+			boost::mp11::mp_for_each<boost::describe::describe_enumerators<DamageType>>([&](auto D) {
+				using namespace std::literals;
+				if (auto v = util::getAndErase(params, util::toLower(D.name) + "DefenceBonus"s))
+					defenceBonuses[static_cast<int>(D.value)] = util::parseReal(*v);
+			});
 
 			double damageBonus = 0;
 			if (auto v = util::getAndErase(params, "damageBonus"))
@@ -109,20 +106,22 @@ namespace core {
 			if (!params.empty())
 				throw UnknownParamsError{params};
 
-			if (type == "unconditionalSkill")
-				return std::make_unique<UnconditionalSkill>(
-					regenBonus, manaRegenBonus, damageBonus, speedBonus,
-					accuracyBonus, evasionBonus, xpMul, hpBonus, manaBonus, defenceBonuses,
-					icon, name);
-			else if (type == "lowHpSkill")
-				return std::make_unique<LowHpSkill>(
-					regenBonus, manaRegenBonus, 
-					damageBonus, speedBonus, accuracyBonus, evasionBonus, xpMul, defenceBonuses,
-					icon, name);
-			else if (type == "targetFullHpSkill")
-				return std::make_unique<TargetFullHpSkill>(damageBonus, icon, name);
-			else
-				throw UnknownSkillTypeError(type);
+			return {
+				regenBonus, manaRegenBonus, speedBonus, accuracyBonus, evasionBonus, 
+				xpMul, hpBonus, manaBonus, damageBonus, defenceBonuses
+			};
+		}
+
+		std::unique_ptr<Effect> createTargetFullHpSkill(std::unordered_map<std::string, std::string>& params,
+				std::string_view name, const sf::Texture& icon) {
+			double damageBonus = 0;
+			if (auto v = util::getAndErase(params, "damageBonus"))
+				damageBonus = util::parseReal(*v);
+
+			if (!params.empty())
+				throw UnknownParamsError{params};
+
+			return std::make_unique<TargetFullHpSkill>(damageBonus, icon, name);
 		}
 
 		std::unique_ptr<Poison> createPoison(std::unordered_map<std::string, std::string>& params,
@@ -152,26 +151,10 @@ namespace core {
 			return std::make_unique<AppliesEffectOnAttack>(appliedName, icon, name);
 		}
 
-		std::unique_ptr<SpeedEffect> createSpeedEffect(std::unordered_map<std::string, std::string>& params,
-												  std::string_view name, const sf::Texture& icon) { 
-			double speedBonus = util::parseReal(util::getAndEraseRequired(params, "speedBonus"));
-			double duration = util::parseReal(util::getAndEraseRequired(params, "duration"));
-
-			if (!params.empty())
-				throw UnknownParamsError{params};
-
-			return std::make_unique<SpeedEffect>(speedBonus, duration, icon, name);
-		}
-
-		std::unique_ptr<FireDefenceEffect> createFireDefenceEffect(std::unordered_map<std::string, std::string>& params,
+		std::unique_ptr<TempBonus> createTempBonus(std::unordered_map<std::string, std::string>& params,
 				std::string_view name, const sf::Texture& icon) {
-			double defenceBonus = util::parseReal(util::getAndEraseRequired(params, "defenceBonus"));
 			double duration = util::parseReal(util::getAndEraseRequired(params, "duration"));
-
-			if (!params.empty())
-				throw UnknownParamsError{params};
-
-			return std::make_unique<FireDefenceEffect>(defenceBonus, duration, icon, name);
+			return std::make_unique<TempBonus>(loadBonuses(params), duration, icon, name);
 		}
 	}
 
@@ -191,19 +174,19 @@ namespace core {
 			const sf::Texture& icon = assets->texture(util::getAndEraseRequired(params, "icon"));
 			std::string name = util::getAndEraseRequired(params, "name");
 
-			if (type == "unconditionalSkill" 
-			 || type == "lowHpSkill" 
-			 || type == "targetFullHpSkill")
-				effects.push_back(createSkill(params, type, name, icon));
+			if (type == "unconditionalSkill") {
+				effects.push_back(std::make_unique<UnconditionalSkill>(loadBonuses(params), icon, name));
+			} else if (type == "lowHpSkill") {
+				effects.push_back(std::make_unique<LowHpSkill>(loadBonuses(params), icon, name));
+			} else if (type == "targetFullHpSkill")
+				effects.push_back(createTargetFullHpSkill(params, name, icon));
 			else if (type == "poison")
 				effects.push_back(createPoison(params, name, icon));
 			else if (type == "appliesEffectOnAttack")
 				effects.push_back(createAppliesEffect(params, name, icon));
-			else if (type == "speedEffect")
-				effects.push_back(createSpeedEffect(params, name, icon));
-			else if(type == "fireDefenceEffect")
-				effects.push_back(createFireDefenceEffect(params, name, icon));
-			else
+			else if (type == "tempBonus")
+				effects.push_back(createTempBonus(params, name, icon));
+			else 
 				throw UnknownSkillTypeError(type);
 		});
 

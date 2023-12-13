@@ -16,80 +16,24 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef UNCONDITIONAL_SKILL_HPP_
 #define UNCONDITIONAL_SKILL_HPP_
 
-#include "Effect.hpp"
+#include "ConditionalBonus.hpp"
 
 namespace core {
 	/// @brief Always applies
 	/// @details Type in skill file is "unconditional".
 	/// Default skill type.
-	class UnconditionalSkill : public Effect {
+	class UnconditionalSkill : public ConditionalBonus {
 	public:
-		UnconditionalSkill(double newRegenBonus, double newManaRegenBonus, double newDamageBonus, double newSpeedBonus,
-			               double newAccuracyBonus, double newEvasionBonus, 
-			               double newXpMul, double newHpBonus, double newManaBonus,
-						   std::array<double, util::nEnumerators<DamageType>> defenceBonuses_,
-			               const sf::Texture& icon_, std::string_view name_) :
-			Effect{icon_, name_, true}, 
-			hpBonus_{newHpBonus}, regenBonus_{newRegenBonus}, 
-			manaBonus_{newManaBonus}, manaRegenBonus_{newManaRegenBonus},
-			damageBonus_{newDamageBonus},
-			accuracyBonus_{newAccuracyBonus}, evasionBonus_{newEvasionBonus},
-			speedBonus_{newSpeedBonus}, xpMul_{newXpMul}, defenceBonuses{defenceBonuses_} {}
+		UnconditionalSkill(Bonuses bonuses, const sf::Texture& icon, std::string_view name) :
+			ConditionalBonus{bonuses, icon, name, true} {}
 
-		double regenBonus() const final {
-			return regenBonus_;
+		bool shouldApply() const final {
+			return true;
 		}
-
-		double manaRegenBonus() const final {
-			return manaRegenBonus_;
-		}
-
-		double damageBonus(const Actor&) const final {
-			return damageBonus_;
-		}
-
-		double speedBonus() const final {
-			return speedBonus_;
-		}
-
-		double accuracyBonus() const final {
-			return accuracyBonus_;
-		}
-
-		double evasionBonus() const final {
-			return evasionBonus_;
-		}
-
-		double xpMul() const final {
-			return xpMul_;
-		}
-
-		double hpBonus() const final {
-			return hpBonus_;
-		}
-
-		double manaBonus() const final {
-			return manaBonus_;
-		}
-
-		double defenceBonus(DamageType damageType) const final {
-			return defenceBonuses[static_cast<size_t>(damageType)];
-		}
-
+		
 		std::unique_ptr<Effect> clone() const final {
 			return std::make_unique<UnconditionalSkill>(*this);
 		}
-	private:
-		double hpBonus_;
-		double regenBonus_;
-		double manaBonus_;
-		double manaRegenBonus_;
-		double damageBonus_;
-		double accuracyBonus_;
-		double evasionBonus_;
-		double speedBonus_;
-		double xpMul_;
-		std::array<double, util::nEnumerators<DamageType>> defenceBonuses;
 	};
 }
 

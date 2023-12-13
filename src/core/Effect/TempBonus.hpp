@@ -13,37 +13,46 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef SPEED_EFFECT_HPP_
-#define SPEED_EFFECT_HPP_
+#ifndef TEMP_BONUS_HPP_
+#define TEMP_BONUS_HPP_
 
-#include "Effect.hpp"
+#include "ConditionalBonus.hpp"
 
 #include "../Actor.hpp"
 
 namespace core {
 	/// Modifies speed for some time
-	class SpeedEffect : public Effect {
+	class TempBonus : public ConditionalBonus {
 	public:
-		SpeedEffect(double newSpeedBonus, double duration_, const sf::Texture& icon_, std::string_view name_) :
-			Effect{icon_, name_, false}, speedBonus_{newSpeedBonus}, duration{duration_} {}
+		struct RequirementNotMet : public util::RuntimeError {
+		public:
+			using RuntimeError::RuntimeError;
+		};
 
-		double speedBonus() const final {
-			return speedBonus_;
+		TempBonus(Bonuses bonuses, double duration_, const sf::Texture& icon, std::string_view name) :
+				ConditionalBonus{bonuses, icon, name, false}, duration{duration_} {
+			if (bonuses.hpBonus != 0)
+				throw RequirementNotMet{"TempBonus can't change max hp"};
+			if (bonuses.manaBonus != 0)
+				throw RequirementNotMet{"TempBonus can't change max mana"};
+		}
+
+		bool shouldApply() const final {
+			return true;
 		}
 
 		void update(double time) final {
 			duration -= time;
 		}
 
-		virtual bool shouldBeRemoved() const {
+		bool shouldBeRemoved() const final {
 			return duration <= 0;
 		}
 
 		std::unique_ptr<Effect> clone() const final {
-			return std::make_unique<SpeedEffect>(*this);
+			return std::make_unique<TempBonus>(*this);
 		}
 	private:
-		double speedBonus_;
 		double duration;
 	};
 }

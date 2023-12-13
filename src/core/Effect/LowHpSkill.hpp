@@ -16,57 +16,34 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef LOW_HP_SKILL_HPP_
 #define LOW_HP_SKILL_HPP_
 
-#include "Effect.hpp"
+#include "ConditionalBonus.hpp"
 
 #include "../Actor.hpp"
+
+#include "util/Exception.hpp"
 
 namespace core {
 	/// @brief Applies if Actor has low hp
 	/// @detail Actor hp should be less than 50% of his max hp
 	/// Type in skill file is "lowHp"
-	class LowHpSkill : public Effect {
+	class LowHpSkill : public ConditionalBonus {
 	public:
-		LowHpSkill(double newRegenBonus, double newManaRegenBonus, 
-				   double newDamageBonus, double newSpeedBonus, double newXpMul,
-			       double newAccuracyBonus, double newEvasionBonus, 
-				   std::array<double, util::nEnumerators<DamageType>> defenceBonuses_,
-			       const sf::Texture& icon_, std::string_view name_) :
-			Effect{icon_, name_, true}, 
-			regenBonus_{newRegenBonus}, manaRegenBonus_{newManaRegenBonus}, 
-			damageBonus_{newDamageBonus},
-			accuracyBonus_{newAccuracyBonus}, evasionBonus_{newEvasionBonus},
-			speedBonus_{newSpeedBonus}, xpMul_{newXpMul}, defenceBonuses{defenceBonuses_} {}
+		struct RequirementNotMet : public util::RuntimeError {
+		public:
+			using RuntimeError::RuntimeError;
+		};
 
-		double regenBonus() const final {
-			return shouldApply() ? regenBonus_ : 0;
+		LowHpSkill(Bonuses bonuses, const sf::Texture& icon, std::string_view name) :
+				ConditionalBonus{bonuses, icon, name, true} {
+			if (bonuses.hpBonus != 0)
+				throw RequirementNotMet{"LowHpSkill can't change max hp"};
+			if (bonuses.manaBonus != 0)
+				throw RequirementNotMet{"LowHpSkill can't change max mana"};
 		}
 
-		double manaRegenBonus() const final {
-			return shouldApply() ? manaRegenBonus_ : 0;
-		}
-
-		double damageBonus(const Actor&) const final {
-			return shouldApply() ? damageBonus_ : 0;
-		}
-
-		double speedBonus() const final {
-			return shouldApply() ? speedBonus_ : 0;
-		}
-
-		double xpMul() const final {
-			return shouldApply() ? xpMul_ : 1;
-		}
-
-		double accuracyBonus() const final {
-			return shouldApply() ? accuracyBonus_ : 0;
-		}
-
-		double evasionBonus() const final {
-			return shouldApply() ? evasionBonus_ : 0;
-		}
-
-		double defenceBonus(DamageType damageType) const final {
-			return defenceBonuses[static_cast<size_t>(damageType)];
+		bool shouldApply() const final {
+			auto ownerPtr = owner_.lock();
+			return ownerPtr->hp() < 0.5 * ownerPtr->maxHp();
 		}
 
 		std::unique_ptr<Effect> clone() const final {
@@ -77,22 +54,7 @@ namespace core {
 			owner_ = std::move(newOwner);
 		}
 	private:
-		double regenBonus_;
-		double manaRegenBonus_;
-		double damageBonus_;
-		double accuracyBonus_;
-		double evasionBonus_;
-		double speedBonus_;
-		double xpMul_;
-
-		std::array<double, util::nEnumerators<DamageType>> defenceBonuses;
-
 		std::weak_ptr<Actor> owner_;
-
-		bool shouldApply() const {
-			auto ownerPtr = owner_.lock();
-			return ownerPtr->hp() < 0.5 * ownerPtr->maxHp();
-		}
 	};
 }
 
