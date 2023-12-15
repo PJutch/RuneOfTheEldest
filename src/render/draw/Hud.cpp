@@ -65,6 +65,9 @@ namespace render {
             float effectXCenter = rightmostXCenter;
 
             for (const auto& skill : skills) {
+                if (!skill->isVisible())
+                    continue;
+
                 float& x = skill->isSkill() ? skillXCenter : effectXCenter;
                 float y = skill->isSkill() ? skillY : effectY;
 
@@ -122,7 +125,7 @@ namespace render {
                 const auto& spell = world.player().spells()[i];
                 sf::FloatRect spellRect{sf::Vector2f{x, y} - iconSize / 2.f, iconSize};
 
-                sf::Color boundaryColor{128, 128, 128};
+                sf::Color boundaryColor = spell->frameColor();
                 if (auto currentSpell = world.player().controller().currentSpell())
                     if (i == currentSpell)
                         boundaryColor = {255, 255, 0};

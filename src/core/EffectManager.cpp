@@ -56,62 +56,6 @@ namespace core {
 				std::move(currentStacktrace)} {}
 		};
 
-		ConditionalBonus::Bonuses loadBonuses(std::unordered_map<std::string, std::string>& params) {
-			double regenBonus = 0;
-			double manaRegenBonus = 0;
-			double speedBonus = 0;
-			double accuracyBonus = 0;
-			double evasionBonus = 0;
-			double xpMul = 1;
-			double hpBonus = 0;
-			double manaBonus = 0;
-
-			if (auto v = util::getAndErase(params, "hpBonus"))
-				hpBonus = util::parseReal(*v);
-
-			if (auto v = util::getAndErase(params, "manaBonus"))
-				manaBonus = util::parseReal(*v);
-
-			if (auto v = util::getAndErase(params, "regenBonus"))
-				regenBonus = util::parseReal(*v);
-
-			if (auto v = util::getAndErase(params, "manaRegenBonus"))
-				manaRegenBonus = util::parseReal(*v);
-
-			if (auto v = util::getAndErase(params, "speed"))
-				speedBonus = util::parseReal(*v);
-
-			if (auto v = util::getAndErase(params, "accuracy"))
-				accuracyBonus = util::parseReal(*v);
-
-			if (auto v = util::getAndErase(params, "evasion"))
-				evasionBonus = util::parseReal(*v);
-
-			if (auto v = util::getAndErase(params, "xpMul"))
-				xpMul = util::parseReal(*v);
-
-			std::array<double, util::nEnumerators<DamageType>> defenceBonuses;
-			defenceBonuses.fill(0);
-
-			boost::mp11::mp_for_each<boost::describe::describe_enumerators<DamageType>>([&](auto D) {
-				using namespace std::literals;
-				if (auto v = util::getAndErase(params, util::toLower(D.name) + "DefenceBonus"s))
-					defenceBonuses[static_cast<int>(D.value)] = util::parseReal(*v);
-			});
-
-			double damageBonus = 0;
-			if (auto v = util::getAndErase(params, "damageBonus"))
-				damageBonus = util::parseReal(*v);
-
-			if (!params.empty())
-				throw UnknownParamsError{params};
-
-			return {
-				regenBonus, manaRegenBonus, speedBonus, accuracyBonus, evasionBonus, 
-				xpMul, hpBonus, manaBonus, damageBonus, defenceBonuses
-			};
-		}
-
 		std::unique_ptr<Effect> createTargetFullHpSkill(std::unordered_map<std::string, std::string>& params,
 				std::string_view name, const sf::Texture& icon) {
 			double damageBonus = 0;
@@ -156,6 +100,62 @@ namespace core {
 			double duration = util::parseReal(util::getAndEraseRequired(params, "duration"));
 			return std::make_unique<TempBonus>(loadBonuses(params), duration, icon, name);
 		}
+	}
+
+	ConditionalBonus::Bonuses loadBonuses(std::unordered_map<std::string, std::string>& params) {
+		double regenBonus = 0;
+		double manaRegenBonus = 0;
+		double speedBonus = 0;
+		double accuracyBonus = 0;
+		double evasionBonus = 0;
+		double xpMul = 1;
+		double hpBonus = 0;
+		double manaBonus = 0;
+
+		if (auto v = util::getAndErase(params, "hpBonus"))
+			hpBonus = util::parseReal(*v);
+
+		if (auto v = util::getAndErase(params, "manaBonus"))
+			manaBonus = util::parseReal(*v);
+
+		if (auto v = util::getAndErase(params, "regenBonus"))
+			regenBonus = util::parseReal(*v);
+
+		if (auto v = util::getAndErase(params, "manaRegenBonus"))
+			manaRegenBonus = util::parseReal(*v);
+
+		if (auto v = util::getAndErase(params, "speed"))
+			speedBonus = util::parseReal(*v);
+
+		if (auto v = util::getAndErase(params, "accuracy"))
+			accuracyBonus = util::parseReal(*v);
+
+		if (auto v = util::getAndErase(params, "evasion"))
+			evasionBonus = util::parseReal(*v);
+
+		if (auto v = util::getAndErase(params, "xpMul"))
+			xpMul = util::parseReal(*v);
+
+		std::array<double, util::nEnumerators<DamageType>> defenceBonuses;
+		defenceBonuses.fill(0);
+
+		boost::mp11::mp_for_each<boost::describe::describe_enumerators<DamageType>>([&](auto D) {
+			using namespace std::literals;
+			if (auto v = util::getAndErase(params, util::toLower(D.name) + "DefenceBonus"s))
+				defenceBonuses[static_cast<int>(D.value)] = util::parseReal(*v);
+		});
+
+		double damageBonus = 0;
+		if (auto v = util::getAndErase(params, "damageBonus"))
+			damageBonus = util::parseReal(*v);
+
+		if (!params.empty())
+			throw UnknownParamsError{params};
+
+		return {
+			regenBonus, manaRegenBonus, speedBonus, accuracyBonus, evasionBonus,
+			xpMul, hpBonus, manaBonus, damageBonus, defenceBonuses
+		};
 	}
 
 	EffectManager::EffectManager(std::shared_ptr<render::AssetManager> assets,

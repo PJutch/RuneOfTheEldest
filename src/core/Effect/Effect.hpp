@@ -119,8 +119,13 @@ namespace core {
 		}
 
 		/// Checks if Effect is Skill
-		[[nodiscard]] bool isSkill() {
+		[[nodiscard]] bool isSkill() const {
 			return isSkill_;
+		}
+
+		/// Checks if Effect should be drawn
+		[[nodiscard]] virtual bool isVisible() const {
+			return true;
 		}
 	private:
 		const sf::Texture* icon_;

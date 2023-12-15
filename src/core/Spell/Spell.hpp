@@ -24,6 +24,8 @@ namespace sf {
 	class Texture;
 }
 
+#include <SFML/Graphics/Color.hpp>
+
 #include <string>
 #include <memory>
 
@@ -76,6 +78,12 @@ namespace core {
 		}
 
 		[[nodiscard]] virtual std::shared_ptr<Spell> clone() const = 0;
+
+		virtual void owner(std::weak_ptr<Actor>) {}
+
+		virtual sf::Color frameColor() const {
+			return sf::Color{128, 128, 128};
+		}
 	private:
 		const sf::Texture* icon_;
 		std::string name_;

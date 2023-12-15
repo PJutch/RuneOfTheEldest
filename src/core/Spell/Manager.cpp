@@ -23,6 +23,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Teleport.hpp"
 #include "Dig.hpp"
 #include "Heal.hpp"
+#include "Bonus.hpp"
 
 #include "core/DamageType.hpp"
 
@@ -267,6 +268,15 @@ namespace core {
 
 			return makeSpell<Loaded>(stats, icon, name, world, particles, playerMap, raycaster, randomEngine);
 		}
+
+		std::shared_ptr<BonusSpell> loadBonusSpell(std::unordered_map<std::string, std::string>& params,
+												   std::shared_ptr<render::AssetManager> assets) {
+			const sf::Texture& icon = assets->texture(util::getAndEraseRequired(params, "icon"));
+			std::string name = util::getAndEraseRequired(params, "name");
+
+			double mana = util::parseReal(util::getAndEraseRequired(params, "mana"));
+			return std::make_shared<BonusSpell>(loadBonuses(params), mana, icon, name);
+		}
 	}
 
 	SpellManager::SpellManager(std::shared_ptr<core::EffectManager> effectManager, 
@@ -300,6 +310,8 @@ namespace core {
 				spells.push_back(loadSpell<DigSpell>(params, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
 			} else if (type == "heal") {
 				spells.push_back(loadSpell<HealSpell>(params, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
+			} else if (type == "bonus") {
+				spells.push_back(loadBonusSpell(params, assets));
 			}
 		});
 

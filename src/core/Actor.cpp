@@ -216,4 +216,13 @@ namespace core {
 			return 1 - defence_;
 		}
 	}
+
+	void Actor::beDamaged(double damage, DamageType type) {
+		if (!isAlive())
+			return;
+
+		hp_ -= damage * recievedDamageMul(type);
+		if (!isAlive())
+			xpManager->addXp(stats.xp);
+	}
 }

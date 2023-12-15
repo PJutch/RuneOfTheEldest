@@ -99,14 +99,7 @@ namespace core {
 			return hp() > 0;
 		}
 
-		void beDamaged(double damage, DamageType type) {
-			if (!isAlive()) 
-				return;
-
-			hp_ -= damage * recievedDamageMul(type);
-			if (!isAlive())
-				xpManager->addXp(stats.xp);
-		}
+		void beDamaged(double damage, DamageType type);
 
 		/// @brief Attacks this actor with given damage and accuracy
 		/// @returns true if hit
@@ -227,6 +220,7 @@ namespace core {
 		}
 
 		void addSpell(std::shared_ptr<Spell> spell) {
+			spell->owner(weak_from_this());
 			spells_.push_back(std::move(spell));
 		}
 

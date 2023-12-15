@@ -21,6 +21,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "World.hpp"
 
 #include "util/random.hpp"
+#include "util/log.hpp"
 
 namespace core {
 	/// Manages player xp and leveling up
