@@ -24,6 +24,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Dig.hpp"
 #include "Heal.hpp"
 #include "Bonus.hpp"
+#include "ConcentrationBonus.hpp"
 
 #include "core/DamageType.hpp"
 
@@ -277,6 +278,18 @@ namespace core {
 			double mana = util::parseReal(util::getAndEraseRequired(params, "mana"));
 			return std::make_shared<BonusSpell>(loadBonuses(params), mana, icon, name);
 		}
+
+		std::shared_ptr<ConcentrationBonusSpell> loadConcentrationBonusSpell(std::unordered_map<std::string, std::string>& params,
+				std::shared_ptr<render::AssetManager> assets, std::shared_ptr<render::ParticleManager> particles) {
+			const sf::Texture& icon = assets->texture(util::getAndEraseRequired(params, "icon"));
+			std::string name = util::getAndEraseRequired(params, "name");
+
+			double mana = util::parseReal(util::getAndEraseRequired(params, "mana"));
+			const sf::Texture& particleTexture = assets->texture(util::getAndEraseRequired(params, "particle"));
+
+			return std::make_shared<ConcentrationBonusSpell>(loadBonuses(params), mana, particleTexture, 
+															 icon, name, std::move(particles));
+		}
 	}
 
 	SpellManager::SpellManager(std::shared_ptr<core::EffectManager> effectManager, 
@@ -288,7 +301,7 @@ namespace core {
 		auto logger = loggerFactory.create("effects");
 		logger->info("Loading...");
 		util::forEachFile("resources/Spells/", [&, this](std::ifstream& file, const std::filesystem::path& path) {
-			logger->info("Loading Skill spec from {} ...", path.generic_string());
+			logger->info("Loading Spell spec from {} ...", path.generic_string());
 			auto params = util::parseMapping(file);
 
 			std::string type = util::getAndEraseRequired(params, "type");
@@ -312,6 +325,8 @@ namespace core {
 				spells.push_back(loadSpell<HealSpell>(params, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
 			} else if (type == "bonus") {
 				spells.push_back(loadBonusSpell(params, assets));
+			} else if (type == "concentrationBonus") {
+				spells.push_back(loadConcentrationBonusSpell(params, assets, particles));
 			}
 		});
 
