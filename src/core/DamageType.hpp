@@ -30,6 +30,7 @@ namespace core {
 		POISON,      ///< Poison effect
 		MAGIC,       ///< Spell
 		ELECTRICITY, ///< Lightning spells
+		LIGHT,       ///< Holy spells
 		DEATH,       ///< Dark spells
 		FIRE,        ///< Fire spells
 		COLD         ///< Freezing spells

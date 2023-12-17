@@ -54,6 +54,10 @@ namespace render {
 			add(pos, pos, z, rotation, maxLifetime, texture);
 		}
 
+		void add(sf::Vector2f pos, int z, sf::Time maxLifetime, const sf::Texture* texture) {
+			add(pos, z, 0.f, maxLifetime, texture);
+		}
+
 		void add(std::unique_ptr<CustomParticle> customParticle) {
 			customParticles.push_back(std::move(customParticle));
 		}

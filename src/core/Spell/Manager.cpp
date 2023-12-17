@@ -25,6 +25,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Heal.hpp"
 #include "Bonus.hpp"
 #include "ConcentrationBonus.hpp"
+#include "Radiance.hpp"
 
 #include "core/DamageType.hpp"
 
@@ -323,6 +324,8 @@ namespace core {
 				spells.push_back(loadSpell<DigSpell>(params, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
 			} else if (type == "heal") {
 				spells.push_back(loadSpell<HealSpell>(params, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
+			} else if (type == "radiance") {
+				spells.push_back(loadSpell<RadianceSpell>(params, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
 			} else if (type == "bonus") {
 				spells.push_back(loadBonusSpell(params, assets));
 			} else if (type == "concentrationBonus") {
