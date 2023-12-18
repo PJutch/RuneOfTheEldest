@@ -26,6 +26,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Bonus.hpp"
 #include "ConcentrationBonus.hpp"
 #include "Radiance.hpp"
+#include "MagicMapping.hpp"
 
 #include "core/DamageType.hpp"
 
@@ -148,6 +149,17 @@ namespace core {
 				std::shared_ptr<render::PlayerMap>,
 				std::shared_ptr<util::Raycaster>, util::RandomEngine&) {
 			return std::make_unique<Result>(stats, icon, name, world);
+		}
+
+		template <typename Result>
+			requires std::constructible_from<Result,
+		typename Result::Stats, const sf::Texture&, std::string_view, std::shared_ptr<render::PlayerMap>>
+			std::unique_ptr<Result> makeSpell(typename Result::Stats stats,
+				const sf::Texture& icon, std::string_view name,
+				std::shared_ptr<World>, std::shared_ptr<render::ParticleManager>,
+				std::shared_ptr<render::PlayerMap> playerMap,
+				std::shared_ptr<util::Raycaster>, util::RandomEngine&) {
+			return std::make_unique<Result>(stats, icon, name, playerMap);
 		}
 
 		template <typename Result>
@@ -326,6 +338,8 @@ namespace core {
 				spells.push_back(loadSpell<HealSpell>(params, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
 			} else if (type == "radiance") {
 				spells.push_back(loadSpell<RadianceSpell>(params, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
+			} else if (type == "magicMapping") {
+				spells.push_back(loadSpell<MagicMappingSpell>(params, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
 			} else if (type == "bonus") {
 				spells.push_back(loadBonusSpell(params, assets));
 			} else if (type == "concentrationBonus") {

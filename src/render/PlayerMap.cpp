@@ -18,6 +18,7 @@ If not, see < https://www.gnu.org/licenses/>. */
 #include "core/World.hpp"
 
 #include "util/raycast.hpp"
+#include "util/Direction.hpp"
 
 namespace render {
 	PlayerMap::PlayerMap(std::shared_ptr<core::World> world_, std::shared_ptr<util::Raycaster> raycaster_) :
@@ -66,5 +67,22 @@ namespace render {
 		std::ranges::sort(seenActors_, {}, [](SeenActor actor) {
 			return actor.position.y;
 		});
+	}
+
+	void PlayerMap::discoverLevelTiles(int z) {
+		if (seeEverything)
+			return;
+
+		auto [shapeX, shapeY, shapeZ] = world->tiles().shape();
+		for (int x = 0; x < shapeX; ++x)
+			for (int y = 0; y < shapeY; ++y) 
+				if (tileStates[{ x, y, z }] == TileState::UNSEEN) {
+					if (std::ranges::any_of(util::directions<int>, [&](sf::Vector2i d) {
+						sf::Vector3i pos{x + d.x, y + d.y, z};
+						return world->tiles().isValidPosition(pos) && world->tiles()[pos] != Tile::WALL;
+					})) {
+						tileStates[{ x, y, z }] = TileState::MEMORIZED;
+					}
+				}
 	}
 }
