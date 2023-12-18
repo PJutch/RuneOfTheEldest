@@ -101,6 +101,10 @@ namespace core {
 
 		void beDamaged(double damage, DamageType type);
 
+		void beBanished() {
+			hp_ = 0.0;
+		}
+
 		/// @brief Attacks this actor with given damage and accuracy
 		/// @returns true if hit
 		bool beAttacked(double damage, double accuracy, DamageType damageType) {
