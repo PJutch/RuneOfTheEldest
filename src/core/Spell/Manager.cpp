@@ -27,6 +27,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "ConcentrationBonus.hpp"
 #include "Radiance.hpp"
 #include "MagicMapping.hpp"
+#include "SenseMonsters.hpp"
 
 #include "core/DamageType.hpp"
 
@@ -340,6 +341,8 @@ namespace core {
 				spells.push_back(loadSpell<RadianceSpell>(params, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
 			} else if (type == "magicMapping") {
 				spells.push_back(loadSpell<MagicMappingSpell>(params, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
+			} else if (type == "senseMonsters") {
+				spells.push_back(loadSpell<SenseMonstersSpell>(params, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
 			} else if (type == "bonus") {
 				spells.push_back(loadBonusSpell(params, assets));
 			} else if (type == "concentrationBonus") {

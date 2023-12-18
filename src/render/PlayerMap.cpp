@@ -85,4 +85,24 @@ namespace render {
 					}
 				}
 	}
+
+	void PlayerMap::discoverLevelActors(int z) {
+		if (seeEverything)
+			return;
+
+		std::erase_if(seenActors_, [z](auto actor) -> bool {
+			return actor.position.z == z;
+		});
+
+		for (const auto& actor : world->actors())
+			if (actor->isAlive() && actor->position().z == z)
+				seenActors_.emplace_back(actor->position(),
+					actor->hp(), actor->maxHp(),
+					actor->mana(), actor->maxMana(),
+					actor->controller().aiState(), actor->texture());
+
+		std::ranges::sort(seenActors_, {}, [](SeenActor actor) {
+			return actor.position.y;
+		});
+	}
 }

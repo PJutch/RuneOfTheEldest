@@ -73,6 +73,7 @@ namespace render {
 		void updateTiles();
 
 		void discoverLevelTiles(int z);
+		void discoverLevelActors(int z);
 
 		void handleSound(core::Sound sound) {
 			recentSounds_.push_back(sound);
