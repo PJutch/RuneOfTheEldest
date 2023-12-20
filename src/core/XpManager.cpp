@@ -18,32 +18,60 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Actor.hpp"
 
 namespace core {
-	XpManager::XpManager(std::shared_ptr<World> world_, std::shared_ptr<EffectManager> effects_,
+	XpManager::XpManager(std::shared_ptr<World> world_, 
+						 std::shared_ptr<EffectManager> effects_, std::shared_ptr<SpellManager> spells_,
 			             util::LoggerFactory& loggerFactory, util::RandomEngine& randomEngine_) :
-			effects{std::move(effects_)}, world{std::move(world_)},
+		effects{std::move(effects_)}, spells{std::move(spells_)}, world{std::move(world_)},
 		    randomEngine{&randomEngine_}, logger{loggerFactory.create("xp")} {
 		for (const auto& effect : *effects)
 			if (effect->isSkill())
 				skills.push_back(effect.get());
 	}
 
-	void XpManager::generateAvailableSkills() const {
-		logger->info("Selecting available skills...");
-		availableSkills_.resize(3);
-		for (const Effect*& skill : availableSkills_) {
-			auto iskill = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(skills) - 1}(*randomEngine);
-			skill = skills[iskill];
-			
-			logger->info("Selected skill #{} {}", iskill, skill->name());
+	void XpManager::generateLevelupChoices() const {
+		logger->info("Generating levelup choices...");
+		levelupChoices_.resize(3);
+		for (auto& choice : levelupChoices_) {
+			while (true) {
+				if (std::bernoulli_distribution{0.5}(*randomEngine)) {
+					auto iskill = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(skills) - 1}(*randomEngine);
+					const Effect* skill = skills[iskill];
+
+					logger->info("Selected skill #{} {}", iskill, skill->name());
+					choice.type = LevelUpChoice::Type::SKILL;
+					choice.name = skill->name();
+					choice.icon = &skill->icon();
+					choice.result = [skill, world = world] {
+						world->player().addEffect(skill->clone());
+					};
+					break;
+				} else {
+					auto ispell = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(*spells) - 1}(*randomEngine);
+					const Spell& spell = (*spells)[ispell];
+
+					if (std::ranges::none_of(world->player().spells(), [&spell](const auto& other) {
+						return other->name() == spell.name();
+					})) {
+						logger->info("Selected spell #{} {}", ispell, spell.name());
+						choice.type = LevelUpChoice::Type::SKILL;
+						choice.name = spell.name();
+						choice.icon = &spell.icon();
+						choice.result = [&spell, world = world] {
+							world->player().addSpell(spell.clone());
+						};
+						break;
+					}
+				}
+			}
 		}
 	}
 
-	void XpManager::levelUp(const Effect* skill) {
+	void XpManager::levelUp(const LevelUpChoice& choice) {
 		logger->info("Finished level up");
-		logger->info("Player selected skill {}", skill->name());
+		logger->info("Player selected {}", choice.name);
 
-		world->player().addEffect(skill->clone());
-		availableSkills_.clear();
+		choice.result();
+		levelupChoices_.clear();
 
 		xp -= xpUntilNextLvl;
 		xpUntilNextLvl *= 2;

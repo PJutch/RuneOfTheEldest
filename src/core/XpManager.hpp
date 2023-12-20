@@ -17,6 +17,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define XP_MANAGER_HPP_
 
 #include "EffectManager.hpp"
+#include "Spell/Manager.hpp"
 
 #include "World.hpp"
 
@@ -27,9 +28,22 @@ namespace core {
 	/// Manages player xp and leveling up
 	class XpManager {
 	public:
+		struct LevelUpChoice {
+			enum class Type {
+				SKILL,
+				SPELL
+			};
+
+			Type type;
+			std::string_view name;
+			const sf::Texture* icon;
+			std::function<void()> result;
+		};
+
 		XpManager() = default;
 		XpManager(std::shared_ptr<World> world_) : world{std::move(world_)} {}
-		XpManager(std::shared_ptr<World> world, std::shared_ptr<EffectManager> assets,
+		XpManager(std::shared_ptr<World> world, 
+			      std::shared_ptr<EffectManager> effects, std::shared_ptr<SpellManager> spells,
 			      util::LoggerFactory& loggerFactory, util::RandomEngine& randomEngine_);
 
 		/// Add given amount of xp to player
@@ -40,21 +54,21 @@ namespace core {
 			return xp >= xpUntilNextLvl;
 		}
 
-		/// @brief Skills for player to choose from.
-		/// @details Randomly selects 3 skills for player.
-		/// Return same skills on each call.
-		/// Resets on level up
-		std::span<Effect const* const> availableSkills() const {
-			if (availableSkills_.empty())
-				generateAvailableSkills();
-			return availableSkills_;
+		/// @brief Skills and spells for player to choose from
+		/// @details Randomly selects 3 skills or spells for player.
+		/// Return same skills and spells on each call.
+		/// Resets on level up.
+		std::span<LevelUpChoice const> levelupChoices() const {
+			if (levelupChoices_.empty())
+				generateLevelupChoices();
+			return levelupChoices_;
 		}
 
 		/// @brief Levels up player
-		/// @details Add clone of selected skill to player
-		/// Resets available skills
-		/// Increases xp requirements for next level
-		void levelUp(const Effect* skill);
+		/// @details Add clone of selected skill or spell to player.
+		/// Resets available choices.
+		/// Increases xp requirements for next level.
+		void levelUp(const LevelUpChoice& choice);
 
 		/// Returns colected percent of xp for next level
 		double xpPercentUntilNextLvl() const noexcept {
@@ -71,15 +85,16 @@ namespace core {
 		double xpUntilNextLvl = 1;
 
 		std::shared_ptr<EffectManager> effects;
+		std::shared_ptr<SpellManager> spells;
 		std::vector<const Effect*> skills;
-		mutable std::vector<const Effect*> availableSkills_;
+		mutable std::vector<LevelUpChoice> levelupChoices_;
 
 		std::shared_ptr<World> world;
 		util::RandomEngine* randomEngine = nullptr;
 
 		std::shared_ptr<spdlog::logger> logger;
 
-		void generateAvailableSkills() const;
+		void generateLevelupChoices() const;
 	};
 }
 

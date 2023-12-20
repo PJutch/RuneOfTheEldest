@@ -30,21 +30,20 @@ namespace render {
     void drawLevelupScreen(sf::RenderTarget& target, const render::AssetManager& assets, const core::XpManager& xpManager) {
         target.setView(createFullscreenView(1000.f, target.getSize()));
 
-        auto skills = xpManager.availableSkills();
+        auto choices = xpManager.levelupChoices();
 
         sf::Vector2f screenSize = target.getView().getSize();
 
-        float leftBoundary = (screenSize.x - skillSize.x * skills.size()) / 2;
+        float leftBoundary = (screenSize.x - skillSize.x * choices.size()) / 2;
         float skillXCenter = leftBoundary + skillSize.x / 2;
-        for (const core::Effect* skill : skills) {
+        for (const auto& choice : choices) {
             drawRect(target, {skillXCenter - skillSize.x / 2, 300, skillSize.x, skillSize.y},
                 sf::Color{32, 32, 32}, sf::Color{128, 128, 128}, 4.f);
 
-            const sf::Texture& icon = skill->icon();
-            sf::Vector2f iconCenter = util::geometry_cast<float>(icon.getSize()) / 2.f;
-            drawSprite(target, {skillXCenter, 0.375f * screenSize.y}, iconCenter, icon, 1.0, 8.0);
+            sf::Vector2f iconCenter = util::geometry_cast<float>(choice.icon->getSize()) / 2.f;
+            drawSprite(target, {skillXCenter, 0.375f * screenSize.y}, iconCenter, *choice.icon, 1.0, 8.0);
 
-            drawText(target, {skillXCenter, 0.5f * screenSize.y}, skill->name(), assets.font(), sf::Color::White, 30);
+            drawText(target, {skillXCenter, 0.5f * screenSize.y}, choice.name, assets.font(), sf::Color::White, 30);
 
             skillXCenter += skillSize.x;
         }
@@ -57,17 +56,17 @@ namespace render {
         target.setView(createFullscreenView(1000.f, target.getSize()));
         sf::Vector2f clickPos = target.mapPixelToCoords({event.mouseButton.x, event.mouseButton.y});
 
-        auto skills = xpManager.availableSkills();
+        auto choices = xpManager.levelupChoices();
 
         sf::Vector2f screenSize = target.getView().getSize();
 
-        float leftBoundary = (screenSize.x - skillSize.x * skills.size()) / 2;
+        float leftBoundary = (screenSize.x - skillSize.x * choices.size()) / 2;
         float skillXCenter = leftBoundary + skillSize.x / 2;
-        for (const core::Effect* skill : skills) {
+        for (const auto& choice : choices) {
             sf::FloatRect currentSkillRect{skillXCenter - skillSize.x / 2, 300, skillSize.x, skillSize.y};
 
             if (currentSkillRect.contains(clickPos)) {
-                xpManager.levelUp(skill);
+                xpManager.levelUp(choice);
                 return;
             }
 

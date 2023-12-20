@@ -64,6 +64,14 @@ namespace core {
 			return spells.cend();
 		}
 
+		const Spell& operator[] (int i) const {
+			return *spells[i];
+		}
+
+		size_t size() const {
+			return spells.size();
+		}
+
 		std::shared_ptr<Spell> findSpell(std::string_view spellName) const {
 			auto iter = std::ranges::find(spells, spellName, [](const auto& spell) {
 				return spell->name();
