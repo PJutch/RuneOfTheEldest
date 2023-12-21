@@ -43,7 +43,9 @@ namespace render {
             sf::Vector2f iconCenter = util::geometry_cast<float>(choice.icon->getSize()) / 2.f;
             drawSprite(target, {skillXCenter, 0.375f * screenSize.y}, iconCenter, *choice.icon, 1.0, 8.0);
 
-            drawText(target, {skillXCenter, 0.5f * screenSize.y}, choice.name, assets.font(), sf::Color::White, 30);
+            std::string typeTitle = std::format("New {}", core::XpManager::LevelUpChoice::typeName(choice.type));
+            drawText(target, {skillXCenter, 0.5f * screenSize.y}, typeTitle, assets.font(), sf::Color{128, 128, 128}, 15);
+            drawText(target, {skillXCenter, 0.52f * screenSize.y}, choice.name, assets.font(), sf::Color::White, 30);
 
             skillXCenter += skillSize.x;
         }

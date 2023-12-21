@@ -37,7 +37,7 @@ namespace core {
 					auto iskill = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(skills) - 1}(*randomEngine);
 					const Effect* skill = skills[iskill];
 
-					logger->info("Selected skill #{} {}", iskill, skill->name());
+					logger->info("Selected skill #{} \"{}\"", iskill, skill->name());
 					choice.type = LevelUpChoice::Type::SKILL;
 					choice.name = skill->name();
 					choice.icon = &skill->icon();
@@ -52,8 +52,8 @@ namespace core {
 					if (std::ranges::none_of(world->player().spells(), [&spell](const auto& other) {
 						return other->name() == spell.name();
 					})) {
-						logger->info("Selected spell #{} {}", ispell, spell.name());
-						choice.type = LevelUpChoice::Type::SKILL;
+						logger->info("Selected spell #{} \"{}\"", ispell, spell.name());
+						choice.type = LevelUpChoice::Type::SPELL;
 						choice.name = spell.name();
 						choice.icon = &spell.icon();
 						choice.result = [&spell, world = world] {
@@ -68,7 +68,7 @@ namespace core {
 
 	void XpManager::levelUp(const LevelUpChoice& choice) {
 		logger->info("Finished level up");
-		logger->info("Player selected {}", choice.name);
+		logger->info("Player selected {} \"{}\"", LevelUpChoice::typeName(choice.type), choice.name);
 
 		choice.result();
 		levelupChoices_.clear();

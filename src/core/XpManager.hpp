@@ -34,6 +34,14 @@ namespace core {
 				SPELL
 			};
 
+			static std::string_view typeName(Type type) {
+				switch (type) {
+				case Type::SKILL: return "skill";
+				case Type::SPELL: return "spell";
+				default: TROTE_ASSERT(false, "Unreachable");
+				}
+			}
+
 			Type type;
 			std::string_view name;
 			const sf::Texture* icon;
