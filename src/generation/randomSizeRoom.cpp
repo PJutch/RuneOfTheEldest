@@ -42,20 +42,20 @@ namespace generation {
 
         void horizontalPassageEnd(core::World& world, Area& room, int x, int y, bool debugTiles) {
             if (x < room.left()) {
-                horizontalLine(world, room.z(), x, room.left(), y, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+                horizontalLine(world, room.z(), x, room.left(), y, debugTiles ? core::Tile::PASSAGE : core::Tile::EMPTY);
                 room.addLeftPassage(y);
             } else {
-                horizontalLine(world, room.z(), room.right(), x, y, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+                horizontalLine(world, room.z(), room.right(), x, y, debugTiles ? core::Tile::PASSAGE : core::Tile::EMPTY);
                 room.addRightPassage(y);
             }
         }
 
         void verticalPassageEnd(core::World& world, Area& room, int x, int y, bool debugTiles) {
             if (y < room.top()) {
-                verticalLine(world, room.z(), y, room.top(), x, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+                verticalLine(world, room.z(), y, room.top(), x, debugTiles ? core::Tile::PASSAGE : core::Tile::EMPTY);
                 room.addTopPassage(x);
             } else {
-                verticalLine(world, room.z(), room.bottom(), y, x, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+                verticalLine(world, room.z(), room.bottom(), y, x, debugTiles ? core::Tile::PASSAGE : core::Tile::EMPTY);
                 room.addBottomPassage(x);
             }
         }
@@ -69,9 +69,9 @@ namespace generation {
                 {room.left(), room.right() - 2}(randomEngine);
 
                 if (x < room.left())
-                    horizontalLine(world, room.z(), x, turnX + 1, y, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+                    horizontalLine(world, room.z(), x, turnX + 1, y, debugTiles ? core::Tile::PASSAGE : core::Tile::EMPTY);
                 else
-                    horizontalLine(world, room.z(), turnX, x, y, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+                    horizontalLine(world, room.z(), turnX, x, y, debugTiles ? core::Tile::PASSAGE : core::Tile::EMPTY);
 
                 verticalPassageEnd(world, room, turnX, y, debugTiles);
             }
@@ -86,9 +86,9 @@ namespace generation {
                 {room.top(), room.bottom() - 2}(randomEngine);
 
                 if (y < room.top())
-                    verticalLine(world, room.z(), y, turnY + 1, x, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+                    verticalLine(world, room.z(), y, turnY + 1, x, debugTiles ? core::Tile::PASSAGE : core::Tile::EMPTY);
                 else
-                    verticalLine(world, room.z(), turnY, y, x, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+                    verticalLine(world, room.z(), turnY, y, x, debugTiles ? core::Tile::PASSAGE : core::Tile::EMPTY);
 
                 horizontalPassageEnd(world, room, x, turnY, debugTiles);
             }
@@ -99,12 +99,12 @@ namespace generation {
             TROTE_ASSERT(area.top() <= y && y < area.bottom());
 
             if (room.top() <= y && y < room.bottom() - 1) {
-                horizontalLine(world, room.z(), area.left(), room.left(), y, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+                horizontalLine(world, room.z(), area.left(), room.left(), y, debugTiles ? core::Tile::PASSAGE : core::Tile::EMPTY);
                 room.addLeftPassage(y);
             } else {
                 int turnX = std::uniform_int_distribution
                 {area.left(), room.right() - 2}(randomEngine);
-                horizontalLine(world, room.z(), area.left(), turnX + 1, y, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+                horizontalLine(world, room.z(), area.left(), turnX + 1, y, debugTiles ? core::Tile::PASSAGE : core::Tile::EMPTY);
                 bendedVerticalPassage(world, room, turnX, y, debugTiles, randomEngine);
             }
         }
@@ -114,12 +114,12 @@ namespace generation {
             TROTE_ASSERT(area.top() <= y && y < area.bottom());
 
             if (room.top() <= y && y < room.bottom() - 1) {
-                horizontalLine(world, room.z(), room.right(), area.right(), y, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+                horizontalLine(world, room.z(), room.right(), area.right(), y, debugTiles ? core::Tile::PASSAGE : core::Tile::EMPTY);
                 room.addRightPassage(y);
             } else {
                 int turnX = std::uniform_int_distribution
                 {room.left(), area.right() - 2}(randomEngine);
-                horizontalLine(world, room.z(), turnX, area.right(), y, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+                horizontalLine(world, room.z(), turnX, area.right(), y, debugTiles ? core::Tile::PASSAGE : core::Tile::EMPTY);
                 bendedVerticalPassage(world, room, turnX, y, debugTiles, randomEngine);
             }
         }
@@ -129,12 +129,12 @@ namespace generation {
             TROTE_ASSERT(area.left() <= x && x < area.right());
 
             if (room.left() <= x && x < room.right() - 1) {
-                verticalLine(world, room.z(), area.top(), room.top(), x, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+                verticalLine(world, room.z(), area.top(), room.top(), x, debugTiles ? core::Tile::PASSAGE : core::Tile::EMPTY);
                 room.addTopPassage(x);
             } else {
                 int turnY = std::uniform_int_distribution
                 {area.top(), room.bottom() - 2}(randomEngine);
-                verticalLine(world, room.z(), area.top(), turnY + 1, x, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+                verticalLine(world, room.z(), area.top(), turnY + 1, x, debugTiles ? core::Tile::PASSAGE : core::Tile::EMPTY);
                 bendedHorizontalPassage(world, room, x, turnY, debugTiles, randomEngine);
             }
         }
@@ -144,12 +144,12 @@ namespace generation {
             TROTE_ASSERT(area.left() <= x && x < area.right());
 
             if (room.left() <= x && x < room.right() - 1) {
-                verticalLine(world, room.z(), room.bottom(), area.bottom(), x, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+                verticalLine(world, room.z(), room.bottom(), area.bottom(), x, debugTiles ? core::Tile::PASSAGE : core::Tile::EMPTY);
                 room.addBottomPassage(x);
             } else {
                 int turnY = std::uniform_int_distribution
                 {room.top(), area.bottom() - 2}(randomEngine);
-                verticalLine(world, room.z(), turnY, area.bottom(), x, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+                verticalLine(world, room.z(), turnY, area.bottom(), x, debugTiles ? core::Tile::PASSAGE : core::Tile::EMPTY);
                 bendedHorizontalPassage(world, room, x, turnY, debugTiles, randomEngine);
             }
         }

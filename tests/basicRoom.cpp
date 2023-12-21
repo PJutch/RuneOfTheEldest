@@ -31,12 +31,12 @@ testing::AssertionResult hasSingleRoom(const core::World& world, int z, sf::IntR
     for (int x = 0; x < world.tiles().shape().x; ++x)
         for (int y = 0; y < world.tiles().shape().y; ++ y)
             if (room.contains(x, y)) {
-                if (world.tiles()[{x, y, z}] != Tile::EMPTY)
+                if (world.tiles()[{x, y, z}] != core::Tile::EMPTY)
                     return testing::AssertionFailure()
                          << "tile at " << x << ", " << y 
                          << " should be empty but it is not";
             } else
-                if (world.tiles()[{x, y, z}] != Tile::WALL)
+                if (world.tiles()[{x, y, z}] != core::Tile::WALL)
                     return testing::AssertionFailure()
                          << "tile at " << x << ", " << y 
                          << " should be wall but it is not";
@@ -46,7 +46,7 @@ testing::AssertionResult hasSingleRoom(const core::World& world, int z, sf::IntR
 
 TEST(BasicRoomGenerator, generateRoom) {
     auto world = std::make_shared<core::World>();
-    world->tiles().assign({ 10, 7, 1 }, Tile::WALL);
+    world->tiles().assign({ 10, 7, 1 }, core::Tile::WALL);
 
     sf::IntRect room{3, 2, 6, 5};
     generation::rectRoom(*world, generation::Area{ room, 0 });
@@ -56,7 +56,7 @@ TEST(BasicRoomGenerator, generateRoom) {
 
 TEST(BasicRoomGenerator, generateRoomNearEdge) {
     auto world = std::make_shared<core::World>();
-    world->tiles().assign({ 8, 7, 1 }, Tile::WALL);
+    world->tiles().assign({ 8, 7, 1 }, core::Tile::WALL);
 
     sf::IntRect room{1, 2, 7, 5};
     generation::rectRoom(*world, generation::Area{ room, 0});
@@ -66,7 +66,7 @@ TEST(BasicRoomGenerator, generateRoomNearEdge) {
 
 TEST(BasicRoomGenerator, generateRoom3x3) {
     auto world = std::make_shared<core::World>();
-    world->tiles().assign({ 7, 7, 1 }, Tile::WALL);
+    world->tiles().assign({ 7, 7, 1 }, core::Tile::WALL);
 
     sf::IntRect room{3, 2, 3, 3};
     generation::rectRoom(*world, generation::Area{ room, 0});
@@ -76,7 +76,7 @@ TEST(BasicRoomGenerator, generateRoom3x3) {
 
 TEST(BasicRoomGenerator, generateRoom2x2) {
     auto world = std::make_shared<core::World>();
-    world->tiles().assign({ 7, 7, 1 }, Tile::WALL);
+    world->tiles().assign({ 7, 7, 1 }, core::Tile::WALL);
 
     sf::IntRect room{3, 2, 2, 2};
     generation::rectRoom(*world, generation::Area{ room, 0});
@@ -86,7 +86,7 @@ TEST(BasicRoomGenerator, generateRoom2x2) {
 
 TEST(BasicRoomGenerator, generateRoom1x1) {
     auto world = std::make_shared<core::World>();
-    world->tiles().assign({ 7, 7, 1 }, Tile::WALL);
+    world->tiles().assign({ 7, 7, 1 }, core::Tile::WALL);
 
     sf::IntRect room{3, 2, 1, 1};
     generation::rectRoom(*world, generation::Area{ room, 0});

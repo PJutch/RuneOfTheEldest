@@ -58,7 +58,7 @@ namespace render {
 		[[nodiscard]] const sf::Texture& texture(const std::filesystem::path& path) const noexcept;
 
 		/// Gets texture for given tile
-		[[nodiscard]] const sf::Texture& tileTexture(Tile tile) const noexcept {
+		[[nodiscard]] const sf::Texture& tileTexture(core::Tile tile) const noexcept {
 			return tileTextures[static_cast<int>(tile)];
 		}
 
@@ -85,7 +85,7 @@ namespace render {
 		mutable std::unordered_map<std::filesystem::path, sf::Texture> textureCache;
 
 		inline const static sf::Vector2i tileSize_{ 16, 16 };
-		std::array<sf::Texture, totalTiles> tileTextures;
+		std::array<sf::Texture, core::totalTiles> tileTextures;
 
 		std::array<sf::Texture, core::Sound::totalTypes * 2> soundIcons;
 
@@ -95,7 +95,7 @@ namespace render {
 
 		std::shared_ptr<spdlog::logger> logger;
 
-		[[nodiscard]] sf::Texture& tileTextureMut(Tile tile) noexcept {
+		[[nodiscard]] sf::Texture& tileTextureMut(core::Tile tile) noexcept {
 			return tileTextures[static_cast<int>(tile)];
 		}
 

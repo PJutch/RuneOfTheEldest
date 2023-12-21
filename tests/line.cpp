@@ -23,136 +23,136 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 TEST(line, horizontalLine) {
     auto world = std::make_shared<core::World>();
-    world->tiles().assign({3, 3, 1}, Tile::WALL);
+    world->tiles().assign({3, 3, 1}, core::Tile::WALL);
 
-    generation::horizontalLine(*world, 0, 1, 3, 1, Tile::EMPTY);
+    generation::horizontalLine(*world, 0, 1, 3, 1, core::Tile::EMPTY);
 
-    EXPECT_EQ((world->tiles()[{0, 0, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{0, 1, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{0, 2, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{1, 0, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{1, 1, 0}]), Tile::EMPTY);
-    EXPECT_EQ((world->tiles()[{1, 2, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{2, 0, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{2, 1, 0}]), Tile::EMPTY);
-    EXPECT_EQ((world->tiles()[{2, 2, 0}]), Tile::WALL);
+    EXPECT_EQ((world->tiles()[{0, 0, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{0, 1, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{0, 2, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{1, 0, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{1, 1, 0}]), core::Tile::EMPTY);
+    EXPECT_EQ((world->tiles()[{1, 2, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{2, 0, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{2, 1, 0}]), core::Tile::EMPTY);
+    EXPECT_EQ((world->tiles()[{2, 2, 0}]), core::Tile::WALL);
 }
 
 TEST(line, verticalLine) {
     auto world = std::make_shared<core::World>();
-    world->tiles().assign({3, 3, 1}, Tile::WALL);
+    world->tiles().assign({3, 3, 1}, core::Tile::WALL);
 
-    generation::verticalLine(*world, 0, 1, 3, 1, Tile::EMPTY);
+    generation::verticalLine(*world, 0, 1, 3, 1, core::Tile::EMPTY);
 
-    EXPECT_EQ((world->tiles()[{0, 0, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{0, 1, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{0, 2, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{1, 0, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{1, 1, 0}]), Tile::EMPTY);
-    EXPECT_EQ((world->tiles()[{1, 2, 0}]), Tile::EMPTY);
-    EXPECT_EQ((world->tiles()[{2, 0, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{2, 1, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{2, 2, 0}]), Tile::WALL);
+    EXPECT_EQ((world->tiles()[{0, 0, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{0, 1, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{0, 2, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{1, 0, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{1, 1, 0}]), core::Tile::EMPTY);
+    EXPECT_EQ((world->tiles()[{1, 2, 0}]), core::Tile::EMPTY);
+    EXPECT_EQ((world->tiles()[{2, 0, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{2, 1, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{2, 2, 0}]), core::Tile::WALL);
 }
 
 TEST(line, horizontalLineSwap) {
     auto world = std::make_shared<core::World>();
-    world->tiles().assign({3, 3, 1}, Tile::WALL);
+    world->tiles().assign({3, 3, 1}, core::Tile::WALL);
 
-    generation::horizontalLine(*world, 0, 3, 1, 1, Tile::EMPTY);
+    generation::horizontalLine(*world, 0, 3, 1, 1, core::Tile::EMPTY);
 
-    EXPECT_EQ((world->tiles()[{0, 0, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{0, 1, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{0, 2, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{1, 0, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{1, 1, 0}]), Tile::EMPTY);
-    EXPECT_EQ((world->tiles()[{1, 2, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{2, 0, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{2, 1, 0}]), Tile::EMPTY);
-    EXPECT_EQ((world->tiles()[{2, 2, 0}]), Tile::WALL);
+    EXPECT_EQ((world->tiles()[{0, 0, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{0, 1, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{0, 2, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{1, 0, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{1, 1, 0}]), core::Tile::EMPTY);
+    EXPECT_EQ((world->tiles()[{1, 2, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{2, 0, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{2, 1, 0}]), core::Tile::EMPTY);
+    EXPECT_EQ((world->tiles()[{2, 2, 0}]), core::Tile::WALL);
 }
 
 TEST(line, verticalLineSwap) {
     auto world = std::make_shared<core::World>();
-    world->tiles().assign({3, 3, 1}, Tile::WALL);
+    world->tiles().assign({3, 3, 1}, core::Tile::WALL);
 
-    generation::verticalLine(*world, 0, 3, 1, 1, Tile::EMPTY);
+    generation::verticalLine(*world, 0, 3, 1, 1, core::Tile::EMPTY);
 
-    EXPECT_EQ((world->tiles()[{0, 0, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{0, 1, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{0, 2, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{1, 0, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{1, 1, 0}]), Tile::EMPTY);
-    EXPECT_EQ((world->tiles()[{1, 2, 0}]), Tile::EMPTY);
-    EXPECT_EQ((world->tiles()[{2, 0, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{2, 1, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{2, 2, 0}]), Tile::WALL);
+    EXPECT_EQ((world->tiles()[{0, 0, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{0, 1, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{0, 2, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{1, 0, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{1, 1, 0}]), core::Tile::EMPTY);
+    EXPECT_EQ((world->tiles()[{1, 2, 0}]), core::Tile::EMPTY);
+    EXPECT_EQ((world->tiles()[{2, 0, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{2, 1, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{2, 2, 0}]), core::Tile::WALL);
 }
 
 TEST(line, horizontalLine1) {
     auto world = std::make_shared<core::World>();
-    world->tiles().assign({3, 3, 1}, Tile::WALL);
+    world->tiles().assign({3, 3, 1}, core::Tile::WALL);
 
-    generation::horizontalLine(*world, 0, 1, 2, 1, Tile::EMPTY);
+    generation::horizontalLine(*world, 0, 1, 2, 1, core::Tile::EMPTY);
 
-    EXPECT_EQ((world->tiles()[{0, 0, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{0, 1, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{0, 2, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{1, 0, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{1, 1, 0}]), Tile::EMPTY);
-    EXPECT_EQ((world->tiles()[{1, 2, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{2, 0, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{2, 1, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{2, 2, 0}]), Tile::WALL);
+    EXPECT_EQ((world->tiles()[{0, 0, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{0, 1, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{0, 2, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{1, 0, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{1, 1, 0}]), core::Tile::EMPTY);
+    EXPECT_EQ((world->tiles()[{1, 2, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{2, 0, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{2, 1, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{2, 2, 0}]), core::Tile::WALL);
 }
 
 TEST(line, verticalLine1) {
     auto world = std::make_shared<core::World>();
-    world->tiles().assign({3, 3, 1}, Tile::WALL);
+    world->tiles().assign({3, 3, 1}, core::Tile::WALL);
 
-    generation::verticalLine(*world, 0, 1, 2, 1, Tile::EMPTY);
+    generation::verticalLine(*world, 0, 1, 2, 1, core::Tile::EMPTY);
 
-    EXPECT_EQ((world->tiles()[{0, 0, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{0, 1, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{0, 2, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{1, 0, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{1, 1, 0}]), Tile::EMPTY);
-    EXPECT_EQ((world->tiles()[{1, 2, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{2, 0, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{2, 1, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{2, 2, 0}]), Tile::WALL);
+    EXPECT_EQ((world->tiles()[{0, 0, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{0, 1, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{0, 2, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{1, 0, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{1, 1, 0}]), core::Tile::EMPTY);
+    EXPECT_EQ((world->tiles()[{1, 2, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{2, 0, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{2, 1, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{2, 2, 0}]), core::Tile::WALL);
 }
 
 TEST(line, horizontalLine0) {
     auto world = std::make_shared<core::World>();
-    world->tiles().assign({3, 3, 1}, Tile::WALL);
+    world->tiles().assign({3, 3, 1}, core::Tile::WALL);
 
-    generation::horizontalLine(*world, 0, 1, 1, 1, Tile::EMPTY);
+    generation::horizontalLine(*world, 0, 1, 1, 1, core::Tile::EMPTY);
 
-    EXPECT_EQ((world->tiles()[{0, 0, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{0, 1, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{0, 2, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{1, 0, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{1, 1, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{1, 2, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{2, 0, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{2, 1, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{2, 2, 0}]), Tile::WALL);
+    EXPECT_EQ((world->tiles()[{0, 0, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{0, 1, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{0, 2, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{1, 0, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{1, 1, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{1, 2, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{2, 0, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{2, 1, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{2, 2, 0}]), core::Tile::WALL);
 }
 
 TEST(line, verticalLine0) {
     auto world = std::make_shared<core::World>();
-    world->tiles().assign({3, 3, 1}, Tile::WALL);
+    world->tiles().assign({3, 3, 1}, core::Tile::WALL);
 
-    generation::verticalLine(*world, 0, 1, 1, 1, Tile::EMPTY);
+    generation::verticalLine(*world, 0, 1, 1, 1, core::Tile::EMPTY);
 
-    EXPECT_EQ((world->tiles()[{0, 0, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{0, 1, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{0, 2, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{1, 0, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{1, 1, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{1, 2, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{2, 0, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{2, 1, 0}]), Tile::WALL);
-    EXPECT_EQ((world->tiles()[{2, 2, 0}]), Tile::WALL);
+    EXPECT_EQ((world->tiles()[{0, 0, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{0, 1, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{0, 2, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{1, 0, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{1, 1, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{1, 2, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{2, 0, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{2, 1, 0}]), core::Tile::WALL);
+    EXPECT_EQ((world->tiles()[{2, 2, 0}]), core::Tile::WALL);
 }

@@ -106,7 +106,7 @@ void Game::generate() {
     generationLogger->info("Started");
 
     world->clearActors();
-    world->tiles().assign({ 50, 50, 10 }, Tile::WALL);
+    world->tiles().assign({ 50, 50, 10 }, core::Tile::WALL);
 
     generationLogger->info("Generating dungeon...");
     dungeonGenerator()();

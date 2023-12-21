@@ -22,19 +22,19 @@ namespace render {
     AssetManager::AssetManager(util::LoggerFactory& loggerFactory) : logger{ loggerFactory.create("assets") } {
         logger->info("Loading...");
 
-        loadTexture(tileTextureMut(Tile::EMPTY), "floor tile texture", "resources/textures/Tiles/floor.png");
-        loadTexture(tileTextureMut(Tile::WALL), "wall tile texture", "resources/textures/Tiles/wall.png");
+        loadTexture(tileTextureMut(core::Tile::EMPTY), "floor tile texture", "resources/textures/Tiles/floor.png");
+        loadTexture(tileTextureMut(core::Tile::WALL), "wall tile texture", "resources/textures/Tiles/wall.png");
 
-        loadTexture(tileTextureMut(Tile::UP_STAIRS), "up stairs tile texture", "resources/textures/Tiles/up_stairs.png");
-        loadTexture(tileTextureMut(Tile::DOWN_STAIRS), "down stairs tile texture", "resources/textures/Tiles/down_stairs.png");
+        loadTexture(tileTextureMut(core::Tile::UP_STAIRS), "up stairs tile texture", "resources/textures/Tiles/up_stairs.png");
+        loadTexture(tileTextureMut(core::Tile::DOWN_STAIRS), "down stairs tile texture", "resources/textures/Tiles/down_stairs.png");
 
         logger->info("Creating debug tile textures...");
-        fillTexture(tileTextureMut(Tile::ROOM), tileSize(), sf::Color::Red);
-        fillTexture(tileTextureMut(Tile::ROOM_ENTRANCE), tileSize(), sf::Color::Magenta);
-        fillTexture(tileTextureMut(Tile::PASSAGE), tileSize(), sf::Color::Blue);
-        fillTexture(tileTextureMut(Tile::COMPONENT1), tileSize(), sf::Color::Red);
-        fillTexture(tileTextureMut(Tile::COMPONENT2), tileSize(), sf::Color::Green);
-        fillTexture(tileTextureMut(Tile::COMPONENT3), tileSize(), sf::Color::Blue);
+        fillTexture(tileTextureMut(core::Tile::ROOM), tileSize(), sf::Color::Red);
+        fillTexture(tileTextureMut(core::Tile::ROOM_ENTRANCE), tileSize(), sf::Color::Magenta);
+        fillTexture(tileTextureMut(core::Tile::PASSAGE), tileSize(), sf::Color::Blue);
+        fillTexture(tileTextureMut(core::Tile::COMPONENT1), tileSize(), sf::Color::Red);
+        fillTexture(tileTextureMut(core::Tile::COMPONENT2), tileSize(), sf::Color::Green);
+        fillTexture(tileTextureMut(core::Tile::COMPONENT3), tileSize(), sf::Color::Blue);
 
         loadTexture(aiStateIconMut(AiState::INACTIVE), "incative AI state icon", "resources/textures/AiStates/sleeping.png");
         loadTexture(aiStateIconMut(AiState::CHECKING), "checking AI state icon", "resources/textures/AiStates/curious.png");

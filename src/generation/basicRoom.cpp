@@ -25,16 +25,16 @@ namespace generation {
 
         for (int x = area.left(); x < area.right() - 1; ++x)
             for (int y = area.top(); y < area.bottom() - 1; ++y)
-                world.tiles()[{x, y, area.z()}] = (debugTiles ? Tile::ROOM
-                    : Tile::EMPTY);
+                world.tiles()[{x, y, area.z()}] = (debugTiles ? core::Tile::ROOM
+                    : core::Tile::EMPTY);
 
         for (int y : area.rightPassages())
             world.tiles()[{area.right() - 1, y, area.z()}] = (debugTiles
-                ? Tile::ROOM_ENTRANCE : Tile::EMPTY);
+                ? core::Tile::ROOM_ENTRANCE : core::Tile::EMPTY);
 
         for (int x : area.bottomPassages())
             world.tiles()[{x, area.bottom() - 1, area.z()}] = (debugTiles
-                ? Tile::ROOM_ENTRANCE : Tile::EMPTY);
+                ? core::Tile::ROOM_ENTRANCE : core::Tile::EMPTY);
     }
 
     void diamondRoom(core::World& world, Area area, bool debugTiles) {
@@ -47,24 +47,24 @@ namespace generation {
                 double d = std::abs(x - xCenter) / (area.right() - xCenter)
                          + std::abs(y - yCenter) / (area.bottom() - yCenter);
                 if (d <= 1)
-                    world.tiles()[{x, y, area.z()}] = (debugTiles ? Tile::ROOM : Tile::EMPTY);
+                    world.tiles()[{x, y, area.z()}] = (debugTiles ? core::Tile::ROOM : core::Tile::EMPTY);
             }
 
         for (int y : area.leftPassages())
-            for (int x = area.left(); x < area.right() - 1 && world.tiles()[{x, y, area.z()}] == Tile::WALL; ++x)
-                world.tiles()[{x, y, area.z()}] = (debugTiles ? Tile::ROOM_ENTRANCE : Tile::EMPTY);
+            for (int x = area.left(); x < area.right() - 1 && world.tiles()[{x, y, area.z()}] == core::Tile::WALL; ++x)
+                world.tiles()[{x, y, area.z()}] = (debugTiles ? core::Tile::ROOM_ENTRANCE : core::Tile::EMPTY);
 
         for (int y : area.rightPassages())
-            for (int x = area.right() - 1; x >= area.left() && world.tiles()[{x, y, area.z()}] == Tile::WALL; --x)
-                world.tiles()[{x, y, area.z()}] = (debugTiles ? Tile::ROOM_ENTRANCE : Tile::EMPTY);
+            for (int x = area.right() - 1; x >= area.left() && world.tiles()[{x, y, area.z()}] == core::Tile::WALL; --x)
+                world.tiles()[{x, y, area.z()}] = (debugTiles ? core::Tile::ROOM_ENTRANCE : core::Tile::EMPTY);
 
         for (int x : area.topPassages())
-            for (int y = area.top(); y < area.bottom() - 1 && world.tiles()[{x, y, area.z()}] == Tile::WALL; ++y)
-                world.tiles()[{x, y, area.z()}] = (debugTiles ? Tile::ROOM_ENTRANCE : Tile::EMPTY);
+            for (int y = area.top(); y < area.bottom() - 1 && world.tiles()[{x, y, area.z()}] == core::Tile::WALL; ++y)
+                world.tiles()[{x, y, area.z()}] = (debugTiles ? core::Tile::ROOM_ENTRANCE : core::Tile::EMPTY);
 
         for (int x : area.bottomPassages())
-            for (int y = area.bottom() - 1; y >= area.top() && world.tiles()[{x, y, area.z()}] == Tile::WALL; --y)
-                world.tiles()[{x, y, area.z()}] = (debugTiles ? Tile::ROOM_ENTRANCE : Tile::EMPTY);
+            for (int y = area.bottom() - 1; y >= area.top() && world.tiles()[{x, y, area.z()}] == core::Tile::WALL; --y)
+                world.tiles()[{x, y, area.z()}] = (debugTiles ? core::Tile::ROOM_ENTRANCE : core::Tile::EMPTY);
     }
 
     void randomRoom(core::World& world, Area area, util::RandomEngine& engine, bool debugTiles) {

@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <utility>
 
 namespace generation {
-    void horizontalLine(core::World& world, int z, int left, int right, int y, Tile tile) {
+    void horizontalLine(core::World& world, int z, int left, int right, int y, core::Tile tile) {
         using std::swap;
         if (left > right)
             swap(left, right);
@@ -27,7 +27,7 @@ namespace generation {
             world.tiles()[{x, y, z}] = tile;
     }
 
-    void verticalLine(core::World& world, int z, int top, int bottom, int x, Tile tile) {
+    void verticalLine(core::World& world, int z, int top, int bottom, int x, core::Tile tile) {
         using std::swap;
         if (top > bottom)
             swap(top, bottom);
@@ -36,7 +36,7 @@ namespace generation {
             world.tiles()[{x, y, z}] = tile;
     }
 
-    void horizontalLineInclusive(core::World& world, int z, int left, int right, int y, Tile tile) {
+    void horizontalLineInclusive(core::World& world, int z, int left, int right, int y, core::Tile tile) {
         using std::swap;
         if (left > right)
             swap(left, right);
@@ -44,7 +44,7 @@ namespace generation {
         horizontalLine(world, z, left, right + 1, y, tile);
     }
 
-    void verticalLineInclusive(core::World& world, int z, int top, int bottom, int x, Tile tile) {
+    void verticalLineInclusive(core::World& world, int z, int top, int bottom, int x, core::Tile tile) {
         using std::swap;
         if (top > bottom)
             swap(top, bottom);

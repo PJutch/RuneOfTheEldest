@@ -28,7 +28,7 @@ namespace generation {
             for (int x = area.left(); x < area.right() - 1; ++x)
                 for (int y = area.top(); y < area.bottom() - 1; ++y)
                     if (std::bernoulli_distribution{density}(randomEngine))
-                        world.tiles()[{x, y, area.z()}] = (debugTiles ? Tile::ROOM : Tile::EMPTY);
+                        world.tiles()[{x, y, area.z()}] = (debugTiles ? core::Tile::ROOM : core::Tile::EMPTY);
         }
 
         class Buffer {
@@ -57,7 +57,7 @@ namespace generation {
             for (int dx = -1; dx <= 1; ++dx)
                 for (int dy = -1; dy <= 1; ++dy) {
                     sf::Vector3i cur{p.x + dx, p.y + dy, p.z};
-                    if (world.tiles().isValidPosition(cur) && world.tiles()[cur] != Tile::WALL)
+                    if (world.tiles().isValidPosition(cur) && world.tiles()[cur] != core::Tile::WALL)
                         ++res;
                 }
             return res;
@@ -73,9 +73,9 @@ namespace generation {
                 for (int x = area.left(); x < area.right() - 1; ++x)
                     for (int y = area.top(); y < area.bottom() - 1; ++y)
                         if (buffer[{x, y}] >= 5)
-                            world.tiles()[{x, y, area.z()}] = (debugTiles ? Tile::ROOM : Tile::EMPTY);
+                            world.tiles()[{x, y, area.z()}] = (debugTiles ? core::Tile::ROOM : core::Tile::EMPTY);
                         else
-                            world.tiles()[{x, y, area.z()}] = Tile::WALL;
+                            world.tiles()[{x, y, area.z()}] = core::Tile::WALL;
             }
         }
 
@@ -88,7 +88,7 @@ namespace generation {
 
         void markComponent(const core::World& world, sf::IntRect bounds, sf::Vector3i current, int id, Buffer& ids, int& size) {
             if (!bounds.contains(util::getXY(current))
-             || world.tiles()[current] != Tile::EMPTY 
+             || world.tiles()[current] != core::Tile::EMPTY
              || ids[util::getXY(current)] != 0)
                 return;
 
@@ -105,7 +105,7 @@ namespace generation {
             ComponentData res{area.bounds()};
             for (int x = area.left(); x < area.right() - 1; ++x)
                 for (int y = area.top(); y < area.bottom() - 1; ++y)
-                    if (world.tiles()[{x, y, area.z()}] == Tile::EMPTY && res.ids[{x, y}] == 0) {
+                    if (world.tiles()[{x, y, area.z()}] == core::Tile::EMPTY && res.ids[{x, y}] == 0) {
                         res.sizes.emplace_back();
                         markComponent(world, area.bounds(), {x, y, area.z()},
                                        std::ssize(res.sizes), res.ids, res.sizes.back());
@@ -116,8 +116,8 @@ namespace generation {
         void paintDebugComponents(core::World& world, Area area, const Buffer& ids) {
             for (int x = area.left(); x < area.right() - 1; ++x)
                 for (int y = area.top(); y < area.bottom() - 1; ++y)
-                    if (world.tiles()[{x, y, area.z()}] == Tile::EMPTY)
-                        world.tiles()[{x, y, area.z()}] = static_cast<Tile>(static_cast<int>(Tile::COMPONENT1) + ids[{x, y}] % 3);
+                    if (world.tiles()[{x, y, area.z()}] == core::Tile::EMPTY)
+                        world.tiles()[{x, y, area.z()}] = static_cast<core::Tile>(static_cast<int>(core::Tile::COMPONENT1) + ids[{x, y}] % 3);
         }
 
         template <typename Range>
@@ -147,17 +147,17 @@ namespace generation {
         void connectHVH(sf::Vector3i pos1, sf::Vector3i pos2, core::World& world, Area area,
                         util::RandomEngine& randomEngine, bool debugTiles) {
             int turnX = std::uniform_int_distribution{std::min(pos1.x, pos2.x), std::max(pos1.x, pos2.x)}(randomEngine);
-            horizontalLineInclusive(world, area.z(), pos1.x, turnX , pos1.y, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
-            verticalLineInclusive  (world, area.z(), pos1.y, pos2.y, turnX , debugTiles ? Tile::PASSAGE : Tile::EMPTY);
-            horizontalLineInclusive(world, area.z(), turnX , pos2.x, pos2.y, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+            horizontalLineInclusive(world, area.z(), pos1.x, turnX , pos1.y, debugTiles ? core::Tile::PASSAGE : core::Tile::EMPTY);
+            verticalLineInclusive  (world, area.z(), pos1.y, pos2.y, turnX , debugTiles ? core::Tile::PASSAGE : core::Tile::EMPTY);
+            horizontalLineInclusive(world, area.z(), turnX , pos2.x, pos2.y, debugTiles ? core::Tile::PASSAGE : core::Tile::EMPTY);
         }
 
         void connectVHV(sf::Vector3i pos1, sf::Vector3i pos2, core::World& world, Area area,
                         util::RandomEngine& randomEngine, bool debugTiles) {
             int turnY = std::uniform_int_distribution{std::min(pos1.y, pos2.y), std::max(pos1.y, pos2.y)}(randomEngine);
-            verticalLineInclusive(world, area.z(), pos1.y, turnY , pos1.x, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
-            verticalLineInclusive(world, area.z(), pos1.x, pos2.x, turnY , debugTiles ? Tile::PASSAGE : Tile::EMPTY);
-            verticalLineInclusive(world, area.z(), turnY , pos2.y, pos2.x, debugTiles ? Tile::PASSAGE : Tile::EMPTY);
+            verticalLineInclusive(world, area.z(), pos1.y, turnY , pos1.x, debugTiles ? core::Tile::PASSAGE : core::Tile::EMPTY);
+            verticalLineInclusive(world, area.z(), pos1.x, pos2.x, turnY , debugTiles ? core::Tile::PASSAGE : core::Tile::EMPTY);
+            verticalLineInclusive(world, area.z(), turnY , pos2.y, pos2.x, debugTiles ? core::Tile::PASSAGE : core::Tile::EMPTY);
         }
 
         void connect(sf::Vector3i pos1, sf::Vector3i pos2, core::World& world, Area area, 

@@ -79,7 +79,7 @@ namespace render {
 				if (tileStates[{ x, y, z }] == TileState::UNSEEN) {
 					if (std::ranges::any_of(util::directions<int>, [&](sf::Vector2i d) {
 						sf::Vector3i pos{x + d.x, y + d.y, z};
-						return world->tiles().isValidPosition(pos) && world->tiles()[pos] != Tile::WALL;
+						return world->tiles().isValidPosition(pos) && world->tiles()[pos] != core::Tile::WALL;
 					})) {
 						tileStates[{ x, y, z }] = TileState::MEMORIZED;
 					}

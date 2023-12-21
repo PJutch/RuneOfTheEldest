@@ -240,10 +240,10 @@ TEST(World, updateDeathInterrupt) {
 
 TEST(World, isFree) {
 	core::World world;
-	world.tiles().assign({ 2, 2, 1 }, Tile::WALL);
+	world.tiles().assign({ 2, 2, 1 }, core::Tile::WALL);
 
-	world.tiles()[{ 0, 0, 0 }] = Tile::EMPTY;
-	world.tiles()[{ 0, 1, 0 }] = Tile::EMPTY;
+	world.tiles()[{ 0, 0, 0 }] = core::Tile::EMPTY;
+	world.tiles()[{ 0, 1, 0 }] = core::Tile::EMPTY;
 
 	world.addActor(makeTestActor({0, 1, 0}));
 

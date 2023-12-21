@@ -47,7 +47,7 @@ namespace {
 
 TEST(PlayerMap, tileVisibilityEmpty) {
     auto world = std::make_shared<core::World>();
-    world->tiles().assign({ 3, 3, 1 }, Tile::EMPTY);
+    world->tiles().assign({ 3, 3, 1 }, core::Tile::EMPTY);
 
     auto player = makeTestActor({ 0, 2, 0 });
     world->player(std::move(player));
@@ -64,10 +64,10 @@ TEST(PlayerMap, tileVisibilityEmpty) {
 namespace {
     std::shared_ptr<core::World> createWallWorld() {
         auto world = std::make_shared<core::World>();
-        world->tiles().assign({ 3, 3, 1 }, Tile::EMPTY);
+        world->tiles().assign({ 3, 3, 1 }, core::Tile::EMPTY);
 
         for (int x = 0; x < 3; ++x)
-            world->tiles()[{x, 1, 0}] = Tile::WALL;
+            world->tiles()[{x, 1, 0}] = core::Tile::WALL;
 
         auto player = makeTestActor();
         world->player(std::move(player));

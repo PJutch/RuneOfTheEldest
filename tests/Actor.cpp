@@ -150,10 +150,10 @@ TEST(Actor, regenLimit) {
 
 auto createAliveActorTryMoveToTest() {
 	auto world = std::make_shared<core::World>();
-	world->tiles().assign({ 3, 3, 1 }, Tile::EMPTY);
+	world->tiles().assign({ 3, 3, 1 }, core::Tile::EMPTY);
 
-	world->tiles()[{ 1, 0, 0 }] = Tile::WALL;
-	world->tiles()[{ 1, 1, 0 }] = Tile::WALL;
+	world->tiles()[{ 1, 0, 0 }] = core::Tile::WALL;
+	world->tiles()[{ 1, 1, 0 }] = core::Tile::WALL;
 
 	auto actor = makeSharedTestActor({ 0, 1, 0 }, world);
 	actor->controller(std::make_unique<TestController>());

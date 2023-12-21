@@ -129,7 +129,7 @@ namespace util {
 	}
 
 	template <typename IsPassable>
-		requires std::convertible_to<std::invoke_result_t<IsPassable, Tile>, bool>
+		requires std::convertible_to<std::invoke_result_t<IsPassable, core::Tile>, bool>
 	sf::Vector3i nextStep(const core::World& world, sf::Vector3i position, sf::Vector3i target,
 		                  PathBuffer& buffer, const IsPassable& isPassable) {
 		return nextStep(world, position, target, buffer, [&](const core::World& world, sf::Vector3i pos) {
@@ -139,7 +139,7 @@ namespace util {
 
 	inline sf::Vector3i nextStep(const core::World& world, sf::Vector3i position, sf::Vector3i target,
 		                  PathBuffer& buffer) {
-		return nextStep(world, position, target, buffer, &isPassable);
+		return nextStep(world, position, target, buffer, &core::isPassable);
 	}
 
 	struct ExplorePathUpdate {

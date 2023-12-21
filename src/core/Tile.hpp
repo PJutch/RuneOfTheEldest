@@ -16,47 +16,89 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef TILE_HPP_
 #define TILE_HPP_
 
+#include "util/Exception.hpp"
+
+#include <array>
+#include <format>
+
 /// @file Tile.hpp Tile enum and its "methods"
 
-/// Tile types
-enum class Tile {
-    EMPTY,         ///< Empty floor tile
-    WALL,          ///< Impassable wall
+namespace core {
+    /// Tile types
+    enum class Tile {
+        EMPTY,         ///< Empty floor tile
+        WALL,          ///< Impassable wall
 
-    ROOM,          ///< Debug only @see BasicRoomGenerator::debugTiles
-    ROOM_ENTRANCE, ///< Debug only @see BasicRoomGenerator::debugTiles
-    PASSAGE,       ///< Debug only @see RandomSizeRoomGenerator::debugTiles
-    DOWN_STAIRS,   ///< Stairs leading to next level
-    UP_STAIRS,     ///< Stairs leading to previous level
+        ROOM,          ///< Debug only @see BasicRoomGenerator::debugTiles
+        ROOM_ENTRANCE, ///< Debug only @see BasicRoomGenerator::debugTiles
+        PASSAGE,       ///< Debug only @see RandomSizeRoomGenerator::debugTiles
 
-    COMPONENT1,    ///< Debug only. Used to mark connected components. Should be consequent
-    COMPONENT2,    ///< Debug only. Used to mark connected components. Should be consequent
-    COMPONENT3,    ///< Debug only. Used to mark connected components. Should be consequent
+        DOWN_STAIRS,   ///< Stairs leading to next level
+        UP_STAIRS,     ///< Stairs leading to previous level
 
-    TOTAL_         ///< Technical enumerator. Should always be last
-};
+        COMPONENT1,    ///< Debug only. Used to mark connected components. Should be consequent
+        COMPONENT2,    ///< Debug only. Used to mark connected components. Should be consequent
+        COMPONENT3,    ///< Debug only. Used to mark connected components. Should be consequent
 
-/// Total amount of tiles
-const static int totalTiles = static_cast<int>(Tile::TOTAL_);
+        TOTAL_         ///< Technical enumerator. Should always be last
+    };
 
-/// @brief Tests if Tile is passable (!= Tile::WALL)
-/// @details Tile::UNSEEN is also impassable for placing player and debug dungeon generation 
-[[nodiscard]] inline bool isPassable(Tile tile) {
-    return tile != Tile::WALL;
-}
+    /// Total amount of tiles
+    const int totalTiles = static_cast<int>(Tile::TOTAL_);
 
-/// same as isPassable
-[[nodiscard]] inline bool isPassableTile(Tile tile) {
-    return isPassable(tile);
-}
+    /// @brief Tests if Tile is passable (!= Tile::WALL)
+    /// @details Tile::UNSEEN is also impassable for placing player and debug dungeon generation 
+    [[nodiscard]] inline bool isPassable(Tile tile) {
+        return tile != Tile::WALL;
+    }
 
-/// @brief Tests if Tile is empty (Tile::EMPTY)
-/// @details Debug tiles for marking generation cause are also empty
-[[nodiscard]] inline bool isEmpty(Tile tile) {
-    return tile == Tile::EMPTY 
-        || tile == Tile::ROOM 
-        || tile == Tile::ROOM_ENTRANCE 
-        || tile == Tile::PASSAGE;
+    /// same as isPassable
+    [[nodiscard]] inline bool isPassableTile(Tile tile) {
+        return isPassable(tile);
+    }
+
+    /// @brief Tests if Tile is empty (Tile::EMPTY)
+    /// @details Debug tiles for marking generation cause are also empty
+    [[nodiscard]] inline bool isEmpty(Tile tile) {
+        return tile == Tile::EMPTY
+            || tile == Tile::ROOM
+            || tile == Tile::ROOM_ENTRANCE
+            || tile == Tile::PASSAGE;
+    }
+
+    inline char charFromTile(Tile tile) {
+        switch (tile) {
+        case Tile::WALL:
+            return '#';
+        case Tile::UP_STAIRS:
+            return '<';
+        case Tile::DOWN_STAIRS:
+            return '>';
+        default:
+            return ' ';
+        }
+    }
+
+    class UnknownTile : public util::RuntimeError {
+    public:
+        UnknownTile(char c, util::Stacktrace stacktrace = {}) :
+            util::RuntimeError{std::format("Unknow tile '{}'", c), std::move(stacktrace)} {}
+    };
+
+    inline Tile tileFromChar(char c) {
+        switch (c) {
+        case ' ':
+            return Tile::EMPTY;
+        case '#':
+            return Tile::WALL;
+        case '<':
+            return Tile::UP_STAIRS;
+        case '>':
+            return Tile::DOWN_STAIRS;
+        default:
+            throw UnknownTile{c};
+        }
+    }
 }
 
 #endif

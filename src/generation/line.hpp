@@ -19,11 +19,11 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "core/World.hpp"
 
 namespace generation {
-    void horizontalLine(core::World& world, int z, int left, int right, int y, Tile tile);
-    void verticalLine(core::World& world, int z, int top, int bottom, int x, Tile tile);
+    void horizontalLine(core::World& world, int z, int left, int right, int y, core::Tile tile);
+    void verticalLine(core::World& world, int z, int top, int bottom, int x, core::Tile tile);
 
-    void horizontalLineInclusive(core::World& world, int z, int left, int right, int y, Tile tile);
-    void verticalLineInclusive(core::World& world, int z, int top, int bottom, int x, Tile tile);
+    void horizontalLineInclusive(core::World& world, int z, int left, int right, int y, core::Tile tile);
+    void verticalLineInclusive(core::World& world, int z, int top, int bottom, int x, core::Tile tile);
 }
 
 #endif
