@@ -187,9 +187,6 @@ namespace core {
 		Actor& player() noexcept {
 			return *player_;
 		}
-
-		void parseTiles(std::string_view s);
-		std::string stringifyTiles() const;
 	private:
 		util::Array3D<Tile> tiles_;
 

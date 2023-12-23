@@ -40,6 +40,8 @@ namespace core {
 			         std::shared_ptr<util::Raycaster> raycaster);
 
 		void spawn();
+
+		std::shared_ptr<core::Actor> parseActor(std::string_view s);
 	private:
 		std::shared_ptr<World> world;
 		std::shared_ptr<XpManager> xpManager;

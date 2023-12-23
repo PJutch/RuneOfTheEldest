@@ -61,6 +61,43 @@ namespace core {
 			SpellNotFound(std::string_view name, util::Stacktrace currentStacktrace = {}) noexcept :
 				LoadError{std::format("Spell \"{}\" not found", name), std::move(currentStacktrace)} {}
 		};
+
+		Actor::Stats loadStats(std::unordered_map<std::string, std::string>& params, render::AssetManager& assets) {
+			Actor::Stats result;
+
+			result.maxHp = util::parseReal(util::getAndEraseRequired(params, "hp"));
+			result.regen = util::parseReal(util::getAndEraseRequired(params, "regen"));
+
+			if (auto v = util::getAndErase(params, "mana"))
+				result.maxMana = util::parseReal(*v);
+			if (auto v = util::getAndErase(params, "manaRegen"))
+				result.manaRegen = util::parseReal(*v);
+
+			result.damage = util::parseReal(util::getAndEraseRequired(params, "damage"));
+			result.accuracy = util::parseReal(util::getAndEraseRequired(params, "accuracy"));
+			result.evasion = util::parseReal(util::getAndEraseRequired(params, "evasion"));
+			result.turnDelay = util::parseReal(util::getAndEraseRequired(params, "turnDelay"));
+
+			result.xp = util::parseReal(util::getAndEraseRequired(params, "xp"));
+			if (auto v = util::getAndErase(params, "hasRangedAttack")) {
+				result.hasRangedAttack = util::parseBool(*v);
+
+				result.projectileFlightTime = sf::seconds(util::parseReal(util::getAndEraseRequired(params, "projectileFlightTime")));
+				result.projectileTexture = &assets.texture(util::getAndEraseRequired(params, "projectileTexture"));
+			} else
+				result.hasRangedAttack = false;
+
+			result.defences.fill(0);
+			boost::mp11::mp_for_each<boost::describe::describe_enumerators<DamageType>>([&](auto D) {
+				using namespace std::literals;
+				if (auto v = util::getAndErase(params, util::toLower(D.name) + "Defence"s))
+					result.defences[static_cast<int>(D.value)] = util::parseReal(*v);
+			});
+
+			result.texture = &assets.texture(util::getAndEraseRequired(params, "texture"));
+
+			return result;
+		}
 	}
 
 	ActorSpawner::ActorSpawner(std::shared_ptr<World> world_, std::shared_ptr<XpManager> xpManager_, 
@@ -80,41 +117,11 @@ namespace core {
 
 			actorData.emplace_back();
 
-			Actor::Stats& currentStats = actorData.back().stats;
-
-			currentStats.maxHp = util::parseReal(util::getAndEraseRequired(params, "hp"));
-			currentStats.regen = util::parseReal(util::getAndEraseRequired(params, "regen"));
-
-			if (auto v = util::getAndErase(params, "mana"))
-				currentStats.maxMana = util::parseReal(*v);
-			if (auto v = util::getAndErase(params, "manaRegen"))
-				currentStats.manaRegen = util::parseReal(*v);
-
-			currentStats.damage = util::parseReal(util::getAndEraseRequired(params, "damage"));
-			currentStats.accuracy = util::parseReal(util::getAndEraseRequired(params, "accuracy"));
-			currentStats.evasion = util::parseReal(util::getAndEraseRequired(params, "evasion"));
-			currentStats.turnDelay = util::parseReal(util::getAndEraseRequired(params, "turnDelay"));
-
-			currentStats.xp = util::parseReal(util::getAndEraseRequired(params, "xp"));
-			if (auto v = util::getAndErase(params, "hasRangedAttack")) {
-				currentStats.hasRangedAttack = util::parseBool(*v);
-
-				currentStats.projectileFlightTime = sf::seconds(util::parseReal(util::getAndEraseRequired(params, "projectileFlightTime")));
-				currentStats.projectileTexture = &renderContext.assets->texture(util::getAndEraseRequired(params, "projectileTexture"));
-			} else
-				currentStats.hasRangedAttack = false;
-
-			currentStats.defences.fill(0);
-			boost::mp11::mp_for_each<boost::describe::describe_enumerators<DamageType>>([&](auto D) {
-				using namespace std::literals;
-				if (auto v = util::getAndErase(params, util::toLower(D.name) + "Defence"s))
-					currentStats.defences[static_cast<int>(D.value)] = util::parseReal(*v);
-			});
+			actorData.back().stats = loadStats(params, *renderContext.assets);
 
 			if (auto v = util::getAndErase(params, "controller"))
 				actorData.back().controller = *v;
 
-			currentStats.texture = &renderContext.assets->texture(util::getAndEraseRequired(params, "texture"));
 			actorData.back().minOnLevel = util::parseUint(util::getAndEraseRequired(params, "minOnLevel"));
 			actorData.back().maxOnLevel = util::parseUint(util::getAndEraseRequired(params, "maxOnLevel"));
 
