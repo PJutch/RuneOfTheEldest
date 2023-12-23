@@ -350,6 +350,45 @@ namespace util {
 
 		return result;
 	}
+
+	class FirstHeaderExpected : public util::RuntimeError {
+	public:
+		FirstHeaderExpected(util::Stacktrace stacktrace = {}) :
+			util::RuntimeError{"Header expected in the begining of sectioned data", stacktrace} {}
+	};
+
+	class ClosingBracketNotFound : public util::RuntimeError {
+	public:
+		ClosingBracketNotFound(util::Stacktrace stacktrace = {}) : 
+			util::RuntimeError{"Expected closing square bracket", stacktrace} {}
+	};
+
+	/// Iterates over sections delimited by [Section name] in s
+	template <std::invocable<std::string_view, std::string_view> Callback>
+	void forEachSection(std::string_view s, Callback&& callback) {
+		if (s.empty())
+			return;
+
+		if (s.front() != '[')
+			throw FirstHeaderExpected{};
+
+		auto sectionStart = s.begin();
+		while (sectionStart != s.end()) {
+			auto nameStart = std::next(sectionStart);
+			auto nameEnd = std::ranges::find(nameStart, s.end(), ']');
+
+			if (nameEnd == s.end()) {
+				throw ClosingBracketNotFound{};
+			}
+
+			auto dataStart = std::next(nameEnd);
+			auto dataEnd = std::ranges::find(dataStart, s.end(), '[');
+
+			callback(std::string_view{nameStart, nameEnd}, {dataStart, dataEnd});
+
+			sectionStart = dataEnd;
+		}
+	}
 }
 
 #endif

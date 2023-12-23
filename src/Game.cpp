@@ -33,6 +33,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/Keyboard.hpp"
 #include "util/raycast.hpp"
 #include "util/filesystem.hpp"
+#include "util/parse.hpp"
 
 Game::Game(std::shared_ptr<core::World> newWorld,
            std::unique_ptr<core::ActorSpawner> actorSpawner_,
@@ -59,11 +60,25 @@ Game::Game(std::shared_ptr<core::World> newWorld,
     addOnUpdateListener([particles = renderContext.particles](sf::Time elapsedTime) { particles->update(elapsedTime); });
 }
 
+namespace {
+    class UnknowSection : public util::RuntimeError {
+    public:
+        UnknowSection(std::string_view name, util::Stacktrace stacktrace = {}) : 
+            util::RuntimeError{std::format("Unknown section \"{}\"", name), std::move(stacktrace)} {}
+    };
+}
+
 void Game::run() {
     sf::Texture playerTextureStub;
 
     if (auto v = util::readWhole("latest.sav")) {
-        world->parse(*v);
+        util::forEachSection(*v, [&](std::string_view name, std::string_view data) {
+            if (name == "Tiles") {
+                world->parse(data);
+            } else {
+                throw UnknowSection{name};
+            }
+        });
 
         auto playerStub = std::make_shared<core::Actor>(
             core::Actor::Stats{ .maxHp = 1, .texture = &playerTextureStub }, sf::Vector3i{}, 
@@ -92,7 +107,8 @@ void Game::run() {
         draw_();
     }
 
-    util::writeWhole("latest.sav", world->stringify());
+    using namespace std::literals;
+    util::writeWhole("latest.sav", "[Tiles]"s + world->stringify());
 }
 
 void Game::handleEvent(sf::Event event) {
