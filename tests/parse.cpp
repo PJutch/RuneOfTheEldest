@@ -200,3 +200,21 @@ TEST(parse, parseCharMapLeadingSpaces) {
 	EXPECT_EQ((data[{1, 1, 1}]), 'd');
 }
 
+std::vector<std::pair<std::string_view, std::string_view>> parseSections(std::string_view s) {
+	std::vector<std::pair<std::string_view, std::string_view>> sections;
+
+	util::forEachSection(s, [&sections](std::string_view name, std::string_view data) {
+		sections.emplace_back(name, data);
+	});
+
+	return sections;
+}
+
+TEST(parse, forEachSection) {
+	using namespace std::literals;
+	EXPECT_TRUE(parseSections("").empty());
+	EXPECT_EQ(parseSections("[a]bc[dd]e"), (std::vector{std::pair{"a"sv, "bc"sv}, std::pair{"dd"sv, "e"sv}}));
+	EXPECT_EQ(parseSections("[]"), (std::vector{std::pair{""sv, ""sv}}));
+	EXPECT_EQ(parseSections("[]  \n"), (std::vector{std::pair{""sv, ""sv}}));
+	EXPECT_EQ(parseSections("[a]  \nbc[dd]\n  e"), (std::vector{std::pair{"a"sv, "bc"sv}, std::pair{"dd"sv, "  e"sv}}));
+}
