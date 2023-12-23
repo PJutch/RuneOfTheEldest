@@ -34,6 +34,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/raycast.hpp"
 #include "util/filesystem.hpp"
 #include "util/parse.hpp"
+#include "util/stringify.hpp"
 
 Game::Game(std::shared_ptr<core::World> newWorld,
            std::unique_ptr<core::ActorSpawner> actorSpawner_,
@@ -74,7 +75,7 @@ void Game::run() {
     if (auto v = util::readWhole("latest.sav")) {
         util::forEachSection(*v, [&](std::string_view name, std::string_view data) {
             if (name == "Tiles") {
-                world->parse(data);
+                world->tiles() = util::parseCharMap(data).transform(&core::tileFromChar);
             } else {
                 throw UnknowSection{name};
             }
@@ -108,7 +109,7 @@ void Game::run() {
     }
 
     using namespace std::literals;
-    util::writeWhole("latest.sav", "[Tiles]"s + world->stringify());
+    util::writeWhole("latest.sav", "[Tiles]"s + util::strigifyCharMap(world->tiles().transform(&core::charFromTile)));
 }
 
 void Game::handleEvent(sf::Event event) {

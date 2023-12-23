@@ -188,8 +188,8 @@ namespace core {
 			return *player_;
 		}
 
-		void parse(std::string_view s);
-		std::string stringify() const;
+		void parseTiles(std::string_view s);
+		std::string stringifyTiles() const;
 	private:
 		util::Array3D<Tile> tiles_;
 
