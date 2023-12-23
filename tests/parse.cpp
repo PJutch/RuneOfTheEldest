@@ -86,8 +86,7 @@ TEST(parse, parseBool) {
 }
 
 TEST(parse, forEachStrippedLine) {
-	std::istringstream stream{"a\n  b \n c\n"};
-	util::forEachStrippedLine(stream, [](std::string_view line, int lineIndex) {
+	util::forEachStrippedLine("a\n  b \n c\n", [](std::string_view line, int lineIndex) {
 		using namespace std::literals;
 		switch (lineIndex) {
 		case 0: TROTE_ASSERT(line == "a"sv); break;
@@ -99,8 +98,7 @@ TEST(parse, forEachStrippedLine) {
 }
 
 TEST(parse, forEachStrippedLineEmpty) {
-	std::istringstream stream{ "a\n\n  " };
-	util::forEachStrippedLine(stream, [](std::string_view line, int lineIndex) {
+	util::forEachStrippedLine("a\n\n  ", [](std::string_view line, int lineIndex) {
 		using namespace std::literals;
 		switch (lineIndex) {
 		case 0: TROTE_ASSERT(line == "a"sv); break;
@@ -110,8 +108,7 @@ TEST(parse, forEachStrippedLineEmpty) {
 }
 
 TEST(parse, forEachStrippedLineComments) {
-	std::istringstream stream{ "a # b\n # cde " };
-	util::forEachStrippedLine(stream, [](std::string_view line, int lineIndex) {
+	util::forEachStrippedLine("a # b\n # cde ", [](std::string_view line, int lineIndex) {
 		using namespace std::literals;
 		switch (lineIndex) {
 		case 0: TROTE_ASSERT(line == "a"sv); break;
@@ -121,8 +118,7 @@ TEST(parse, forEachStrippedLineComments) {
 }
 
 TEST(parse, forEachStrippedLineNone) {
-	std::istringstream stream{ "" };
-	util::forEachStrippedLine(stream, [](std::string_view line, int lineIndex) {
+	util::forEachStrippedLine("", [](std::string_view line, int lineIndex) {
 		TROTE_ASSERT(false, "there shouldn't be more lines");
 	});
 }
@@ -137,20 +133,19 @@ TEST(parse, parseKeyValuePair) {
 }
 
 TEST(parse, parseMapping) {
-	std::istringstream stream{ "ab  cde \n fg hi" };
 	using namespace std::literals;
-	EXPECT_EQ(util::parseMapping(stream), (std::unordered_map{ std::pair{"ab"s, "cde"s}, std::pair{"fg"s, "hi"s} }));
+	EXPECT_EQ(util::parseMapping("ab  cde \n fg hi"), 
+		(std::unordered_map{ std::pair{"ab"s, "cde"s}, std::pair{"fg"s, "hi"s} }));
 }
 
 TEST(parse, parseMappingEmpty) {
-	std::istringstream stream{ "" };
-	EXPECT_TRUE(util::parseMapping(stream).empty());
+	EXPECT_TRUE(util::parseMapping("").empty());
 }
 
 TEST(parse, parseMappingComments) {
-	std::istringstream stream{ "ab  cde  # ??\n# bla-bla \n fg hi" };
 	using namespace std::literals;
-	EXPECT_EQ(util::parseMapping(stream), (std::unordered_map{ std::pair{"ab"s, "cde"s}, std::pair{"fg"s, "hi"s} }));
+	EXPECT_EQ(util::parseMapping("ab  cde  # ??\n# bla-bla \n fg hi"), 
+		(std::unordered_map{ std::pair{"ab"s, "cde"s}, std::pair{"fg"s, "hi"s} }));
 }
 
 TEST(parse, parseList) {

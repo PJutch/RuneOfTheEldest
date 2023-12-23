@@ -174,13 +174,23 @@ namespace util {
 		return result;
 	}
 
-	/// Iterates over line from s
-	template <typename Callback> requires std::invocable<Callback, std::string_view>
+	/// Iterates over lines from is
+	template <std::invocable<std::string_view, int> Callback>
+	void forEachLine(std::istream& is, Callback&& callback) {
+		std::string line;
+		int index = 0;
+		while (std::getline(is, line))
+			callback(std::string_view{line}, index++);
+	}
+
+	/// Iterates over lines from s
+	template <std::invocable<std::string_view, int> Callback>
 	void forEachLine(std::string_view s, Callback&& callback) {
+		int index = 0;
 		auto lineStart = s.begin();
 		while (lineStart != s.end()) {
 			auto lineEnd = std::ranges::find(lineStart, s.end(), '\n');
-			callback(std::string_view{lineStart, lineEnd});
+			callback(std::string_view{lineStart, lineEnd}, index++);
 
 			if (lineEnd == s.end()) {
 				break;
@@ -189,23 +199,30 @@ namespace util {
 		}
 	}
 
+	/// Iterates over lines from source without line numbers
+	template <std::invocable<std::string_view> Callback>
+	void forEachLine(auto&& source, Callback&& callback) {
+		forEachLine(source, [&callback](std::string_view s, int) {
+			callback(s);
+		});
+	}
+
 	/// @brief Iterates over stripped line from is
 	/// @details Comments and spaces are stripped.
 	/// Empty lines are ignored.
 	/// Rest is passed to callback with the line number (skipped lines aren't counted).
-	template <typename Callback> requires std::invocable<Callback, std::string_view, int>
-	void forEachStrippedLine(std::istream& is, Callback&& callback) {
-		std::string line;
-		int index = 0;
-		while (std::getline(is, line))
+	template <std::invocable<std::string_view, int> Callback>
+	void forEachStrippedLine(auto&& source, Callback&& callback) {
+		forEachLine(source, [&callback](std::string_view line, int index) {
 			if (std::string_view meaningful = strip(stripComment(line)); !meaningful.empty())
-				callback(meaningful, index++);
+				callback(meaningful, index);
+		});
 	}
 
 	/// Strips each line in is and passes it to the callback
-	template <typename Callback> requires std::invocable<Callback, std::string_view>
-	void forEachStrippedLine(std::istream& is, Callback&& callback) {
-		forEachStrippedLine(is, [&callback](std::string_view line, [[maybe_unused]] int index) {
+	template <std::invocable<std::string_view> Callback>
+	void forEachStrippedLine(auto&& source, Callback&& callback) {
+		forEachStrippedLine(source, [&callback](std::string_view line, int) {
 			callback(line);
 		});
 	}
@@ -236,10 +253,10 @@ namespace util {
 		return { key, value };
 	}
 
-	/// Parses whole stream as key-value pairs
-	inline std::unordered_map<std::string, std::string> parseMapping(std::istream& is) {
+	/// Parses whole source as key-value pairs
+	inline std::unordered_map<std::string, std::string> parseMapping(auto&& source) {
 		std::unordered_map<std::string, std::string> result;
-		forEachStrippedLine(is, [&result](std::string_view line) {
+		forEachStrippedLine(source, [&result](std::string_view line) {
 			result.insert(parseKeyValuePair(line));
 		});
 		return result;
