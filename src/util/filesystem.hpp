@@ -58,6 +58,30 @@ namespace util {
 			callback(file, filePath);
 		});
 	}
+
+	/// Reads all contents of a stream
+	inline std::string readWhole(std::istream& is) {
+		return {std::istreambuf_iterator{is}, std::istreambuf_iterator<char>{}};
+	}
+
+	/// Reads all contents of a file if it exists
+	inline std::optional<std::string> readWhole(const std::filesystem::path& path) {
+		if (std::ifstream file{path}) {
+			return readWhole(file);
+		} else {
+			return std::nullopt;
+		}
+	}
+
+	/// Replaces file contents with a string
+	inline bool writeWhole(const std::filesystem::path& path, std::string_view s) {
+		if (std::ofstream file{path}) {
+			file << s;
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
 
 #endif

@@ -17,6 +17,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Actor.hpp"
 
+#include "util/parse.hpp"
+#include "util/stringify.hpp"
+
 namespace core {
 	std::shared_ptr<Actor> World::actorAt(sf::Vector3i position) {
 		auto iter = std::ranges::find_if(actors_, [position](std::shared_ptr<Actor> actor) {
@@ -94,5 +97,13 @@ namespace core {
 		std::ranges::pop_heap(actors_, std::greater<>{}, [](std::shared_ptr<Actor>& actor) {
 			return actor->nextTurn();
 		});
+	}
+
+	void World::parse(std::string_view s) {
+		tiles() = util::parseCharMap(s).transform(&tileFromChar);
+	}
+
+	std::string World::stringify() const {
+		return util::strigifyCharMap(tiles().transform(&charFromTile));
 	}
 }

@@ -164,3 +164,39 @@ TEST(parse, parseList) {
 	EXPECT_EQ(util::parseList(",,"), (std::vector{""sv, ""sv}));
 }
 
+TEST(parse, parseCharMapSize) {
+	EXPECT_EQ(util::parseCharMap("ab\ncd\n-\nef\ngh").shape(), (sf::Vector3i{2, 2, 2}));
+	EXPECT_EQ(util::parseCharMap("ab  \ncd\n-\nef\ngh\n").shape(), (sf::Vector3i{2, 2, 2}));
+	EXPECT_EQ(util::parseCharMap("ab\ncd\n --- \nef\ngh\n  ").shape(), (sf::Vector3i{2, 2, 2}));
+	EXPECT_EQ(util::parseCharMap("ab\ncd\n-\nef\ngh\nx").shape(), (sf::Vector3i{2, 3, 2}));
+	EXPECT_EQ(util::parseCharMap("").shape(), (sf::Vector3i{0, 0, 1}));
+}
+
+TEST(parse, parseCharMapData) {
+	auto data = util::parseCharMap("ab\nc\n--\nd");
+
+	EXPECT_EQ(data.shape(), (sf::Vector3i{2, 2, 2}));
+	EXPECT_EQ((data[{0, 0, 0}]), 'a');
+	EXPECT_EQ((data[{1, 0, 0}]), 'b');
+	EXPECT_EQ((data[{0, 1, 0}]), 'c');
+	EXPECT_EQ((data[{1, 1, 0}]), ' ');
+	EXPECT_EQ((data[{0, 0, 1}]), 'd');
+	EXPECT_EQ((data[{1, 0, 1}]), ' ');
+	EXPECT_EQ((data[{0, 1, 1}]), ' ');
+	EXPECT_EQ((data[{1, 1, 1}]), ' ');
+}
+
+TEST(parse, parseCharMapLeadingSpaces) {
+	auto data = util::parseCharMap("ab\n c\n--\n\n d");
+
+	EXPECT_EQ(data.shape(), (sf::Vector3i{2, 2, 2}));
+	EXPECT_EQ((data[{0, 0, 0}]), 'a');
+	EXPECT_EQ((data[{1, 0, 0}]), 'b');
+	EXPECT_EQ((data[{0, 1, 0}]), ' ');
+	EXPECT_EQ((data[{1, 1, 0}]), 'c');
+	EXPECT_EQ((data[{0, 0, 1}]), ' ');
+	EXPECT_EQ((data[{1, 0, 1}]), ' ');
+	EXPECT_EQ((data[{0, 1, 1}]), ' ');
+	EXPECT_EQ((data[{1, 1, 1}]), 'd');
+}
+

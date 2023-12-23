@@ -91,6 +91,22 @@ namespace util {
 				          * static_cast<ptrdiff_t>(shape().y)
 				          * static_cast<ptrdiff_t>(shape().z), value);
 		}
+
+		template <std::invocable<T> Proj>
+		auto transform(Proj&& proj) const {
+			Array3D<std::invoke_result_t<Proj, T>> result;
+			result.assign(shape(), {});
+
+			for (int z = 0; z < shape().z; ++z) {
+				for (int y = 0; y < shape().y; ++y) {
+					for (int x = 0; x < shape().x; ++x) {
+						result[{x, y, z}] = proj((*this)[{x, y, z}]);
+					}
+				}
+			}
+			
+			return result;
+		}
 	private:
 		std::vector<T> elements;
 		sf::Vector3i shape_;

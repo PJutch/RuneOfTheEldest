@@ -18,6 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Exception.hpp"
 #include "Map.hpp"
+#include "Array3D.hpp"
 
 #include <format>
 #include <iostream>
@@ -48,6 +49,14 @@ namespace util {
 
 		auto end = std::ranges::find_if_not(s.rbegin(), s.rend(), &isSpace).base();
 		return { begin, end };
+	}
+
+	/// @brief Strip spaces from right
+	/// @details Removes all chars satisfying isSpace from right.
+	/// Returns subview of input view
+	inline std::string_view rightStrip(std::string_view s) noexcept {
+		auto end = std::ranges::find_if_not(s.rbegin(), s.rend(), &isSpace).base();
+		return {s.begin(), end};
 	}
 
 	/// @brief Strip comment from line
@@ -165,6 +174,21 @@ namespace util {
 		return result;
 	}
 
+	/// Iterates over line from s
+	template <typename Callback> requires std::invocable<Callback, std::string_view>
+	void forEachLine(std::string_view s, Callback&& callback) {
+		auto lineStart = s.begin();
+		while (lineStart != s.end()) {
+			auto lineEnd = std::ranges::find(lineStart, s.end(), '\n');
+			callback(std::string_view{lineStart, lineEnd});
+
+			if (lineEnd == s.end()) {
+				break;
+			}
+			lineStart = std::next(lineEnd);
+		}
+	}
+
 	/// @brief Iterates over stripped line from is
 	/// @details Comments and spaces are stripped.
 	/// Empty lines are ignored.
@@ -241,11 +265,10 @@ namespace util {
 	}
 
 	/// @brief Parses comma-separated list
-	/// @detail Values are separated by commas
-	/// Commas aren't parts of values
-	/// Trailing commas are ignored (trailing commas before ws aren't)
-	/// Empty string gives empty list
-	/// Empty string gives empty list
+	/// @detail Values are separated by commas.
+	/// Commas aren't parts of values.
+	/// Trailing commas are ignored (trailing commas before ws aren't).
+	/// Empty string gives empty list.
 	inline std::vector<std::string_view> parseList(std::string_view s) {
 		std::vector<std::string_view> res;
 		auto prev = s.begin();
@@ -260,6 +283,72 @@ namespace util {
 			prev = next;
 		}
 		return res;
+	}
+
+	/// @brief Parses 3D char map
+	/// @detail New line ends a row.
+	/// Line containing at least 1 - and spaces ends a level.
+	/// Spaces at the end of a row or level are ignored.
+	/// Spaces in the begining or in the middle aren't.
+	/// Spaces are added to make shape a rectangular cuboid.
+	inline Array3D<char> parseCharMap(std::string_view s) {
+		int maxWidth = 0;
+		int maxHeight = 0;
+
+		int meaningfulHeight = 0;
+		int height = 0;
+		int depth = 1;
+		forEachLine(s, [&](std::string_view line) {
+			int width = std::ssize(rightStrip(line));
+			if (width == 0) {
+				++height;
+				return;
+			}
+
+			if (std::ranges::all_of(line, [](char c) {
+				return c == '-' || isSpace(c);
+			})) {
+				maxHeight = std::max(meaningfulHeight, maxHeight);
+				height = 0;
+				meaningfulHeight = 0;
+
+				++depth;
+
+				return;
+			}
+			
+			maxWidth = std::max(width, maxWidth);
+			++height;
+			meaningfulHeight = height;
+		});
+
+		maxHeight = std::max(meaningfulHeight, maxHeight);
+
+		Array3D<char> result;
+		result.assign({maxWidth, maxHeight, depth}, ' ');
+
+		sf::Vector3i pos;
+		forEachLine(s, [&](std::string_view line) {
+			auto meaningful = rightStrip(line);
+
+			if (!meaningful.empty() && std::ranges::all_of(line, [](char c) {
+				return c == '-' || isSpace(c);
+			})) {
+				pos.y = 0;
+				++pos.z;
+				return;
+			}
+
+			for (char c : meaningful) {
+				result[pos] = c;
+				++pos.x;
+			}
+
+			pos.x = 0;
+			++pos.y;
+		});
+
+		return result;
 	}
 }
 

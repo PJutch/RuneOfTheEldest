@@ -28,9 +28,11 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "core/World.hpp"
 #include "core/ActorSpawner.hpp"
 #include "core/XpManager.hpp"
+#include "core/Controller/PlayerController.hpp"
 
 #include "util/Keyboard.hpp"
 #include "util/raycast.hpp"
+#include "util/filesystem.hpp"
 
 Game::Game(std::shared_ptr<core::World> newWorld,
            std::unique_ptr<core::ActorSpawner> actorSpawner_,
@@ -50,6 +52,7 @@ Game::Game(std::shared_ptr<core::World> newWorld,
     addOnGenerateListener([particles = renderContext.particles]() { particles->clear(); });
     addOnGenerateListener([raycaster = std::move(raycaster)]() { raycaster->clear(); });
     addOnGenerateListener([xpManager = xpManager]() { xpManager->onGenerate(); });
+    addOnGenerateListener([]() { std::filesystem::remove("latest.sav"); });
 
     addOnUpdateListener([camera = renderContext.camera](sf::Time elapsedTime) { camera->update(elapsedTime); });
     addOnUpdateListener([playerMap = renderContext.playerMap](sf::Time) { playerMap->update(); });
@@ -57,7 +60,21 @@ Game::Game(std::shared_ptr<core::World> newWorld,
 }
 
 void Game::run() {
-    generate();
+    sf::Texture playerTextureStub;
+
+    if (auto v = util::readWhole("latest.sav")) {
+        world->parse(*v);
+
+        auto playerStub = std::make_shared<core::Actor>(
+            core::Actor::Stats{ .maxHp = 1, .texture = &playerTextureStub }, sf::Vector3i{}, 
+            world, xpManager, renderContext.particles, nullptr);
+        playerStub->controller(std::make_unique<core::PlayerController>(playerStub, nullptr, renderContext));
+        world->addActor(playerStub);
+
+        renderContext.playerMap->onGenerate();
+    } else {
+        generate();
+    }
 
     sf::Clock clock;
 	while (renderContext.window->isOpen()) {
@@ -74,6 +91,8 @@ void Game::run() {
 
         draw_();
     }
+
+    util::writeWhole("latest.sav", world->stringify());
 }
 
 void Game::handleEvent(sf::Event event) {
