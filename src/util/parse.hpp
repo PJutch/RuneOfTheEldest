@@ -363,7 +363,10 @@ namespace util {
 			util::RuntimeError{"Expected closing square bracket", stacktrace} {}
 	};
 
-	/// Iterates over sections delimited by [Section name] in s
+	/// @brief Iterates over sections in s
+	/// @details sections are delimited by headers.
+	/// Header is a section name in square brackets;
+	/// If line after header contains only spaces it's ignored;
 	template <std::invocable<std::string_view, std::string_view> Callback>
 	void forEachSection(std::string_view s, Callback&& callback) {
 		if (s.empty())
@@ -382,6 +385,16 @@ namespace util {
 			}
 
 			auto dataStart = std::next(nameEnd);
+
+			auto lineEnd = std::ranges::find(nameEnd, s.end(), '\n');
+			if (std::ranges::all_of(dataStart, lineEnd, &isSpace)) {
+				if (lineEnd == s.end()) {
+					dataStart = s.end();
+				} else {
+					dataStart = std::next(lineEnd);
+				}
+			}
+
 			auto dataEnd = std::ranges::find(dataStart, s.end(), '[');
 
 			callback(std::string_view{nameStart, nameEnd}, {dataStart, dataEnd});

@@ -109,7 +109,7 @@ void Game::run() {
     }
 
     using namespace std::literals;
-    util::writeWhole("latest.sav", "[Tiles]"s + util::strigifyCharMap(world->tiles().transform(&core::charFromTile)));
+    util::writeWhole("latest.sav", "[Tiles]\n"s + util::strigifyCharMap(world->tiles().transform(&core::charFromTile)));
 }
 
 void Game::handleEvent(sf::Event event) {
