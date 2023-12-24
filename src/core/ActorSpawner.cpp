@@ -21,173 +21,277 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "render/AssetManager.hpp"
 
 #include "util/parse.hpp"
+#include "util/stringify.hpp"
 #include "util/filesystem.hpp"
 #include "util/Map.hpp"
-#include <util/case.hpp>
+#include "util/case.hpp"
 
 #include <boost/describe.hpp>
 #include <boost/mp11.hpp>
 
 namespace core {
-	namespace {
-		class LoadError : public util::RuntimeError {
-		public:
-			LoadError(const std::string& message, util::Stacktrace currentStacktrace = {}) noexcept :
-				RuntimeError{ message, std::move(currentStacktrace) } {}
-		};
+    namespace {
+        class LoadError : public util::RuntimeError {
+        public:
+            LoadError(const std::string& message, util::Stacktrace currentStacktrace = {}) noexcept :
+                RuntimeError{message, std::move(currentStacktrace)} {}
+        };
 
-		std::string unknownParamsMessage(std::unordered_map<std::string, std::string> params) {
-			std::string message = "Unknown params: ";
-			for (auto [name, value] : params)
-				message += std::format("\"{}\" ", name);
-			return message;
-		}
+        std::string unknownParamsMessage(std::unordered_map<std::string, std::string> params) {
+            std::string message = "Unknown params: ";
+            for (auto [name, value] : params)
+                message += std::format("\"{}\" ", name);
+            return message;
+        }
 
-		class UnknownParamsError : public LoadError {
-		public:
-			UnknownParamsError(std::unordered_map<std::string, std::string> params,
-				util::Stacktrace currentStacktrace = {}) noexcept :
-				LoadError{ unknownParamsMessage(params), std::move(currentStacktrace) } {}
-		};
+        class UnknownParamsError : public LoadError {
+        public:
+            UnknownParamsError(std::unordered_map<std::string, std::string> params,
+                util::Stacktrace currentStacktrace = {}) noexcept :
+                LoadError{unknownParamsMessage(params), std::move(currentStacktrace)} {}
+        };
 
-		class EffectNotFound : public LoadError {
-		public:
-			EffectNotFound(std::string_view name, util::Stacktrace currentStacktrace = {}) noexcept :
-				LoadError{std::format("Effect \"{}\" not found", name), std::move(currentStacktrace)} {}
-		};
+        class EffectNotFound : public LoadError {
+        public:
+            EffectNotFound(std::string_view name, util::Stacktrace currentStacktrace = {}) noexcept :
+                LoadError{std::format("Effect \"{}\" not found", name), std::move(currentStacktrace)} {}
+        };
 
-		class SpellNotFound : public LoadError {
-		public:
-			SpellNotFound(std::string_view name, util::Stacktrace currentStacktrace = {}) noexcept :
-				LoadError{std::format("Spell \"{}\" not found", name), std::move(currentStacktrace)} {}
-		};
+        class SpellNotFound : public LoadError {
+        public:
+            SpellNotFound(std::string_view name, util::Stacktrace currentStacktrace = {}) noexcept :
+                LoadError{std::format("Spell \"{}\" not found", name), std::move(currentStacktrace)} {}
+        };
 
-		Actor::Stats loadStats(std::unordered_map<std::string, std::string>& params, render::AssetManager& assets) {
-			Actor::Stats result;
+        Actor::Stats loadStats(std::unordered_map<std::string, std::string>& params, render::AssetManager& assets) {
+            Actor::Stats result;
 
-			result.maxHp = util::parseReal(util::getAndEraseRequired(params, "hp"));
-			result.regen = util::parseReal(util::getAndEraseRequired(params, "regen"));
+            result.maxHp = util::parseReal(util::getAndEraseRequired(params, "hp"));
+            result.regen = util::parseReal(util::getAndEraseRequired(params, "regen"));
 
-			if (auto v = util::getAndErase(params, "mana"))
-				result.maxMana = util::parseReal(*v);
-			if (auto v = util::getAndErase(params, "manaRegen"))
-				result.manaRegen = util::parseReal(*v);
+            if (auto v = util::getAndErase(params, "mana"))
+                result.maxMana = util::parseReal(*v);
+            if (auto v = util::getAndErase(params, "manaRegen"))
+                result.manaRegen = util::parseReal(*v);
 
-			result.damage = util::parseReal(util::getAndEraseRequired(params, "damage"));
-			result.accuracy = util::parseReal(util::getAndEraseRequired(params, "accuracy"));
-			result.evasion = util::parseReal(util::getAndEraseRequired(params, "evasion"));
-			result.turnDelay = util::parseReal(util::getAndEraseRequired(params, "turnDelay"));
+            result.damage = util::parseReal(util::getAndEraseRequired(params, "damage"));
+            result.accuracy = util::parseReal(util::getAndEraseRequired(params, "accuracy"));
+            result.evasion = util::parseReal(util::getAndEraseRequired(params, "evasion"));
+            result.turnDelay = util::parseReal(util::getAndEraseRequired(params, "turnDelay"));
 
-			result.xp = util::parseReal(util::getAndEraseRequired(params, "xp"));
-			if (auto v = util::getAndErase(params, "hasRangedAttack")) {
-				result.hasRangedAttack = util::parseBool(*v);
+            result.xp = util::parseReal(util::getAndEraseRequired(params, "xp"));
 
-				result.projectileFlightTime = sf::seconds(util::parseReal(util::getAndEraseRequired(params, "projectileFlightTime")));
-				result.projectileTexture = &assets.texture(util::getAndEraseRequired(params, "projectileTexture"));
-			} else
-				result.hasRangedAttack = false;
+            if (auto v = util::getAndErase(params, "hasRangedAttack")) {
+                result.hasRangedAttack = util::parseBool(*v);
+            } else {
+                result.hasRangedAttack = false;
+            }
 
-			result.defences.fill(0);
-			boost::mp11::mp_for_each<boost::describe::describe_enumerators<DamageType>>([&](auto D) {
-				using namespace std::literals;
-				if (auto v = util::getAndErase(params, util::toLower(D.name) + "Defence"s))
-					result.defences[static_cast<int>(D.value)] = util::parseReal(*v);
-			});
+            if (result.hasRangedAttack) {
+                result.projectileFlightTime = sf::seconds(util::parseReal(util::getAndEraseRequired(params, "projectileFlightTime")));
+                result.projectileTexture = &assets.texture(util::getAndEraseRequired(params, "projectileTexture"));
+            }
 
-			result.texture = &assets.texture(util::getAndEraseRequired(params, "texture"));
+            result.defences.fill(0);
+            boost::mp11::mp_for_each<boost::describe::describe_enumerators<DamageType>>([&](auto D) {
+                using namespace std::literals;
+                if (auto v = util::getAndErase(params, util::toLower(D.name) + "Defence"s))
+                    result.defences[static_cast<int>(D.value)] = util::parseReal(*v);
+            });
 
-			return result;
-		}
-	}
+            result.texture = &assets.texture(util::getAndEraseRequired(params, "texture"));
 
-	ActorSpawner::ActorSpawner(std::shared_ptr<World> world_, std::shared_ptr<XpManager> xpManager_, 
-		                       std::shared_ptr<EffectManager> effectManager, std::shared_ptr<SpellManager> spellManager,
-		                       render::Context renderContext_, util::LoggerFactory& loggerFactory,
-		                       util::RandomEngine& randomEngine_,
-							   std::shared_ptr<util::Raycaster> raycaster_) :
-			world{ std::move(world_) }, xpManager{ std::move(xpManager_) }, 
-			renderContext{std::move(renderContext_)},
-			raycaster{ std::move(raycaster_) },
-		    randomEngine{ &randomEngine_ }, logger{loggerFactory.create("actors")} {
-		logger->info("Loading...");
-		util::forEachFile("resources/Actors/", [&, this](std::ifstream& file, const std::filesystem::path& path) {
-			logger->info("Loading spec from {} ...", path.generic_string());
+            return result;
+        }
+    }
 
-			auto params = util::parseMapping(file);
+    ActorSpawner::ActorSpawner(std::shared_ptr<World> world_, std::shared_ptr<XpManager> xpManager_,
+        std::shared_ptr<EffectManager> effectManager, std::shared_ptr<SpellManager> spellManager,
+        render::Context renderContext_, util::LoggerFactory& loggerFactory,
+        util::RandomEngine& randomEngine_,
+        std::shared_ptr<util::Raycaster> raycaster_) :
+        world{std::move(world_)}, xpManager{std::move(xpManager_)},
+        renderContext{std::move(renderContext_)},
+        raycaster{std::move(raycaster_)},
+        randomEngine{&randomEngine_}, logger{loggerFactory.create("actors")} {
+        logger->info("Loading...");
+        util::forEachFile("resources/Actors/", [&, this](std::ifstream& file, const std::filesystem::path& path) {
+            logger->info("Loading spec from {} ...", path.generic_string());
 
-			actorData.emplace_back();
+            auto params = util::parseMapping(file);
 
-			actorData.back().stats = loadStats(params, *renderContext.assets);
+            actorData.emplace_back();
 
-			if (auto v = util::getAndErase(params, "controller"))
-				actorData.back().controller = *v;
+            actorData.back().stats = loadStats(params, *renderContext.assets);
 
-			actorData.back().minOnLevel = util::parseUint(util::getAndEraseRequired(params, "minOnLevel"));
-			actorData.back().maxOnLevel = util::parseUint(util::getAndEraseRequired(params, "maxOnLevel"));
+            if (auto v = util::getAndErase(params, "controller"))
+                actorData.back().controller = *v;
 
-			if (auto v = util::getAndErase(params, "minLevel"))
-				actorData.back().minLevel = util::parseUint(*v);
-			if (auto v = util::getAndErase(params, "maxLevel"))
-				actorData.back().maxLevel = util::parseUint(*v);
+            actorData.back().minOnLevel = util::parseUint(util::getAndEraseRequired(params, "minOnLevel"));
+            actorData.back().maxOnLevel = util::parseUint(util::getAndEraseRequired(params, "maxOnLevel"));
 
-			if (auto v = util::getAndErase(params, "effect")) {
-				if (auto effect = effectManager->findEffect(*v))
-					actorData.back().effectToAdd = effect;
-				else
-					throw EffectNotFound{*v};
-			}
+            if (auto v = util::getAndErase(params, "minLevel"))
+                actorData.back().minLevel = util::parseUint(*v);
+            if (auto v = util::getAndErase(params, "maxLevel"))
+                actorData.back().maxLevel = util::parseUint(*v);
 
-			if (auto v = util::getAndErase(params, "spells")) {
-				for (auto spellName : util::parseList(*v) | std::views::transform(util::strip))
-					if (auto spell = spellManager->findSpell(spellName))
-						actorData.back().spellsToAdd.push_back(std::move(spell));
-					else
-						throw SpellNotFound{spellName};
-			}
+            if (auto v = util::getAndErase(params, "effect")) {
+                if (auto effect = effectManager->findEffect(*v))
+                    actorData.back().effectToAdd = effect;
+                else
+                    throw EffectNotFound{*v};
+            }
 
-			if (!params.empty())
-				throw UnknownParamsError{ params };
-		});
-		logger->info("Loaded");
-	}
+            if (auto v = util::getAndErase(params, "spells")) {
+                for (auto spellName : util::parseList(*v) | std::views::transform(util::strip))
+                    if (auto spell = spellManager->findSpell(spellName))
+                        actorData.back().spellsToAdd.push_back(std::move(spell));
+                    else
+                        throw SpellNotFound{spellName};
+            }
 
-	namespace {
-		class UnknownControllerError : public util::RuntimeError {
-		public:
-			UnknownControllerError(std::string_view type, util::Stacktrace currentStacktrace = {}) noexcept :
-				util::RuntimeError{ std::format("Unknow controller {}", type), std::move(currentStacktrace) } {}
-		};
-	}
+            if (!params.empty())
+                throw UnknownParamsError{params};
+        });
+        logger->info("Loaded");
+    }
 
-	std::unique_ptr<Controller> ActorSpawner::createController(std::shared_ptr<Actor> actor, std::string_view type) {
-		if (type == "player")
-			return std::make_unique<PlayerController>(actor, raycaster, renderContext);
-		else if (type == "enemy")
-			return std::make_unique<EnemyAi>(actor, raycaster);
-		else
-			throw UnknownControllerError{ type };
-	}
+    namespace {
+        class UnknownControllerError : public util::RuntimeError {
+        public:
+            UnknownControllerError(std::string_view type, util::Stacktrace currentStacktrace = {}) noexcept :
+                util::RuntimeError{std::format("Unknow controller {}", type), std::move(currentStacktrace)} {}
+        };
+    }
 
-	void ActorSpawner::spawn() {
-		logger->info("Spawning...");
-		for (int level = 0; level < world->tiles().shape().z; ++level)
-			for (const ActorData& data : actorData)
-				if (data.minLevel <= level && (!data.maxLevel || level <= data.maxLevel)) {
-					int count = std::uniform_int_distribution{data.minOnLevel, data.maxOnLevel}(*randomEngine);
-					for (int i = 0; i < count; ++i)
-						if (auto position = world->randomPositionAt(level, 1000, &World::isFree)) {
-							auto enemy = std::make_shared<Actor>(data.stats, *position, world, xpManager,
-								renderContext.particles, randomEngine);
-							enemy->controller(createController(enemy, data.controller));
+    std::unique_ptr<Controller> ActorSpawner::createController(std::shared_ptr<Actor> actor, std::string_view type) const {
+        if (type == "player")
+            return std::make_unique<PlayerController>(actor, raycaster, renderContext);
+        else if (type == "enemy")
+            return std::make_unique<EnemyAi>(actor, raycaster);
+        else
+            throw UnknownControllerError{type};
+    }
 
-							if (data.effectToAdd)
-								enemy->addEffect(data.effectToAdd->clone());
-							for (const auto& spell : data.spellsToAdd)
-								enemy->addSpell(spell->clone());
+    void ActorSpawner::spawn() {
+        logger->info("Spawning...");
+        for (int level = 0; level < world->tiles().shape().z; ++level)
+            for (const ActorData& data : actorData)
+                if (data.minLevel <= level && (!data.maxLevel || level <= data.maxLevel)) {
+                    int count = std::uniform_int_distribution{data.minOnLevel, data.maxOnLevel}(*randomEngine);
+                    for (int i = 0; i < count; ++i)
+                        if (auto position = world->randomPositionAt(level, 1000, &World::isFree)) {
+                            auto enemy = std::make_shared<Actor>(data.stats, *position, world, xpManager,
+                                renderContext.particles, randomEngine);
+                            enemy->controller(createController(enemy, data.controller));
 
-							world->addActor(std::move(enemy));
-						}
-				}
-		logger->info("Spawned");
-	}
+                            if (data.effectToAdd)
+                                enemy->addEffect(data.effectToAdd->clone());
+                            for (const auto& spell : data.spellsToAdd)
+                                enemy->addSpell(spell->clone());
+
+                            world->addActor(std::move(enemy));
+                        }
+                }
+        logger->info("Spawned");
+    }
+
+    std::shared_ptr<core::Actor> ActorSpawner::parseActor(std::string_view s) const {
+        auto params = util::parseMapping(s);
+
+        core::Actor::Stats stats = loadStats(params, *renderContext.assets);
+        sf::Vector3i position = util::parseVector3i(util::getAndEraseRequired(params, "position"));
+
+        auto result = std::make_shared<core::Actor>(stats, position,
+            world, xpManager, renderContext.particles, randomEngine);
+
+        if (auto v = util::getAndErase(params, "controller"))
+            result->controller(createController(result, *v));
+
+        /*
+        if (auto v = util::getAndErase(params, "effect")) {
+            if (auto effect = effectManager->findEffect(*v))
+                actorData.back().effectToAdd = effect;
+            else
+                throw EffectNotFound{*v};
+        }
+
+        if (auto v = util::getAndErase(params, "spells")) {
+            for (auto spellName : util::parseList(*v) | std::views::transform(util::strip))
+                if (auto spell = spellManager->findSpell(spellName))
+                    actorData.back().spellsToAdd.push_back(std::move(spell));
+                else
+                    throw SpellNotFound{spellName};
+        }
+        */
+
+        if (!params.empty())
+            throw UnknownParamsError{params};
+
+        return result;
+    }
+
+    std::string ActorSpawner::stringifyActor(const core::Actor& actor) const {
+        std::string result = std::format(
+            "hp {}\n"
+            "regen {}\n"
+            "mana {}\n"
+            "manaRegen {}\n"
+            "damage {}\n"
+            "accuracy {}\n"
+            "evasion {}\n"
+            "turnDelay {}\n"
+            "xp {}\n"
+            "hasRangedAttack {}\n"
+            "texture {}\n"
+            "position {}\n"
+            "controller {}\n",
+            actor.stats().maxHp,
+            actor.stats().regen,
+            actor.stats().maxMana,
+            actor.stats().manaRegen,
+            actor.stats().damage,
+            actor.stats().accuracy,
+            actor.stats().evasion,
+            actor.stats().turnDelay,
+            actor.stats().xp,
+            actor.stats().hasRangedAttack,
+            renderContext.assets->texturePath(*actor.stats().texture).generic_string(),
+            util::stringifyVector3(actor.position()),
+            actor.controller().type()
+        );
+
+        if (actor.stats().hasRangedAttack) {
+            result += std::format(
+                "projectileFlightTime {}\nprojectileTexture {}\n", 
+                actor.stats().projectileFlightTime.asSeconds(),
+                renderContext.assets->texturePath(*actor.stats().projectileTexture).generic_string());
+        }
+
+        boost::mp11::mp_for_each<boost::describe::describe_enumerators<DamageType>>([&](auto D) {
+            result += std::format("{}Defence {}\n", util::toLower(D.name), actor.stats().defences[static_cast<int>(D.value)]);
+        });
+
+        /*
+        if (auto v = util::getAndErase(params, "controller"))
+           actorData.back().controller = *v;
+
+        if (auto v = util::getAndErase(params, "effect")) {
+           if (auto effect = effectManager->findEffect(*v))
+               actorData.back().effectToAdd = effect;
+           else
+               throw EffectNotFound{*v};
+       }
+
+       if (auto v = util::getAndErase(params, "spells")) {
+           for (auto spellName : util::parseList(*v) | std::views::transform(util::strip))
+               if (auto spell = spellManager->findSpell(spellName))
+                   actorData.back().spellsToAdd.push_back(std::move(spell));
+               else
+                   throw SpellNotFound{spellName};
+       }
+       */
+
+        return result;
+    }
 }

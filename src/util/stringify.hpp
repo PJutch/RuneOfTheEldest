@@ -45,6 +45,11 @@ namespace util {
         }
         return res;
     }
+
+    template <typename T>
+    std::string stringifyVector3(sf::Vector3<T> vec) {
+        return std::format("{}, {}, {}", vec.x, vec.y, vec.z);
+    }
 }
 
 #endif

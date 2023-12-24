@@ -29,6 +29,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "core/ActorSpawner.hpp"
 #include "core/XpManager.hpp"
 #include "core/Controller/PlayerController.hpp"
+#include "core/Controller/EnemyAi.hpp"
 
 #include "util/Keyboard.hpp"
 #include "util/raycast.hpp"
@@ -70,24 +71,8 @@ namespace {
 }
 
 void Game::run() {
-    sf::Texture playerTextureStub;
-
     if (auto v = util::readWhole("latest.sav")) {
-        util::forEachSection(*v, [&](std::string_view name, std::string_view data) {
-            if (name == "Tiles") {
-                world->tiles() = util::parseCharMap(data).transform(&core::tileFromChar);
-            } else {
-                throw UnknowSection{name};
-            }
-        });
-
-        auto playerStub = std::make_shared<core::Actor>(
-            core::Actor::Stats{ .maxHp = 1, .texture = &playerTextureStub }, sf::Vector3i{}, 
-            world, xpManager, renderContext.particles, nullptr);
-        playerStub->controller(std::make_unique<core::PlayerController>(playerStub, nullptr, renderContext));
-        world->addActor(playerStub);
-
-        renderContext.playerMap->onGenerate();
+        loadFromString(*v);
     } else {
         generate();
     }
@@ -108,8 +93,22 @@ void Game::run() {
         draw_();
     }
 
-    using namespace std::literals;
-    util::writeWhole("latest.sav", "[Tiles]\n"s + util::strigifyCharMap(world->tiles().transform(&core::charFromTile)));
+    save();
+}
+
+void Game::loadFromString(std::string_view s) {
+    util::forEachSection(s, [&](std::string_view name, std::string_view data) {
+        if (name == "Tiles") {
+            world->tiles() = util::parseCharMap(data).transform(&core::tileFromChar);
+        } else if (name == "Actor") {
+            auto actor = actorSpawner->parseActor(data);
+            world->addActor(std::move(actor));
+        } else {
+            throw UnknowSection{name};
+        }
+    });
+
+    renderContext.playerMap->onGenerate();
 }
 
 void Game::handleEvent(sf::Event event) {
@@ -170,4 +169,13 @@ void Game::draw_() {
             render::drawLevelupScreen(*renderContext.window, *renderContext.assets, *xpManager);
     }
     renderContext.window->display();
+}
+
+void Game::save() const {
+    std::ofstream file{"latest.sav"};
+
+    file << "[Tiles]\n" << util::strigifyCharMap(world->tiles().transform(&core::charFromTile));
+    for (const auto& actor : world->actors()) {
+        file << "[Actor]\n" << actorSpawner->stringifyActor(*actor);
+    }
 }

@@ -71,7 +71,13 @@ namespace core {
 		virtual std::optional<int> currentSpell() const {
 			return std::nullopt;
 		}
+
+		std::string_view type() const noexcept {
+			return type_;
+		}
 	protected:
+		Controller(std::string_view newType) : type_{newType} {}
+
 		void wantsSwap(bool newWantsSwap) noexcept {
 			wantsSwap_ = newWantsSwap;
 		}
@@ -84,6 +90,8 @@ namespace core {
 			shouldInterruptOnDelete_ = newShouldInterruptOnDelete;
 		}
 	private:
+		std::string type_;
+
 		bool wantsSwap_ = true;
 		bool isOnPlayerSide_ = false;
 		bool shouldInterruptOnDelete_ = false;

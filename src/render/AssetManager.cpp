@@ -61,6 +61,23 @@ namespace render {
         return textureCache[path];
     }
 
+    namespace {
+        class UnknownTexture : public util::RuntimeError {
+        public:
+            UnknownTexture(util::Stacktrace stacktrace = {}) :
+                util::RuntimeError{"Can't find path to texture, it's not in cache", std::move(stacktrace)} {}
+        };
+    }
+
+    [[nodiscard]] const std::filesystem::path& AssetManager::texturePath(const sf::Texture& texture) const {
+        for (const auto& record : textureCache) {
+            if (&record.second == &texture) {
+                return record.first;
+            }
+        }
+        throw UnknownTexture{};
+    }
+
     void AssetManager::loadTexture(sf::Texture& texture, std::string_view name, const std::filesystem::path& path) const {
         logger->info("Loading {} ...", name);
         if (!texture.loadFromFile(path.generic_string()))

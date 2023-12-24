@@ -419,6 +419,23 @@ namespace util {
 			sectionStart = dataEnd;
 		}
 	}
+
+	class WrongListLength : public util::RuntimeError {
+	public:
+		WrongListLength(int expected, int actual, util::Stacktrace stacktrace = {}) :
+			util::RuntimeError{std::format("Expceted {} values but {} were given", expected, actual), stacktrace} {}
+	};
+
+	/// Parses vector of 3 ints
+	template <typename T = int>
+	sf::Vector3<T> parseVector3i(std::string_view s) {
+		auto values = parseList(s);
+		if (std::ssize(values) != 3) {
+			throw WrongListLength(3, std::ssize(values));
+		}
+
+		return {parseInt<T>(strip(values[0])), parseInt<T>(strip(values[1])), parseInt<T>(strip(values[2]))};
+	}
 }
 
 #endif

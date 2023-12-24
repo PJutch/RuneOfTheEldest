@@ -19,11 +19,11 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/reduce.hpp"
 
 namespace core {
-	Actor::Actor(Stats stats_, sf::Vector3i newPosition,
+	Actor::Actor(Stats newStats, sf::Vector3i newPosition,
 		         std::shared_ptr<World> newWorld, std::shared_ptr<XpManager> xpManager_,
 				 std::shared_ptr<render::ParticleManager> particles_,
 		         util::RandomEngine* newRandomEngine) :
-		stats{stats_}, position_{newPosition}, hp_{stats.maxHp}, mana_{stats.maxMana},
+		stats_{newStats}, position_{newPosition}, hp_{newStats.maxHp}, mana_{newStats.maxMana},
 		world_{ std::move(newWorld) }, xpManager{ std::move(xpManager_) },
 		particles{particles_}, randomEngine_ {newRandomEngine} {}
 
@@ -136,19 +136,19 @@ namespace core {
 	}
 
 	double Actor::regen() {
-		return stats.regen * util::reduce(effects_, 1., std::plus<>{}, [](const auto& effect) {
+		return stats().regen * util::reduce(effects_, 1., std::plus<>{}, [](const auto& effect) {
 			return effect->regenBonus();
 		});
 	}
 
 	double Actor::manaRegen() {
-		return stats.manaRegen * util::reduce(effects_, 1., std::plus<>{}, [](const auto& effect) {
+		return stats().manaRegen * util::reduce(effects_, 1., std::plus<>{}, [](const auto& effect) {
 			return effect->manaRegenBonus();
 		});
 	}
 
 	double Actor::damage(const Actor& target) {
-		return stats.damage * util::reduce(effects_, 1., std::plus<>{}, [&target](const auto& effect) {
+		return stats().damage * util::reduce(effects_, 1., std::plus<>{}, [&target](const auto& effect) {
 			return effect->damageBonus(target);
 		});
 	}
@@ -158,7 +158,7 @@ namespace core {
 			return effect->speedBonus();
 		});
 
-		return stats.turnDelay * (speed >= 0 ? 1 / (speed + 1) : 1 - speed);
+		return stats().turnDelay * (speed >= 0 ? 1 / (speed + 1) : 1 - speed);
 	}
 
 	double Actor::xpMul() const {
@@ -168,19 +168,19 @@ namespace core {
 	}
 
 	double Actor::evasion() {
-		return util::reduce(effects_, stats.evasion, std::plus<>{}, [](const auto& effect) {
+		return util::reduce(effects_, stats().evasion, std::plus<>{}, [](const auto& effect) {
 			return effect->evasionBonus();
 		});
 	}
 
 	double Actor::accuracy() {
-		return util::reduce(effects_, stats.accuracy, std::plus<>{}, [](const auto& effect) {
+		return util::reduce(effects_, stats().accuracy, std::plus<>{}, [](const auto& effect) {
 			return effect->accuracyBonus();
 		});
 	}
 
 	double Actor::defence(DamageType damageType) {
-		return util::reduce(effects_, stats.defences[static_cast<int>(damageType)], std::plus<>{}, [damageType](const auto& effect) {
+		return util::reduce(effects_, stats().defences[static_cast<int>(damageType)], std::plus<>{}, [damageType](const auto& effect) {
 			return effect->defenceBonus(damageType);
 		});
 	}
@@ -202,7 +202,7 @@ namespace core {
 	}
 
 	void Actor::attack(Actor& other) {
-		other.beAttacked(damage(other), stats.accuracy, DamageType::PHYSICAL);
+		other.beAttacked(damage(other), stats().accuracy, DamageType::PHYSICAL);
 		for (const auto& effect : effects_)
 			effect->onAttack(other);
 		world().makeSound({Sound::Type::ATTACK, controller().isOnPlayerSide(), position()});
@@ -223,6 +223,6 @@ namespace core {
 
 		hp_ -= damage * recievedDamageMul(type);
 		if (!isAlive())
-			xpManager->addXp(stats.xp);
+			xpManager->addXp(stats().xp);
 	}
 }

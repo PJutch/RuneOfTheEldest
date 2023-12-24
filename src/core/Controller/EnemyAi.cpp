@@ -31,6 +31,7 @@ namespace {
 namespace core {
 	EnemyAi::EnemyAi(std::weak_ptr<Actor> newEnemy, 
 		             std::shared_ptr<util::Raycaster> raycaster_) :
+		Controller{"enemy"},
 		enemy_{ std::move(newEnemy) }, targetPosition{ enemy_.lock()->position() }, 
 		raycaster{std::move(raycaster_)}, pathBuffer{std::make_unique<util::PathBuffer>()} {}
 

@@ -77,6 +77,9 @@ private:
     void handleEvent(sf::Event event);
     void generate();
     void draw_();
+
+    void loadFromString(std::string_view s);
+    void save() const;
 };
 
 #endif

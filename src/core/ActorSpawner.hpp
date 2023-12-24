@@ -41,7 +41,8 @@ namespace core {
 
 		void spawn();
 
-		std::shared_ptr<core::Actor> parseActor(std::string_view s);
+		std::shared_ptr<core::Actor> parseActor(std::string_view s) const;
+		std::string stringifyActor(const core::Actor& actor) const;
 	private:
 		std::shared_ptr<World> world;
 		std::shared_ptr<XpManager> xpManager;
@@ -67,7 +68,7 @@ namespace core {
 		};
 		std::vector<ActorData> actorData;
 
-		std::unique_ptr<Controller> createController(std::shared_ptr<Actor> actor, std::string_view type);
+		std::unique_ptr<Controller> createController(std::shared_ptr<Actor> actor, std::string_view type) const;
 	};
 }
 

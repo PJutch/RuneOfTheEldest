@@ -54,10 +54,10 @@ namespace core {
 
 			double xp;
 
-			const sf::Texture* texture;
+			const sf::Texture* texture = nullptr;
 
 			bool hasRangedAttack;
-			const sf::Texture* projectileTexture;
+			const sf::Texture* projectileTexture = nullptr;
 			sf::Time projectileFlightTime;
 		};
 
@@ -70,6 +70,10 @@ namespace core {
 			  std::shared_ptr<World> world, std::shared_ptr<XpManager> xpManager, 
 			  std::shared_ptr<render::ParticleManager> particles,
 			  util::RandomEngine* randomEngine);
+
+		const Stats& stats() const {
+			return stats_;
+		}
 
 		void controller(std::unique_ptr<Controller> newController) {
 			controller_ = std::move(newController);
@@ -123,7 +127,7 @@ namespace core {
 
 		/// Gets max possible HP
 		[[nodiscard]] double maxHp() const noexcept {
-			return stats.maxHp * hpMul;
+			return stats().maxHp * hpMul;
 		}
 
 		/// Gets Actor mana
@@ -133,7 +137,7 @@ namespace core {
 
 		/// Gets max possible mana
 		[[nodiscard]] double maxMana() const noexcept {
-			return stats.maxMana * manaMul;
+			return stats().maxMana * manaMul;
 		}
 
 		/// @brief Tries to decreas Actor mana
@@ -148,7 +152,7 @@ namespace core {
 		}
 
 		[[nodiscard]] const sf::Texture* texture() const noexcept {
-			return stats.texture;
+			return stats().texture;
 		}
 
 		void endTurn() noexcept;
@@ -237,7 +241,7 @@ namespace core {
 		void updateHp();
 
 		bool hasRangedAttack() {
-			return stats.hasRangedAttack;
+			return stats().hasRangedAttack;
 		}
 
 		void attack(Actor& other);
@@ -248,7 +252,7 @@ namespace core {
 			auto pos1 = render::toScreen(util::geometry_cast<float>(util::getXY(position())) + sf::Vector2f{0.5f, 0.5f});
 			auto pos2 = render::toScreen(util::geometry_cast<float>(util::getXY(other.position())) + sf::Vector2f{0.5f, 0.5f});
 			particles->add(pos1, pos2, position().z,
-				           stats.projectileFlightTime, stats.projectileTexture);
+				           stats().projectileFlightTime, stats().projectileTexture);
 		}
 
 		double hitChance(double accuracy) {
@@ -260,7 +264,7 @@ namespace core {
 			hp_ = std::min(hp(), maxHp());
 		}
 	private:
-		Stats stats;
+		Stats stats_;
 		std::unique_ptr<Controller> controller_;
 		std::vector<std::unique_ptr<Effect>> effects_;
 		std::vector<std::shared_ptr<Spell>> spells_;

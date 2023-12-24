@@ -20,6 +20,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 namespace {
 	class TestController : public core::Controller {
 	public:
+		TestController() : Controller{"test"} {}
+
 		bool act() final {
 			return true;
 		}

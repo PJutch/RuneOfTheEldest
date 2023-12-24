@@ -57,6 +57,9 @@ namespace render {
 		/// @details Loads texture from given file and caches it
 		[[nodiscard]] const sf::Texture& texture(const std::filesystem::path& path) const noexcept;
 
+		/// @brief Finds texture path in cache by its address
+		[[nodiscard]] const std::filesystem::path& texturePath(const sf::Texture& texture) const;
+
 		/// Gets texture for given tile
 		[[nodiscard]] const sf::Texture& tileTexture(core::Tile tile) const noexcept {
 			return tileTextures[static_cast<int>(tile)];
