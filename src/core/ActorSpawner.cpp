@@ -21,6 +21,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "render/AssetManager.hpp"
 
 #include "util/parse.hpp"
+#include "util/parseKeyValue.hpp"
 #include "util/stringify.hpp"
 #include "util/filesystem.hpp"
 #include "util/Map.hpp"
@@ -63,8 +64,8 @@ namespace core {
                 LoadError{std::format("Spell \"{}\" not found", name), std::move(currentStacktrace)} {}
         };
 
-        Actor::Stats loadStats(std::unordered_map<std::string, std::string>& params, std::string_view id, 
-                               render::AssetManager& assets) {
+        Actor::Stats loadStats(std::unordered_map<std::string, std::string>& params, std::string_view id,
+            render::AssetManager& assets) {
             Actor::Stats result;
             result.id = id;
 
@@ -211,26 +212,33 @@ namespace core {
     }
 
     std::shared_ptr<core::Actor> ActorSpawner::parseActor(std::string_view s) const {
-        auto params = util::parseMapping(s);
+        util::KeyValueVisitor visitor;
+        auto result = std::make_shared<core::Actor>(world, xpManager, renderContext.particles, randomEngine);
 
-        std::string type = util::getAndEraseRequired(params, "type");
+        visitor.key("type").unique().required().callback([&](std::string_view type) {
+            if (auto data = std::ranges::find(actorData, type, [](const auto& data) {
+                return data.stats.id;
+            }); data != actorData.end()) {
+                result->stats(data->stats);
+            } else {
+                throw UnknownActorType{type};
+            }
+        });
 
-        core::Actor::Stats stats;
-        if (auto data = std::ranges::find(actorData, type, [](const auto& data) {
-            return data.stats.id;
-        }); data != actorData.end()) {
-            stats = data->stats;
-        } else {
-            throw UnknownActorType{type};
-        }
+        visitor.key("position").unique().required().callback([&](std::string_view data) {
+            result->position(util::parseVector3i(data));
+        });
 
-        sf::Vector3i position = util::parseVector3i(util::getAndEraseRequired(params, "position"));
+        visitor.key("controller").unique().required().callback([&](std::string_view data) {
+            result->controller(createController(result, data));
+        });
 
-        auto result = std::make_shared<core::Actor>(stats, position,
-            world, xpManager, renderContext.particles, randomEngine);
+        visitor.key("hp").unique().required().callback([&](std::string_view data) {
+            result->hp(util::parseReal(data));
+        });
 
-        if (auto v = util::getAndErase(params, "controller"))
-            result->controller(createController(result, *v));
+        util::forEackKeyValuePair(s, visitor);
+        visitor.validate();
 
         /*
         if (auto v = util::getAndErase(params, "effect")) {
@@ -249,24 +257,19 @@ namespace core {
         }
         */
 
-        if (!params.empty())
-            throw UnknownParamsError{params};
-
         return result;
     }
 
     std::string ActorSpawner::stringifyActor(const core::Actor& actor) const {
         std::string result = std::format(
-            "type {}\nposition {}\ncontroller {}\n",
-            actor.stats().id,
+            "type {}\nposition {}\nhp {}\ncontroller {}\n",
+            actor.stats().id, 
             util::stringifyVector3(actor.position()), 
+            actor.hp(),
             actor.controller().type()
         );
 
         /*
-        if (auto v = util::getAndErase(params, "controller"))
-           actorData.back().controller = *v;
-
         if (auto v = util::getAndErase(params, "effect")) {
            if (auto effect = effectManager->findEffect(*v))
                actorData.back().effectToAdd = effect;

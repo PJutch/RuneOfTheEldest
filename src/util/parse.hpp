@@ -17,7 +17,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define PARSE_HPP_
 
 #include "Exception.hpp"
-#include "Map.hpp"
 #include "Array3D.hpp"
 
 #include <format>
@@ -227,41 +226,6 @@ namespace util {
 		});
 	}
 
-	/// Value not given
-	class NoValueError : public ParseError {
-	public:
-		NoValueError(std::string_view key, std::string_view parsed, Stacktrace currentStacktrace = {}) noexcept :
-			ParseError{ std::format("No value given for key \"{}\"", key), parsed, std::move(currentStacktrace) } {}
-	};
-
-	/// @brief Splits string into key and value
-	/// @details Key is part before first space.
-	/// Values is part after first continuous space block.
-	/// Returns subview of the given view.
-	inline std::pair<std::string_view, std::string_view> parseKeyValuePair(std::string_view s) {
-		if (s.empty())
-			throw EmptyStringError{ s };
-
-		auto keyEnd = std::ranges::find_if(s.begin(), s.end(), isSpace);
-		std::string_view key{ s.begin(), keyEnd };
-
-		auto valueStart = std::ranges::find_if_not(keyEnd, s.end(), isSpace);
-		if (valueStart == s.end())
-			throw NoValueError{ key, s };
-		std::string_view value{ valueStart, s.end()};
-
-		return { key, value };
-	}
-
-	/// Parses whole source as key-value pairs
-	inline std::unordered_map<std::string, std::string> parseMapping(auto&& source) {
-		std::unordered_map<std::string, std::string> result;
-		forEachStrippedLine(source, [&result](std::string_view line) {
-			result.insert(parseKeyValuePair(line));
-		});
-		return result;
-	}
-
 	/// String required to be true of false isn't
 	class NotABoolError : public ParseError {
 	public:
@@ -366,58 +330,6 @@ namespace util {
 		});
 
 		return result;
-	}
-
-	class FirstHeaderExpected : public util::RuntimeError {
-	public:
-		FirstHeaderExpected(util::Stacktrace stacktrace = {}) :
-			util::RuntimeError{"Header expected in the begining of sectioned data", stacktrace} {}
-	};
-
-	class ClosingBracketNotFound : public util::RuntimeError {
-	public:
-		ClosingBracketNotFound(util::Stacktrace stacktrace = {}) : 
-			util::RuntimeError{"Expected closing square bracket", stacktrace} {}
-	};
-
-	/// @brief Iterates over sections in s
-	/// @details sections are delimited by headers.
-	/// Header is a section name in square brackets;
-	/// If line after header contains only spaces it's ignored;
-	template <std::invocable<std::string_view, std::string_view> Callback>
-	void forEachSection(std::string_view s, Callback&& callback) {
-		if (s.empty())
-			return;
-
-		if (s.front() != '[')
-			throw FirstHeaderExpected{};
-
-		auto sectionStart = s.begin();
-		while (sectionStart != s.end()) {
-			auto nameStart = std::next(sectionStart);
-			auto nameEnd = std::ranges::find(nameStart, s.end(), ']');
-
-			if (nameEnd == s.end()) {
-				throw ClosingBracketNotFound{};
-			}
-
-			auto dataStart = std::next(nameEnd);
-
-			auto lineEnd = std::ranges::find(nameEnd, s.end(), '\n');
-			if (std::ranges::all_of(dataStart, lineEnd, &isSpace)) {
-				if (lineEnd == s.end()) {
-					dataStart = s.end();
-				} else {
-					dataStart = std::next(lineEnd);
-				}
-			}
-
-			auto dataEnd = std::ranges::find(dataStart, s.end(), '[');
-
-			callback(std::string_view{nameStart, nameEnd}, {dataStart, dataEnd});
-
-			sectionStart = dataEnd;
-		}
 	}
 
 	class WrongListLength : public util::RuntimeError {

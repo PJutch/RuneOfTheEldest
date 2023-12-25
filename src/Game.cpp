@@ -35,6 +35,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/raycast.hpp"
 #include "util/filesystem.hpp"
 #include "util/parse.hpp"
+#include "util/parseKeyValue.hpp"
 #include "util/stringify.hpp"
 
 Game::Game(std::shared_ptr<core::World> newWorld,
@@ -99,17 +100,19 @@ void Game::run() {
 
 void Game::loadFromString(std::string_view s) {
     saveLogger->info("Loading started...");
-    util::forEachSection(s, [&](std::string_view name, std::string_view data) {
-        if (name == "Tiles") {
-            saveLogger->info("Loading tiles...");
-            world->tiles() = util::parseCharMap(data).transform(&core::tileFromChar);
-        } else if (name == "Actor") {
-            auto actor = actorSpawner->parseActor(data);
-            world->addActor(std::move(actor));
-        } else {
-            throw UnknowSection{name};
-        }
+
+    util::KeyValueVisitor visitor;
+    visitor.key("Tiles").unique().required().callback([&](std::string_view data) {
+        saveLogger->info("Loading tiles...");
+        world->tiles() = util::parseCharMap(data).transform(&core::tileFromChar);
     });
+    visitor.key("Actor").callback([&](std::string_view data) {
+        auto actor = actorSpawner->parseActor(data);
+        world->addActor(std::move(actor));
+    });
+
+    util::forEachSection(s, visitor);
+    visitor.validate();
 
     renderContext.playerMap->onGenerate();
     saveLogger->info("Loading finished");

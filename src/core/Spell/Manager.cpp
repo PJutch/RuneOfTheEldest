@@ -35,6 +35,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "render/AssetManager.hpp"
 
 #include "util/parse.hpp"
+#include "util/parseKeyValue.hpp"
 #include "util/Map.hpp"
 #include "util/filesystem.hpp"
 

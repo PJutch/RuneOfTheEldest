@@ -72,13 +72,16 @@ namespace core {
 			  std::shared_ptr<World> world, std::shared_ptr<XpManager> xpManager, 
 			  std::shared_ptr<render::ParticleManager> particles,
 			  util::RandomEngine* randomEngine);
+		Actor(std::shared_ptr<World> world, std::shared_ptr<XpManager> xpManager,
+			  std::shared_ptr<render::ParticleManager> particles,
+			  util::RandomEngine* randomEngine);
 
 		const Stats& stats() const {
 			return stats_;
 		}
 
-		void controller(std::unique_ptr<Controller> newController) {
-			controller_ = std::move(newController);
+		void stats(const Stats& newStats) {
+			stats_ = newStats;
 		}
 
 		Controller& controller() noexcept {
@@ -87,6 +90,10 @@ namespace core {
 
 		const Controller& controller() const noexcept {
 			return *controller_;
+		}
+
+		void controller(std::unique_ptr<Controller> newController) {
+			controller_ = std::move(newController);
 		}
 
 		[[nodiscard]] sf::Vector3i position() const noexcept {
@@ -125,6 +132,11 @@ namespace core {
 		/// Gets Actor HP
 		[[nodiscard]] double hp() const noexcept {
 			return hp_;
+		}
+
+		/// Sets Actor HP
+		void hp(double newHp) noexcept {
+			hp_ = newHp;
 		}
 
 		/// Gets max possible HP

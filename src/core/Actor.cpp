@@ -31,7 +31,12 @@ namespace core {
 		         std::shared_ptr<World> newWorld, std::shared_ptr<XpManager> xpManager, 
 				 std::shared_ptr<render::ParticleManager> particles_,
 		         util::RandomEngine* newRandomEngine) :
-		Actor{ stats_, {0, 0, 0}, std::move(newWorld), std::move(xpManager), std::move(particles_), newRandomEngine } {}
+		Actor{ stats_, {}, std::move(newWorld), std::move(xpManager), std::move(particles_), newRandomEngine } {}
+
+	Actor::Actor(std::shared_ptr<World> newWorld, std::shared_ptr<XpManager> xpManager,
+				 std::shared_ptr<render::ParticleManager> particles_,
+				 util::RandomEngine* newRandomEngine) :
+		Actor{{}, {}, std::move(newWorld), std::move(xpManager), std::move(particles_), newRandomEngine} {}
 
 	void Actor::endTurn() noexcept {
 		nextTurn_ += turnDelay();

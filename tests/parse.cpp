@@ -14,6 +14,7 @@ You should have received a copy of the GNU General Public License along with the
 If not, see <https://www.gnu.org/licenses/>. */
 
 #include "util/parse.hpp"
+#include "util/parseKeyValue.hpp"
 
 #include "util/assert.hpp"
 
