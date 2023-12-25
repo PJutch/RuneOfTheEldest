@@ -13,8 +13,8 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef ALIVE_ACTOR_HPP_
-#define ALIVE_ACTOR_HPP_
+#ifndef ACTOR_HPP_
+#define ACTOR_HPP_
 
 #include "World.hpp"
 #include "Controller/Controller.hpp"
