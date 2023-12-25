@@ -26,6 +26,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/random.hpp"
 #include "util/raycast.hpp"
 #include "util/pathfinding.hpp"
+#include "util/stringify.hpp"
 
 #include <SFML/System/Vector3.hpp>
 
@@ -36,6 +37,14 @@ namespace core {
 	/// AI controlling enemy
 	class EnemyAi : public Controller {
 	public:
+		struct State {
+			sf::Vector3i targetPosition;
+			double targetPriority = 0.0;
+			bool checkStairs = false;
+			bool wandering = false;
+		};
+
+		EnemyAi(State state, std::weak_ptr<Actor> enemy, std::shared_ptr<util::Raycaster> raycaster);
 		EnemyAi(std::weak_ptr<Actor> enemy, std::shared_ptr<util::Raycaster> raycaster);
 
 		/// Chases or attacks Player
@@ -48,13 +57,15 @@ namespace core {
 		void handleSound(Sound sound) noexcept final;
 
 		[[nodiscard]] AiState aiState() const noexcept final;
+
+		[[nodiscard]] virtual std::string stringify() const {
+			return std::format("enemy targetPosition {}, targetPriority {}, checkStairs {}, wandering {}", 
+				util::stringifyVector3(state.targetPosition), state.targetPriority, state.checkStairs, state.wandering);
+		}
 	private:
 		std::weak_ptr<Actor> enemy_;
 
-		sf::Vector3i targetPosition;
-		double targetPriority = 0.0;
-		bool checkStairs = false;
-		bool wandering = false;
+		State state;
 
 		std::shared_ptr<util::Raycaster> raycaster;
 		std::unique_ptr<util::PathBuffer> pathBuffer;
@@ -64,16 +75,16 @@ namespace core {
 		void updateTarget() noexcept;
 
 		void setTarget(sf::Vector3i position, double priority) {
-			targetPosition = position;
-			targetPriority = priority;
-			checkStairs = true;
-			wandering = false;
+			state.targetPosition = position;
+			state.targetPriority = priority;
+			state.checkStairs = true;
+			state.wandering = false;
 		}
 
 		void wander() noexcept {
-			targetPosition = randomNearbyTarget();
-			wandering = true;
-			checkStairs = false;
+			state.targetPosition = randomNearbyTarget();
+			state.wandering = true;
+			state.checkStairs = false;
 		}
 
 		sf::Vector3i randomNearbyTarget() noexcept;

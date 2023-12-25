@@ -62,6 +62,10 @@ namespace core {
 		std::optional<int> currentSpell() const final {
 			return currentSpell_;
 		}
+
+		[[nodiscard]] virtual std::string stringify() const {
+			return "player";
+		}
 	private:
 		std::weak_ptr<Actor> player;
 		std::shared_ptr<util::Raycaster> raycaster;

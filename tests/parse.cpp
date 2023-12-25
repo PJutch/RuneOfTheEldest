@@ -214,3 +214,14 @@ TEST(parse, forEachSection) {
 	EXPECT_EQ(parseSections("[]  \n"), (std::vector{std::pair{""sv, ""sv}}));
 	EXPECT_EQ(parseSections("[a]  \nbc[dd]\n  e"), (std::vector{std::pair{"a"sv, "bc"sv}, std::pair{"dd"sv, "  e"sv}}));
 }
+
+TEST(parse, parseSpaceSepList) {
+	using namespace std::literals;
+	EXPECT_EQ(util::parseList("ab cde"), (std::vector{"ab"sv, " cde"sv}));
+	EXPECT_EQ(util::parseList("ab  ñde"), (std::vector{"ab"sv, "cde"sv}));
+	EXPECT_EQ(util::parseList("ab  "), (std::vector{"ab"sv}));
+	EXPECT_EQ(util::parseList("abc"), (std::vector{"abc"sv}));
+	EXPECT_EQ(util::parseList(""), (std::vector<std::string_view>{}));
+	EXPECT_EQ(util::parseList("   "), (std::vector<std::string_view>{}));
+	EXPECT_EQ(util::parseList("a b c d"), (std::vector{"a"sv, " b"sv, " c"sv, " d"sv}));
+}

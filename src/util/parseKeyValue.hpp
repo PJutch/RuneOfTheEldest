@@ -41,8 +41,6 @@ namespace util {
 		std::string_view key{s.begin(), keyEnd};
 
 		auto valueStart = std::ranges::find_if_not(keyEnd, s.end(), isSpace);
-		if (valueStart == s.end())
-			throw NoValueError{key, s};
 		std::string_view value{valueStart, s.end()};
 
 		return {key, value};
@@ -115,6 +113,15 @@ namespace util {
 			callback(std::string_view{nameStart, nameEnd}, {dataStart, dataEnd});
 
 			sectionStart = dataEnd;
+		}
+	}
+
+	/// Parses whole source as key-value pairs separated by commas and forwards to callback
+	template <std::invocable<std::string_view, std::string_view> Callback>
+	inline void forEackInlineKeyValuePair(auto&& source, Callback&& callback) {
+		for (std::string_view pair : util::parseList(source)) {
+			auto [key, value] = parseKeyValuePair(strip(pair));
+			callback(key, value);
 		}
 	}
 

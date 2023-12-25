@@ -22,11 +22,10 @@ namespace {
 	class TestController : public core::Controller {
 	public:
 		TestController(std::weak_ptr<core::Actor> actor_, int newId = -1) : 
-			Controller{"test"}, actor{ std::move(actor_) }, id_{ newId } {}
+			actor{ std::move(actor_) }, id_{ newId } {}
 		TestController(std::weak_ptr<core::Actor> actor_, int newId, std::vector<int>* log_,
 			           double waitAfter_ = std::numeric_limits<double>::infinity(),
 			           double dieAfter_ = std::numeric_limits<double>::infinity(), bool shouldInterruptOnDelete_ = false) noexcept :
-				Controller{"test"},
 				actor{ std::move(actor_) }, id_{ newId }, log{ log_ }, waitAfter{ waitAfter_ }, dieAfter{ dieAfter_ } {
 			shouldInterruptOnDelete(shouldInterruptOnDelete_);
 		}
@@ -57,6 +56,10 @@ namespace {
 
 		core::Sound lastSound() const noexcept {
 			return lastSound_;
+		}
+
+		[[nodiscard]] std::string stringify() const final {
+			return "test";
 		}
 	private:
 		std::weak_ptr<core::Actor> actor;

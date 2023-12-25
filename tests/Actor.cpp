@@ -20,8 +20,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 namespace {
 	class TestController : public core::Controller {
 	public:
-		TestController() : Controller{"test"} {}
-
 		bool act() final {
 			return true;
 		}
@@ -36,6 +34,10 @@ namespace {
 
 		bool hadSwapped() const noexcept {
 			return hadSwapped_;
+		}
+
+		[[nodiscard]] std::string stringify() const final {
+			return "test";
 		}
 	private:
 		bool hadSwapped_ = false;

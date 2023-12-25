@@ -29,10 +29,13 @@ namespace {
 }
 
 namespace core {
-	EnemyAi::EnemyAi(std::weak_ptr<Actor> newEnemy, 
+	EnemyAi::EnemyAi(State state_, std::weak_ptr<Actor> newEnemy,
 		             std::shared_ptr<util::Raycaster> raycaster_) :
-		Controller{"enemy"},
-		enemy_{ std::move(newEnemy) }, targetPosition{ enemy_.lock()->position() }, 
+		enemy_{ std::move(newEnemy) }, state{state_}, 
+		raycaster{std::move(raycaster_)}, pathBuffer{std::make_unique<util::PathBuffer>()} {}
+
+	EnemyAi::EnemyAi(std::weak_ptr<Actor> newEnemy, std::shared_ptr<util::Raycaster> raycaster_) :
+		enemy_{std::move(newEnemy)}, state{.targetPosition = enemy_.lock()->position()}, 
 		raycaster{std::move(raycaster_)}, pathBuffer{std::make_unique<util::PathBuffer>()} {}
 
 	bool EnemyAi::act() {
@@ -58,24 +61,24 @@ namespace core {
 			return;
 		}
 
-		if (targetPriority < maxIgnoredPriority) {
-			targetPosition = enemy->position();
-			wandering = false;
+		if (state.targetPriority < maxIgnoredPriority) {
+			state.targetPosition = enemy->position();
+			state.wandering = false;
 			return;
 		}
 
-		if (targetPriority < maxWanderingPriority && !wandering)
+		if (state.targetPriority < maxWanderingPriority && !state.wandering)
 			wander();
 		
-		if (enemy->position() == targetPosition) {
-			if (checkStairs) {
-				targetPosition = tryFollowStairs(targetPosition);
-				checkStairs = false;
+		if (enemy->position() == state.targetPosition) {
+			if (state.checkStairs) {
+				state.targetPosition = tryFollowStairs(state.targetPosition);
+				state.checkStairs = false;
 			} else
 				wander();
 		}
 			
-		targetPriority *= 0.9;
+		state.targetPriority *= 0.9;
 	}
 
 	sf::Vector3i EnemyAi::randomNearbyTarget() noexcept {
@@ -101,7 +104,7 @@ namespace core {
 		auto enemy = enemy_.lock();
 
 		wantsSwap(true);
-		sf::Vector3i nextStep_ = util::nextStep(enemy->world(), enemy->position(), targetPosition, *pathBuffer);
+		sf::Vector3i nextStep_ = util::nextStep(enemy->world(), enemy->position(), state.targetPosition, *pathBuffer);
 		if (nextStep_.z == 0)
 			enemy->tryMoveInDirection(util::getXY(nextStep_), false);
 		else
@@ -126,18 +129,18 @@ namespace core {
 		if (priority < maxIgnoredPriority)
 			return;
 
-		if (priority < maxWanderingPriority && targetPriority < maxIgnoredPriority)
+		if (priority < maxWanderingPriority && state.targetPriority < maxIgnoredPriority)
 			wander();
-		else if (priority > targetPriority)
+		else if (priority > state.targetPriority)
 			setTarget(sound.position, priority);
 	}
 
 	AiState EnemyAi::aiState() const noexcept {
 		if (canSeePlayer())
 			return AiState::ATTACKING;
-		else if (targetPriority < maxIgnoredPriority)
+		else if (state.targetPriority < maxIgnoredPriority)
 			return AiState::INACTIVE;
-		else if (wandering)
+		else if (state.wandering)
 			return AiState::WANDERING;
 		else
 			return AiState::CHECKING;

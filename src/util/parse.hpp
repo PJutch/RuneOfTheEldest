@@ -245,7 +245,7 @@ namespace util {
 			throw NotABoolError(s);
 	}
 
-	/// @brief Parses comma-separated list
+	/// @brief Parses comma separated list
 	/// @detail Values are separated by commas.
 	/// Commas aren't parts of values.
 	/// Trailing commas are ignored (trailing commas before ws aren't).
@@ -262,6 +262,22 @@ namespace util {
 				break;
 			++next;
 			prev = next;
+		}
+		return res;
+	}
+
+	/// @brief Parses space separated list
+	/// @detail Values are separated by spaces
+	/// Spaces aren't parts of values and stripped.
+	/// Empty values are ignored.
+	/// Empty string gives empty list.
+	inline std::vector<std::string_view> parseSpaceSepList(std::string_view s) {
+		std::vector<std::string_view> res;
+		auto start = std::ranges::find_if_not(s, &isSpace);
+		while (start != s.end()) {
+			auto end = std::ranges::find_if(start, s.end(), &isSpace);
+			res.emplace_back(start, end);
+			start = std::ranges::find_if_not(end, s.end(), &isSpace);
 		}
 		return res;
 	}
@@ -341,7 +357,7 @@ namespace util {
 	/// Parses vector of 3 ints
 	template <typename T = int>
 	sf::Vector3<T> parseVector3i(std::string_view s) {
-		auto values = parseList(s);
+		auto values = parseSpaceSepList(s);
 		if (std::ssize(values) != 3) {
 			throw WrongListLength(3, std::ssize(values));
 		}

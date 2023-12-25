@@ -31,7 +31,6 @@ namespace core {
 	PlayerController::PlayerController(std::shared_ptr<Actor> player_, 
 		                               std::shared_ptr<util::Raycaster> raycaster_,
 		                               render::Context renderContext_) :
-			Controller{"player"},
 			player{player_}, raycaster{std::move(raycaster_)}, pathBuffer{std::make_unique<util::PathBuffer>()},
 			renderContext{renderContext_}, travelTarget{player_->position()} {
 		wantsSwap(false);

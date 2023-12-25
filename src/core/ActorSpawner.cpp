@@ -171,13 +171,42 @@ namespace core {
         };
     }
 
-    std::unique_ptr<Controller> ActorSpawner::createController(std::shared_ptr<Actor> actor, std::string_view type) const {
-        if (type == "player")
+    std::unique_ptr<Controller> ActorSpawner::createController(std::shared_ptr<Actor> actor, std::string_view s) const {
+        auto [type, data] = util::parseKeyValuePair(s);
+
+        if (type == "player") {
             return std::make_unique<PlayerController>(actor, raycaster, renderContext);
-        else if (type == "enemy")
-            return std::make_unique<EnemyAi>(actor, raycaster);
-        else
+        } else if (type == "enemy") {
+            if (data.empty()) {
+                return std::make_unique<EnemyAi>(actor, raycaster);
+            }
+
+            util::KeyValueVisitor visitor;
+            EnemyAi::State state;
+
+            visitor.key("targetPosition").unique().required().callback([&](std::string_view data) {
+                state.targetPosition = util::parseVector3i(data);
+            });
+
+            visitor.key("targetPriority").unique().required().callback([&](std::string_view data) {
+                state.targetPriority = util::parseReal(data);
+            });
+
+            visitor.key("checkStairs").unique().required().callback([&](std::string_view data) {
+                state.checkStairs = util::parseBool(data);
+            });
+
+            visitor.key("wandering").unique().required().callback([&](std::string_view data) {
+                state.checkStairs = util::parseBool(data);
+            });
+
+            util::forEackInlineKeyValuePair(data, visitor);
+            visitor.validate();
+
+            return std::make_unique<EnemyAi>(state, actor, raycaster);
+        } else {
             throw UnknownControllerError{type};
+        }
     }
 
     void ActorSpawner::spawn() {
@@ -271,10 +300,10 @@ namespace core {
     std::string ActorSpawner::stringifyActor(const core::Actor& actor) const {
         std::string result = std::format(
             "type {}\nposition {}\nnextTurn {}\nhp {}\nmana {}\ncontroller {}\n",
-            actor.stats().id, 
-            util::stringifyVector3(actor.position()), 
+            actor.stats().id,
+            util::stringifyVector3(actor.position()),
             actor.nextTurn(), actor.hp(), actor.mana(),
-            actor.controller().type()
+            actor.controller().stringify()
         );
 
         /*
