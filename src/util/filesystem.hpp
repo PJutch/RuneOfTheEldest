@@ -82,6 +82,18 @@ namespace util {
 			return false;
 		}
 	}
+
+	/// Makes dot-separated identifier from path raltive to base path
+	inline std::string toIdentifier(const std::filesystem::path& path, const std::filesystem::path& base) {
+		auto result = std::filesystem::relative(path, base).replace_extension().generic_string();
+		for (char& c : result) {
+			if (c == '/') {
+				c = '.';
+			}
+		}
+		return result;
+	}
+	
 }
 
 #endif

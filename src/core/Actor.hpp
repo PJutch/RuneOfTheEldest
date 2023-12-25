@@ -37,6 +37,8 @@ namespace core {
 	public:
 		/// Immutable params of the Actor
 		struct Stats {
+			std::string id;
+
 			double maxHp;
 			double regen;
 

@@ -63,8 +63,10 @@ namespace core {
                 LoadError{std::format("Spell \"{}\" not found", name), std::move(currentStacktrace)} {}
         };
 
-        Actor::Stats loadStats(std::unordered_map<std::string, std::string>& params, render::AssetManager& assets) {
+        Actor::Stats loadStats(std::unordered_map<std::string, std::string>& params, std::string_view id, 
+                               render::AssetManager& assets) {
             Actor::Stats result;
+            result.id = id;
 
             result.maxHp = util::parseReal(util::getAndEraseRequired(params, "hp"));
             result.regen = util::parseReal(util::getAndEraseRequired(params, "regen"));
@@ -115,14 +117,18 @@ namespace core {
         raycaster{std::move(raycaster_)},
         randomEngine{&randomEngine_}, logger{loggerFactory.create("actors")} {
         logger->info("Loading...");
-        util::forEachFile("resources/Actors/", [&, this](std::ifstream& file, const std::filesystem::path& path) {
-            logger->info("Loading spec from {} ...", path.generic_string());
+
+        std::filesystem::path basePath = "resources/Actors/";
+        util::forEachFile(basePath, [&, this](std::ifstream& file, const std::filesystem::path& path) {
+            std::string id = util::toIdentifier(path, basePath);
+
+            logger->info("Loading {} spec from {} ...", id, path.generic_string());
 
             auto params = util::parseMapping(file);
 
             actorData.emplace_back();
 
-            actorData.back().stats = loadStats(params, *renderContext.assets);
+            actorData.back().stats = loadStats(params, id, *renderContext.assets);
 
             if (auto v = util::getAndErase(params, "controller"))
                 actorData.back().controller = *v;
@@ -196,10 +202,28 @@ namespace core {
         logger->info("Spawned");
     }
 
+    namespace {
+        class UnknownActorType : public util::RuntimeError {
+        public:
+            UnknownActorType(std::string_view type, util::Stacktrace currentStacktrace = {}) noexcept :
+                util::RuntimeError{std::format("Can't find description of actor type {}", type), std::move(currentStacktrace)} {}
+        };
+    }
+
     std::shared_ptr<core::Actor> ActorSpawner::parseActor(std::string_view s) const {
         auto params = util::parseMapping(s);
 
-        core::Actor::Stats stats = loadStats(params, *renderContext.assets);
+        std::string type = util::getAndEraseRequired(params, "type");
+
+        core::Actor::Stats stats;
+        if (auto data = std::ranges::find(actorData, type, [](const auto& data) {
+            return data.stats.id;
+        }); data != actorData.end()) {
+            stats = data->stats;
+        } else {
+            throw UnknownActorType{type};
+        }
+
         sf::Vector3i position = util::parseVector3i(util::getAndEraseRequired(params, "position"));
 
         auto result = std::make_shared<core::Actor>(stats, position,
@@ -233,44 +257,11 @@ namespace core {
 
     std::string ActorSpawner::stringifyActor(const core::Actor& actor) const {
         std::string result = std::format(
-            "hp {}\n"
-            "regen {}\n"
-            "mana {}\n"
-            "manaRegen {}\n"
-            "damage {}\n"
-            "accuracy {}\n"
-            "evasion {}\n"
-            "turnDelay {}\n"
-            "xp {}\n"
-            "hasRangedAttack {}\n"
-            "texture {}\n"
-            "position {}\n"
-            "controller {}\n",
-            actor.stats().maxHp,
-            actor.stats().regen,
-            actor.stats().maxMana,
-            actor.stats().manaRegen,
-            actor.stats().damage,
-            actor.stats().accuracy,
-            actor.stats().evasion,
-            actor.stats().turnDelay,
-            actor.stats().xp,
-            actor.stats().hasRangedAttack,
-            renderContext.assets->texturePath(*actor.stats().texture).generic_string(),
-            util::stringifyVector3(actor.position()),
+            "type {}\nposition {}\ncontroller {}\n",
+            actor.stats().id,
+            util::stringifyVector3(actor.position()), 
             actor.controller().type()
         );
-
-        if (actor.stats().hasRangedAttack) {
-            result += std::format(
-                "projectileFlightTime {}\nprojectileTexture {}\n", 
-                actor.stats().projectileFlightTime.asSeconds(),
-                renderContext.assets->texturePath(*actor.stats().projectileTexture).generic_string());
-        }
-
-        boost::mp11::mp_for_each<boost::describe::describe_enumerators<DamageType>>([&](auto D) {
-            result += std::format("{}Defence {}\n", util::toLower(D.name), actor.stats().defences[static_cast<int>(D.value)]);
-        });
 
         /*
         if (auto v = util::getAndErase(params, "controller"))
