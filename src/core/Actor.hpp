@@ -108,6 +108,10 @@ namespace core {
 			return nextTurn_;
 		}
 
+		void nextTurn(double newNextTurn) noexcept {
+			nextTurn_ = newNextTurn;
+		}
+
 		[[nodiscard]] bool isAlive() const {
 			return hp() > 0;
 		}
@@ -147,6 +151,11 @@ namespace core {
 		/// Gets Actor mana
 		[[nodiscard]] double mana() const noexcept {
 			return mana_;
+		}
+
+		/// Sets Actor mana
+		void mana(double newMana) noexcept {
+			mana_ = newMana;
 		}
 
 		/// Gets max possible mana

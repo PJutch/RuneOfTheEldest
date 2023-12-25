@@ -233,8 +233,16 @@ namespace core {
             result->controller(createController(result, data));
         });
 
+        visitor.key("nextTurn").unique().required().callback([&](std::string_view data) {
+            result->nextTurn(util::parseReal(data));
+        });
+
         visitor.key("hp").unique().required().callback([&](std::string_view data) {
             result->hp(util::parseReal(data));
+        });
+
+        visitor.key("mana").unique().required().callback([&](std::string_view data) {
+            result->mana(util::parseReal(data));
         });
 
         util::forEackKeyValuePair(s, visitor);
@@ -262,10 +270,10 @@ namespace core {
 
     std::string ActorSpawner::stringifyActor(const core::Actor& actor) const {
         std::string result = std::format(
-            "type {}\nposition {}\nhp {}\ncontroller {}\n",
+            "type {}\nposition {}\nnextTurn {}\nhp {}\nmana {}\ncontroller {}\n",
             actor.stats().id, 
             util::stringifyVector3(actor.position()), 
-            actor.hp(),
+            actor.nextTurn(), actor.hp(), actor.mana(),
             actor.controller().type()
         );
 
