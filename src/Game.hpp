@@ -70,6 +70,7 @@ private:
     render::Context renderContext;
 
     std::shared_ptr<spdlog::logger> generationLogger;
+    std::shared_ptr<spdlog::logger> saveLogger;
 
     util::Signal<> onGenerate;
     util::Signal<sf::Time> onUpdate;

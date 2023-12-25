@@ -49,7 +49,8 @@ Game::Game(std::shared_ptr<core::World> newWorld,
         xpManager{std::move(xpManager_)},
         dungeonGenerator_{std::move(newDungeonGenerator)},
         renderContext{std::move(renderContext_)},
-        generationLogger{ loggerFactory.create("generation") } {
+        generationLogger{ loggerFactory.create("generation") },
+        saveLogger{loggerFactory.create("save")} {
     addOnGenerateListener([camera = renderContext.camera]() { camera->reset(); });
     addOnGenerateListener([playerMap = renderContext.playerMap]() { playerMap->onGenerate(); });
     addOnGenerateListener([particles = renderContext.particles]() { particles->clear(); });
@@ -97,8 +98,10 @@ void Game::run() {
 }
 
 void Game::loadFromString(std::string_view s) {
+    saveLogger->info("Loading started...");
     util::forEachSection(s, [&](std::string_view name, std::string_view data) {
         if (name == "Tiles") {
+            saveLogger->info("Loading tiles...");
             world->tiles() = util::parseCharMap(data).transform(&core::tileFromChar);
         } else if (name == "Actor") {
             auto actor = actorSpawner->parseActor(data);
@@ -109,6 +112,7 @@ void Game::loadFromString(std::string_view s) {
     });
 
     renderContext.playerMap->onGenerate();
+    saveLogger->info("Loading finished");
 }
 
 void Game::handleEvent(sf::Event event) {
@@ -172,10 +176,16 @@ void Game::draw_() {
 }
 
 void Game::save() const {
+    saveLogger->info("Saving started...");
     std::ofstream file{"latest.sav"};
 
+    saveLogger->info("Saving tiles...");
     file << "[Tiles]\n" << util::strigifyCharMap(world->tiles().transform(&core::charFromTile));
+
+    saveLogger->info("Saving actors...");
     for (const auto& actor : world->actors()) {
         file << "[Actor]\n" << actorSpawner->stringifyActor(*actor);
     }
+
+    saveLogger->info("Saving finished");
 }
