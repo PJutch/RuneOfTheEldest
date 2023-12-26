@@ -30,8 +30,8 @@ namespace core {
 	/// Effect modifying Actor stats
 	class Effect {
 	public:
-		Effect(const sf::Texture& newIcon, std::string_view newName, bool isSkill) : 
-			icon_{&newIcon}, name_{newName}, isSkill_{isSkill} {}
+		Effect(const sf::Texture& newIcon, std::string_view newId, std::string_view newName, bool isSkill) : 
+			icon_{&newIcon}, id_{newId}, name_{newName}, isSkill_{isSkill} {}
 
 		virtual ~Effect() = default;
 
@@ -113,6 +113,11 @@ namespace core {
 			return *icon_;
 		}
 
+		/// Skill name for dev usage
+		[[nodiscard]] const std::string& id() const {
+			return id_;
+		}
+
 		/// Skill name for level up menu
 		[[nodiscard]] const std::string& name() const {
 			return name_;
@@ -129,6 +134,7 @@ namespace core {
 		}
 	private:
 		const sf::Texture* icon_;
+		std::string id_;
 		std::string name_;
 		bool isSkill_;
 	};

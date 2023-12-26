@@ -33,7 +33,8 @@ namespace core {
 	/// Spell that Actor can cast
 	class Spell {
 	public:
-		Spell(const sf::Texture& newIcon, std::string_view newName) : icon_{&newIcon}, name_{newName} {}
+		Spell(const sf::Texture& newIcon, std::string_view newId, std::string_view newName) : 
+			icon_{&newIcon}, id_{newId}, name_{ newName } {}
 		virtual ~Spell() = default;
 
 		/// Feedback for gui
@@ -67,12 +68,17 @@ namespace core {
 		/// interrupts continuous casting
 		virtual void interrupt() {}
 
-		/// Skill icon for level up menu
+		/// Spell icon for level up menu
 		[[nodiscard]] const sf::Texture& icon() const {
 			return *icon_;
 		}
 
-		/// Skill name for level up menu
+		/// Spell name for dev use
+		[[nodiscard]] const std::string& id() const {
+			return id_;
+		}
+
+		/// Spell name for level up menu
 		[[nodiscard]] const std::string& name() const {
 			return name_;
 		}
@@ -86,6 +92,7 @@ namespace core {
 		}
 	private:
 		const sf::Texture* icon_;
+		std::string id_;
 		std::string name_;
 	};
 }

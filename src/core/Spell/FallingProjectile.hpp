@@ -52,9 +52,9 @@ namespace core {
 			const sf::Texture* projectileTexture = nullptr;
 		};
 
-		FallingProjectileSpell(Stats stats_, const sf::Texture& icon, std::string_view name,
+		FallingProjectileSpell(Stats stats_, const sf::Texture& icon, std::string_view id, std::string_view name,
 			                   std::shared_ptr<World> world_, std::shared_ptr<render::ParticleManager> particles_) :
-			Spell{icon, name}, stats{stats_}, world{std::move(world_)}, particles{std::move(particles_)} {}
+			Spell{icon, id, name}, stats{stats_}, world{std::move(world_)}, particles{std::move(particles_)} {}
 
 		CastResult cast(std::shared_ptr<Actor>  self, core::Position<int> target) final {
 			auto other = world->actorAt(target);

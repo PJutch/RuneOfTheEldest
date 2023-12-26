@@ -65,7 +65,7 @@ namespace core {
         };
 
         Actor::Stats loadStats(std::unordered_map<std::string, std::string>& params, std::string_view id,
-            render::AssetManager& assets) {
+                               render::AssetManager& assets) {
             Actor::Stats result;
             result.id = id;
 
@@ -113,10 +113,10 @@ namespace core {
         render::Context renderContext_, util::LoggerFactory& loggerFactory,
         util::RandomEngine& randomEngine_,
         std::shared_ptr<util::Raycaster> raycaster_) :
-        world{std::move(world_)}, xpManager{std::move(xpManager_)},
-        renderContext{std::move(renderContext_)},
-        raycaster{std::move(raycaster_)},
-        randomEngine{&randomEngine_}, logger{loggerFactory.create("actors")} {
+            world{std::move(world_)}, xpManager{std::move(xpManager_)},
+            renderContext{std::move(renderContext_)},
+            raycaster{std::move(raycaster_)},
+            randomEngine{&randomEngine_}, logger{loggerFactory.create("actors")} {
         logger->info("Loading...");
 
         std::filesystem::path basePath = "resources/Actors/";

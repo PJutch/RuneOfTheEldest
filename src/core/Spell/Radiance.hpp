@@ -56,10 +56,10 @@ namespace core {
 			const sf::Texture* tileTexture = nullptr;
 		};
 
-		RadianceSpell(Stats stats_, const sf::Texture& icon, std::string_view name,
+		RadianceSpell(Stats stats_, const sf::Texture& icon, std::string_view id, std::string_view name,
 			          std::shared_ptr<World> world_, std::shared_ptr<render::ParticleManager> particles_,
 					  std::shared_ptr<util::Raycaster> raycaster_) :
-			Spell{icon, name}, stats{stats_}, world{std::move(world_)}, 
+			Spell{icon, id, name}, stats{stats_}, world{std::move(world_)}, 
 			particles{std::move(particles_)}, raycaster{std::move(raycaster_)} {}
 
 		CastResult cast(std::shared_ptr<Actor> self) final {

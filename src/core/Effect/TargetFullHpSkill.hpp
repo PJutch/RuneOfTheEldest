@@ -25,8 +25,8 @@ namespace core {
 	/// @details Type in skill file is "targetFullHp"
 	class TargetFullHpSkill : public Effect {
 	public:
-		TargetFullHpSkill(double newDamageMul, const sf::Texture& icon_, std::string_view name_) :
-			Effect{icon_, name_, true}, damageBonus_{newDamageMul} {}
+		TargetFullHpSkill(double newDamageMul, const sf::Texture& icon_, std::string_view id_, std::string_view name_) :
+			Effect{icon_, id_, name_, true}, damageBonus_{newDamageMul} {}
 
 		double damageBonus(const Actor& target) const final {
 			return target.hp() == target.maxHp() ? damageBonus_ : 0;

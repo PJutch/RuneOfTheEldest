@@ -24,8 +24,9 @@ namespace core {
 	/// Lose hp with time. Type name is poison.
 	class Poison : public Effect {
 	public:
-		Poison(double damageOverTime_, double duration_, const sf::Texture& icon_, std::string_view name_) :
-			Effect{icon_, name_, false}, damageOverTime{damageOverTime_}, duration{duration_} {}
+		Poison(double damageOverTime_, double duration_, 
+			   const sf::Texture& icon_, std::string_view id_, std::string_view name_) :
+			Effect{icon_, id_, name_, false}, damageOverTime{damageOverTime_}, duration{duration_} {}
 
 		void update(double time) final {
 			owner_.lock()->beDamaged(time * damageOverTime, DamageType::POISON);

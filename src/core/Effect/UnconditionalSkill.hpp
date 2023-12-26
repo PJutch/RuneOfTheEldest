@@ -24,8 +24,8 @@ namespace core {
 	/// Default skill type.
 	class UnconditionalSkill : public ConditionalBonus {
 	public:
-		UnconditionalSkill(Bonuses bonuses, const sf::Texture& icon, std::string_view name) :
-			ConditionalBonus{bonuses, icon, name, true} {}
+		UnconditionalSkill(Bonuses bonuses, const sf::Texture& icon, std::string_view id, std::string_view name) :
+			ConditionalBonus{bonuses, icon, id, name, true} {}
 
 		bool shouldApply() const final {
 			return true;

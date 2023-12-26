@@ -44,9 +44,9 @@ namespace core {
 		public Spell, public std::enable_shared_from_this<ConcentrationBonusSpell> {
 	public:
 		ConcentrationBonusSpell(ConditionalBonus::Bonuses bonuses, double mana_, const sf::Texture& particleTexture_, 
-				const sf::Texture& icon, std::string_view name,
+				const sf::Texture& icon, std::string_view id, std::string_view name,
 				std::shared_ptr<render::ParticleManager> particles_) :
-			Spell{icon, name}, bonus{std::make_shared<Bonus>(bonuses, icon, name)}, 
+			Spell{icon, id, name}, bonus{std::make_shared<Bonus>(bonuses, icon, std::format("{}__spellBonus", id), name)},
 			mana{mana_}, particleTexture{&particleTexture_}, particles{std::move(particles_)} {}
 
 		CastResult cast(std::shared_ptr<Actor> self_) final {
@@ -112,8 +112,8 @@ namespace core {
 				using RuntimeError::RuntimeError;
 			};
 
-			Bonus(ConditionalBonus::Bonuses bonuses, const sf::Texture& icon, std::string_view name) :
-					ConditionalBonus{bonuses, icon, name, false} {
+			Bonus(ConditionalBonus::Bonuses bonuses, const sf::Texture& icon, std::string_view id, std::string_view name) :
+					ConditionalBonus{bonuses, icon, id, name, false} {
 				if (bonuses.hpBonus != 0)
 					throw RequirementNotMet{"ConcentrationBonusSpell can't change max hp"};
 				if (bonuses.manaBonus != 0)

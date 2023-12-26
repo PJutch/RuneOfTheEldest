@@ -58,7 +58,7 @@ namespace core {
 		};
 
 		std::unique_ptr<Effect> createTargetFullHpSkill(std::unordered_map<std::string, std::string>& params,
-				std::string_view name, const sf::Texture& icon) {
+				std::string_view id, std::string_view name, const sf::Texture& icon) {
 			double damageBonus = 0;
 			if (auto v = util::getAndErase(params, "damageBonus"))
 				damageBonus = util::parseReal(*v);
@@ -66,11 +66,11 @@ namespace core {
 			if (!params.empty())
 				throw UnknownParamsError{params};
 
-			return std::make_unique<TargetFullHpSkill>(damageBonus, icon, name);
+			return std::make_unique<TargetFullHpSkill>(damageBonus, icon, id, name);
 		}
 
 		std::unique_ptr<Poison> createPoison(std::unordered_map<std::string, std::string>& params,
-			std::string_view name, const sf::Texture& icon) {
+				std::string_view id, std::string_view name, const sf::Texture& icon) {
 			double damageOverTime = 1;
 			double duration = 1;
 
@@ -83,23 +83,23 @@ namespace core {
 			if (!params.empty())
 				throw UnknownParamsError{params};
 
-			return std::make_unique<Poison>(damageOverTime, duration, icon, name);
+			return std::make_unique<Poison>(damageOverTime, duration, icon, id, name);
 		}
 
 		std::unique_ptr<AppliesEffectOnAttack> createAppliesEffect(std::unordered_map<std::string, std::string>& params,
-			std::string_view name, const sf::Texture& icon) {
+				std::string_view id, std::string_view name, const sf::Texture& icon) {
 			std::string appliedName = util::getAndEraseRequired(params, "applies");
 
 			if (!params.empty())
 				throw UnknownParamsError{params};
 
-			return std::make_unique<AppliesEffectOnAttack>(appliedName, icon, name);
+			return std::make_unique<AppliesEffectOnAttack>(appliedName, icon, id, name);
 		}
 
 		std::unique_ptr<TempBonus> createTempBonus(std::unordered_map<std::string, std::string>& params,
-				std::string_view name, const sf::Texture& icon) {
+				std::string_view id, std::string_view name, const sf::Texture& icon) {
 			double duration = util::parseReal(util::getAndEraseRequired(params, "duration"));
-			return std::make_unique<TempBonus>(loadBonuses(params), duration, icon, name);
+			return std::make_unique<TempBonus>(loadBonuses(params), duration, icon, id, name);
 		}
 	}
 
@@ -163,8 +163,12 @@ namespace core {
 		                         util::LoggerFactory& loggerFactory) {
 		auto logger = loggerFactory.create("effects");
 		logger->info("Loading...");
-		util::forEachFile("resources/Effects/", [&, this](std::ifstream& file, const std::filesystem::path& path) {
-			logger->info("Loading Skill spec from {} ...", path.generic_string());
+
+		std::filesystem::path basePath = "resources/Effects/";
+		util::forEachFile(basePath, [&, this](std::ifstream& file, const std::filesystem::path& path) {
+			std::string id = util::toIdentifier(path, basePath);
+
+			logger->info("Loading {} skill spec from {} ...", id, path.generic_string());
 
 			auto params = util::parseMapping(file);
 
@@ -176,17 +180,17 @@ namespace core {
 			std::string name = util::getAndEraseRequired(params, "name");
 
 			if (type == "unconditionalSkill") {
-				effects.push_back(std::make_unique<UnconditionalSkill>(loadBonuses(params), icon, name));
+				effects.push_back(std::make_unique<UnconditionalSkill>(loadBonuses(params), icon, id, name));
 			} else if (type == "lowHpSkill") {
-				effects.push_back(std::make_unique<LowHpSkill>(loadBonuses(params), icon, name));
+				effects.push_back(std::make_unique<LowHpSkill>(loadBonuses(params), icon, id, name));
 			} else if (type == "targetFullHpSkill")
-				effects.push_back(createTargetFullHpSkill(params, name, icon));
+				effects.push_back(createTargetFullHpSkill(params, id, name, icon));
 			else if (type == "poison")
-				effects.push_back(createPoison(params, name, icon));
+				effects.push_back(createPoison(params, id, name, icon));
 			else if (type == "appliesEffectOnAttack")
-				effects.push_back(createAppliesEffect(params, name, icon));
+				effects.push_back(createAppliesEffect(params, id, name, icon));
 			else if (type == "tempBonus")
-				effects.push_back(createTempBonus(params, name, icon));
+				effects.push_back(createTempBonus(params, id, name, icon));
 			else 
 				throw UnknownSkillTypeError(type);
 		});

@@ -24,8 +24,9 @@ namespace core {
 	/// Lose hp with time. Type name is poison.
 	class AppliesEffectOnAttack : public Effect {
 	public:
-		AppliesEffectOnAttack(std::string_view appliedEffect_, const sf::Texture& icon_, std::string_view name_) :
-			Effect{icon_, name_, false}, appliedEffectName{appliedEffect_} {}
+		AppliesEffectOnAttack(std::string_view appliedEffect_, 
+				const sf::Texture& icon_, std::string_view id_, std::string_view name_) :
+			Effect{icon_, id_, name_, false}, appliedEffectName{appliedEffect_} {}
 
 		void init(const EffectManager& effects) final {
 			appliedEffect = effects.findEffect(appliedEffectName);

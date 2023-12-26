@@ -44,8 +44,9 @@ namespace core {
 			std::array<double, util::nEnumerators<DamageType>> defenceBonuses{};
 		};
 
-		ConditionalBonus(Bonuses bonuses_, const sf::Texture& icon_, std::string_view name_, bool isSkill) :
-			Effect{icon_, name_, isSkill}, bonuses{bonuses_} {}
+		ConditionalBonus(Bonuses bonuses_, 
+				const sf::Texture& icon_, std::string_view id_, std::string_view name_, bool isSkill) :
+			Effect{icon_, id_, name_, isSkill}, bonuses{bonuses_} {}
 
 		double regenBonus() const final {
 			return shouldApply() ? bonuses.regenBonus : 0;

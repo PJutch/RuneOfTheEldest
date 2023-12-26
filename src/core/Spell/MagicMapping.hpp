@@ -41,9 +41,9 @@ namespace core {
 			double mana;
 		};
 
-		MagicMappingSpell(Stats stats_, const sf::Texture& icon, std::string_view name, 
+		MagicMappingSpell(Stats stats_, const sf::Texture& icon, std::string_view id, std::string_view name,
 				std::shared_ptr<render::PlayerMap> playerMap_) :
-			Spell{icon, name}, stats{stats_}, playerMap{std::move(playerMap_)} {}
+			Spell{icon, id, name}, stats{stats_}, playerMap{std::move(playerMap_)} {}
 
 		CastResult cast(std::shared_ptr<Actor> self) final {
 			if (!self->useMana(stats.mana))

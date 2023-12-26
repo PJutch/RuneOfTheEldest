@@ -29,8 +29,8 @@ namespace core {
 			using RuntimeError::RuntimeError;
 		};
 
-		TempBonus(Bonuses bonuses, double duration_, const sf::Texture& icon, std::string_view name) :
-				ConditionalBonus{bonuses, icon, name, false}, duration{duration_} {
+		TempBonus(Bonuses bonuses, double duration_, const sf::Texture& icon, std::string_view id, std::string_view name) :
+				ConditionalBonus{bonuses, icon, id, name, false}, duration{duration_} {
 			if (bonuses.hpBonus != 0)
 				throw RequirementNotMet{"TempBonus can't change max hp"};
 			if (bonuses.manaBonus != 0)

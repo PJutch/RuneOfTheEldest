@@ -24,8 +24,9 @@ namespace core {
 	/// Modifies speed for some time
 	class FireDefenceEffect : public Effect {
 	public:
-		FireDefenceEffect(double newDefenceBonus, double duration_, const sf::Texture& icon_, std::string_view name_) :
-			Effect{icon_, name_, false}, defenceBonus_{newDefenceBonus}, duration{duration_} {}
+		FireDefenceEffect(double newDefenceBonus, double duration_, 
+				const sf::Texture& icon_, std::string_view id_, std::string_view name_) :
+			Effect{icon_, id_, name_, false}, defenceBonus_{newDefenceBonus}, duration{duration_} {}
 
 		double defenceBonus(DamageType damageType) const final {
 			if (damageType == DamageType::FIRE) {

@@ -43,8 +43,8 @@ namespace core {
 			double mana;
 		};
 
-		HealSpell(Stats stats_, const sf::Texture& icon, std::string_view name) :
-			Spell{icon, name}, stats{stats_} {}
+		HealSpell(Stats stats_, const sf::Texture& icon, std::string_view id, std::string_view name) :
+			Spell{icon, id, name}, stats{stats_} {}
 
 		CastResult cast(std::shared_ptr<Actor> self) final {
 			if (!self->useMana(stats.mana))

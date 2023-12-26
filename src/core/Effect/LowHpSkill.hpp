@@ -33,8 +33,8 @@ namespace core {
 			using RuntimeError::RuntimeError;
 		};
 
-		LowHpSkill(Bonuses bonuses, const sf::Texture& icon, std::string_view name) :
-				ConditionalBonus{bonuses, icon, name, true} {
+		LowHpSkill(Bonuses bonuses, const sf::Texture& icon, std::string_view id, std::string_view name) :
+				ConditionalBonus{bonuses, icon, id, name, true} {
 			if (bonuses.hpBonus != 0)
 				throw RequirementNotMet{"LowHpSkill can't change max hp"};
 			if (bonuses.manaBonus != 0)
