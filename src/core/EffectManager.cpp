@@ -21,7 +21,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Effect/Poison.hpp"
 #include "Effect/AppliesEffectOnAttack.hpp"
 #include "Effect/TempBonus.hpp"
-#include "Effect/FireDefenceEffect.hpp"
 #include "Effect/ConditionalBonus.hpp"
 
 #include "core/DamageType.hpp"
