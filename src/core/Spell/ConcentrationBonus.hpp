@@ -136,6 +136,10 @@ namespace core {
 				return std::make_unique<Bonus>(*this);
 			}
 
+			void parseData(std::string_view) final {
+				throw UnexpectedData{};
+			}
+
 			[[nodiscard]] std::optional<std::string> stringify() const final {
 				return std::nullopt;
 			}

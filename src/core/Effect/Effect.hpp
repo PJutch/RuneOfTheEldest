@@ -16,8 +16,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef EFFECT_HPP_
 #define EFFECT_HPP_
 
-#include <core/fwd.hpp>
-#include <core/DamageType.hpp>
+#include "core/fwd.hpp"
+#include "core/DamageType.hpp"
+
+#include "util/Exception.hpp"
 
 namespace sf {
 	class Texture;
@@ -134,8 +136,18 @@ namespace core {
 			return true;
 		}
 
+		class UnexpectedData : util::RuntimeError {
+		public:
+			UnexpectedData(util::Stacktrace stacktrace = {}) : 
+				util::RuntimeError{"Effect doesn't stores data but recieved some"} {}
+		};
+
 		/// Parses data from save file
-		virtual void parseData(std::string_view) {}
+		virtual void parseData(std::string_view data) {
+			if (!data.empty()) {
+				throw UnexpectedData{};
+			}
+		}
 
 		/// Returns effect data to be saved
 		[[nodiscard]] virtual std::optional<std::string> stringify() const {

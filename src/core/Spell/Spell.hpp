@@ -16,9 +16,11 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef SPELL_HPP_
 #define SPELL_HPP_
 
-#include <core/fwd.hpp>
-#include <core/DamageType.hpp>
-#include <core/Position.hpp>
+#include "core/fwd.hpp"
+#include "core/DamageType.hpp"
+#include "core/Position.hpp"
+
+#include "util/Exception.hpp"
 
 namespace sf {
 	class Texture;
@@ -91,7 +93,18 @@ namespace core {
 			return sf::Color{128, 128, 128};
 		}
 
-		virtual void parseData(std::string_view data) {}
+		class UnexpectedData : util::RuntimeError {
+		public:
+			UnexpectedData(util::Stacktrace stacktrace = {}) :
+				util::RuntimeError{"Spell doesn't stores data but recieved some"} {}
+		};
+
+		/// Parses data from save file
+		virtual void parseData(std::string_view data) {
+			if (!data.empty()) {
+				throw UnexpectedData{};
+			}
+		}
 
 		virtual [[nodiscard]] std::string stringify() const {
 			return id();
