@@ -305,7 +305,9 @@ namespace core {
         );
 
         for (const auto& effect : actor.effects()) {
-            result.append(std::format("effect {}\n", effect->id()));
+            if (effect->shouldSave()) {
+                result.append(std::format("effect {}\n", effect->id()));
+            }
         }
 
         for (const auto& spell : actor.spells()) {

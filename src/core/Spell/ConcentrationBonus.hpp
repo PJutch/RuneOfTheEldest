@@ -135,6 +135,10 @@ namespace core {
 			std::unique_ptr<Effect> clone() const {
 				return std::make_unique<Bonus>(*this);
 			}
+
+			[[nodiscard]] bool shouldSave() const final {
+				return false;
+			}
 		private:
 			std::weak_ptr<ConcentrationBonusSpell> spell_;
 		};

@@ -102,6 +102,10 @@ namespace core {
 			std::unique_ptr<Effect> clone() const {
 				return std::make_unique<Bonus>(*this);
 			}
+
+			[[nodiscard]] bool shouldSave() const final {
+				return false;
+			}
 		private:
 			std::weak_ptr<BonusSpell> spell_;
 			std::weak_ptr<core::Actor> owner_;

@@ -132,6 +132,11 @@ namespace core {
 		[[nodiscard]] virtual bool isVisible() const {
 			return true;
 		}
+
+		/// Checks if Effect should be saved
+		[[nodiscard]] virtual bool shouldSave() const {
+			return true;
+		}
 	private:
 		const sf::Texture* icon_;
 		std::string id_;
