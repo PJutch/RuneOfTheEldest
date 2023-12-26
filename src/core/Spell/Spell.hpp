@@ -90,6 +90,12 @@ namespace core {
 		virtual sf::Color frameColor() const {
 			return sf::Color{128, 128, 128};
 		}
+
+		virtual void parseData(std::string_view data) {}
+
+		virtual [[nodiscard]] std::string stringify() const {
+			return id();
+		}
 	private:
 		const sf::Texture* icon_;
 		std::string id_;

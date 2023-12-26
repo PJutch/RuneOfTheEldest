@@ -41,8 +41,10 @@ namespace core {
 
 		void spawn();
 
-		std::shared_ptr<core::Actor> parseActor(std::string_view s) const;
+		std::shared_ptr<core::Actor> parseActor(std::string_view s);
 		std::string stringifyActor(const core::Actor& actor) const;
+
+		void onSaveLoaded();
 	private:
 		std::shared_ptr<World> world;
 		std::shared_ptr<XpManager> xpManager;
@@ -69,6 +71,12 @@ namespace core {
 			std::vector<std::shared_ptr<Spell>> spellsToAdd;
 		};
 		std::vector<ActorData> actorData;
+
+		struct SpellToAdd {
+			std::shared_ptr<Actor> actor;
+			std::string spellData;
+		};
+		std::vector<SpellToAdd> spellsToAdd;
 
 		std::unique_ptr<Controller> createController(std::shared_ptr<Actor> actor, std::string_view type) const;
 	};

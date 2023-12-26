@@ -18,6 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "../AiState.hpp"
 #include "../Sound.hpp"
+#include "../Spell/Spell.hpp"
 
 #include <SFML/Window/Event.hpp>
 
@@ -71,6 +72,9 @@ namespace core {
 		virtual std::optional<int> currentSpell() const {
 			return std::nullopt;
 		}
+
+		/// Sets cast spell after loading
+		virtual void setCastSpell(std::shared_ptr<Spell>) {}
 
 		[[nodiscard]] virtual std::string stringify() const = 0;
 	protected:

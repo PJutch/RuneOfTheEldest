@@ -115,6 +115,7 @@ void Game::loadFromString(std::string_view s) {
     visitor.validate();
 
     renderContext.playerMap->onGenerate();
+    actorSpawner->onSaveLoaded();
     saveLogger->info("Loading finished");
 }
 

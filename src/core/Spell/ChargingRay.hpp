@@ -29,6 +29,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "util/raycast.hpp"
 #include "util/random.hpp"
+#include "util/parse.hpp"
+#include "util/parseKeyValue.hpp"
+#include "util/stringify.hpp"
 
 namespace sf {
 	class Texture;
@@ -66,7 +69,7 @@ namespace core {
 			if (!target_)
 				return CastResult::FAILURE;
 
-			if (target_ != target.lock() || self_ != self.lock()) {
+			if (!isCasted || target_ != target.lock() || self_ != self.lock()) {
 				target = std::move(target_);
 				self = std::move(self_);
 				damageMul = 1;
@@ -86,6 +89,46 @@ namespace core {
 
 		[[nodiscard]] std::shared_ptr<Spell> clone() const final {
 			return std::make_shared<ChargingRaySpell>(*this);
+		}
+
+		void parseData(std::string_view data) final {
+			util::KeyValueVisitor visitor;
+
+			visitor.key("isCasted").unique().required().callback([&](std::string_view data) {
+				isCasted = util::parseBool(data);
+			});
+
+			visitor.key("damageMul").unique().required().callback([&](std::string_view data) {
+				damageMul = util::parseReal(data);
+			});
+
+			visitor.key("targetPosition").unique().callback([&](std::string_view data) {
+				target = world->actorAt(util::parseVector3i(data));
+			});
+
+			util::forEackInlineKeyValuePair(data, visitor);
+			visitor.validate();
+
+			if (isCasted) {
+				particles->add(std::make_unique<Ray>(shared_from_this(), particles));
+			}
+		}
+
+		[[nodiscard]] std::string stringify() const final {
+			std::string result = std::format("{} isCasted {}, damageMul {}", 
+				id(), isCasted, damageMul);
+			if (!target.expired()) {
+				result += std::format(", targetPosition {}", util::stringifyVector3(target.lock()->position()));
+			}
+			return result;
+		}
+
+		void owner(std::weak_ptr<Actor> owner) final {
+			self = std::move(owner);
+			
+			if (isCasted) {
+				self.lock()->controller().setCastSpell(shared_from_this());
+			}
 		}
 	private:
 		Stats stats;

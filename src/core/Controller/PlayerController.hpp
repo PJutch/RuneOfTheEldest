@@ -63,8 +63,12 @@ namespace core {
 			return currentSpell_;
 		}
 
-		[[nodiscard]] virtual std::string stringify() const {
+		[[nodiscard]] std::string stringify() const final {
 			return "player";
+		}
+
+		void setCastSpell(std::shared_ptr<Spell> spell) final {
+			castSpell = spell;
 		}
 	private:
 		std::weak_ptr<Actor> player;

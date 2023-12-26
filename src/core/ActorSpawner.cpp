@@ -241,7 +241,7 @@ namespace core {
         };
     }
 
-    std::shared_ptr<core::Actor> ActorSpawner::parseActor(std::string_view s) const {
+    std::shared_ptr<core::Actor> ActorSpawner::parseActor(std::string_view s) {
         util::KeyValueVisitor visitor;
         auto result = std::make_shared<core::Actor>(world, xpManager, renderContext.particles, randomEngine);
 
@@ -282,11 +282,8 @@ namespace core {
                 throw EffectNotFound{id};
         });
 
-        visitor.key("spell").callback([&](std::string_view id) {
-            if (auto spell = spellManager->findSpell(id))
-                result->addSpell(spell->clone());
-            else
-                throw SpellNotFound{id};
+        visitor.key("spell").callback([&](std::string_view s) {
+            spellsToAdd.emplace_back(result, std::string{s});
         });
 
         util::forEackKeyValuePair(s, visitor);
@@ -311,9 +308,23 @@ namespace core {
         }
 
         for (const auto& spell : actor.spells()) {
-            result.append(std::format("spell {}\n", spell->id()));
+            result.append(std::format("spell {}\n", spell->stringify()));
         }
 
         return result;
+    }
+
+    void ActorSpawner::onSaveLoaded() {
+        for (const auto& [actor, spellData] : spellsToAdd) {
+            auto [id, data] = util::parseKeyValuePair(spellData);
+
+            if (auto spell = spellManager->findSpell(id)) {
+                auto newSpell = spell->clone();
+                newSpell->parseData(data);
+                actor->addSpell(std::move(newSpell));
+            } else {
+                throw SpellNotFound{id};
+            }
+        }
     }
 }
