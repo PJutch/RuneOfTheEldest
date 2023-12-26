@@ -52,6 +52,21 @@ namespace core {
 		std::unique_ptr<Effect> clone() const final {
 			return std::make_unique<TempBonus>(*this);
 		}
+		
+		void parseData(std::string_view data) final {
+			util::KeyValueVisitor visitor;
+
+			visitor.key("duration").unique().required().callback([&](std::string_view data) {
+				duration = util::parseReal(data);
+			});
+
+			util::forEackInlineKeyValuePair(data, visitor);
+			visitor.validate();
+		}
+
+		[[nodiscard]] std::optional<std::string> stringify() const final {
+			return std::format("{} duration {}", id(), duration);
+		}
 	private:
 		double duration;
 	};

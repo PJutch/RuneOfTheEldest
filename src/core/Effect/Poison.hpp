@@ -20,6 +20,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "../Actor.hpp"
 
+#include "util/parseKeyValue.hpp"
+
 namespace core {
 	/// Lose hp with time. Type name is poison.
 	class Poison : public Effect {
@@ -43,6 +45,21 @@ namespace core {
 
 		void owner(std::weak_ptr<Actor> newOwner) final {
 			owner_ = std::move(newOwner);
+		}
+
+		void parseData(std::string_view data) final {
+			util::KeyValueVisitor visitor;
+
+			visitor.key("duration").unique().required().callback([&](std::string_view data) {
+				duration = util::parseReal(data);
+			});
+
+			util::forEackInlineKeyValuePair(data, visitor);
+			visitor.validate();
+		}
+
+		[[nodiscard]] std::optional<std::string> stringify() const final {
+			return std::format("{} duration {}", id(), duration);
 		}
 	private:
 		double damageOverTime;

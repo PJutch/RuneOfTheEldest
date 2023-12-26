@@ -25,6 +25,7 @@ namespace sf {
 
 #include <string>
 #include <memory>
+#include <optional>
 
 namespace core {
 	/// Effect modifying Actor stats
@@ -133,9 +134,12 @@ namespace core {
 			return true;
 		}
 
-		/// Checks if Effect should be saved
-		[[nodiscard]] virtual bool shouldSave() const {
-			return true;
+		/// Parses data from save file
+		virtual void parseData(std::string_view) {}
+
+		/// Returns effect data to be saved
+		[[nodiscard]] virtual std::optional<std::string> stringify() const {
+			return id();
 		}
 	private:
 		const sf::Texture* icon_;

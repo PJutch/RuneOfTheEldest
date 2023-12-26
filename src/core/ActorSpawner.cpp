@@ -275,11 +275,16 @@ namespace core {
             result->manaUnscaled(util::parseReal(data));
         });
 
-        visitor.key("effect").callback([&](std::string_view id) {
-            if (auto effect = effectManager->findEffect(id))
-                result->addEffect(effect->clone());
-            else
+        visitor.key("effect").callback([&](std::string_view s) {
+            auto [id, data] = util::parseKeyValuePair(s);
+
+            if (auto effect = effectManager->findEffect(id)) {
+                auto newEffect = effect->clone();
+                newEffect->parseData(data);
+                result->addEffect(std::move(newEffect));
+            } else {
                 throw EffectNotFound{id};
+            }
         });
 
         visitor.key("spell").callback([&](std::string_view s) {
@@ -302,8 +307,8 @@ namespace core {
         );
 
         for (const auto& effect : actor.effects()) {
-            if (effect->shouldSave()) {
-                result.append(std::format("effect {}\n", effect->id()));
+            if (auto data = effect->stringify()) {
+                result.append(std::format("effect {}\n", *data));
             }
         }
 

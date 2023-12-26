@@ -103,8 +103,8 @@ namespace core {
 				return std::make_unique<Bonus>(*this);
 			}
 
-			[[nodiscard]] bool shouldSave() const final {
-				return false;
+			[[nodiscard]] std::optional<std::string> stringify() const final {
+				return std::nullopt;
 			}
 		private:
 			std::weak_ptr<BonusSpell> spell_;
