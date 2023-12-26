@@ -72,9 +72,9 @@ namespace core {
 			return spells.size();
 		}
 
-		std::shared_ptr<Spell> findSpell(std::string_view spellName) const {
-			auto iter = std::ranges::find(spells, spellName, [](const auto& spell) {
-				return spell->name();
+		std::shared_ptr<Spell> findSpell(std::string_view id) const {
+			auto iter = std::ranges::find(spells, id, [](const auto& spell) {
+				return spell->id();
 			});
 			return iter == spells.end() ? nullptr : *iter;
 		}

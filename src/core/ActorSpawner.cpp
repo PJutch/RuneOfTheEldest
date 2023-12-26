@@ -150,11 +150,11 @@ namespace core {
             }
 
             if (auto v = util::getAndErase(params, "spells")) {
-                for (auto spellName : util::parseList(*v) | std::views::transform(util::strip))
-                    if (auto spell = spellManager->findSpell(spellName))
+                for (auto id : util::parseList(*v) | std::views::transform(util::strip))
+                    if (auto spell = spellManager->findSpell(id))
                         actorData.back().spellsToAdd.push_back(std::move(spell));
                     else
-                        throw SpellNotFound{spellName};
+                        throw SpellNotFound{id};
             }
 
             if (!params.empty())

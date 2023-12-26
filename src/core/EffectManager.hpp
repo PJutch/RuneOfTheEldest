@@ -61,9 +61,9 @@ namespace core {
 			return effects.cend();
 		}
 
-		const Effect* findEffect(std::string_view appliedEffectName) const {
-			auto iter = std::ranges::find(effects, appliedEffectName, [](const auto& effect) {
-				return effect->name();
+		const Effect* findEffect(std::string_view id) const {
+			auto iter = std::ranges::find(effects, id, [](const auto& effect) {
+				return effect->id();
 			});
 			return iter == effects.end() ? nullptr : iter->get();
 		}
