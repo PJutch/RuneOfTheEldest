@@ -109,11 +109,12 @@ namespace core {
     }
 
     ActorSpawner::ActorSpawner(std::shared_ptr<World> world_, std::shared_ptr<XpManager> xpManager_,
-        std::shared_ptr<EffectManager> effectManager, std::shared_ptr<SpellManager> spellManager,
+        std::shared_ptr<EffectManager> effectManager_, std::shared_ptr<SpellManager> spellManager_,
         render::Context renderContext_, util::LoggerFactory& loggerFactory,
         util::RandomEngine& randomEngine_,
         std::shared_ptr<util::Raycaster> raycaster_) :
             world{std::move(world_)}, xpManager{std::move(xpManager_)},
+            effectManager{std::move(effectManager_)}, spellManager{std::move(spellManager_)},
             renderContext{std::move(renderContext_)},
             raycaster{std::move(raycaster_)},
             randomEngine{&randomEngine_}, logger{loggerFactory.create("actors")} {
@@ -267,32 +268,29 @@ namespace core {
         });
 
         visitor.key("hp").unique().required().callback([&](std::string_view data) {
-            result->hp(util::parseReal(data));
+            result->hpUnscaled(util::parseReal(data));
         });
 
         visitor.key("mana").unique().required().callback([&](std::string_view data) {
-            result->mana(util::parseReal(data));
+            result->manaUnscaled(util::parseReal(data));
+        });
+
+        visitor.key("effect").callback([&](std::string_view id) {
+            if (auto effect = effectManager->findEffect(id))
+                result->addEffect(effect->clone());
+            else
+                throw EffectNotFound{id};
+        });
+
+        visitor.key("spell").callback([&](std::string_view id) {
+            if (auto spell = spellManager->findSpell(id))
+                result->addSpell(spell->clone());
+            else
+                throw SpellNotFound{id};
         });
 
         util::forEackKeyValuePair(s, visitor);
         visitor.validate();
-
-        /*
-        if (auto v = util::getAndErase(params, "effect")) {
-            if (auto effect = effectManager->findEffect(*v))
-                actorData.back().effectToAdd = effect;
-            else
-                throw EffectNotFound{*v};
-        }
-
-        if (auto v = util::getAndErase(params, "spells")) {
-            for (auto spellName : util::parseList(*v) | std::views::transform(util::strip))
-                if (auto spell = spellManager->findSpell(spellName))
-                    actorData.back().spellsToAdd.push_back(std::move(spell));
-                else
-                    throw SpellNotFound{spellName};
-        }
-        */
 
         return result;
     }
@@ -302,26 +300,17 @@ namespace core {
             "type {}\nposition {}\nnextTurn {}\nhp {}\nmana {}\ncontroller {}\n",
             actor.stats().id,
             util::stringifyVector3(actor.position()),
-            actor.nextTurn(), actor.hp(), actor.mana(),
+            actor.nextTurn(), actor.hpUnscaled(), actor.manaUnscaled(),
             actor.controller().stringify()
         );
 
-        /*
-        if (auto v = util::getAndErase(params, "effect")) {
-           if (auto effect = effectManager->findEffect(*v))
-               actorData.back().effectToAdd = effect;
-           else
-               throw EffectNotFound{*v};
-       }
+        for (const auto& effect : actor.effects()) {
+            result.append(std::format("effect {}\n", effect->id()));
+        }
 
-       if (auto v = util::getAndErase(params, "spells")) {
-           for (auto spellName : util::parseList(*v) | std::views::transform(util::strip))
-               if (auto spell = spellManager->findSpell(spellName))
-                   actorData.back().spellsToAdd.push_back(std::move(spell));
-               else
-                   throw SpellNotFound{spellName};
-       }
-       */
+        for (const auto& spell : actor.spells()) {
+            result.append(std::format("spell {}\n", spell->id()));
+        }
 
         return result;
     }

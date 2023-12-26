@@ -202,7 +202,7 @@ namespace core {
 			return effect->manaBonus();
 		});
 
-		mana_ *= newManaMul / hpMul;
+		mana_ *= newManaMul / manaMul;
 		manaMul = newManaMul;
 	}
 

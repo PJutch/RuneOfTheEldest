@@ -46,6 +46,8 @@ namespace core {
 	private:
 		std::shared_ptr<World> world;
 		std::shared_ptr<XpManager> xpManager;
+		std::shared_ptr<EffectManager> effectManager;
+		std::shared_ptr<SpellManager> spellManager;
 		render::Context renderContext;
 		std::shared_ptr<util::Raycaster> raycaster;
 		util::RandomEngine* randomEngine;

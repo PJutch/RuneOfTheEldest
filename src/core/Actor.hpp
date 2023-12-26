@@ -143,6 +143,16 @@ namespace core {
 			hp_ = newHp;
 		}
 
+		/// Gets Actor HP without hpMul
+		[[nodiscard]] double hpUnscaled() const noexcept {
+			return hp_ / hpMul;
+		}
+
+		/// Sets Actor HP without hpMul
+		void hpUnscaled(double newHp) noexcept {
+			hp_ = newHp * hpMul;
+		}
+
 		/// Gets max possible HP
 		[[nodiscard]] double maxHp() const noexcept {
 			return stats().maxHp * hpMul;
@@ -156,6 +166,16 @@ namespace core {
 		/// Sets Actor mana
 		void mana(double newMana) noexcept {
 			mana_ = newMana;
+		}
+
+		/// Gets Actor mana without manaMul
+		[[nodiscard]] double manaUnscaled() const noexcept {
+			return mana_ / manaMul;
+		}
+
+		/// Sets Actor mana without manaMul
+		void manaUnscaled(double newMana) noexcept {
+			mana_ = newMana * manaMul;
 		}
 
 		/// Gets max possible mana
