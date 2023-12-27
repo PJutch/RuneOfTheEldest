@@ -19,12 +19,14 @@ If not, see < https://www.gnu.org/licenses/>. */
 
 #include "util/raycast.hpp"
 #include "util/Direction.hpp"
+#include "util/parse.hpp"
+#include "util/stringify.hpp"
 
 namespace render {
 	PlayerMap::PlayerMap(std::shared_ptr<core::World> world_, std::shared_ptr<util::Raycaster> raycaster_) :
 		world{ std::move(world_) }, raycaster{std::move(raycaster_)} {}
 
-	const bool seeEverything = true;
+	const bool seeEverything = false;
 
 	void PlayerMap::onGenerate() {
 		seenActors_.clear();
@@ -104,5 +106,40 @@ namespace render {
 		std::ranges::sort(seenActors_, {}, [](SeenActor actor) {
 			return actor.position.y;
 		});
+	}
+
+	namespace {
+		class UnknownTileState : public util::RuntimeError {
+		public:
+			UnknownTileState(char c, util::Stacktrace stacktrace = {}) : 
+				util::RuntimeError{std::format("\'{}\' tile state is unknown", c), std::move(stacktrace)} {}
+		};
+	}
+
+	void PlayerMap::parse(std::string_view data) {
+		tileStates = util::parseCharMap(data).transform([](char c) {
+			switch (c) {
+			case '.':
+				return PlayerMap::TileState::MEMORIZED;
+			case '?':
+				return PlayerMap::TileState::UNSEEN;
+			default:
+				throw UnknownTileState{c};
+			}
+		});
+	}
+
+	[[nodiscard]] std::string PlayerMap::stringify() const {
+		return util::strigifyCharMap(tileStates.transform([](PlayerMap::TileState tileState) {
+			switch (tileState) {
+			case PlayerMap::TileState::VISIBLE: 
+			case PlayerMap::TileState::MEMORIZED:
+				return '.';
+			case PlayerMap::TileState::UNSEEN: 
+				return '?';
+			default:
+				TROTE_ASSERT(false, "unreachable");
+			}
+		}));
 	}
 }

@@ -86,6 +86,9 @@ namespace render {
 		std::span<const core::Sound> recentSounds() const noexcept {
 			return recentSounds_;
 		}
+
+		void parse(std::string_view data);
+		[[nodiscard]] std::string stringify() const;
 	private:
 		util::Array3D<TileState> tileStates;
 		std::vector<SeenActor> seenActors_;
