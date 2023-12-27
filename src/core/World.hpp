@@ -148,14 +148,24 @@ namespace core {
 			return std::nullopt;
 		}
 
+		/// Returns all up stairs and their destination
+		[[nodiscard]] const util::UnorderedMap<sf::Vector3i, sf::Vector3i>& upStairs() const {
+			return upStairs_;
+		}
+
 		/// Returns at(position) destination if it's Tile::UP_STAIRS
 		[[nodiscard]] std::optional<sf::Vector3i> upStairs(sf::Vector3i position) const {
-			return util::getOptional(upStairs_, position);
+			return util::getOptional(upStairs(), position);
+		}
+
+		/// Returns all down stairs and their destination
+		[[nodiscard]] const util::UnorderedMap<sf::Vector3i, sf::Vector3i>& downStairs() const {
+			return downStairs_;
 		}
 
 		/// Returns at(position) destination if it's Tile::DOWN_STAIRS
 		[[nodiscard]] std::optional<sf::Vector3i> downStairs(sf::Vector3i position) const {
-			return util::getOptional(downStairs_, position);
+			return util::getOptional(downStairs(), position);
 		}
 
 		/// @brief Create stairs between position1 and position2

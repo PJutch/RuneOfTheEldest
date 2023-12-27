@@ -364,6 +364,18 @@ namespace util {
 
 		return {parseInt<T>(strip(values[0])), parseInt<T>(strip(values[1])), parseInt<T>(strip(values[2]))};
 	}
+
+	/// Parses 2 vectors of 3 ints
+	template <typename T = int>
+	std::array<sf::Vector3<T>, 2> parse2Vector3i(std::string_view s) {
+		auto values = parseSpaceSepList(s);
+		if (std::ssize(values) != 6) {
+			throw WrongListLength(6, std::ssize(values));
+		}
+
+		return {sf::Vector3i{parseInt<T>(strip(values[0])), parseInt<T>(strip(values[1])), parseInt<T>(strip(values[2]))},
+				sf::Vector3i{parseInt<T>(strip(values[3])), parseInt<T>(strip(values[4])), parseInt<T>(strip(values[5]))}};
+	}
 }
 
 #endif

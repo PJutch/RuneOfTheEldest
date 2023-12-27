@@ -106,6 +106,10 @@ void Game::loadFromString(std::string_view s) {
         saveLogger->info("Loading tiles...");
         world->tiles() = util::parseCharMap(data).transform(&core::tileFromChar);
     });
+    visitor.key("Stairs").callback([&](std::string_view data) {
+        auto [stairs1, stairs2] = util::parse2Vector3i(data);
+        world->addStairs(stairs1, stairs2);
+    });
     visitor.key("Actor").callback([&](std::string_view data) {
         auto actor = actorSpawner->parseActor(data);
         world->addActor(std::move(actor));
@@ -185,6 +189,11 @@ void Game::save() const {
 
     saveLogger->info("Saving tiles...");
     file << "[Tiles]\n" << util::strigifyCharMap(world->tiles().transform(&core::charFromTile));
+
+    saveLogger->info("Saving stairs...");
+    for (auto [upStairs, downStairs] : world->upStairs()) {
+        file << "[Stairs]\n" << util::stringifyVector3(upStairs) << ' ' << util::stringifyVector3(downStairs) << '\n';
+    }
 
     saveLogger->info("Saving actors...");
     for (const auto& actor : world->actors()) {
