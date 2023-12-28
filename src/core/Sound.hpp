@@ -18,6 +18,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include <SFML/System/Vector3.hpp>
 
+#include <string_view>
+#include <string>
+
 namespace core {
 	struct Sound {
 		/// Action caused sound
@@ -44,6 +47,9 @@ namespace core {
 		/// It reduces quadratically with the distance.
 		/// Sounds can't be heard from other Levels
 		double volume(sf::Vector3i listenerPosition);
+
+		[[nodiscard]] static Sound parse(std::string_view data);
+		[[nodiscard]] std::string stringify() const;
 	};
 }
 

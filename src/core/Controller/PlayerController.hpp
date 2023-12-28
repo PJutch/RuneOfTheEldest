@@ -48,7 +48,7 @@ namespace core {
 
 		/// Adds sound to PlayerMap. Interrupts rest
 		void handleSound(Sound sound) {
-			renderContext.playerMap->handleSound(sound);
+			renderContext.playerMap->addSound(sound);
 			if (isResting())
 				state = State::WAITING_TURN;
 		}

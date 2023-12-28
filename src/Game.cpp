@@ -120,6 +120,9 @@ void Game::loadFromString(std::string_view s) {
     visitor.key("KnownActor").callback([&](std::string_view data) {
         renderContext.playerMap->parseSeenActor(data);
     });
+    visitor.key("Sound").callback([&](std::string_view data) {
+        renderContext.playerMap->addSound(core::Sound::parse(data));
+    });
 
     util::forEachSection(s, visitor);
     visitor.validate();
@@ -211,6 +214,11 @@ void Game::save() const {
     saveLogger->info("Saving known actors...");
     for (const auto& actor : renderContext.playerMap->seenActors()) {
         file << "[KnownActor]\n" << renderContext.playerMap->stringifySeenActor(actor);
+    }
+
+    saveLogger->info("Saving sounds...");
+    for (const auto& sound : renderContext.playerMap->recentSounds()) {
+        file << "[Sound]\n" << sound.stringify();
     }
 
     saveLogger->info("Saving finished");
