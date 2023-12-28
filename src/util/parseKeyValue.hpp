@@ -183,7 +183,7 @@ namespace util {
 			return actions[key_];
 		}
 
-		class UnknownKey : RuntimeError {
+		class UnknownKey : public RuntimeError {
 		public:
 			UnknownKey(std::string_view key_, Stacktrace stacktrace = {}) :
 				RuntimeError(std::format("Key \"{}\" is unknown", key_), std::move(stacktrace)) {}

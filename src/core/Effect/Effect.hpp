@@ -136,10 +136,10 @@ namespace core {
 			return true;
 		}
 
-		class UnexpectedData : util::RuntimeError {
+		class UnexpectedData : public util::RuntimeError {
 		public:
 			UnexpectedData(util::Stacktrace stacktrace = {}) : 
-				util::RuntimeError{"Effect doesn't stores data but recieved some"} {}
+				util::RuntimeError{"Effect doesn't stores data but recieved some", std::move(stacktrace)} {}
 		};
 
 		/// Parses data from save file
