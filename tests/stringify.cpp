@@ -31,12 +31,12 @@ TEST(stringify, stringifyCharMap) {
 	data[{0, 1, 1}] = 'g';
 	data[{1, 1, 1}] = 'h';
 
-	EXPECT_EQ(util::strigifyCharMap(data), "ab\ncd\n--\nef\ngh\n");
+	EXPECT_EQ(util::stringifyCharMap(data), "ab\ncd\n--\nef\ngh\n");
 }
 
 TEST(stringify, stringifyCharMapComplexShape) {
 	util::Array3D<char> data;
 	data.assign({3, 4, 2}, 'x');
 
-	EXPECT_EQ(util::strigifyCharMap(data), "xxx\nxxx\nxxx\nxxx\n---\nxxx\nxxx\nxxx\nxxx\n");
+	EXPECT_EQ(util::stringifyCharMap(data), "xxx\nxxx\nxxx\nxxx\n---\nxxx\nxxx\nxxx\nxxx\n");
 }

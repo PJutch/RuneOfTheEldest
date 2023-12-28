@@ -130,7 +130,7 @@ namespace render {
 	}
 
 	[[nodiscard]] std::string PlayerMap::stringify() const {
-		return util::strigifyCharMap(tileStates.transform([](PlayerMap::TileState tileState) {
+		return util::stringifyCharMap(tileStates.transform([](PlayerMap::TileState tileState) {
 			switch (tileState) {
 			case PlayerMap::TileState::VISIBLE: 
 			case PlayerMap::TileState::MEMORIZED:

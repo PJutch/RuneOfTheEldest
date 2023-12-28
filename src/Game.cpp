@@ -191,7 +191,7 @@ void Game::save() const {
     std::ofstream file{"latest.sav"};
 
     saveLogger->info("Saving tiles...");
-    file << "[Tiles]\n" << util::strigifyCharMap(world->tiles().transform(&core::charFromTile));
+    file << "[Tiles]\n" << util::stringifyCharMap(world->tiles().transform(&core::charFromTile));
 
     saveLogger->info("Saving stairs...");
     for (auto [upStairs, downStairs] : world->upStairs()) {

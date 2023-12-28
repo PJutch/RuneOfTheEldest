@@ -24,7 +24,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <concepts>
 
 namespace util {
-    inline std::string strigifyCharMap(Array3D<char> chars) {
+    inline std::string stringifyCharMap(Array3D<char> chars) {
         std::string res;
         res.reserve((chars.shape().x + 1) * (chars.shape().y + 1) * chars.shape().z);
 
