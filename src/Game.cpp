@@ -114,7 +114,8 @@ void Game::loadFromString(std::string_view s) {
         auto actor = actorSpawner->parseActor(data);
         world->addActor(std::move(actor));
     });
-    visitor.key("KnownTiles").callback([&](std::string_view data) {
+    visitor.key("KnownTiles").unique().required().callback([&](std::string_view data) {
+        saveLogger->info("Loading known tiles...");
         renderContext.playerMap->parseTileStates(data);
     });
     visitor.key("KnownActor").callback([&](std::string_view data) {
@@ -122,6 +123,10 @@ void Game::loadFromString(std::string_view s) {
     });
     visitor.key("Sound").callback([&](std::string_view data) {
         renderContext.playerMap->addSound(core::Sound::parse(data));
+    });
+    visitor.key("Xp").unique().required().callback([&](std::string_view data) {
+        saveLogger->info("Loading player leveling data...");
+        xpManager->parse(data);
     });
 
     util::forEachSection(s, visitor);
@@ -220,6 +225,9 @@ void Game::save() const {
     for (const auto& sound : renderContext.playerMap->recentSounds()) {
         file << "[Sound]\n" << sound.stringify();
     }
+
+    saveLogger->info("Saving player leveling data...");
+    file << "[Xp]\n" << xpManager->stringify();
 
     saveLogger->info("Saving finished");
 }

@@ -11,11 +11,13 @@ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
-If not, see <https://www.gnu.org/licenses/>. */
+If not, see <https://www.gnu.org/licenses/>. */ 
 
 #include "XpManager.hpp"
 
 #include "Actor.hpp"
+
+#include "util/parseKeyValue.hpp"
 
 namespace core {
 	XpManager::XpManager(std::shared_ptr<World> world_, 
@@ -40,6 +42,7 @@ namespace core {
 					logger->info("Selected skill #{} \"{}\"", iskill, skill->name());
 					choice.type = LevelUpChoice::Type::SKILL;
 					choice.name = skill->name();
+					choice.id = skill->id();
 					choice.icon = &skill->icon();
 					choice.result = [skill, world = world] {
 						world->player().addEffect(skill->clone());
@@ -55,6 +58,7 @@ namespace core {
 						logger->info("Selected spell #{} \"{}\"", ispell, spell.name());
 						choice.type = LevelUpChoice::Type::SPELL;
 						choice.name = spell.name();
+						choice.id = spell.id();
 						choice.icon = &spell.icon();
 						choice.result = [&spell, world = world] {
 							world->player().addSpell(spell.clone());
@@ -79,5 +83,57 @@ namespace core {
 
 	void XpManager::addXp(double dxp) {
 		xp += dxp * world->player().xpMul();
+	}
+
+	void XpManager::parse(std::string_view data) {
+		util::KeyValueVisitor visitor;
+		visitor.key("xp").unique().required().callback([&](std::string_view data) {
+			xp = util::parseReal(data);
+		});
+		visitor.key("levelCost").unique().required().callback([&](std::string_view data) {
+			xpUntilNextLvl = util::parseReal(data);
+		});
+		visitor.key("choice.skill").callback([&](std::string_view data) {
+			const Effect* skill = effects->findEffect(data);
+
+			LevelUpChoice choice;
+			choice.type = LevelUpChoice::Type::SKILL;
+			choice.name = skill->name();
+			choice.id = skill->id();
+			choice.icon = &skill->icon();
+			choice.result = [skill, world = world] {
+				world->player().addEffect(skill->clone());
+			};
+
+			levelupChoices_.push_back(std::move(choice));
+		});
+		visitor.key("choice.spell").callback([&](std::string_view data) {
+			const Spell& spell = *spells->findSpell(data);
+
+			LevelUpChoice choice;
+			choice.type = LevelUpChoice::Type::SPELL;
+			choice.name = spell.name();
+			choice.id = spell.id();
+			choice.icon = &spell.icon();
+			choice.result = [&spell, world = world] {
+				world->player().addSpell(spell.clone());
+			};
+			
+			levelupChoices_.push_back(std::move(choice));
+		});
+
+		util::forEackKeyValuePair(data, visitor);
+		visitor.validate();
+	}
+
+	[[nodiscard]] std::string XpManager::stringify() const {
+		std::string result = std::format("xp {}\nlevelCost {}\n", xp, xpUntilNextLvl);
+		for (const LevelUpChoice& levelUpChoices : levelupChoices_) 
+			if (levelUpChoices.type == LevelUpChoice::Type::SKILL) {
+				result += std::format("choice.skill {}\n", levelUpChoices.id);
+			} else {
+				result += std::format("choice.spell {}\n", levelUpChoices.id);
+			}
+		return result;
 	}
 }

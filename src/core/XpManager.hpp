@@ -44,6 +44,7 @@ namespace core {
 
 			Type type;
 			std::string_view name;
+			std::string_view id;
 			const sf::Texture* icon;
 			std::function<void()> result;
 		};
@@ -88,6 +89,9 @@ namespace core {
 			xp = 0;
 			xpUntilNextLvl = 1;
 		}
+
+		void parse(std::string_view data);
+		[[nodiscard]] std::string stringify() const;
 	private:
 		double xp = 0;
 		double xpUntilNextLvl = 1;
