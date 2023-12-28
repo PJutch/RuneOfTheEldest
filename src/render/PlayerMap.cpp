@@ -15,16 +15,20 @@ If not, see < https://www.gnu.org/licenses/>. */
 
 #include "PlayerMap.hpp"
 
+#include "AssetManager.hpp"
+
 #include "core/World.hpp"
 
 #include "util/raycast.hpp"
 #include "util/Direction.hpp"
 #include "util/parse.hpp"
+#include "util/parseKeyValue.hpp"
 #include "util/stringify.hpp"
 
 namespace render {
-	PlayerMap::PlayerMap(std::shared_ptr<core::World> world_, std::shared_ptr<util::Raycaster> raycaster_) :
-		world{ std::move(world_) }, raycaster{std::move(raycaster_)} {}
+	PlayerMap::PlayerMap(std::shared_ptr<core::World> world_, std::shared_ptr<AssetManager> assets_, 
+						 std::shared_ptr<util::Raycaster> raycaster_) :
+		world{ std::move(world_) }, assets{std::move(assets_)}, raycaster{std::move(raycaster_)} {}
 
 	const bool seeEverything = false;
 
@@ -116,7 +120,7 @@ namespace render {
 		};
 	}
 
-	void PlayerMap::parse(std::string_view data) {
+	void PlayerMap::parseTileStates(std::string_view data) {
 		tileStates = util::parseCharMap(data).transform([](char c) {
 			switch (c) {
 			case '.':
@@ -129,7 +133,7 @@ namespace render {
 		});
 	}
 
-	[[nodiscard]] std::string PlayerMap::stringify() const {
+	[[nodiscard]] std::string PlayerMap::stringifyTileStates() const {
 		return util::stringifyCharMap(tileStates.transform([](PlayerMap::TileState tileState) {
 			switch (tileState) {
 			case PlayerMap::TileState::VISIBLE: 
@@ -141,5 +145,49 @@ namespace render {
 				TROTE_ASSERT(false, "unreachable");
 			}
 		}));
+	}
+
+	void PlayerMap::parseSeenActor(std::string_view data) {
+		SeenActor result;
+
+		util::KeyValueVisitor visitor;
+		visitor.key("position").unique().required().callback([&](std::string_view data) {
+			result.position = util::parseVector3i(data);
+		});
+
+		visitor.key("hp").unique().required().callback([&](std::string_view data) {
+			result.hp = util::parseReal(data);
+		});
+
+		visitor.key("maxHp").unique().required().callback([&](std::string_view data) {
+			result.maxHp = util::parseReal(data);
+		});
+
+		visitor.key("mana").unique().required().callback([&](std::string_view data) {
+			result.mana = util::parseReal(data);
+		});
+
+		visitor.key("maxMana").unique().required().callback([&](std::string_view data) {
+			result.maxMana = util::parseReal(data);
+		});
+
+		visitor.key("aiState").unique().required().callback([&](std::string_view data) {
+			result.aiState = parseAiState(data);
+		});
+
+		visitor.key("texture").unique().required().callback([&](std::string_view data) {
+			result.texture = &assets->texture(data);
+		});
+
+		util::forEackKeyValuePair(data, visitor);
+		visitor.validate();
+
+		seenActors_.push_back(result);
+	}
+
+	[[nodiscard]] std::string PlayerMap::stringifySeenActor(SeenActor actor) const {
+		return std::format("position {}\nhp {}\nmaxHp {}\nmana {}\nmaxMana {}\naiState {}\ntexture {}\n",
+			               util::stringifyVector3(actor.position), actor.hp, actor.maxHp, actor.mana, actor.maxMana,
+			               stringifyAiState(actor.aiState), assets->texturePath(*actor.texture).generic_string());
 	}
 }

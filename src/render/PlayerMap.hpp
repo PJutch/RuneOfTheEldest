@@ -31,7 +31,8 @@ If not, see < https://www.gnu.org/licenses/>. */
 namespace render {
 	class PlayerMap {
 	public:
-		PlayerMap(std::shared_ptr<core::World> world, std::shared_ptr<util::Raycaster> raycaster);
+		PlayerMap(std::shared_ptr<core::World> world, std::shared_ptr<AssetManager> assets, 
+				  std::shared_ptr<util::Raycaster> raycaster);
 
 		enum class TileState {
 			UNSEEN,
@@ -87,8 +88,11 @@ namespace render {
 			return recentSounds_;
 		}
 
-		void parse(std::string_view data);
-		[[nodiscard]] std::string stringify() const;
+		void parseTileStates(std::string_view data);
+		[[nodiscard]] std::string stringifyTileStates() const;
+
+		void parseSeenActor(std::string_view data);
+		[[nodiscard]] std::string stringifySeenActor(SeenActor seenActor) const;
 	private:
 		util::Array3D<TileState> tileStates;
 		std::vector<SeenActor> seenActors_;
@@ -96,6 +100,7 @@ namespace render {
 		std::vector<core::Sound> recentSounds_;
 
 		std::shared_ptr<core::World> world;
+		std::shared_ptr<AssetManager> assets;
 		std::shared_ptr<util::Raycaster> raycaster;
 
 		void updateActors();

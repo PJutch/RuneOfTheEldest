@@ -110,18 +110,20 @@ void Game::loadFromString(std::string_view s) {
         auto [stairs1, stairs2] = util::parse2Vector3i(data);
         world->addStairs(stairs1, stairs2);
     });
-    visitor.key("KnownTiles").callback([&](std::string_view data) {
-        renderContext.playerMap->parse(data);
-    });
     visitor.key("Actor").callback([&](std::string_view data) {
         auto actor = actorSpawner->parseActor(data);
         world->addActor(std::move(actor));
+    });
+    visitor.key("KnownTiles").callback([&](std::string_view data) {
+        renderContext.playerMap->parseTileStates(data);
+    });
+    visitor.key("KnownActor").callback([&](std::string_view data) {
+        renderContext.playerMap->parseSeenActor(data);
     });
 
     util::forEachSection(s, visitor);
     visitor.validate();
 
-    // renderContext.playerMap->onGenerate();
     actorSpawner->onSaveLoaded();
     saveLogger->info("Loading finished");
 }
@@ -198,12 +200,17 @@ void Game::save() const {
         file << "[Stairs]\n" << util::stringifyVector3(upStairs) << ' ' << util::stringifyVector3(downStairs) << '\n';
     }
 
-    saveLogger->info("Saving known tiles...");
-    file << "[KnownTiles]\n" << renderContext.playerMap->stringify();
-
     saveLogger->info("Saving actors...");
     for (const auto& actor : world->actors()) {
         file << "[Actor]\n" << actorSpawner->stringifyActor(*actor);
+    }
+
+    saveLogger->info("Saving known tiles...");
+    file << "[KnownTiles]\n" << renderContext.playerMap->stringifyTileStates();
+
+    saveLogger->info("Saving known actors...");
+    for (const auto& actor : renderContext.playerMap->seenActors()) {
+        file << "[KnownActor]\n" << renderContext.playerMap->stringifySeenActor(actor);
     }
 
     saveLogger->info("Saving finished");

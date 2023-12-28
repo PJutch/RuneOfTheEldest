@@ -16,6 +16,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef AI_STATE_HPP_
 #define AI_STATE_HPP_
 
+#include "util/assert.hpp"
+
 /// State of Enemy AI
 enum class AiState {
 	NONE,       ///< Has no AI (may be Player controlled)
@@ -27,5 +29,44 @@ enum class AiState {
 };
 
 const int totalAiStates = static_cast<int>(AiState::TOTAL_);
+
+class UnknownAiState : public util::RuntimeError {
+public:
+    UnknownAiState(std::string_view s, util::Stacktrace stacktrace = {}) :
+        util::RuntimeError{std::format("Unknow ai state \"{}\"", s), std::move(stacktrace)} {}
+};
+
+inline AiState parseAiState(std::string_view data) {
+    if (data == "none") { 
+        return AiState::NONE; 
+    } else if (data == "inactive") {
+        return AiState::INACTIVE;
+    } else if (data == "checking") {
+        return AiState::CHECKING;
+    } else if (data == "wandering") {
+        return AiState::WANDERING;
+    } else if (data == "attacking") {
+        return AiState::ATTACKING;
+    } else {
+        throw UnknownAiState{data};
+    }
+}
+
+inline std::string stringifyAiState(AiState aiState) {
+    switch (aiState) {
+    case AiState::NONE:
+        return "none";
+    case AiState::INACTIVE:
+        return "inactive";
+    case AiState::CHECKING:
+        return "checking";
+    case AiState::WANDERING:
+        return "wandering";
+    case AiState::ATTACKING:
+        return "attacking";
+    default:
+        TROTE_ASSERT(false, "unreachable");
+    }
+}
 
 #endif
