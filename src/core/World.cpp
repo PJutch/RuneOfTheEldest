@@ -63,6 +63,8 @@ namespace core {
 	}
 
 	void World::generateStairs() {
+		upStairs_.clear();
+		downStairs_.clear();
 		const int max_tries = 1000;
 		for (int z = 1; z < tiles().shape().z; ++z)
 			for (int i = 0; i < 3; ++i)

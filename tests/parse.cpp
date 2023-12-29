@@ -130,7 +130,7 @@ TEST(parse, parseKeyValuePair) {
 	EXPECT_EQ(util::parseKeyValuePair("ab  cde"), (std::pair{ "ab"sv, "cde"sv }));
 	EXPECT_EQ(util::parseKeyValuePair("ab cde fg"), (std::pair{ "ab"sv, "cde fg"sv }));
 	EXPECT_THROW(util::parseKeyValuePair(""), util::EmptyStringError);
-	EXPECT_THROW(util::parseKeyValuePair("ab "), util::NoValueError);
+	EXPECT_EQ(util::parseKeyValuePair("ab "), (std::pair{"ab"sv, ""sv}));
 }
 
 TEST(parse, parseMapping) {
@@ -217,11 +217,16 @@ TEST(parse, forEachSection) {
 
 TEST(parse, parseSpaceSepList) {
 	using namespace std::literals;
-	EXPECT_EQ(util::parseList("ab cde"), (std::vector{"ab"sv, " cde"sv}));
-	EXPECT_EQ(util::parseList("ab  ñde"), (std::vector{"ab"sv, "cde"sv}));
-	EXPECT_EQ(util::parseList("ab  "), (std::vector{"ab"sv}));
-	EXPECT_EQ(util::parseList("abc"), (std::vector{"abc"sv}));
-	EXPECT_EQ(util::parseList(""), (std::vector<std::string_view>{}));
-	EXPECT_EQ(util::parseList("   "), (std::vector<std::string_view>{}));
-	EXPECT_EQ(util::parseList("a b c d"), (std::vector{"a"sv, " b"sv, " c"sv, " d"sv}));
+	EXPECT_EQ(util::parseSpaceSepList("ab cde"), (std::vector{"ab"sv, "cde"sv}));
+	EXPECT_EQ(util::parseSpaceSepList("ab  cde"), (std::vector{"ab"sv, "cde"sv}));
+	EXPECT_EQ(util::parseSpaceSepList("ab  "), (std::vector{"ab"sv}));
+	EXPECT_EQ(util::parseSpaceSepList("abc"), (std::vector{"abc"sv}));
+	EXPECT_EQ(util::parseSpaceSepList(""), (std::vector<std::string_view>{}));
+	EXPECT_EQ(util::parseSpaceSepList("   "), (std::vector<std::string_view>{}));
+	EXPECT_EQ(util::parseSpaceSepList("a b c d"), (std::vector{"a"sv, "b"sv, "c"sv, "d"sv}));
+}
+
+TEST(parse, parse2Vector3i) {
+	using namespace std::literals;
+	EXPECT_EQ(util::parse2Vector3i("0 1 2 -1 -2 -3"), (std::array<sf::Vector3i, 2>{sf::Vector3i{0, 1, 2}, sf::Vector3i{-1, -2, -3}}));
 }

@@ -121,7 +121,7 @@ namespace render {
 	}
 
 	void PlayerMap::parseTileStates(std::string_view data) {
-		tileStates = util::parseCharMap(data).transform([](char c) {
+		auto newTileStates = util::parseCharMap(data).transform([](char c) {
 			switch (c) {
 			case '.':
 				return PlayerMap::TileState::MEMORIZED;
@@ -131,6 +131,12 @@ namespace render {
 				throw UnknownTileState{c};
 			}
 		});
+
+		if (seeEverything) {
+			tileStates.assign(newTileStates.shape(), render::PlayerMap::TileState::VISIBLE);
+		} else {
+			tileStates = newTileStates;
+		}
 	}
 
 	[[nodiscard]] std::string PlayerMap::stringifyTileStates() const {
