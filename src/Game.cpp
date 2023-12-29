@@ -87,10 +87,10 @@ void Game::run() {
 
         if (world->player().isAlive() && !xpManager->canLevelUp()) {
             world->update();
-
-            sf::Time elapsedTime = clock.restart();
-            onUpdate(elapsedTime);
         }
+
+        sf::Time elapsedTime = clock.restart();
+        onUpdate(elapsedTime);
 
         draw_();
     }
