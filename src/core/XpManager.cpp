@@ -36,33 +36,17 @@ namespace core {
 		for (auto& choice : levelupChoices_) {
 			while (true) {
 				if (std::bernoulli_distribution{0.5}(*randomEngine)) {
-					auto iskill = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(skills) - 1}(*randomEngine);
-					const Effect* skill = skills[iskill];
-
-					logger->info("Selected skill #{} \"{}\"", iskill, skill->name());
-					choice.type = LevelUpChoice::Type::SKILL;
-					choice.name = skill->name();
-					choice.id = skill->id();
-					choice.icon = &skill->icon();
-					choice.result = [skill, world = world] {
-						world->player().addEffect(skill->clone());
-					};
+					int iskill = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(skills) - 1}(*randomEngine);
+					logger->info("Selected skill #{} \"{}\"", iskill, skills[iskill]->name());
+					choice = skills[iskill];
 					break;
 				} else {
 					auto ispell = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(*spells) - 1}(*randomEngine);
-					const Spell& spell = (*spells)[ispell];
-
-					if (std::ranges::none_of(world->player().spells(), [&spell](const auto& other) {
-						return other->name() == spell.name();
+					if (std::ranges::none_of(world->player().spells(), [&](const auto& other) {
+						return other->name() == (*spells)[ispell].name();
 					})) {
-						logger->info("Selected spell #{} \"{}\"", ispell, spell.name());
-						choice.type = LevelUpChoice::Type::SPELL;
-						choice.name = spell.name();
-						choice.id = spell.id();
-						choice.icon = &spell.icon();
-						choice.result = [&spell, world = world] {
-							world->player().addSpell(spell.clone());
-						};
+						logger->info("Selected spell #{} \"{}\"", ispell, (*spells)[ispell].name());
+						choice = &(*spells)[ispell];
 						break;
 					}
 				}
@@ -72,9 +56,18 @@ namespace core {
 
 	void XpManager::levelUp(const LevelUpChoice& choice) {
 		logger->info("Finished level up");
-		logger->info("Player selected {} \"{}\"", LevelUpChoice::typeName(choice.type), choice.name);
+		std::visit([&]<typename Choice>(Choice choice) {
+			if constexpr (std::same_as<Choice, const Effect*>) {
+				logger->info("Player selected skill \"{}\"", choice->name());
+				world->player().addEffect(choice->clone());
+			} else if constexpr (std::same_as<Choice, const Spell*>) {
+				logger->info("Player selected spell \"{}\"", choice->name());
+				world->player().addSpell(choice->clone());
+			} else {
+				TROTE_ASSERT(false, "unreachable");
+			}
+		}, choice);
 
-		choice.result();
 		levelupChoices_.clear();
 
 		xp -= xpUntilNextLvl;
@@ -94,32 +87,10 @@ namespace core {
 			xpUntilNextLvl = util::parseReal(data);
 		});
 		visitor.key("choice.skill").callback([&](std::string_view data) {
-			const Effect* skill = effects->findEffect(data);
-
-			LevelUpChoice choice;
-			choice.type = LevelUpChoice::Type::SKILL;
-			choice.name = skill->name();
-			choice.id = skill->id();
-			choice.icon = &skill->icon();
-			choice.result = [skill, world = world] {
-				world->player().addEffect(skill->clone());
-			};
-
-			levelupChoices_.push_back(std::move(choice));
+			levelupChoices_.push_back(effects->findEffect(data));
 		});
 		visitor.key("choice.spell").callback([&](std::string_view data) {
-			const Spell& spell = *spells->findSpell(data);
-
-			LevelUpChoice choice;
-			choice.type = LevelUpChoice::Type::SPELL;
-			choice.name = spell.name();
-			choice.id = spell.id();
-			choice.icon = &spell.icon();
-			choice.result = [&spell, world = world] {
-				world->player().addSpell(spell.clone());
-			};
-			
-			levelupChoices_.push_back(std::move(choice));
+			levelupChoices_.push_back(spells->findSpell(data).get());
 		});
 
 		util::forEackKeyValuePair(data, visitor);
@@ -128,12 +99,16 @@ namespace core {
 
 	[[nodiscard]] std::string XpManager::stringify() const {
 		std::string result = std::format("xp {}\nlevelCost {}\n", xp, xpUntilNextLvl);
-		for (const LevelUpChoice& levelUpChoices : levelupChoices_) 
-			if (levelUpChoices.type == LevelUpChoice::Type::SKILL) {
-				result += std::format("choice.skill {}\n", levelUpChoices.id);
-			} else {
-				result += std::format("choice.spell {}\n", levelUpChoices.id);
-			}
+		for (const LevelUpChoice& choice : levelupChoices_) 
+			std::visit([&]<typename Choice>(Choice choice) {
+				if constexpr (std::same_as<Choice, const Effect*>) {
+					result += std::format("choice.skill {}\n", choice->id());
+				} else if constexpr (std::same_as<Choice, const Spell*>) {
+					result += std::format("choice.spell {}\n", choice->id());
+				} else {
+					TROTE_ASSERT(false, "unreachable");
+				}
+			}, choice);
 		return result;
 	}
 }

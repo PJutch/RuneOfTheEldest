@@ -40,12 +40,23 @@ namespace render {
             drawRect(target, {skillXCenter - skillSize.x / 2, 300, skillSize.x, skillSize.y},
                 sf::Color{32, 32, 32}, sf::Color{128, 128, 128}, 4.f);
 
-            sf::Vector2f iconCenter = util::geometry_cast<float>(choice.icon->getSize()) / 2.f;
-            drawSprite(target, {skillXCenter, 0.375f * screenSize.y}, iconCenter, *choice.icon, 1.0, 8.0);
+            std::visit([&]<typename Choice>(Choice choice) {
+                sf::Vector2f iconCenter = util::geometry_cast<float>(choice->icon().getSize()) / 2.f;
+                drawSprite(target, {skillXCenter, 0.375f * screenSize.y}, iconCenter, choice->icon(), 1.0, 8.0);
 
-            std::string typeTitle = std::format("New {}", core::XpManager::LevelUpChoice::typeName(choice.type));
-            drawText(target, {skillXCenter, 0.5f * screenSize.y}, typeTitle, assets.font(), sf::Color{128, 128, 128}, 15);
-            drawText(target, {skillXCenter, 0.52f * screenSize.y}, choice.name, assets.font(), sf::Color::White, 30);
+                std::string typeTitle;
+                if constexpr (std::same_as<Choice, const core::Effect*>) {
+                    typeTitle = std::format("New skill");
+                } else if constexpr (std::same_as<Choice, const core::Spell*>) {
+                    typeTitle = std::format("New spell");
+                } else {
+                    TROTE_ASSERT(false, "unreachable");
+                }
+                drawText(target, {skillXCenter, 0.5f * screenSize.y}, typeTitle, assets.font(), sf::Color{128, 128, 128}, 15);
+
+                drawText(target, {skillXCenter, 0.52f * screenSize.y}, choice->name(), assets.font(), sf::Color::White, 30);
+                
+            }, choice);
 
             skillXCenter += skillSize.x;
         }

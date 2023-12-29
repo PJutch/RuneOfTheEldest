@@ -28,26 +28,7 @@ namespace core {
 	/// Manages player xp and leveling up
 	class XpManager {
 	public:
-		struct LevelUpChoice {
-			enum class Type {
-				SKILL,
-				SPELL
-			};
-
-			static std::string_view typeName(Type type) {
-				switch (type) {
-				case Type::SKILL: return "skill";
-				case Type::SPELL: return "spell";
-				default: TROTE_ASSERT(false, "Unreachable");
-				}
-			}
-
-			Type type;
-			std::string_view name;
-			std::string_view id;
-			const sf::Texture* icon;
-			std::function<void()> result;
-		};
+		using LevelUpChoice = std::variant<const Effect*, const Spell*>;
 
 		XpManager() = default;
 		XpManager(std::shared_ptr<World> world_) : world{std::move(world_)} {}
