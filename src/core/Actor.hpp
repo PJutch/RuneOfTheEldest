@@ -22,6 +22,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "XpManager.hpp"
 #include "DamageType.hpp"
 #include "Spell/Spell.hpp"
+#include "Item.hpp"
 
 #include "render/ParticleManager.hpp"
 #include "render/coords.hpp"
@@ -279,6 +280,15 @@ namespace core {
 			return spells_;
 		}
 
+		void addItem(std::unique_ptr<Item> item) {
+			item->owner(weak_from_this());
+			items_.push_back(std::move(item));
+		}
+
+		const std::vector<std::unique_ptr<Item>>& items() const noexcept {
+			return items_;
+		}
+
 		double xpMul() const;
 
 		void updateHp();
@@ -311,6 +321,7 @@ namespace core {
 		std::unique_ptr<Controller> controller_;
 		std::vector<std::unique_ptr<Effect>> effects_;
 		std::vector<std::shared_ptr<Spell>> spells_;
+		std::vector<std::unique_ptr<Item>> items_;
 
 		double nextTurn_ = 0;
 		sf::Vector3i position_;

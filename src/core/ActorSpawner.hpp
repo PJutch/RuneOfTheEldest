@@ -19,6 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "World.hpp"
 #include "Spell/Manager.hpp"
 #include "Effect/Effect.hpp"
+#include "ItemManager.hpp"
 #include "Actor.hpp"
 
 #include "render/Context.hpp"
@@ -35,6 +36,7 @@ namespace core {
 	public:
 		ActorSpawner(std::shared_ptr<World> world, std::shared_ptr<XpManager> xpManager, 
 			         std::shared_ptr<EffectManager> effectManager, std::shared_ptr<SpellManager> spellManager,
+					 std::shared_ptr<ItemManager> itemManager_,
 			         render::Context renderContext, util::LoggerFactory& loggerFactory,
 			         util::RandomEngine& randomEngine,
 			         std::shared_ptr<util::Raycaster> raycaster);
@@ -50,6 +52,7 @@ namespace core {
 		std::shared_ptr<XpManager> xpManager;
 		std::shared_ptr<EffectManager> effectManager;
 		std::shared_ptr<SpellManager> spellManager;
+		std::shared_ptr<ItemManager> itemManager;
 		render::Context renderContext;
 		std::shared_ptr<util::Raycaster> raycaster;
 		util::RandomEngine* randomEngine;

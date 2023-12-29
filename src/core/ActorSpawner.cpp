@@ -64,6 +64,12 @@ namespace core {
                 LoadError{std::format("Spell \"{}\" not found", name), std::move(currentStacktrace)} {}
         };
 
+        class ItemNotFound : public LoadError {
+        public:
+            ItemNotFound(std::string_view name, util::Stacktrace currentStacktrace = {}) noexcept :
+                LoadError{std::format("Item \"{}\" not found", name), std::move(currentStacktrace)} {}
+        };
+
         Actor::Stats loadStats(std::unordered_map<std::string, std::string>& params, std::string_view id,
                                render::AssetManager& assets) {
             Actor::Stats result;
@@ -110,11 +116,13 @@ namespace core {
 
     ActorSpawner::ActorSpawner(std::shared_ptr<World> world_, std::shared_ptr<XpManager> xpManager_,
         std::shared_ptr<EffectManager> effectManager_, std::shared_ptr<SpellManager> spellManager_,
+        std::shared_ptr<ItemManager> itemManager_,
         render::Context renderContext_, util::LoggerFactory& loggerFactory,
         util::RandomEngine& randomEngine_,
         std::shared_ptr<util::Raycaster> raycaster_) :
             world{std::move(world_)}, xpManager{std::move(xpManager_)},
-            effectManager{std::move(effectManager_)}, spellManager{std::move(spellManager_)},
+            effectManager{std::move(effectManager_)}, spellManager{std::move(spellManager_)}, 
+            itemManager{std::move(itemManager_)},
             renderContext{std::move(renderContext_)},
             raycaster{std::move(raycaster_)},
             randomEngine{&randomEngine_}, logger{loggerFactory.create("actors")} {
@@ -291,6 +299,18 @@ namespace core {
             spellsToAdd.emplace_back(result, std::string{s});
         });
 
+        visitor.key("item").callback([&](std::string_view s) {
+            auto [id, data] = util::parseKeyValuePair(s);
+
+            if (auto item = itemManager->findItem(id)) {
+                auto newItem = item->clone();
+                newItem->parseData(data);
+                result->addItem(std::move(newItem));
+            } else {
+                throw ItemNotFound{id};
+            }
+        });
+
         util::forEackKeyValuePair(s, visitor);
         visitor.validate();
 
@@ -314,6 +334,10 @@ namespace core {
 
         for (const auto& spell : actor.spells()) {
             result.append(std::format("spell {}\n", spell->stringify()));
+        }
+
+        for (const auto& item : actor.items()) {
+            result.append(std::format("item {}\n", item->stringify()));
         }
 
         return result;
