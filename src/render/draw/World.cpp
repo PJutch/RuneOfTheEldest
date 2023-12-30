@@ -24,6 +24,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "core/World.hpp"
 #include "core/Sound.hpp"
+#include "core/Item.hpp"
+#include "core/Actor.hpp"
 
 #include <SFML/System/Vector2.hpp>
 #include <SFML/System/Vector3.hpp>
@@ -122,6 +124,30 @@ namespace render {
             drawSprite(target, topLeft + util::topRight(spriteSize), util::topRight(aiStateIconSize),
                 assets.aiStateIcon(actor.aiState), colorMod);
         }
+
+        void draw(sf::RenderTarget& target, const AssetManager& assets,
+                  const render::PlayerMap& playerMap, core::Position<float> cameraPos,
+                  sf::Vector3i position, const core::Item& item) {
+            if (position.z != cameraPos.z)
+                return;
+
+            double colorMod;
+            switch (playerMap.tileState(position)) {
+            case PlayerMap::TileState::VISIBLE: colorMod = 1.0; break;
+            case PlayerMap::TileState::MEMORIZED: colorMod = 0.5; break;
+            case PlayerMap::TileState::UNSEEN: colorMod = 0.0; break;
+            default: TROTE_ASSERT(false, "unreachable");
+            }
+
+            sf::Vector2f spriteSize = util::geometry_cast<float>(item.icon().getSize());
+            sf::Vector2f maxHpBarSize{spriteSize.x, 2.f};
+
+            sf::Vector2f topLeft = toScreen(util::getXY(position))
+                + util::bottomMiddle(util::geometry_cast<float>(render::tileSize))
+                - util::bottomMiddle(spriteSize);
+
+            drawSprite(target, topLeft, {0, 0}, item.icon(), colorMod);
+        }
     }
 
     void draw(sf::RenderTarget& target, const AssetManager& assets,
@@ -133,6 +159,9 @@ namespace render {
                 drawTile(target, assets, world, playerMap, {x, y, cameraPos.z});
 
         drawAreas(target, world, cameraPos);
+
+        for (const auto& [position, item] : world.items())
+            draw(target, assets, playerMap, cameraPos, position, *item);
 
         for (const auto& actor : playerMap.seenActors())
             draw(target, assets, playerMap, cameraPos, actor);

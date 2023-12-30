@@ -40,13 +40,14 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 Game::Game(std::shared_ptr<core::World> newWorld,
            std::unique_ptr<core::ActorSpawner> actorSpawner_,
+           std::shared_ptr<core::ItemManager> items_,
            std::shared_ptr<core::XpManager> xpManager_,
            std::unique_ptr<generation::DungeonGenerator> newDungeonGenerator,
            render::Context renderContext_,
            std::shared_ptr<util::Raycaster> raycaster,
            util::LoggerFactory& loggerFactory) :
         world{std::move(newWorld)},
-        actorSpawner{std::move(actorSpawner_)},
+        actorSpawner{std::move(actorSpawner_)}, items{std::move(items_)},
         xpManager{std::move(xpManager_)},
         dungeonGenerator_{std::move(newDungeonGenerator)},
         renderContext{std::move(renderContext_)},
@@ -177,6 +178,7 @@ void Game::generate() {
     world->generateStairs();
 
     actorSpawner->spawn();
+    items->spawn();
 
     generationLogger->info("Finished");
 

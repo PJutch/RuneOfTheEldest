@@ -27,6 +27,7 @@ namespace core {
 	class XpManager;
 	class EffectManager;
 	class Item;
+	class ItemManager;
 }
 
 #endif

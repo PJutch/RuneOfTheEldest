@@ -36,6 +36,7 @@ class Game {
 public:
     Game(std::shared_ptr<core::World> world,
          std::unique_ptr<core::ActorSpawner> enemySpawner,
+         std::shared_ptr<core::ItemManager> items,
          std::shared_ptr<core::XpManager> xpManager,
          std::unique_ptr<generation::DungeonGenerator> dungeonGenerator,
          render::Context renderContext,
@@ -63,6 +64,7 @@ public:
 private:
     std::shared_ptr<core::World> world;
     std::unique_ptr<core::ActorSpawner> actorSpawner;
+    std::shared_ptr<core::ItemManager> items;
     std::shared_ptr<core::XpManager> xpManager;
 
     std::unique_ptr<generation::DungeonGenerator> dungeonGenerator_;
