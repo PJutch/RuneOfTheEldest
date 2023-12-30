@@ -165,7 +165,9 @@ void Game::handleEvent(sf::Event event) {
 void Game::generate() {
     generationLogger->info("Started");
 
+    generationLogger->info("Resetting world...");
     world->clearActors();
+    world->clearItems();
     world->tiles().assign({ 50, 50, 10 }, core::Tile::WALL);
 
     generationLogger->info("Generating dungeon...");

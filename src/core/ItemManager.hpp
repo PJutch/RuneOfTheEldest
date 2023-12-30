@@ -30,8 +30,8 @@ namespace core {
 	public:
 		ItemManager() = default;
 		ItemManager(std::shared_ptr<render::AssetManager> assets,
-			        std::shared_ptr<SpellManager> spells, util::RandomEngine& randomEngine, 
-					util::LoggerFactory& loggerFactory);
+			        std::shared_ptr<SpellManager> spells, std::shared_ptr<core::World> world, 
+					util::RandomEngine& randomEngine, util::LoggerFactory& loggerFactory);
 
 		auto begin() {
 			return items.begin();
@@ -63,8 +63,15 @@ namespace core {
 			});
 			return iter == items.end() ? nullptr : iter->get();
 		}
+
+		void spawn();
 	private:
 		std::vector<std::unique_ptr<Item>> items;
+
+		std::shared_ptr<spdlog::logger> logger;
+
+		std::shared_ptr<World> world;
+		util::RandomEngine* randomEngine;
 	};
 }
 

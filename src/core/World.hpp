@@ -20,6 +20,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Sound.hpp"
 #include "fwd.hpp"
 #include "Position.hpp"
+#include "Item.hpp"
 
 #include "util/Array3D.hpp"
 #include "util/Map.hpp"
@@ -82,12 +83,30 @@ namespace core {
 			return actorAt(util::make3D(position.xy(), position.z));
 		}
 
+		/// Add Item to list
+		void addItem(sf::Vector3i position, std::unique_ptr<Item> item) {
+			items_.emplace(position, std::move(item));
+		}
+
+		/// Remove all items
+		void clearItems() {
+			actors_.clear();
+		}
+
+		[[nodiscard]] const util::UnorderedMap<sf::Vector3i, std::unique_ptr<Item>>& items() const {
+			return items_;
+		}
+
 		/// Updates actors until one of them decides to wait input
 		void update();
 
 		/// Tile isPassable and have no Actors on it
 		[[nodiscard]] bool isFree(sf::Vector3i position) const {
-			return isPassable(tiles()[position]) && !actorAt(position);
+			return isPassable(tiles()[position]) 
+				&& !actorAt(position) 
+				&& std::ranges::all_of(items_, [&](const auto& item) {
+					return item.first != position;
+				});
 		}
 
 		void makeSound(Sound sound);
@@ -207,6 +226,8 @@ namespace core {
 
 		std::vector<std::shared_ptr<Actor>> actors_;
 		std::shared_ptr<Actor> player_;
+
+		util::UnorderedMap<sf::Vector3i, std::unique_ptr<Item>> items_;
 
 		util::RandomEngine* randomEngine = nullptr;
 

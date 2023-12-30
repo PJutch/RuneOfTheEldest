@@ -17,19 +17,34 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Scroll.hpp"
 
+#include "World.hpp"
+
 #include "render/AssetManager.hpp"
 
 namespace core {
 	ItemManager::ItemManager(std::shared_ptr<render::AssetManager> assets,
-			std::shared_ptr<SpellManager> spells, util::RandomEngine& randomEngine,
-			util::LoggerFactory& loggerFactory) {
-		auto logger = loggerFactory.create("items");
+							 std::shared_ptr<SpellManager> spells, std::shared_ptr<core::World> world_,
+							 util::RandomEngine& randomEngine_, util::LoggerFactory& loggerFactory) : 
+			logger{loggerFactory.create("items")}, world {std::move(world_)}, randomEngine{&randomEngine_} {
 		logger->info("Loading...");
 
 		logger->info("Generating scrolls...");
 		for (const auto& spell : *spells)
-			items.push_back(std::make_unique<Scroll>(spell, assets->texture("resources/textures/scroll.png"), spells, randomEngine));
+			items.push_back(std::make_unique<Scroll>(spell, assets->texture("resources/textures/scroll.png"), spells, *randomEngine));
 
 		logger->info("Loaded");
+	}
+
+	void ItemManager::spawn() {
+		logger->info("Spawning...");
+		for (int z = 0; z < world->tiles().shape().z; ++z) {
+			for (int i = 0; i < std::uniform_int_distribution{1, 4}(*randomEngine); ++i) {
+				if (auto pos = world->randomPositionAt(z, 1000, &World::isFree)) {
+					auto iitem = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(items)}(*randomEngine);
+					world->addItem(*pos, items[iitem]->clone());
+				}
+			}
+		}
+		logger->info("Spawned");
 	}
 }
