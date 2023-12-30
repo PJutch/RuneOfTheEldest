@@ -140,7 +140,7 @@ void Game::loadFromString(std::string_view s) {
     visitor.key("Item").callback([&](std::string_view s) {
         std::string_view id;
         std::string_view data;
-        sf::Vector3i position;
+        core::Position<int> position;
 
         util::KeyValueVisitor visitor;
         visitor.key("id").unique().required().callback([&](std::string_view s) {
@@ -150,7 +150,7 @@ void Game::loadFromString(std::string_view s) {
             data = s;
         });
         visitor.key("position").unique().required().callback([&](std::string_view s) {
-            position = util::parseVector3i(s);
+            position = util::parsePositionInt(s);
         });
 
         util::forEackKeyValuePair(s, visitor);
@@ -254,7 +254,7 @@ void Game::save() const {
 
     saveLogger->info("Saving items...");
     for (const auto& [position, item] : world->items()) {
-        file << std::format("[Item]\nid {}\ndata {}\nposition {}\n", item->id(), item->stringifyData(), util::stringifyVector3(position));
+        file << std::format("[Item]\nid {}\ndata {}\nposition {}\n", item->id(), item->stringifyData(), util::stringifyPosition(position));
     }
 
     saveLogger->info("Saving known tiles...");

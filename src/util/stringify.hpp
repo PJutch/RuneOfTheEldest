@@ -18,6 +18,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Array3D.hpp"
 
+#include "core/Position.hpp"
+
 #include <algorithm>
 #include <string>
 #include <string_view>
@@ -49,6 +51,11 @@ namespace util {
     template <typename T>
     std::string stringifyVector3(sf::Vector3<T> vec) {
         return std::format("{} {} {}", vec.x, vec.y, vec.z);
+    }
+
+    template <typename T>
+    std::string stringifyPosition(core::Position<T> pos) {
+        return std::format("{} {} {}", pos.x, pos.y, pos.z);
     }
 }
 

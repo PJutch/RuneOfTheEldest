@@ -127,12 +127,12 @@ namespace render {
 
         void draw(sf::RenderTarget& target, const AssetManager& assets,
                   const render::PlayerMap& playerMap, core::Position<float> cameraPos,
-                  sf::Vector3i position, const core::Item& item) {
+                  core::Position<int> position, const core::Item& item) {
             if (position.z != cameraPos.z)
                 return;
 
             double colorMod;
-            switch (playerMap.tileState(position)) {
+            switch (playerMap.tileState(sf::Vector3i{position})) {
             case PlayerMap::TileState::VISIBLE: colorMod = 1.0; break;
             case PlayerMap::TileState::MEMORIZED: colorMod = 0.5; break;
             case PlayerMap::TileState::UNSEEN: colorMod = 0.0; break;
@@ -142,7 +142,7 @@ namespace render {
             sf::Vector2f spriteSize = util::geometry_cast<float>(item.icon().getSize());
             sf::Vector2f maxHpBarSize{spriteSize.x, 2.f};
 
-            sf::Vector2f topLeft = toScreen(util::getXY(position))
+            sf::Vector2f topLeft = toScreen(position.xy())
                 + util::bottomMiddle(util::geometry_cast<float>(render::tileSize))
                 - util::bottomMiddle(spriteSize);
 

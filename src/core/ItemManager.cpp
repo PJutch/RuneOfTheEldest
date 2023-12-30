@@ -41,7 +41,7 @@ namespace core {
 			for (int i = 0; i < std::uniform_int_distribution{1, 4}(*randomEngine); ++i) {
 				if (auto pos = world->randomPositionAt(z, 1000, &World::isFree)) {
 					auto iitem = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(items) - 1}(*randomEngine);
-					world->addItem(*pos, items[iitem]->clone());
+					world->addItem(core::Position<int>{*pos}, items[iitem]->clone());
 				}
 			}
 		}

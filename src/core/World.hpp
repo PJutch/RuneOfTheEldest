@@ -84,7 +84,7 @@ namespace core {
 		}
 
 		/// Add Item to list
-		void addItem(sf::Vector3i position, std::unique_ptr<Item> item) {
+		void addItem(core::Position<int> position, std::unique_ptr<Item> item) {
 			items_.emplace(position, std::move(item));
 		}
 
@@ -93,11 +93,11 @@ namespace core {
 			actors_.clear();
 		}
 
-		[[nodiscard]] const util::UnorderedMap<sf::Vector3i, std::unique_ptr<Item>>& items() const {
+		[[nodiscard]] const util::UnorderedMap<core::Position<int>, std::unique_ptr<Item>>& items() const {
 			return items_;
 		}
 
-		std::unique_ptr<Item> removeItem(sf::Vector3i position) {
+		std::unique_ptr<Item> removeItem(core::Position<int> position) {
 			if (auto iter = items_.find(position); iter != items_.end()) {
 				auto item = std::move(iter->second);
 				items_.erase(iter);
@@ -113,7 +113,7 @@ namespace core {
 		[[nodiscard]] bool isFree(sf::Vector3i position) const {
 			return isPassable(tiles()[position]) 
 				&& !actorAt(position) 
-				&& !items().contains(position);
+				&& !items().contains(core::Position<int>{position});
 		}
 
 		void makeSound(Sound sound);
@@ -234,7 +234,7 @@ namespace core {
 		std::vector<std::shared_ptr<Actor>> actors_;
 		std::shared_ptr<Actor> player_;
 
-		util::UnorderedMap<sf::Vector3i, std::unique_ptr<Item>> items_;
+		util::UnorderedMap<core::Position<int>, std::unique_ptr<Item>> items_;
 
 		util::RandomEngine* randomEngine = nullptr;
 

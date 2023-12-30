@@ -19,6 +19,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Exception.hpp"
 #include "Array3D.hpp"
 
+#include "core/Position.hpp"
+
 #include <format>
 #include <iostream>
 #include <algorithm>
@@ -375,6 +377,17 @@ namespace util {
 
 		return {sf::Vector3i{parseInt<T>(strip(values[0])), parseInt<T>(strip(values[1])), parseInt<T>(strip(values[2]))},
 				sf::Vector3i{parseInt<T>(strip(values[3])), parseInt<T>(strip(values[4])), parseInt<T>(strip(values[5]))}};
+	}
+
+	/// Parses vector of 3 ints
+	template <typename T = int>
+	core::Position<T> parsePositionInt(std::string_view s) {
+		auto values = parseSpaceSepList(s);
+		if (std::ssize(values) != 3) {
+			throw WrongListLength(3, std::ssize(values));
+		}
+
+		return {parseInt<T>(strip(values[0])), parseInt<T>(strip(values[1])), parseInt(strip(values[2]))};
 	}
 }
 

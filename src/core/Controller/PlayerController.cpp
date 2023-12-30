@@ -259,7 +259,7 @@ namespace core {
 
 	bool PlayerController::tryPickup() {
 		auto player_ = player.lock();
-		if (auto item = player_->world().removeItem(sf::Vector3i{player_->position()})) {
+		if (auto item = player_->world().removeItem(core::Position<int>{player_->position()})) {
 			player_->addItem(std::move(item));
 			return true;
 		}
