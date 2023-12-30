@@ -113,6 +113,8 @@ namespace core {
 				|| state == State::WAITING_HP
 				|| state == State::WAITING_MANA;
 		}
+
+		bool tryPickup();
 	};
 }
 

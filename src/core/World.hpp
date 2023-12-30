@@ -97,6 +97,15 @@ namespace core {
 			return items_;
 		}
 
+		std::unique_ptr<Item> removeItem(sf::Vector3i position) {
+			if (auto iter = items_.find(position); iter != items_.end()) {
+				auto item = std::move(iter->second);
+				items_.erase(iter);
+				return std::move(item);
+			}
+			return nullptr;
+		}
+
 		/// Updates actors until one of them decides to wait input
 		void update();
 
@@ -104,9 +113,7 @@ namespace core {
 		[[nodiscard]] bool isFree(sf::Vector3i position) const {
 			return isPassable(tiles()[position]) 
 				&& !actorAt(position) 
-				&& std::ranges::all_of(items_, [&](const auto& item) {
-					return item.first != position;
-				});
+				&& !items().contains(position);
 		}
 
 		void makeSound(Sound sound);

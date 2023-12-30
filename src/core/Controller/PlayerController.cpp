@@ -65,9 +65,13 @@ namespace core {
 				}
 				endTurn();
 			} else if (event.key.code == sf::Keyboard::Comma) {
-				if (event.key.shift)
+				if (event.key.shift) {
 					if (tryAscentStairs())
 						endTurn();
+				} else {
+					if (tryPickup())
+						endTurn();
+				}
 			} else if (event.key.code == sf::Keyboard::Period) {
 				if (event.key.shift) {
 					if (tryDescentStairs())
@@ -251,5 +255,14 @@ namespace core {
 			return !actor->controller().isOnPlayerSide() 
 				&& raycaster->canSee(player_->position(), actor->position());
 		});
+	}
+
+	bool PlayerController::tryPickup() {
+		auto player_ = player.lock();
+		if (auto item = player_->world().removeItem(sf::Vector3i{player_->position()})) {
+			player_->addItem(std::move(item));
+			return true;
+		}
+		return false;
 	}
 }
