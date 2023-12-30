@@ -35,8 +35,8 @@ namespace core {
 	/// Item that Actor can carry around and use
 	class Item {
 	public:
-		Item(const sf::Texture& newIcon, std::string_view newId) :
-			icon_{&newIcon}, id_{newId} {}
+		Item(const sf::Texture& newIcon, std::string_view newId, std::string_view newName) :
+			icon_{&newIcon}, id_{newId}, name_{newName} {}
 		virtual ~Item() = default;
 
 		/// Feedback for gui
@@ -72,7 +72,9 @@ namespace core {
 		}
 
 		/// Item name for ingame display
-		[[nodiscard]] virtual std::string name() const = 0;
+		[[nodiscard]] const std::string& name() const {
+			return name_;
+		}
 
 		[[nodiscard]] virtual std::unique_ptr<Item> clone() const = 0;
 
@@ -101,6 +103,7 @@ namespace core {
 	private:
 		const sf::Texture* icon_;
 		std::string id_;
+		std::string name_;
 	};
 }
 

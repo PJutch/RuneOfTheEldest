@@ -39,8 +39,9 @@ namespace core {
 	/// Scroll that Actor can use to cast spell to cast spell without using mana
 	class Scroll : public Item {
 	public:
-		Scroll(const sf::Texture& newIcon, std::shared_ptr<SpellManager> spells_, util::RandomEngine& randomEngine_) :
-			Item{newIcon, "scroll"}, spells{std::move(spells_)}, randomEngine{&randomEngine_} {}
+		Scroll(std::shared_ptr<Spell> spell_, const sf::Texture& icon_, std::shared_ptr<SpellManager> spells_, util::RandomEngine& randomEngine_) :
+			Item{icon_, "scroll." + spell_->id(), spell_->name() + " scroll"}, 
+			spell{std::move(spell_)}, spells{std::move(spells_)}, randomEngine{&randomEngine_} {}
 
 		UsageResult use([[maybe_unused]] std::shared_ptr<Actor> self, [[maybe_unused]] core::Position<int> target) final {
 			switch (spell->cast(self, target)) {
@@ -68,10 +69,6 @@ namespace core {
 			}
 		}
 
-		std::string name() const final {
-			return spell->name() + " scroll";
-		}
-
 		[[nodiscard]] std::unique_ptr<Item> clone() const final {
 			auto result = std::make_unique<Scroll>(*this);
 			result->spell = (*spells)[std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(*spells) - 1}(*randomEngine)].clone();
@@ -80,14 +77,6 @@ namespace core {
 
 		void owner(std::weak_ptr<Actor> actor) final {
 			spell->owner(std::move(actor));
-		}
-
-		void parseData(std::string_view data) final {
-			spell = spells->findSpell(data);
-		}
-
-		[[nodiscard]] std::string stringify() const final {
-			return std::format("{} {}", id(), spell->id());
 		}
 	private:
 		std::shared_ptr<Spell> spell;

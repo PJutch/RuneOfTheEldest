@@ -26,7 +26,9 @@ namespace core {
 		auto logger = loggerFactory.create("items");
 		logger->info("Loading...");
 
-		items.push_back(std::make_unique<Scroll>(assets->texture("resources/textures/scroll.png"), spells, randomEngine));
+		logger->info("Generating scrolls...");
+		for (const auto& spell : *spells)
+			items.push_back(std::make_unique<Scroll>(spell, assets->texture("resources/textures/scroll.png"), spells, randomEngine));
 
 		logger->info("Loaded");
 	}
