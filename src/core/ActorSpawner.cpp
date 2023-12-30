@@ -337,7 +337,7 @@ namespace core {
         }
 
         for (const auto& item : actor.items()) {
-            result.append(std::format("item {}\n", item->stringify()));
+            result.append(std::format("item {} {}\n", item->id(), item->stringifyData()));
         }
 
         return result;

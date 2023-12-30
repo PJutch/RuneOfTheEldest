@@ -97,8 +97,8 @@ namespace core {
 			}
 		}
 
-		virtual [[nodiscard]] std::string stringify() const {
-			return id();
+		virtual [[nodiscard]] std::string stringifyData() const {
+			return "";
 		}
 	private:
 		const sf::Texture* icon_;

@@ -99,6 +99,14 @@ void Game::run() {
     save();
 }
 
+namespace {
+    class ItemNotFound : public util::RuntimeError {
+    public:
+        ItemNotFound(std::string_view name, util::Stacktrace currentStacktrace = {}) noexcept :
+            util::RuntimeError{std::format("Item \"{}\" not found", name), std::move(currentStacktrace)} {}
+    };
+}
+
 void Game::loadFromString(std::string_view s) {
     saveLogger->info("Loading started...");
 
@@ -128,6 +136,33 @@ void Game::loadFromString(std::string_view s) {
     visitor.key("Xp").unique().required().callback([&](std::string_view data) {
         saveLogger->info("Loading player leveling data...");
         xpManager->parse(data);
+    });
+    visitor.key("Item").callback([&](std::string_view s) {
+        std::string_view id;
+        std::string_view data;
+        sf::Vector3i position;
+
+        util::KeyValueVisitor visitor;
+        visitor.key("id").unique().required().callback([&](std::string_view s) {
+            id = s;
+        });
+        visitor.key("data").unique().callback([&](std::string_view s) {
+            data = s;
+        });
+        visitor.key("position").unique().required().callback([&](std::string_view s) {
+            position = util::parseVector3i(s);
+        });
+
+        util::forEackKeyValuePair(s, visitor);
+        visitor.validate();
+
+        if (auto item = items->findItem(id)) {
+            auto newItem = item->clone();
+            newItem->parseData(data);
+            world->addItem(position, std::move(newItem));
+        } else {
+            throw ItemNotFound{id};
+        }
     });
 
     util::forEachSection(s, visitor);
@@ -215,6 +250,11 @@ void Game::save() const {
     saveLogger->info("Saving actors...");
     for (const auto& actor : world->actors()) {
         file << "[Actor]\n" << actorSpawner->stringifyActor(*actor);
+    }
+
+    saveLogger->info("Saving items...");
+    for (const auto& [position, item] : world->items()) {
+        file << std::format("[Item]\nid {}\ndata {}\nposition {}\n", item->id(), item->stringifyData(), util::stringifyVector3(position));
     }
 
     saveLogger->info("Saving known tiles...");
