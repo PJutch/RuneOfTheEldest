@@ -35,12 +35,23 @@ namespace render {
             drawRect(target, rect, {255, 128, 0});
         }
 
-        void drawSkillTooltip(sf::RenderTarget& target, const AssetManager& assets,
-                              const std::unique_ptr<core::Effect>& skill) {
-            auto text = createText(skill->name(), assets.font(), sf::Color::White, 30);
+        enum class TooltipMode {
+            UP_LEFT,
+            UP_RIGHT
+        };
+
+        void drawTooltip(sf::RenderTarget& target, const AssetManager& assets,
+                         const auto& element, TooltipMode mode) {
+            auto text = createText(element.name(), assets.font(), sf::Color::White, 30);
 
             auto tooltipSize = text.getLocalBounds().getSize() + sf::Vector2f{10.f, 10.f};
-            auto tooltipPos = target.mapPixelToCoords(sf::Mouse::getPosition()) - tooltipSize;
+            auto tooltipPos = target.mapPixelToCoords(sf::Mouse::getPosition());
+
+            switch (mode) {
+            case TooltipMode::UP_LEFT: tooltipPos -= tooltipSize; break;
+            case TooltipMode::UP_RIGHT: tooltipPos.y -= tooltipSize.y; break;
+            default: TROTE_ASSERT(false, "unreachable");
+            }
 
             drawRect(target, {tooltipPos, tooltipSize}, sf::Color{32, 32, 32}, sf::Color{128, 128, 128}, 3.f);
 
@@ -92,23 +103,10 @@ namespace render {
                 sf::FloatRect skillRect{sf::Vector2f{x, y} - iconSize / 2.f, iconSize};
 
                 if (skillRect.contains(target.mapPixelToCoords(sf::Mouse::getPosition())))
-                    drawSkillTooltip(target, assets, skill);
+                    drawTooltip(target, assets, *skill, TooltipMode::UP_LEFT);
 
                 x -= iconSize.x + 2 * padding;
             }
-        }
-
-        void drawSpellTooltip(sf::RenderTarget& target, const AssetManager& assets,
-                              std::shared_ptr<core::Spell> skill) {
-            auto text = createText(skill->name(), assets.font(), sf::Color::White, 30);
-
-            auto tooltipSize = text.getLocalBounds().getSize() + sf::Vector2f{10.f, 10.f};
-            auto tooltipPos = target.mapPixelToCoords(sf::Mouse::getPosition()) - sf::Vector2f{0, tooltipSize.y};
-
-            drawRect(target, {tooltipPos, tooltipSize}, sf::Color{32, 32, 32}, sf::Color{128, 128, 128}, 3.f);
-
-            text.setPosition(tooltipPos + sf::Vector2f{5.f, -5.f});
-            target.draw(text);
         }
 
         void drawSpellIcons(sf::RenderTarget& target, const AssetManager& assets, const core::World& world) {
@@ -145,7 +143,7 @@ namespace render {
                 sf::FloatRect spellRect{sf::Vector2f{x, y} - iconSize / 2.f, iconSize};
 
                 if (spellRect.contains(target.mapPixelToCoords(sf::Mouse::getPosition())))
-                    drawSpellTooltip(target, assets, spell);
+                    drawTooltip(target, assets, *spell, TooltipMode::UP_RIGHT);
 
                 x += iconSize.x + 2 * padding;
             }
