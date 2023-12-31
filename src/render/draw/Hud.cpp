@@ -59,93 +59,54 @@ namespace render {
             target.draw(text);
         }
 
-        void drawSkillIcons(sf::RenderTarget& target, const AssetManager& assets, const core::World& world) {
-            const auto& skills = world.player().effects();
+        void drawIcon(sf::RenderTarget& target, sf::FloatRect rect, sf::Color boundaryColor, const sf::Texture& icon) {
+            drawRect(target, rect, sf::Color{32, 32, 32}, boundaryColor, 2.f);
 
-            target.setView(createFullscreenView(1000.f, target.getSize()));
-
-            sf::Vector2f screenSize = target.getView().getSize();
-            const sf::Vector2f iconSize{32.f, 32.f};
-            float padding = 4.f;
-
-            const float skillY = 950.f;
-            const float effectY = 50.f;
-
-            float rightmostXCenter = screenSize.x - padding - iconSize.x / 2;
-            float skillXCenter = rightmostXCenter;
-            float effectXCenter = rightmostXCenter;
-
-            for (const auto& skill : skills) {
-                if (!skill->isVisible())
-                    continue;
-
-                float& x = skill->isSkill() ? skillXCenter : effectXCenter;
-                float y = skill->isSkill() ? skillY : effectY;
-
-                sf::FloatRect skillRect{sf::Vector2f{x, y} - iconSize / 2.f, iconSize};
-
-                drawRect(target, skillRect, sf::Color{32, 32, 32}, sf::Color{128, 128, 128}, 2.f);
-
-                const sf::Texture& icon = skill->icon();
-                sf::Vector2f iconCenter = util::geometry_cast<float>(icon.getSize()) / 2.f;
-                drawSprite(target, {x, y}, iconCenter, icon, 1.0, 2.f);
-
-                x -= iconSize.x + 2 * padding;
-            }
-
-            skillXCenter = rightmostXCenter;
-            effectXCenter = rightmostXCenter;
-
-            for (const auto& skill : skills) {
-                float& x = skill->isSkill() ? skillXCenter : effectXCenter;
-                float y = skill->isSkill() ? skillY : effectY;
-
-                sf::FloatRect skillRect{sf::Vector2f{x, y} - iconSize / 2.f, iconSize};
-
-                if (skillRect.contains(target.mapPixelToCoords(sf::Mouse::getPosition())))
-                    drawTooltip(target, assets, *skill, TooltipMode::UP_LEFT);
-
-                x -= iconSize.x + 2 * padding;
-            }
+            sf::Vector2f iconCenter = util::geometry_cast<float>(icon.getSize()) / 2.f;
+            sf::Vector2f center = rect.getPosition() + rect.getSize() / 2.f;
+            drawSprite(target, center, iconCenter, icon, 1.0, 2.f);
         }
 
-        void drawSpellIcons(sf::RenderTarget& target, const AssetManager& assets, const core::World& world) {
+        enum class IconMode {
+            TOP_RIGHT,
+            BOTTOM_LEFT,
+            BOTTOM_RIGHT,
+        };
+
+        template <typename Elements, typename GetBounaryColor> 
+            requires std::convertible_to<std::invoke_result_t<GetBounaryColor, std::ranges::range_value_t<Elements>, int>, sf::Color>
+        void drawIcons(sf::RenderTarget& target, const AssetManager& assets, 
+                       Elements&& elements, IconMode mode, GetBounaryColor&& getBoundaryColor) {
             target.setView(createFullscreenView(1000.f, target.getSize()));
 
+            const sf::Vector2f screenSize = target.getView().getSize();
             const sf::Vector2f iconSize{32.f, 32.f};
-            float padding = 4.f;
+            const float padding = 4.f;
 
-            float leftmostXCenter = padding + iconSize.x / 2;
-            float x = leftmostXCenter;
-            const float y = 950.f;
+            const float firstXCenter = (mode == IconMode::TOP_RIGHT || mode == IconMode::BOTTOM_RIGHT
+                                       ? screenSize.x - padding - iconSize.x / 2
+                                       :                padding + iconSize.x / 2);
 
-            for (int i = 0; i < std::ssize(world.player().spells()); ++ i) {
-                const auto& spell = world.player().spells()[i];
-                sf::FloatRect spellRect{sf::Vector2f{x, y} - iconSize / 2.f, iconSize};
+            float x = firstXCenter;
+            const float y = (mode == IconMode::TOP_RIGHT ? 50.f : 950.f);
+            int i = 0;
 
-                sf::Color boundaryColor = spell->frameColor();
-                if (auto currentSpell = world.player().controller().currentSpell())
-                    if (i == currentSpell)
-                        boundaryColor = {255, 255, 0};
+            for (const auto& element : elements) {
+                drawIcon(target, sf::FloatRect{sf::Vector2f{x, y} - iconSize / 2.f, iconSize}, getBoundaryColor(element, i), element.icon());
 
-                drawRect(target, spellRect, sf::Color{32, 32, 32}, boundaryColor, 2.f);
-
-                const sf::Texture& icon = spell->icon();
-                sf::Vector2f iconCenter = util::geometry_cast<float>(icon.getSize()) / 2.f;
-                drawSprite(target, {x, y}, iconCenter, icon, 1.0, 2.f);
-
-                x += iconSize.x + 2 * padding;
+                x += (iconSize.x + 2 * padding) * (mode == IconMode::BOTTOM_LEFT ? 1 : -1);
+                ++i;
             }
 
-            x = leftmostXCenter;
+            x = firstXCenter;
 
-            for (const auto& spell : world.player().spells()) {
-                sf::FloatRect spellRect{sf::Vector2f{x, y} - iconSize / 2.f, iconSize};
+            for (const auto& element : elements) {
+                sf::FloatRect rect{sf::Vector2f{x, y} - iconSize / 2.f, iconSize};
 
-                if (spellRect.contains(target.mapPixelToCoords(sf::Mouse::getPosition())))
-                    drawTooltip(target, assets, *spell, TooltipMode::UP_RIGHT);
+                if (rect.contains(target.mapPixelToCoords(sf::Mouse::getPosition())))
+                    drawTooltip(target, assets, element, mode == IconMode::BOTTOM_LEFT ? TooltipMode::UP_RIGHT : TooltipMode::UP_LEFT);
 
-                x += iconSize.x + 2 * padding;
+                x += (iconSize.x + 2 * padding) * (mode == IconMode::BOTTOM_LEFT ? 1 : -1);
             }
         }
     }
@@ -174,7 +135,21 @@ namespace render {
     void drawHud(sf::RenderTarget& target, const AssetManager& assets, 
                  const core::World& world, const core::XpManager& xpManager) {
         drawXpBar(target, xpManager);
-        drawSkillIcons(target, assets, world);
-        drawSpellIcons(target, assets, world);
+        drawIcons(target, assets, world.player().effects() 
+                                | std::views::transform([](const auto& ptr) -> const auto& { return *ptr; })
+                                | std::views::filter([](const auto& effect) { return effect.isVisible() && effect.isSkill(); }),
+                  IconMode::BOTTOM_RIGHT, [](const auto&, int) { return sf::Color{128, 128, 128}; });
+        drawIcons(target, assets, world.player().effects()
+                                | std::views::transform([](const auto& ptr) -> const auto& { return *ptr; })
+                                | std::views::filter([](const auto& effect) { return effect.isVisible() && !effect.isSkill(); }),
+                  IconMode::TOP_RIGHT, [](const auto&, int) { return sf::Color{128, 128, 128}; });
+        drawIcons(target, assets, world.player().spells()
+                                | std::views::transform([](const auto& ptr) -> const auto& { return *ptr; }),
+                  IconMode::BOTTOM_LEFT, [&](const auto& spell, int i) { 
+            if (auto currentSpell = world.player().controller().currentSpell())
+                if (i == currentSpell)
+                    return sf::Color{255, 255, 0};
+            return spell.frameColor();
+        });
     }
 }
