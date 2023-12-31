@@ -69,6 +69,7 @@ namespace render {
 
         enum class IconMode {
             TOP_RIGHT,
+            TOP_LEFT,
             BOTTOM_LEFT,
             BOTTOM_RIGHT,
         };
@@ -88,13 +89,13 @@ namespace render {
                                        :                padding + iconSize.x / 2);
 
             float x = firstXCenter;
-            const float y = (mode == IconMode::TOP_RIGHT ? 50.f : 950.f);
+            const float y = (mode == IconMode::TOP_RIGHT || mode == IconMode::TOP_LEFT ? 50.f : 950.f);
             int i = 0;
 
             for (const auto& element : elements) {
                 drawIcon(target, sf::FloatRect{sf::Vector2f{x, y} - iconSize / 2.f, iconSize}, getBoundaryColor(element, i), element.icon());
 
-                x += (iconSize.x + 2 * padding) * (mode == IconMode::BOTTOM_LEFT ? 1 : -1);
+                x += (iconSize.x + 2 * padding) * (mode == IconMode::BOTTOM_LEFT || mode == IconMode::TOP_LEFT ? 1 : -1);
                 ++i;
             }
 
@@ -104,9 +105,10 @@ namespace render {
                 sf::FloatRect rect{sf::Vector2f{x, y} - iconSize / 2.f, iconSize};
 
                 if (rect.contains(target.mapPixelToCoords(sf::Mouse::getPosition())))
-                    drawTooltip(target, assets, element, mode == IconMode::BOTTOM_LEFT ? TooltipMode::UP_RIGHT : TooltipMode::UP_LEFT);
+                    drawTooltip(target, assets, element, mode == IconMode::BOTTOM_LEFT || mode == IconMode::TOP_LEFT 
+                                                       ? TooltipMode::UP_RIGHT : TooltipMode::UP_LEFT);
 
-                x += (iconSize.x + 2 * padding) * (mode == IconMode::BOTTOM_LEFT ? 1 : -1);
+                x += (iconSize.x + 2 * padding) * (mode == IconMode::BOTTOM_LEFT || mode == IconMode::TOP_LEFT ? 1 : -1);
             }
         }
     }
@@ -151,5 +153,8 @@ namespace render {
                     return sf::Color{255, 255, 0};
             return spell.frameColor();
         });
+        drawIcons(target, assets, world.player().items()
+                                | std::views::transform([](const auto& ptr) -> const auto& { return *ptr; }),
+                  IconMode::TOP_LEFT, [](const auto&, int) { return sf::Color{128, 128, 128}; });
     }
 }
