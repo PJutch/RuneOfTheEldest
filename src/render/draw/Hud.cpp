@@ -37,7 +37,9 @@ namespace render {
 
         enum class TooltipMode {
             UP_LEFT,
-            UP_RIGHT
+            UP_RIGHT,
+            DOWN_LEFT,
+            DOWN_RIGHT
         };
 
         void drawTooltip(sf::RenderTarget& target, const AssetManager& assets,
@@ -50,6 +52,8 @@ namespace render {
             switch (mode) {
             case TooltipMode::UP_LEFT: tooltipPos -= tooltipSize; break;
             case TooltipMode::UP_RIGHT: tooltipPos.y -= tooltipSize.y; break;
+            case TooltipMode::DOWN_LEFT: tooltipPos.x -= tooltipSize.x; break;
+            case TooltipMode::DOWN_RIGHT: break;
             default: TROTE_ASSERT(false, "unreachable");
             }
 
@@ -89,7 +93,7 @@ namespace render {
                                        :                padding + iconSize.x / 2);
 
             float x = firstXCenter;
-            const float y = (mode == IconMode::TOP_RIGHT || mode == IconMode::TOP_LEFT ? 50.f : 950.f);
+            const float y = (mode == IconMode::TOP_RIGHT || mode == IconMode::TOP_LEFT ? 20.f : 970.f);
             int i = 0;
 
             for (const auto& element : elements) {
@@ -104,9 +108,13 @@ namespace render {
             for (const auto& element : elements) {
                 sf::FloatRect rect{sf::Vector2f{x, y} - iconSize / 2.f, iconSize};
 
+                util::UnorderedMap<IconMode, TooltipMode> tooltipModes{{IconMode::BOTTOM_LEFT , TooltipMode::UP_RIGHT  },
+                                                                       {IconMode::BOTTOM_RIGHT, TooltipMode::UP_LEFT   },
+                                                                       {IconMode::TOP_LEFT    , TooltipMode::DOWN_RIGHT},
+                                                                       {IconMode::TOP_RIGHT   , TooltipMode::DOWN_LEFT }};
+
                 if (rect.contains(target.mapPixelToCoords(sf::Mouse::getPosition())))
-                    drawTooltip(target, assets, element, mode == IconMode::BOTTOM_LEFT || mode == IconMode::TOP_LEFT 
-                                                       ? TooltipMode::UP_RIGHT : TooltipMode::UP_LEFT);
+                    drawTooltip(target, assets, element, tooltipModes[mode]);
 
                 x += (iconSize.x + 2 * padding) * (mode == IconMode::BOTTOM_LEFT || mode == IconMode::TOP_LEFT ? 1 : -1);
             }
