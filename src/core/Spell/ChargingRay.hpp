@@ -130,6 +130,10 @@ namespace core {
 				self.lock()->controller().setCastSpell(shared_from_this());
 			}
 		}
+
+		sf::Color frameColor() const final {
+			return isCasted ? sf::Color::Green : sf::Color{128, 128, 128};
+		}
 	private:
 		Stats stats;
 

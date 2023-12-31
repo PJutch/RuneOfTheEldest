@@ -42,8 +42,8 @@ namespace core {
 	void PlayerController::endTurn(std::shared_ptr<Spell> newCastSpell) noexcept {
 		if (castSpell && castSpell != newCastSpell) {
 			castSpell->interrupt();
-			castSpell = std::move(newCastSpell);
 		}
+		castSpell = std::move(newCastSpell);
 
 		state = State::ENDED_TURN;
 		renderContext.playerMap->clearSounds();

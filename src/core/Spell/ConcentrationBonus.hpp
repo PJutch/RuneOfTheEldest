@@ -75,7 +75,34 @@ namespace core {
 		}
 
 		void owner(std::weak_ptr<Actor> newOwner) {
-			newOwner.lock()->addEffect(bonus->clone());
+			self = std::move(newOwner);
+			self.lock()->addEffect(bonus->clone());
+			if (isCasted) {
+				self.lock()->controller().setCastSpell(shared_from_this());
+			}
+		}
+
+		sf::Color frameColor() const final {
+			return isCasted ? sf::Color::Green : sf::Color{128, 128, 128};
+		}
+
+		void parseData(std::string_view data) final {
+			util::KeyValueVisitor visitor;
+
+			visitor.key("isCasted").unique().required().callback([&](std::string_view data) {
+				isCasted = util::parseBool(data);
+			});
+
+			util::forEackInlineKeyValuePair(data, visitor);
+			visitor.validate();
+
+			if (isCasted) {
+				particles->add(std::make_unique<Particle>(shared_from_this(), particles));
+			}
+		}
+
+		[[nodiscard]] std::string stringify() const final {
+			return std::format("{} isCasted {}", id(), isCasted);
 		}
 	private:
 		class Particle : public render::ParticleManager::CustomParticle {
