@@ -44,29 +44,11 @@ namespace core {
 			spell{std::move(spell_)}, spells{std::move(spells_)}, randomEngine{&randomEngine_} {}
 
 		UsageResult use([[maybe_unused]] std::shared_ptr<Actor> self, [[maybe_unused]] core::Position<int> target) final {
-			switch (spell->cast(self, target)) {
-			case Spell::CastResult::NOT_SUPPORTED:
-				return Item::UsageResult::NOT_SUPPORTED;
-			case Spell::CastResult::FAILURE:
-				return Item::UsageResult::FAILURE;
-			case Spell::CastResult::SUCCESS:
-				return Item::UsageResult::SUCCESS;
-			default:
-				TROTE_ASSERT(false, "unreachable");
-			}
+			return spell->cast(self, target);
 		}
 
 		UsageResult use([[maybe_unused]] std::shared_ptr<Actor> self) final {
-			switch (spell->cast(self)) {
-			case Spell::CastResult::NOT_SUPPORTED:
-				return Item::UsageResult::NOT_SUPPORTED;
-			case Spell::CastResult::FAILURE:
-				return Item::UsageResult::FAILURE;
-			case Spell::CastResult::SUCCESS:
-				return Item::UsageResult::SUCCESS;
-			default:
-				TROTE_ASSERT(false, "unreachable");
-			}
+			return spell->cast(self);
 		}
 
 		[[nodiscard]] std::unique_ptr<Item> clone() const final {

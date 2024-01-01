@@ -31,9 +31,9 @@ namespace core {
 			Spell{icon, id, name}, mana{mana_}, 
 			bonus{std::make_shared<Bonus>(bonuses, icon, std::format("{}__spellBonus", id), name)} {}
 
-		CastResult cast(std::shared_ptr<Actor> self) final {
+		UsageResult cast(std::shared_ptr<Actor> self) final {
 			isOn = !isOn;
-			return CastResult::SUCCESS;
+			return UsageResult::SUCCESS;
 		}
 
 		[[nodiscard]] std::shared_ptr<Spell> clone() const final {

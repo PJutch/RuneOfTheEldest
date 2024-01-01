@@ -45,12 +45,12 @@ namespace core {
 				std::shared_ptr<render::PlayerMap> playerMap_) :
 			Spell{icon, id, name}, stats{stats_}, playerMap{std::move(playerMap_)} {}
 
-		CastResult cast(std::shared_ptr<Actor> self) final {
+		UsageResult cast(std::shared_ptr<Actor> self) final {
 			if (!self->useMana(stats.mana))
-				return CastResult::FAILURE;
+				return UsageResult::FAILURE;
 
 			playerMap->discoverLevelTiles(self->position().z);
-			return CastResult::SUCCESS;
+			return UsageResult::SUCCESS;
 		}
 
 		[[nodiscard]] std::shared_ptr<Spell> clone() const final {

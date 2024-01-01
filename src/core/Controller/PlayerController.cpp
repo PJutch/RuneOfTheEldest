@@ -104,12 +104,12 @@ namespace core {
 		if (auto newCurrentSpell = render::clickedSpell(clickPos, *renderContext.window, *player_)) {
 			auto spell = player_->spells()[*newCurrentSpell];
 			switch (spell->cast(player_)) {
-			case Spell::CastResult::SUCCESS:
+			case UsageResult::SUCCESS:
 				endTurn(spell);
 				break;
-			case Spell::CastResult::FAILURE:
+			case UsageResult::FAILURE:
 				break;
-			case Spell::CastResult::NOT_SUPPORTED:
+			case UsageResult::NOT_SUPPORTED:
 				selectedAbility_ = SelectedSpell{*newCurrentSpell};
 				break;
 			default:
@@ -118,12 +118,12 @@ namespace core {
 		} else if (auto newCurrentItem = render::clickedItem(clickPos, *renderContext.window, *player_)) {
 			const auto& item = player_->items()[*newCurrentItem];
 			switch (item->use(player_)) {
-			case Item::UsageResult::SUCCESS:
+			case UsageResult::SUCCESS:
 				endTurn(nullptr);
 				break;
-			case Item::UsageResult::FAILURE:
+			case UsageResult::FAILURE:
 				break;
-			case Item::UsageResult::NOT_SUPPORTED:
+			case UsageResult::NOT_SUPPORTED:
 				selectedAbility_ = SelectedItem{*newCurrentItem};
 				break;
 			default:
@@ -133,14 +133,14 @@ namespace core {
 			if constexpr (std::same_as<T, SelectedSpell>) {
 				auto target = render::mouseTile(clickPos, renderContext.camera->position(), *renderContext.window);
 				auto spell = player_->spells()[v.i];
-				if (spell->cast(player_, target) == Spell::CastResult::SUCCESS) {
+				if (spell->cast(player_, target) == UsageResult::SUCCESS) {
 					endTurn(spell);
 				}
 				return true;
 			} else if constexpr (std::same_as<T, SelectedItem>) {
 				auto target = render::mouseTile(clickPos, renderContext.camera->position(), *renderContext.window);
 				const auto& item = player_->items()[v.i];
-				if (item->use(player_, target) == Item::UsageResult::SUCCESS) {
+				if (item->use(player_, target) == UsageResult::SUCCESS) {
 					endTurn(nullptr);
 				}
 				return true;

@@ -19,6 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "core/fwd.hpp"
 #include "core/DamageType.hpp"
 #include "core/Position.hpp"
+#include "core/Usable.hpp"
 
 #include "util/Exception.hpp"
 
@@ -39,26 +40,19 @@ namespace core {
 			icon_{&newIcon}, id_{newId}, name_{ newName } {}
 		virtual ~Spell() = default;
 
-		/// Feedback for gui
-		enum class CastResult {
-			NOT_SUPPORTED, ///< Can't use on selected target
-			FAILURE,       ///< Can't use in given conditions
-			SUCCESS        ///< Used succesfully
-		};
-
 		/// @brief Casts spell
 		/// @param self Casting Actor
 		/// @param target Tile selected by player
 		/// @returns Feedback for gui
-		virtual CastResult cast([[maybe_unused]] std::shared_ptr<Actor> self, [[maybe_unused]] core::Position<int> target) {
-			return CastResult::NOT_SUPPORTED;
+		virtual UsageResult cast([[maybe_unused]] std::shared_ptr<Actor> self, [[maybe_unused]] core::Position<int> target) {
+			return UsageResult::NOT_SUPPORTED;
 		}
 
 		/// @brief Casts spell
 		/// @param self Casting Actor
 		/// @returns Feedback for gui
-		virtual CastResult cast([[maybe_unused]] std::shared_ptr<Actor> self) {
-			return CastResult::NOT_SUPPORTED;
+		virtual UsageResult cast([[maybe_unused]] std::shared_ptr<Actor> self) {
+			return UsageResult::NOT_SUPPORTED;
 		}
 
 		/// @brief tries to coninue casting spell

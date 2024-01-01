@@ -57,19 +57,19 @@ namespace core {
 			particles{std::move(particles_)}, playerMap{std::move(playerMap_)}, 
 			raycaster{std::move(raycaster_)} {}
 
-		CastResult cast(std::shared_ptr<Actor> self, core::Position<int> target) final {
+		UsageResult cast(std::shared_ptr<Actor> self, core::Position<int> target) final {
 			if (world->tiles()[static_cast<sf::Vector3i>(target)] != Tile::WALL)
-				return CastResult::FAILURE;
+				return UsageResult::FAILURE;
 
 			if (!self->useMana(stats.mana))
-				return CastResult::FAILURE;
+				return UsageResult::FAILURE;
 	
 			world->tiles()[static_cast<sf::Vector3i>(target)] = Tile::EMPTY;
 			raycaster->clear();
 			playerMap->updateTiles();
 			spawnParticle(core::Position<int>{self->position()}, target);
 
-			return CastResult::SUCCESS;
+			return UsageResult::SUCCESS;
 		}
 
 		[[nodiscard]] std::shared_ptr<Spell> clone() const final {

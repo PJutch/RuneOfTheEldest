@@ -18,6 +18,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "core/fwd.hpp"
 #include "core/Position.hpp"
+#include "core/Usable.hpp"
 
 #include "util/Exception.hpp"
 
@@ -38,13 +39,6 @@ namespace core {
 		Item(const sf::Texture& newIcon, std::string_view newId, std::string_view newName) :
 			icon_{&newIcon}, id_{newId}, name_{newName} {}
 		virtual ~Item() = default;
-
-		/// Feedback for gui
-		enum class UsageResult {
-			NOT_SUPPORTED, ///< Can't use on selected target
-			FAILURE,       ///< Can't use in given conditions
-			SUCCESS        ///< Used succesfully
-		};
 
 		/// @brief Uses item
 		/// @param self Using Actor

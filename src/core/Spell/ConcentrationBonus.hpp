@@ -49,15 +49,15 @@ namespace core {
 			Spell{icon, id, name}, bonus{std::make_shared<Bonus>(bonuses, icon, std::format("{}__spellBonus", id), name)},
 			mana{mana_}, particleTexture{&particleTexture_}, particles{std::move(particles_)} {}
 
-		CastResult cast(std::shared_ptr<Actor> self_) final {
+		UsageResult cast(std::shared_ptr<Actor> self_) final {
 			if (isCasted || !self_->useMana(mana)) {
-				return CastResult::FAILURE;
+				return UsageResult::FAILURE;
 			}
 
 			self = std::move(self_);
 			isCasted = true;
 			particles->add(std::make_unique<Particle>(shared_from_this(), particles));
-			return CastResult::SUCCESS;
+			return UsageResult::SUCCESS;
 		}
 
 		bool continueCast() final {
