@@ -71,7 +71,7 @@ namespace core {
 
 		[[nodiscard]] std::unique_ptr<Item> clone() const final {
 			auto result = std::make_unique<Scroll>(*this);
-			result->spell = (*spells)[std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(*spells) - 1}(*randomEngine)].clone();
+			result->spell = spell->clone();
 			return result;
 		}
 
