@@ -61,12 +61,12 @@ namespace core {
 			Spell{icon, id, name}, stats{stats_}, world{std::move(world_)}, 
 			particles{std::move(particles_)}, raycaster{std::move(raycaster_)}, randomEngine{&randomEngine_} {}
 
-		UsageResult cast(std::shared_ptr<Actor> self, core::Position<int> target) final {
+		UsageResult cast(std::shared_ptr<Actor> self, core::Position<int> target, bool useMana = true) final {
 			auto other = world->actorAt(target);
 			if (!other)
 				return UsageResult::FAILURE;
 
-			if (!self->useMana(stats.mana))
+			if (useMana && !self->useMana(stats.mana))
 				return UsageResult::FAILURE;
 
 			attack(*self, *other);

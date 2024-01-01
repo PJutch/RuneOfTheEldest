@@ -46,8 +46,8 @@ namespace core {
 				std::shared_ptr<World> world_) :
 			Spell{icon, id, name}, stats{stats_}, world{std::move(world_)} {}
 
-		UsageResult cast(std::shared_ptr<Actor> self) final {
-			if (!self->useMana(stats.mana))
+		UsageResult cast(std::shared_ptr<Actor> self, bool useMana = true) final {
+			if (useMana && !self->useMana(stats.mana))
 				return UsageResult::FAILURE;
 
 			self->position(world->randomPositionAt(self->position().z, [](const core::World& world, sf::Vector3i pos) {

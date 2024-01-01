@@ -45,8 +45,8 @@ namespace core {
 			std::shared_ptr<render::PlayerMap> playerMap_) :
 			Spell{icon, id, name}, stats{stats_}, playerMap{std::move(playerMap_)} {}
 
-		UsageResult cast(std::shared_ptr<Actor> self) final {
-			if (!self->useMana(stats.mana))
+		UsageResult cast(std::shared_ptr<Actor> self, bool useMana = true) final {
+			if (useMana && !self->useMana(stats.mana))
 				return UsageResult::FAILURE;
 
 			playerMap->discoverLevelActors(self->position().z);

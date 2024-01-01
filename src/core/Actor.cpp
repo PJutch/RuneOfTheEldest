@@ -53,6 +53,10 @@ namespace core {
 		std::erase_if(effects_, [](const auto& effect) {
 			return effect->shouldBeRemoved();
 		});
+
+		std::erase_if(items_, [](const auto& item) {
+			return item->shouldDestroy();
+		});
 	}
 
 	bool Actor::tryMoveTo(sf::Vector3i newPosition, bool forceSwap) {

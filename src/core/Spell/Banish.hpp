@@ -50,12 +50,12 @@ namespace core {
 				std::shared_ptr<World> world_, std::shared_ptr<render::ParticleManager> particles_) :
 			Spell{icon, id, name}, stats{stats_}, world{std::move(world_)}, particles{std::move(particles_)} {}
 
-		UsageResult cast(std::shared_ptr<Actor>  self, core::Position<int> target) final {
+		UsageResult cast(std::shared_ptr<Actor>  self, core::Position<int> target, bool useMana = true) final {
 			auto other = world->actorAt(target);
 			if (!other)
 				return UsageResult::FAILURE;
 
-			if (!self->useMana(stats.manaPerHp * other->hp()))
+			if (useMana && !self->useMana(stats.manaPerHp * other->hp()))
 				return UsageResult::FAILURE;
 
 			other->beBanished();

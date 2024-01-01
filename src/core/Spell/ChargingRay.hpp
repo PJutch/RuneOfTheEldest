@@ -64,12 +64,12 @@ namespace core {
 			Spell{icon, id, name}, stats{stats_}, world{std::move(world_)},
 			particles{std::move(particles_)}, raycaster{std::move(raycaster_)} {}
 
-		UsageResult cast(std::shared_ptr<Actor> self_, core::Position<int> targetPos) final {
+		UsageResult cast(std::shared_ptr<Actor> self_, core::Position<int> targetPos, bool useMana_ = false) final {
 			auto target_ = world->actorAt(targetPos);
 			if (!target_)
 				return UsageResult::FAILURE;
 
-			if (!isCasted || target_ != target.lock() || self_ != self.lock()) {
+			if (!isCasted || useMana != useMana_ || target_ != target.lock() || self_ != self.lock()) {
 				target = std::move(target_);
 				self = std::move(self_);
 				damageMul = 1;
@@ -142,6 +142,7 @@ namespace core {
 		double damageMul = 1;
 
 		bool isCasted = false;
+		bool useMana = true;
 
 		std::shared_ptr<World> world;
 		std::shared_ptr<render::ParticleManager> particles;
@@ -213,7 +214,7 @@ namespace core {
 			auto self_ = self.lock();
 			auto target_ = target.lock();
 
-			if (!self_->useMana(stats.mana)) {
+			if (useMana && !self_->useMana(stats.mana)) {
 				return false;
 			}
 

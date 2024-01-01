@@ -39,16 +39,25 @@ namespace core {
 	/// Scroll that Actor can use to cast spell to cast spell without using mana
 	class Scroll : public Item {
 	public:
-		Scroll(std::shared_ptr<Spell> spell_, const sf::Texture& icon_, std::shared_ptr<SpellManager> spells_, util::RandomEngine& randomEngine_) :
+		Scroll(std::shared_ptr<Spell> spell_, const sf::Texture& icon_, 
+			   std::shared_ptr<SpellManager> spells_, util::RandomEngine& randomEngine_) :
 			Item{icon_, "scroll." + spell_->id(), spell_->name() + " scroll"}, 
 			spell{std::move(spell_)}, spells{std::move(spells_)}, randomEngine{&randomEngine_} {}
 
-		UsageResult use([[maybe_unused]] std::shared_ptr<Actor> self, [[maybe_unused]] core::Position<int> target) final {
-			return spell->cast(self, target);
+		UsageResult use(std::shared_ptr<Actor> self, core::Position<int> target) final {
+			UsageResult result = spell->cast(self, target, false);
+			if (result == UsageResult::SUCCESS) {
+				shouldDestroy_ = true;
+			}
+			return result;
 		}
 
 		UsageResult use([[maybe_unused]] std::shared_ptr<Actor> self) final {
-			return spell->cast(self);
+			UsageResult result = spell->cast(self, false);
+			if (result == UsageResult::SUCCESS) {
+				shouldDestroy_ = true;
+			}
+			return result;
 		}
 
 		[[nodiscard]] std::unique_ptr<Item> clone() const final {
@@ -60,8 +69,13 @@ namespace core {
 		void owner(std::weak_ptr<Actor> actor) final {
 			spell->owner(std::move(actor));
 		}
+
+		virtual [[nodiscard]] bool shouldDestroy() const {
+			return shouldDestroy_;
+		}
 	private:
 		std::shared_ptr<Spell> spell;
+		bool shouldDestroy_ = false;
 
 		std::shared_ptr<SpellManager> spells;
 		util::RandomEngine* randomEngine;

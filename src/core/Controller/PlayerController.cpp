@@ -141,6 +141,9 @@ namespace core {
 				auto target = render::mouseTile(clickPos, renderContext.camera->position(), *renderContext.window);
 				const auto& item = player_->items()[v.i];
 				if (item->use(player_, target) == UsageResult::SUCCESS) {
+					if (item->shouldDestroy()) {
+						selectedAbility_ = {};
+					}
 					endTurn(nullptr);
 				}
 				return true;

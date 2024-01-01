@@ -31,8 +31,9 @@ namespace core {
 			Spell{icon, id, name}, mana{mana_}, 
 			bonus{std::make_shared<Bonus>(bonuses, icon, std::format("{}__spellBonus", id), name)} {}
 
-		UsageResult cast(std::shared_ptr<Actor> self) final {
+		UsageResult cast(std::shared_ptr<Actor> self, bool useMana_ = true) final {
 			isOn = !isOn;
+			useMana = useMana_;
 			return UsageResult::SUCCESS;
 		}
 
@@ -116,6 +117,7 @@ namespace core {
 		};
 
 		bool isOn = false;
+		bool useMana = true;
 		double mana;
 		std::shared_ptr<Bonus> bonus;
 		std::weak_ptr<core::Actor> owner_;

@@ -44,14 +44,15 @@ namespace core {
 		/// @param self Casting Actor
 		/// @param target Tile selected by player
 		/// @returns Feedback for gui
-		virtual UsageResult cast([[maybe_unused]] std::shared_ptr<Actor> self, [[maybe_unused]] core::Position<int> target) {
+		virtual UsageResult cast([[maybe_unused]] std::shared_ptr<Actor> self, 
+			                     [[maybe_unused]] core::Position<int> target, [[maybe_unused]] bool useMana = true) {
 			return UsageResult::NOT_SUPPORTED;
 		}
 
 		/// @brief Casts spell
 		/// @param self Casting Actor
 		/// @returns Feedback for gui
-		virtual UsageResult cast([[maybe_unused]] std::shared_ptr<Actor> self) {
+		virtual UsageResult cast([[maybe_unused]] std::shared_ptr<Actor> self, [[maybe_unused]] bool useMana = true) {
 			return UsageResult::NOT_SUPPORTED;
 		}
 

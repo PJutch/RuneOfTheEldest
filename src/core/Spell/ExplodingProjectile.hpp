@@ -66,8 +66,8 @@ namespace core {
 			Spell{icon, id, name}, stats{stats_}, world{std::move(world_)},
 			particles{std::move(particles_)}, raycaster{std::move(raycaster_)} {}
 
-		UsageResult cast(std::shared_ptr<Actor> self, core::Position<int> target) final {
-			if (!self->useMana(stats.mana)) {
+		UsageResult cast(std::shared_ptr<Actor> self, core::Position<int> target, bool useMana = true) final {
+			if (useMana && !self->useMana(stats.mana)) {
 				return UsageResult::FAILURE;
 			}
 
