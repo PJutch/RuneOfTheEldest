@@ -78,7 +78,7 @@ namespace core {
 			self = std::move(newOwner);
 			self.lock()->addEffect(bonus->clone());
 			if (isCasted) {
-				self.lock()->controller().setCastSpell(shared_from_this());
+				self.lock()->castedSpell(shared_from_this());
 			}
 		}
 

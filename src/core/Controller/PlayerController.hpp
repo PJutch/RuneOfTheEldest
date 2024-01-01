@@ -66,10 +66,6 @@ namespace core {
 		[[nodiscard]] std::string stringify() const final {
 			return "player";
 		}
-
-		void setCastSpell(std::shared_ptr<Spell> spell) final {
-			castSpell = spell;
-		}
 	private:
 		std::weak_ptr<Actor> player;
 		std::shared_ptr<util::Raycaster> raycaster;
@@ -87,8 +83,6 @@ namespace core {
 			EXPLORING
 		};
 		State state = State::WAITING_TURN;
-
-		std::shared_ptr<Spell> castSpell;
 
 		SelectedAbility selectedAbility_;
 

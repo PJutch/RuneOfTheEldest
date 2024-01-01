@@ -199,7 +199,7 @@ namespace core {
 			return stats().texture;
 		}
 
-		void endTurn() noexcept;
+		void endTurn(std::shared_ptr<Spell> castedSpell = nullptr) noexcept;
 
 		/// @brief Changes position if newPosition isn't occupied or attacks Actor there
 		/// @param forceSwap Forces swap even if other Actor doesn't want it
@@ -316,12 +316,21 @@ namespace core {
 			hp_ += healed;
 			hp_ = std::min(hp(), maxHp());
 		}
+
+		std::shared_ptr<Spell> castedSpell() const {
+			return castedSpell_;
+		}
+
+		void castedSpell(std::shared_ptr<Spell> spell) {
+			castedSpell_ = spell;
+		}
 	private:
 		Stats stats_;
 		std::unique_ptr<Controller> controller_;
 		std::vector<std::unique_ptr<Effect>> effects_;
 		std::vector<std::shared_ptr<Spell>> spells_;
 		std::vector<std::unique_ptr<Item>> items_;
+		std::shared_ptr<Spell> castedSpell_;
 
 		double nextTurn_ = 0;
 		sf::Vector3i position_;

@@ -39,15 +39,10 @@ namespace core {
 		player_->world().player(player_);
 	}
 
-	void PlayerController::endTurn(std::shared_ptr<Spell> newCastSpell) noexcept {
-		if (castSpell && castSpell != newCastSpell) {
-			castSpell->interrupt();
-		}
-		castSpell = std::move(newCastSpell);
-
+	void PlayerController::endTurn(std::shared_ptr<Spell> newCastedSpell) noexcept {
 		state = State::ENDED_TURN;
 		renderContext.playerMap->clearSounds();
-		player.lock()->endTurn();
+		player.lock()->endTurn(std::move(newCastedSpell));
 	}
 
 	void PlayerController::handleEvent(sf::Event event) {
@@ -56,14 +51,7 @@ namespace core {
 
 		if (event.type == sf::Event::KeyPressed) {
 			if (event.key.code == sf::Keyboard::Numpad5) {
-				if (castSpell) {
-					castSpell->continueCast();
-					state = State::ENDED_TURN;
-					renderContext.playerMap->clearSounds();
-					player.lock()->endTurn();
-					return;
-				}
-				endTurn();
+				endTurn(player.lock()->castedSpell());
 			} else if (event.key.code == sf::Keyboard::Comma) {
 				if (event.key.shift) {
 					if (tryAscentStairs())
@@ -144,7 +132,7 @@ namespace core {
 					if (item->shouldDestroy()) {
 						selectedAbility_ = {};
 					}
-					endTurn(nullptr);
+					endTurn(item->castedSpell());
 				}
 				return true;
 			} else {

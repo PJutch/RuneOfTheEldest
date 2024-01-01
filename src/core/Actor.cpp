@@ -38,7 +38,16 @@ namespace core {
 				 util::RandomEngine* newRandomEngine) :
 		Actor{{}, {}, std::move(newWorld), std::move(xpManager), std::move(particles_), newRandomEngine} {}
 
-	void Actor::endTurn() noexcept {
+	void Actor::endTurn(std::shared_ptr<Spell> newCastedSpell) noexcept {
+		if (castedSpell_) {
+			if (castedSpell_ == newCastedSpell) {
+				castedSpell_->continueCast();
+			} else {
+				castedSpell_->interrupt();
+			}
+		}
+		castedSpell_ = std::move(newCastedSpell);
+
 		nextTurn_ += turnDelay();
 
 		hp_ += regen() * turnDelay();

@@ -16,9 +16,11 @@ If not, see <https://www.gnu.org/licenses/>. */
 #ifndef ITEM_HPP_
 #define ITEM_HPP_
 
-#include "core/fwd.hpp"
-#include "core/Position.hpp"
-#include "core/Usable.hpp"
+#include "fwd.hpp"
+#include "Position.hpp"
+#include "Usable.hpp"
+
+#include "Spell/Spell.hpp"
 
 #include "util/Exception.hpp"
 
@@ -55,6 +57,11 @@ namespace core {
 			return UsageResult::NOT_SUPPORTED;
 		}
 
+		/// Spell for Actor to start casting
+		virtual [[nodiscard]] std::shared_ptr<Spell> castedSpell() const {
+			return nullptr;
+		}
+
 		/// Item icon for ingame display
 		[[nodiscard]] const sf::Texture& icon() const {
 			return *icon_;
@@ -69,6 +76,8 @@ namespace core {
 		[[nodiscard]] const std::string& name() const {
 			return name_;
 		}
+
+		virtual [[nodiscard]] bool shouldDestroy() const = 0;
 
 		[[nodiscard]] virtual std::unique_ptr<Item> clone() const = 0;
 
@@ -94,8 +103,6 @@ namespace core {
 		virtual [[nodiscard]] std::string stringifyData() const {
 			return "";
 		}
-
-		virtual [[nodiscard]] bool shouldDestroy() const = 0;
 	private:
 		const sf::Texture* icon_;
 		std::string id_;

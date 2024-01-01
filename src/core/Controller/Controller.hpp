@@ -76,9 +76,6 @@ namespace core {
 			return {};
 		}
 
-		/// Sets cast spell after loading
-		virtual void setCastSpell(std::shared_ptr<Spell>) {}
-
 		[[nodiscard]] virtual std::string stringify() const = 0;
 	protected:
 		void wantsSwap(bool newWantsSwap) noexcept {

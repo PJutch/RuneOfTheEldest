@@ -60,6 +60,10 @@ namespace core {
 			return result;
 		}
 
+		[[nodiscard]] std::shared_ptr<Spell> castedSpell() const final {
+			return spell;
+		}
+
 		[[nodiscard]] std::unique_ptr<Item> clone() const final {
 			auto result = std::make_unique<Scroll>(*this);
 			result->spell = spell->clone();
