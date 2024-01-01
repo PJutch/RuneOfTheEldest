@@ -90,7 +90,7 @@ namespace core {
 
 		/// Remove all items
 		void clearItems() {
-			actors_.clear();
+			items_.clear();
 		}
 
 		[[nodiscard]] const util::UnorderedMap<core::Position<int>, std::unique_ptr<Item>>& items() const {
