@@ -121,24 +121,27 @@ namespace render {
         }
     }
 
-    std::optional<int> clickedSpell(sf::Vector2i clickPos, sf::RenderTarget& target, const core::Actor& player) {
+    std::optional<int> clickedIcon(sf::Vector2i clickPos, sf::RenderTarget& target, int n_icons, IconMode mode) {
         target.setView(createFullscreenView(1000.f, target.getSize()));
 
+        const sf::Vector2f screenSize = target.getView().getSize();
         const sf::Vector2f iconSize{32.f, 32.f};
         float padding = 4.f;
 
-        float leftmostXCenter = padding + iconSize.x / 2;
-        float x = leftmostXCenter;
-        const float y = 950.f;
+        const float firstXCenter = (mode == IconMode::TOP_RIGHT || mode == IconMode::BOTTOM_RIGHT
+                                   ? screenSize.x - padding - iconSize.x / 2
+                                   : padding + iconSize.x / 2);
 
-        for (int i = 0; i < std::ssize(player.spells()); ++i) {
-            sf::FloatRect spellRect{sf::Vector2f{x, y} - iconSize / 2.f, iconSize};
+        float x = firstXCenter;
+        const float y = (mode == IconMode::TOP_RIGHT || mode == IconMode::TOP_LEFT ? 20.f : 970.f);
 
-            if (spellRect.contains(target.mapPixelToCoords(clickPos)))
+        for (int i = 0; i < n_icons; ++i) {
+            if (sf::FloatRect{sf::Vector2f{x, y} - iconSize / 2.f, iconSize}.contains(target.mapPixelToCoords(clickPos)))
                 return i;
 
-            x += iconSize.x + 2 * padding;
+            x += (iconSize.x + 2 * padding) * (mode == IconMode::BOTTOM_LEFT || mode == IconMode::TOP_LEFT ? 1 : -1);
         }
+
         return std::nullopt;
     }
 
@@ -156,13 +159,40 @@ namespace render {
         drawIcons(target, assets, world.player().spells()
                                 | std::views::transform([](const auto& ptr) -> const auto& { return *ptr; }),
                   IconMode::BOTTOM_LEFT, [&](const auto& spell, int i) { 
-            if (auto currentSpell = world.player().controller().currentSpell())
-                if (i == currentSpell)
-                    return sf::Color{255, 255, 0};
-            return spell.frameColor();
+            return std::visit([&]<typename T>(T v) {
+                if constexpr (std::same_as<T, core::Controller::SelectedSpell>) {
+                    if (v.i == i) {
+                        return sf::Color::Yellow;
+                    } else {
+                        return spell.frameColor();
+                    }
+                } else {
+                    return spell.frameColor();
+                }
+            }, world.player().controller().selectedAbility());
         });
         drawIcons(target, assets, world.player().items()
                                 | std::views::transform([](const auto& ptr) -> const auto& { return *ptr; }),
-                  IconMode::TOP_LEFT, [](const auto&, int) { return sf::Color{128, 128, 128}; });
+                  IconMode::TOP_LEFT, [&](const auto&, int i) { 
+            return std::visit([&]<typename T>(T v) {
+                if constexpr (std::same_as<T, core::Controller::SelectedItem>) {
+                    if (v.i == i) {
+                        return sf::Color::Yellow;
+                    } else {
+                        return sf::Color{128, 128, 128};
+                    }
+                } else {
+                    return sf::Color{128, 128, 128};
+                }
+            }, world.player().controller().selectedAbility());
+        });
+    }
+
+    std::optional<int> clickedSpell(sf::Vector2i clickPos, sf::RenderTarget& target, const core::Actor& player) {
+        return clickedIcon(clickPos, target, std::ssize(player.spells()), IconMode::BOTTOM_LEFT);
+    }
+
+    std::optional<int> clickedItem(sf::Vector2i clickPos, sf::RenderTarget& target, const core::Actor& player) {
+        return clickedIcon(clickPos, target, std::ssize(player.items()), IconMode::TOP_LEFT);
     }
 }

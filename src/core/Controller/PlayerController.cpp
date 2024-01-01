@@ -94,7 +94,7 @@ namespace core {
 			if (event.mouseButton.button == sf::Mouse::Left) {
 				handleClick({event.mouseButton.x, event.mouseButton.y});
 			} else if (event.mouseButton.button == sf::Mouse::Right) {
-				currentSpell_ = std::nullopt;
+				selectedAbility_ = {};
 			}
 		}
 	}
@@ -110,18 +110,44 @@ namespace core {
 			case Spell::CastResult::FAILURE:
 				break;
 			case Spell::CastResult::NOT_SUPPORTED:
-				currentSpell_ = newCurrentSpell;
+				selectedAbility_ = SelectedSpell{*newCurrentSpell};
 				break;
 			default:
 				TROTE_ASSERT(false, "unreachable");
 			}
-		} else if (currentSpell_) {
-			auto target = render::mouseTile(clickPos, renderContext.camera->position(), *renderContext.window);
-			auto spell = player_->spells()[*currentSpell_];
-			if (spell->cast(player_, target) == Spell::CastResult::SUCCESS) {
-				endTurn(spell);
+		} else if (auto newCurrentItem = render::clickedItem(clickPos, *renderContext.window, *player_)) {
+			const auto& item = player_->items()[*newCurrentItem];
+			switch (item->use(player_)) {
+			case Item::UsageResult::SUCCESS:
+				endTurn(nullptr);
+				break;
+			case Item::UsageResult::FAILURE:
+				break;
+			case Item::UsageResult::NOT_SUPPORTED:
+				selectedAbility_ = SelectedItem{*newCurrentItem};
+				break;
+			default:
+				TROTE_ASSERT(false, "unreachable");
 			}
-		} else {
+		} else if (!std::visit([&]<typename T>(T v) {
+			if constexpr (std::same_as<T, SelectedSpell>) {
+				auto target = render::mouseTile(clickPos, renderContext.camera->position(), *renderContext.window);
+				auto spell = player_->spells()[v.i];
+				if (spell->cast(player_, target) == Spell::CastResult::SUCCESS) {
+					endTurn(spell);
+				}
+				return true;
+			} else if constexpr (std::same_as<T, SelectedItem>) {
+				auto target = render::mouseTile(clickPos, renderContext.camera->position(), *renderContext.window);
+				const auto& item = player_->items()[v.i];
+				if (item->use(player_, target) == Item::UsageResult::SUCCESS) {
+					endTurn(nullptr);
+				}
+				return true;
+			} else {
+				return false;
+			}
+		}, selectedAbility())) {
 			if (!canSeeEnemy()) {
 				auto newTarget = render::mouseTile(clickPos, renderContext.camera->position(), *renderContext.window);
 				if (player_->world().tiles().isValidPosition(static_cast<sf::Vector3i>(newTarget))) {

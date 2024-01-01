@@ -36,9 +36,9 @@ namespace core {
 	/// Controlled by player Actor
 	class PlayerController : public Controller {
 	public:
-		PlayerController(std::shared_ptr<Actor> player, 
-						 std::shared_ptr<util::Raycaster> raycaster,
-						 render::Context renderContext);
+		PlayerController(std::shared_ptr<Actor> player,
+			std::shared_ptr<util::Raycaster> raycaster,
+			render::Context renderContext);
 
 		/// Waits for player input
 		bool act() final;
@@ -59,8 +59,8 @@ namespace core {
 				state = State::WAITING_TURN;
 		}
 
-		std::optional<int> currentSpell() const final {
-			return currentSpell_;
+		[[nodiscard]] SelectedAbility selectedAbility() const final {
+			return selectedAbility_;
 		}
 
 		[[nodiscard]] std::string stringify() const final {
@@ -88,8 +88,9 @@ namespace core {
 		};
 		State state = State::WAITING_TURN;
 
-		std::optional<int> currentSpell_;
 		std::shared_ptr<Spell> castSpell;
+
+		SelectedAbility selectedAbility_;
 
 		core::Position<int> travelTarget;
 

@@ -28,11 +28,8 @@ namespace render {
 	void drawHud(sf::RenderTarget& target, const AssetManager& assets, 
 		         const core::World& world, const core::XpManager& xpManager);
 
-	std::optional<int> clickedSpell(sf::Vector2i clickPos, sf::RenderTarget& target, const core::Actor& actor);
-
-	inline std::optional<int> clickedSpell(sf::Vector2i clickPos, sf::RenderTarget& target, const core::World& world) {
-		return clickedSpell(clickPos, target, world.player());
-	}
+	std::optional<int> clickedSpell(sf::Vector2i clickPos, sf::RenderTarget& target, const core::Actor& player);
+	std::optional<int> clickedItem(sf::Vector2i clickPos, sf::RenderTarget& target, const core::Actor& player);
 }
 
 #endif

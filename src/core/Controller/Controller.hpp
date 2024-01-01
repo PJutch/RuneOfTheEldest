@@ -23,6 +23,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <SFML/Window/Event.hpp>
 
 #include <optional>
+#include <variant>
 
 namespace core {
 	/// Controlls Actor actions
@@ -68,9 +69,11 @@ namespace core {
 			return AiState::NONE;
 		}
 
-		/// Selected spell index
-		virtual std::optional<int> currentSpell() const {
-			return std::nullopt;
+		struct SelectedSpell { int i; };
+		struct SelectedItem { int i; };
+		using SelectedAbility = std::variant<std::monostate, SelectedSpell, SelectedItem>;
+		[[nodiscard]] virtual SelectedAbility selectedAbility() const {
+			return {};
 		}
 
 		/// Sets cast spell after loading
