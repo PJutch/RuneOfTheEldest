@@ -81,6 +81,12 @@ namespace core {
 		};
 		std::vector<SpellToAdd> spellsToAdd;
 
+		struct SpellToCast {
+			std::shared_ptr<Actor> actor;
+			std::variant<std::string, int> spellData;
+		};
+		std::vector<SpellToCast> spellsToCast;
+
 		std::unique_ptr<Controller> createController(std::shared_ptr<Actor> actor, std::string_view type) const;
 	};
 }

@@ -69,22 +69,21 @@ namespace core {
 			if (!target_)
 				return UsageResult::FAILURE;
 
-			if (!isCasted || useMana != useMana_ || target_ != target.lock() || self_ != self.lock()) {
+			if (self_->castedSpell().get() != this || useMana != useMana_ || target_ != target.lock() || self_ != self.lock()) {
 				target = std::move(target_);
 				self = std::move(self_);
 				damageMul = 1;
-				isCasted = true;
 				particles->add(std::make_unique<Ray>(shared_from_this(), particles));
 			}
 			return attack() ? UsageResult::SUCCESS : UsageResult::FAILURE;
 		}
 
 		bool continueCast() final {
-			return attack();
+			return isCasted() && attack();
 		}
 
-		void interrupt() final {
-			isCasted = false;
+		void restartCast() final {
+			particles->add(std::make_unique<Ray>(shared_from_this(), particles));
 		}
 
 		[[nodiscard]] std::shared_ptr<Spell> clone() const final {
@@ -93,10 +92,6 @@ namespace core {
 
 		void parseData(std::string_view data) final {
 			util::KeyValueVisitor visitor;
-
-			visitor.key("isCasted").unique().required().callback([&](std::string_view data) {
-				isCasted = util::parseBool(data);
-			});
 
 			visitor.key("damageMul").unique().required().callback([&](std::string_view data) {
 				damageMul = util::parseReal(data);
@@ -108,15 +103,10 @@ namespace core {
 
 			util::forEackInlineKeyValuePair(data, visitor);
 			visitor.validate();
-
-			if (isCasted) {
-				particles->add(std::make_unique<Ray>(shared_from_this(), particles));
-			}
 		}
 
 		[[nodiscard]] std::string stringify() const final {
-			std::string result = std::format("{} isCasted {}, damageMul {}", 
-				id(), isCasted, damageMul);
+			std::string result = std::format("{} damageMul {}", id(), damageMul);
 			if (!target.expired()) {
 				result += std::format(", targetPosition {}", util::stringifyVector3(target.lock()->position()));
 			}
@@ -125,14 +115,10 @@ namespace core {
 
 		void owner(std::weak_ptr<Actor> owner) final {
 			self = std::move(owner);
-			
-			if (isCasted) {
-				self.lock()->castedSpell(shared_from_this());
-			}
 		}
 
 		sf::Color frameColor() const final {
-			return isCasted ? sf::Color::Green : sf::Color{128, 128, 128};
+			return isCasted() && canAttack() ? sf::Color::Green : sf::Color{128, 128, 128};
 		}
 	private:
 		Stats stats;
@@ -141,7 +127,6 @@ namespace core {
 		std::weak_ptr<Actor> target;
 		double damageMul = 1;
 
-		bool isCasted = false;
 		bool useMana = true;
 
 		std::shared_ptr<World> world;
@@ -164,6 +149,10 @@ namespace core {
 			}
 
 			void draw(sf::RenderTarget& target, core::Position<float> cameraPos) const {
+				if (spell->self.expired()) {
+					return;
+				}
+
 				auto selfPos = spell->self.lock()->position();
 
 				auto pos1 = render::toScreen(util::geometry_cast<float>(util::getXY(selfPos)) + sf::Vector2f{0.5f, 0.5f});
@@ -182,7 +171,8 @@ namespace core {
 			}
 
 			bool shouldBeDeleted() const {
-				return !spell->canAttack() && lifetime >= spell->stats.minVisibleTime;
+				return (!spell->isCasted() || !spell->canAttack())
+					&& lifetime >= spell->stats.minVisibleTime;
 			}
 		private:
 			std::shared_ptr<ChargingRaySpell> spell;
@@ -193,8 +183,8 @@ namespace core {
 			sf::Vector3i targetPos;
 		};
 
-		bool canAttack() {
-			if (!isCasted || self.expired() || target.expired()) {
+		bool canAttack() const {
+			if (self.expired() || target.expired()) {
 				return false;
 			}
 
@@ -204,6 +194,10 @@ namespace core {
 			return target_->isAlive()
 				&& raycaster->canSee(self_->position(), target_->position())
 				&& self_->mana() >= stats.mana;
+		}
+
+		bool isCasted() const {
+			return !self.expired() && self.lock()->castedSpell().get() == this;
 		}
 
 		bool attack() {

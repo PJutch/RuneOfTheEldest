@@ -65,6 +65,9 @@ namespace core {
 		/// interrupts continuous casting
 		virtual void interrupt() {}
 
+		/// restarts continuous casting after saving and loading
+		virtual void restartCast() {}
+
 		/// Spell icon for level up menu
 		[[nodiscard]] const sf::Texture& icon() const {
 			return *icon_;

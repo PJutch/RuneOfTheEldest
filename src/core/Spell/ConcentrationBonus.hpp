@@ -50,22 +50,21 @@ namespace core {
 			mana{mana_}, particleTexture{&particleTexture_}, particles{std::move(particles_)} {}
 
 		UsageResult cast(std::shared_ptr<Actor> self_, bool useMana = true) final {
-			if (isCasted || useMana && !self_->useMana(mana)) {
+			if (self_->castedSpell().get() == this || useMana && !self_->useMana(mana)) {
 				return UsageResult::FAILURE;
 			}
 
 			self = std::move(self_);
-			isCasted = true;
 			particles->add(std::make_unique<Particle>(shared_from_this(), particles));
 			return UsageResult::SUCCESS;
 		}
 
 		bool continueCast() final {
-			return applies();
+			return isCasted();
 		}
 
-		void interrupt() final {
-			isCasted = false;
+		void restartCast() final {
+			particles->add(std::make_unique<Particle>(shared_from_this(), particles));
 		}
 
 		[[nodiscard]] std::shared_ptr<Spell> clone() const final {
@@ -77,32 +76,10 @@ namespace core {
 		void owner(std::weak_ptr<Actor> newOwner) {
 			self = std::move(newOwner);
 			self.lock()->addEffect(bonus->clone());
-			if (isCasted) {
-				self.lock()->castedSpell(shared_from_this());
-			}
 		}
 
 		sf::Color frameColor() const final {
-			return isCasted ? sf::Color::Green : sf::Color{128, 128, 128};
-		}
-
-		void parseData(std::string_view data) final {
-			util::KeyValueVisitor visitor;
-
-			visitor.key("isCasted").unique().required().callback([&](std::string_view data) {
-				isCasted = util::parseBool(data);
-			});
-
-			util::forEackInlineKeyValuePair(data, visitor);
-			visitor.validate();
-
-			if (isCasted) {
-				particles->add(std::make_unique<Particle>(shared_from_this(), particles));
-			}
-		}
-
-		[[nodiscard]] std::string stringify() const final {
-			return std::format("{} isCasted {}", id(), isCasted);
+			return isCasted() ? sf::Color::Green : sf::Color{128, 128, 128};
 		}
 	private:
 		class Particle : public render::ParticleManager::CustomParticle {
@@ -113,6 +90,10 @@ namespace core {
 			void update(sf::Time) final {}
 
 			void draw(sf::RenderTarget& target, core::Position<float> cameraPos) const {
+				if (spell->self.expired()) {
+					return;
+				}
+
 				auto tilePos = spell->self.lock()->position();
 				auto screenPos = render::toScreen(util::geometry_cast<float>(util::getXY(tilePos)) + sf::Vector2f{0.5f, 0.5f});
 
@@ -125,7 +106,7 @@ namespace core {
 			}
 
 			bool shouldBeDeleted() const {
-				return !spell->applies();
+				return !spell->isCasted();
 			}
 		private:
 			std::shared_ptr<ConcentrationBonusSpell> spell;
@@ -148,7 +129,7 @@ namespace core {
 			}
 
 			bool shouldApply() const final {
-				return spell_.lock()->isCasted;
+				return spell_.lock()->isCasted();
 			}
 
 			void spell(std::weak_ptr<ConcentrationBonusSpell> newSpell) {
@@ -181,12 +162,10 @@ namespace core {
 
 		std::weak_ptr<Actor> self;
 
-		bool isCasted = false;
-
 		std::shared_ptr<render::ParticleManager> particles;
 
-		bool applies() {
-			return isCasted && !self.expired();
+		bool isCasted() const {
+			return !self.expired() && self.lock()->castedSpell().get() == this;
 		}
 	};
 }

@@ -311,6 +311,14 @@ namespace core {
             }
         });
 
+        visitor.key("casted").callback([&](std::string_view s) {
+            if (auto stripped = util::strip(s); !stripped.empty() && util::isDigit(stripped[0])) {
+                spellsToCast.emplace_back(result, util::parseInt(stripped));
+            } else {
+                spellsToCast.emplace_back(result, std::string{stripped});
+            }
+        });
+
         util::forEackKeyValuePair(s, visitor);
         visitor.validate();
 
@@ -336,6 +344,12 @@ namespace core {
             result.append(std::format("spell {}\n", spell->stringify()));
         }
 
+        if (auto iter = std::ranges::find(actor.spells(), actor.castedSpell()); iter != actor.spells().end()) {
+            result.append(std::format("casted {}\n", iter - actor.spells().begin()));
+        } else if (actor.castedSpell()) {
+            result.append(std::format("casted {}\n", actor.castedSpell()->stringify()));
+        }
+
         for (const auto& item : actor.items()) {
             result.append(std::format("item {} {}\n", item->id(), item->stringifyData()));
         }
@@ -353,6 +367,27 @@ namespace core {
                 actor->addSpell(std::move(newSpell));
             } else {
                 throw SpellNotFound{id};
+            }
+        }
+
+        for (const auto& [actor, spellData] : spellsToCast) {
+            if (auto i = std::get_if<int>(&spellData)) {
+                actor->castedSpell(actor->spells()[*i]);
+                actor->spells()[*i]->restartCast();
+            } else if (auto spellStr = std::get_if<std::string>(&spellData)) {
+                auto [id, data] = util::parseKeyValuePair(*spellStr);
+
+                if (auto spell = spellManager->findSpell(id)) {
+                    auto newSpell = spell->clone();
+                    newSpell->parseData(data);
+                    actor->castedSpell(newSpell);
+                    newSpell->owner(actor);
+                    newSpell->restartCast();
+                } else {
+                    throw SpellNotFound{id};
+                }
+            } else {
+                TROTE_ASSERT(false, "unreachable");
             }
         }
     }
