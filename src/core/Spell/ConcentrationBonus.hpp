@@ -49,12 +49,11 @@ namespace core {
 			Spell{icon, id, name}, bonus{std::make_shared<Bonus>(bonuses, icon, std::format("{}__spellBonus", id), name)},
 			mana{mana_}, particleTexture{&particleTexture_}, particles{std::move(particles_)} {}
 
-		UsageResult cast(std::shared_ptr<Actor> self_, bool useMana = true) final {
-			if (self_->castedSpell().get() == this || useMana && !self_->useMana(mana)) {
+		UsageResult cast(bool useMana = true) final {
+			if (owner()->castedSpell().get() == this || useMana && !owner()->useMana(mana)) {
 				return UsageResult::FAILURE;
 			}
 
-			self = std::move(self_);
 			particles->add(std::make_unique<Particle>(shared_from_this(), particles));
 			return UsageResult::SUCCESS;
 		}
@@ -73,9 +72,11 @@ namespace core {
 			return cloned;
 		}
 
+		using Spell::owner;
+
 		void owner(std::weak_ptr<Actor> newOwner) {
-			self = std::move(newOwner);
-			self.lock()->addEffect(bonus->clone());
+			Spell::owner(newOwner);
+			owner()->addEffect(bonus->clone());
 		}
 
 		sf::Color frameColor() const final {
@@ -90,11 +91,7 @@ namespace core {
 			void update(sf::Time) final {}
 
 			void draw(sf::RenderTarget& target, core::Position<float> cameraPos) const {
-				if (spell->self.expired()) {
-					return;
-				}
-
-				auto tilePos = spell->self.lock()->position();
+				auto tilePos = spell->owner()->position();
 				auto screenPos = render::toScreen(util::geometry_cast<float>(util::getXY(tilePos)) + sf::Vector2f{0.5f, 0.5f});
 
 				auto textureSize = util::geometry_cast<float>(spell->particleTexture->getSize());
@@ -160,12 +157,10 @@ namespace core {
 		double mana;
 		const sf::Texture* particleTexture;
 
-		std::weak_ptr<Actor> self;
-
 		std::shared_ptr<render::ParticleManager> particles;
 
 		bool isCasted() const {
-			return !self.expired() && self.lock()->castedSpell().get() == this;
+			return owner()->castedSpell().get() == this;
 		}
 	};
 }

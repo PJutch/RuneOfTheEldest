@@ -91,7 +91,7 @@ namespace core {
 		auto player_ = player.lock();
 		if (auto newCurrentSpell = render::clickedSpell(clickPos, *renderContext.window, *player_)) {
 			auto spell = player_->spells()[*newCurrentSpell];
-			switch (spell->cast(player_)) {
+			switch (spell->cast()) {
 			case UsageResult::SUCCESS:
 				endTurn(spell);
 				break;
@@ -121,7 +121,7 @@ namespace core {
 			if constexpr (std::same_as<T, SelectedSpell>) {
 				auto target = render::mouseTile(clickPos, renderContext.camera->position(), *renderContext.window);
 				auto spell = player_->spells()[v.i];
-				if (spell->cast(player_, target) == UsageResult::SUCCESS) {
+				if (spell->cast(target) == UsageResult::SUCCESS) {
 					endTurn(spell);
 				}
 				return true;

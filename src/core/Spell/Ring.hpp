@@ -65,21 +65,21 @@ namespace core {
 			Spell{icon, id, name}, stats{stats_}, world{std::move(world_)},
 			particles{std::move(particles_)}, raycaster{std::move(raycaster_)}, randomEngine{&randomEngine_} {}
 
-		UsageResult cast(std::shared_ptr<Actor> self, bool useMana = true) final {
-			if (useMana && !self->useMana(stats.mana)) {
+		UsageResult cast(bool useMana = true) final {
+			if (useMana && !owner()->useMana(stats.mana)) {
 				return UsageResult::FAILURE;
 			}
 
 			for (const auto& actor : world->actors()) {
-				if (actor.get() != self.get()
-				 && util::distance(util::getXY(actor->position()), util::getXY(self->position())) <= stats.radius
-				 && raycaster->canSee(self->position(), actor->position())) {
+				if (actor.get() != owner().get()
+				 && util::distance(util::getXY(actor->position()), util::getXY(owner()->position())) <= stats.radius
+				 && raycaster->canSee(owner()->position(), actor->position())) {
 					stats.impact.apply(*actor);
 					world->makeSound({Sound::Type::ATTACK, true, actor->position()});
 				}
 			}
 
-			spawnRing(static_cast<core::Position<int>>(self->position()));
+			spawnRing(static_cast<core::Position<int>>(owner()->position()));
 
 			return UsageResult::SUCCESS;
 		}

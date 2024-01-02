@@ -55,17 +55,17 @@ namespace core {
 			            std::shared_ptr<World> world_, std::shared_ptr<render::ParticleManager> particles_) :
 			Spell{icon, id, name}, stats{stats_}, world{std::move(world_)}, particles{std::move(particles_)} {}
 
-		UsageResult cast(std::shared_ptr<Actor> self, core::Position<int> target, bool useMana = true) final {
+		UsageResult cast(core::Position<int> target, bool useMana = true) final {
 			auto other = world->actorAt(target);
 			if (!other)
 				return UsageResult::FAILURE;
 
-			if (useMana && !self->useMana(stats.mana))
+			if (useMana && !owner()->useMana(stats.mana))
 				return UsageResult::FAILURE;
 
 			stats.impact.apply(*other);
-			world->makeSound({Sound::Type::ATTACK, true, self->position()});
-			spawnParticle(core::Position<int>{self->position()}, target);
+			world->makeSound({Sound::Type::ATTACK, true, owner()->position()});
+			spawnParticle(core::Position<int>{owner()->position()}, target);
 
 			return UsageResult::SUCCESS;
 		}

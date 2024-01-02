@@ -64,14 +64,13 @@ namespace core {
 			Spell{icon, id, name}, stats{stats_}, world{std::move(world_)},
 			particles{std::move(particles_)}, raycaster{std::move(raycaster_)} {}
 
-		UsageResult cast(std::shared_ptr<Actor> self_, core::Position<int> targetPos, bool useMana_ = false) final {
+		UsageResult cast(core::Position<int> targetPos, bool useMana_ = false) final {
 			auto target_ = world->actorAt(targetPos);
 			if (!target_)
 				return UsageResult::FAILURE;
 
-			if (self_->castedSpell().get() != this || useMana != useMana_ || target_ != target.lock() || self_ != self.lock()) {
+			if (owner()->castedSpell().get() != this || useMana != useMana_ || target_ != target.lock()) {
 				target = std::move(target_);
-				self = std::move(self_);
 				damageMul = 1;
 				particles->add(std::make_unique<Ray>(shared_from_this(), particles));
 			}
@@ -113,17 +112,12 @@ namespace core {
 			return result;
 		}
 
-		void owner(std::weak_ptr<Actor> owner) final {
-			self = std::move(owner);
-		}
-
 		sf::Color frameColor() const final {
 			return isCasted() && canAttack() ? sf::Color::Green : sf::Color{128, 128, 128};
 		}
 	private:
 		Stats stats;
 
-		std::weak_ptr<Actor> self;
 		std::weak_ptr<Actor> target;
 		double damageMul = 1;
 
@@ -149,11 +143,7 @@ namespace core {
 			}
 
 			void draw(sf::RenderTarget& target, core::Position<float> cameraPos) const {
-				if (spell->self.expired()) {
-					return;
-				}
-
-				auto selfPos = spell->self.lock()->position();
+				auto selfPos = spell->owner()->position();
 
 				auto pos1 = render::toScreen(util::geometry_cast<float>(util::getXY(selfPos)) + sf::Vector2f{0.5f, 0.5f});
 				auto pos2 = render::toScreen(util::geometry_cast<float>(util::getXY(targetPos)) + sf::Vector2f{0.5f, 0.5f});
@@ -184,20 +174,19 @@ namespace core {
 		};
 
 		bool canAttack() const {
-			if (self.expired() || target.expired()) {
+			if (target.expired()) {
 				return false;
 			}
 
-			auto self_ = self.lock();
 			auto target_ = target.lock();
 
 			return target_->isAlive()
-				&& raycaster->canSee(self_->position(), target_->position())
-				&& self_->mana() >= stats.mana;
+				&& raycaster->canSee(owner()->position(), target_->position())
+				&& owner()->mana() >= stats.mana;
 		}
 
 		bool isCasted() const {
-			return !self.expired() && self.lock()->castedSpell().get() == this;
+			return owner()->castedSpell().get() == this;
 		}
 
 		bool attack() {
@@ -205,10 +194,9 @@ namespace core {
 				return false;
 			}
 
-			auto self_ = self.lock();
 			auto target_ = target.lock();
 
-			if (useMana && !self_->useMana(stats.mana)) {
+			if (useMana && !owner()->useMana(stats.mana)) {
 				return false;
 			}
 

@@ -46,11 +46,11 @@ namespace core {
 		HealSpell(Stats stats_, const sf::Texture& icon, std::string_view id, std::string_view name) :
 			Spell{icon, id, name}, stats{stats_} {}
 
-		UsageResult cast(std::shared_ptr<Actor> self, bool useMana = true) final {
-			if (useMana && !self->useMana(stats.mana))
+		UsageResult cast(bool useMana = true) final {
+			if (useMana && !owner()->useMana(stats.mana))
 				return UsageResult::FAILURE;
 
-			self->heal(stats.healed);
+			owner()->heal(stats.healed);
 			return UsageResult::SUCCESS;
 		}
 

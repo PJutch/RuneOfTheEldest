@@ -57,17 +57,17 @@ namespace core {
 			particles{std::move(particles_)}, playerMap{std::move(playerMap_)}, 
 			raycaster{std::move(raycaster_)} {}
 
-		UsageResult cast(std::shared_ptr<Actor> self, core::Position<int> target, bool useMana = true) final {
+		UsageResult cast(core::Position<int> target, bool useMana = true) final {
 			if (world->tiles()[static_cast<sf::Vector3i>(target)] != Tile::WALL)
 				return UsageResult::FAILURE;
 
-			if (useMana && !self->useMana(stats.mana))
+			if (useMana && !owner()->useMana(stats.mana))
 				return UsageResult::FAILURE;
 	
 			world->tiles()[static_cast<sf::Vector3i>(target)] = Tile::EMPTY;
 			raycaster->clear();
 			playerMap->updateTiles();
-			spawnParticle(core::Position<int>{self->position()}, target);
+			spawnParticle(core::Position<int>{owner()->position()}, target);
 
 			return UsageResult::SUCCESS;
 		}

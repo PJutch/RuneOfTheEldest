@@ -41,18 +41,15 @@ namespace core {
 		virtual ~Spell() = default;
 
 		/// @brief Casts spell
-		/// @param self Casting Actor
 		/// @param target Tile selected by player
 		/// @returns Feedback for gui
-		virtual UsageResult cast([[maybe_unused]] std::shared_ptr<Actor> self, 
-			                     [[maybe_unused]] core::Position<int> target, [[maybe_unused]] bool useMana = true) {
+		virtual UsageResult cast([[maybe_unused]] core::Position<int> target, [[maybe_unused]] bool useMana = true) {
 			return UsageResult::NOT_SUPPORTED;
 		}
 
 		/// @brief Casts spell
-		/// @param self Casting Actor
 		/// @returns Feedback for gui
-		virtual UsageResult cast([[maybe_unused]] std::shared_ptr<Actor> self, [[maybe_unused]] bool useMana = true) {
+		virtual UsageResult cast([[maybe_unused]] bool useMana = true) {
 			return UsageResult::NOT_SUPPORTED;
 		}
 
@@ -85,7 +82,9 @@ namespace core {
 
 		[[nodiscard]] virtual std::shared_ptr<Spell> clone() const = 0;
 
-		virtual void owner(std::weak_ptr<Actor>) {}
+		virtual void owner(std::weak_ptr<Actor> newOwner) {
+			owner_ = std::move(newOwner);
+		}
 
 		virtual sf::Color frameColor() const {
 			return sf::Color{128, 128, 128};
@@ -107,10 +106,16 @@ namespace core {
 		virtual [[nodiscard]] std::string stringify() const {
 			return id();
 		}
+	protected:
+		[[nodiscard]] std::shared_ptr<Actor> owner() const {
+			return owner_.lock();
+		}
 	private:
 		const sf::Texture* icon_;
 		std::string id_;
 		std::string name_;
+
+		std::weak_ptr<Actor> owner_;
 	};
 }
 

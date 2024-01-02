@@ -45,7 +45,7 @@ namespace core {
 			spell{std::move(spell_)}, spells{std::move(spells_)}, randomEngine{&randomEngine_} {}
 
 		UsageResult use(core::Position<int> target) final {
-			UsageResult result = spell->cast(self.lock(), target, false);
+			UsageResult result = spell->cast(target, false);
 			if (result == UsageResult::SUCCESS) {
 				shouldDestroy_ = true;
 			}
@@ -53,7 +53,7 @@ namespace core {
 		}
 
 		UsageResult use() final {
-			UsageResult result = spell->cast(self.lock(), false);
+			UsageResult result = spell->cast(false);
 			if (result == UsageResult::SUCCESS) {
 				shouldDestroy_ = true;
 			}
