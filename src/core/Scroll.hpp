@@ -44,16 +44,16 @@ namespace core {
 			Item{icon_, "scroll." + spell_->id(), spell_->name() + " scroll"}, 
 			spell{std::move(spell_)}, spells{std::move(spells_)}, randomEngine{&randomEngine_} {}
 
-		UsageResult use(std::shared_ptr<Actor> self, core::Position<int> target) final {
-			UsageResult result = spell->cast(self, target, false);
+		UsageResult use(core::Position<int> target) final {
+			UsageResult result = spell->cast(self.lock(), target, false);
 			if (result == UsageResult::SUCCESS) {
 				shouldDestroy_ = true;
 			}
 			return result;
 		}
 
-		UsageResult use([[maybe_unused]] std::shared_ptr<Actor> self) final {
-			UsageResult result = spell->cast(self, false);
+		UsageResult use() final {
+			UsageResult result = spell->cast(self.lock(), false);
 			if (result == UsageResult::SUCCESS) {
 				shouldDestroy_ = true;
 			}
@@ -71,6 +71,7 @@ namespace core {
 		}
 
 		void owner(std::weak_ptr<Actor> actor) final {
+			self = actor;
 			spell->owner(std::move(actor));
 		}
 
@@ -79,6 +80,7 @@ namespace core {
 		}
 	private:
 		std::shared_ptr<Spell> spell;
+		std::weak_ptr<Actor> self;
 		bool shouldDestroy_ = false;
 
 		std::shared_ptr<SpellManager> spells;

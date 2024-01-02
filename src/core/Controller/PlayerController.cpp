@@ -105,9 +105,9 @@ namespace core {
 			}
 		} else if (auto newCurrentItem = render::clickedItem(clickPos, *renderContext.window, *player_)) {
 			const auto& item = player_->items()[*newCurrentItem];
-			switch (item->use(player_)) {
+			switch (item->use()) {
 			case UsageResult::SUCCESS:
-				endTurn(nullptr);
+				endTurn(item->castedSpell());
 				break;
 			case UsageResult::FAILURE:
 				break;
@@ -128,7 +128,7 @@ namespace core {
 			} else if constexpr (std::same_as<T, SelectedItem>) {
 				auto target = render::mouseTile(clickPos, renderContext.camera->position(), *renderContext.window);
 				const auto& item = player_->items()[v.i];
-				if (item->use(player_, target) == UsageResult::SUCCESS) {
+				if (item->use(target) == UsageResult::SUCCESS) {
 					if (item->shouldDestroy()) {
 						selectedAbility_ = {};
 					}

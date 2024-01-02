@@ -46,14 +46,14 @@ namespace core {
 		/// @param self Using Actor
 		/// @param target Tile selected by player
 		/// @returns Feedback for gui
-		virtual UsageResult use([[maybe_unused]] std::shared_ptr<Actor> self, [[maybe_unused]] core::Position<int> target) {
+		virtual UsageResult use([[maybe_unused]] core::Position<int> target) {
 			return UsageResult::NOT_SUPPORTED;
 		}
 
 		/// @brief Uses item
 		/// @param self Using Actor
 		/// @returns Feedback for gui
-		virtual UsageResult use([[maybe_unused]] std::shared_ptr<Actor> self) {
+		virtual UsageResult use() {
 			return UsageResult::NOT_SUPPORTED;
 		}
 

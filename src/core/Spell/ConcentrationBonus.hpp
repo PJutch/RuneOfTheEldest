@@ -124,12 +124,12 @@ namespace core {
 					ConditionalBonus{bonuses, icon, id, name, false} {
 				if (bonuses.hpBonus != 0)
 					throw RequirementNotMet{"ConcentrationBonusSpell can't change max hp"};
-				if (bonuses.manaBonus != 0)
+				if (bonuses.manaBonus != 0) 
 					throw RequirementNotMet{"ConcentrationBonusSpell can't change max mana"};
 			}
 
 			bool shouldApply() const final {
-				return spell_.lock()->isCasted();
+				return !spell_.expired() && spell_.lock()->isCasted();
 			}
 
 			void spell(std::weak_ptr<ConcentrationBonusSpell> newSpell) {
