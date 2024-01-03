@@ -40,6 +40,10 @@ namespace render {
 			VISIBLE,
 		};
 
+		[[nodiscard]] TileState tileState(sf::Vector3i position) const noexcept {
+			return tileStates[position];
+		}
+
 		/// Saves seen Actor state to draw it.
 		struct SeenActor {
 			sf::Vector3i position;
@@ -54,12 +58,18 @@ namespace render {
 			const sf::Texture* texture;
 		};
 
-		[[nodiscard]] TileState tileState(sf::Vector3i position) const noexcept {
-			return tileStates[position];
-		}
-
 		[[nodiscard]] std::span<const SeenActor> seenActors() const noexcept {
 			return seenActors_;
+		}
+
+		/// Saves seen Item state to draw it.
+		struct SeenItem {
+			core::Position<int> position;
+			const sf::Texture* texture;
+		};
+
+		[[nodiscard]] std::span<const SeenItem> seenItems() const noexcept {
+			return seenItems_;
 		}
 
 		[[nodiscard]] bool canSee(sf::Vector3i position) const noexcept;
@@ -69,6 +79,7 @@ namespace render {
 		void update() {
 			updateTiles();
 			updateActors();
+			updateItems();
 		}
 
 		void updateTiles();
@@ -93,9 +104,13 @@ namespace render {
 
 		void parseSeenActor(std::string_view data);
 		[[nodiscard]] std::string stringifySeenActor(SeenActor seenActor) const;
+
+		void parseSeenItem(std::string_view data);
+		[[nodiscard]] std::string stringifySeenItem(SeenItem item) const;
 	private:
 		util::Array3D<TileState> tileStates;
 		std::vector<SeenActor> seenActors_;
+		std::vector<SeenItem> seenItems_;
 
 		std::vector<core::Sound> recentSounds_;
 
@@ -104,6 +119,7 @@ namespace render {
 		std::shared_ptr<util::Raycaster> raycaster;
 
 		void updateActors();
+		void updateItems();
 	};
 }
 

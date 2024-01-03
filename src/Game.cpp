@@ -164,6 +164,9 @@ void Game::loadFromString(std::string_view s) {
             throw ItemNotFound{id};
         }
     });
+    visitor.key("KnownItem").callback([&](std::string_view data) {
+        renderContext.playerMap->parseSeenItem(data);
+    });
 
     util::forEachSection(s, visitor);
     visitor.validate();
@@ -263,6 +266,11 @@ void Game::save() const {
     saveLogger->info("Saving known actors...");
     for (const auto& actor : renderContext.playerMap->seenActors()) {
         file << "[KnownActor]\n" << renderContext.playerMap->stringifySeenActor(actor);
+    }
+
+    saveLogger->info("Saving known items...");
+    for (auto item : renderContext.playerMap->seenItems()) {
+        file << "[KnownItem]\n" << renderContext.playerMap->stringifySeenItem(item);
     }
 
     saveLogger->info("Saving sounds...");

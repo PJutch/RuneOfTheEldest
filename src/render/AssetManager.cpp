@@ -17,6 +17,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "render/draw/Primitives.hpp"
 
+#include "util/parseKeyValue.hpp"
+
 #include <string_view>
 #include <filesystem>
 
@@ -63,23 +65,6 @@ namespace render {
         return textureCache[path];
     }
 
-    namespace {
-        class UnknownTexture : public util::RuntimeError {
-        public:
-            UnknownTexture(util::Stacktrace stacktrace = {}) :
-                util::RuntimeError{"Can't find path to texture, it's not in cache", std::move(stacktrace)} {}
-        };
-    }
-
-    [[nodiscard]] const std::filesystem::path& AssetManager::texturePath(const sf::Texture& texture) const {
-        for (const auto& record : textureCache) {
-            if (&record.second == &texture) {
-                return record.first;
-            }
-        }
-        throw UnknownTexture{};
-    }
-
     void AssetManager::loadTexture(sf::Texture& texture, std::string_view name, const std::filesystem::path& path) const {
         logger->info("Loading {} ...", name);
         if (!texture.loadFromFile(path.generic_string()))
@@ -101,4 +86,42 @@ namespace render {
         return result.getTexture();
     }
 
+    namespace {
+        class UnknownTextureType : public util::RuntimeError {
+        public:
+            UnknownTextureType(std::string_view type, util::Stacktrace stacktrace = {}) :
+                util::RuntimeError{std::format("Can't load \"{}\" texture", type), std::move(stacktrace)} {}
+        };
+    }
+
+    [[nodiscard]] const sf::Texture& AssetManager::parse(std::string_view s) const {
+        auto [type, data] = util::parseKeyValuePair(s);
+        if (type == "file") {
+            return texture(data);
+        } else if (type == "scroll") {
+            return scrollTexture(parse(data));
+        } else {
+            throw UnknownTextureType(type);
+        }
+    }
+
+    namespace {
+        class UnknownTexture : public util::RuntimeError {
+        public:
+            UnknownTexture(util::Stacktrace stacktrace = {}) :
+                util::RuntimeError{"Can't find texture in caches", std::move(stacktrace)} {}
+        };
+    }
+
+    [[nodiscard]] std::string AssetManager::stringify(const sf::Texture& t) const {
+        if (auto iter = std::ranges::find(textureCache, &t, [](const auto& p) { return &p.second; }); 
+                iter != textureCache.end()) {
+            return std::format("file {}", iter->first.generic_string());
+        } else if (auto iter = std::ranges::find(scrollTextureCache, &t, [](const auto& p) { return &p.second.getTexture(); }); 
+                iter != scrollTextureCache.end()) {
+            return std::format("scroll {}", stringify(*iter->first));
+        } else {
+            throw UnknownTexture{};
+        }
+    }
 }

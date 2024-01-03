@@ -58,9 +58,6 @@ namespace render {
 		/// @details Loads texture from given file and caches it
 		[[nodiscard]] const sf::Texture& texture(const std::filesystem::path& path) const noexcept;
 
-		/// @brief Finds texture path in cache by its address
-		[[nodiscard]] const std::filesystem::path& texturePath(const sf::Texture& texture) const;
-
 		/// Gets texture for given tile
 		[[nodiscard]] const sf::Texture& tileTexture(core::Tile tile) const noexcept {
 			return tileTextures[static_cast<int>(tile)];
@@ -88,6 +85,9 @@ namespace render {
 		[[nodiscard]] sf::Vector2i tileSize() const noexcept {
 			return tileSize_;
 		}
+
+		[[nodiscard]] const sf::Texture& parse(std::string_view data) const;
+		[[nodiscard]] std::string stringify(const sf::Texture& texture) const;
 	private:
 		mutable std::unordered_map<std::filesystem::path, sf::Texture> textureCache;
 

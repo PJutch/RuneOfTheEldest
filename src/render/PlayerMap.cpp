@@ -34,6 +34,7 @@ namespace render {
 
 	void PlayerMap::onGenerate() {
 		seenActors_.clear();
+		seenItems_.clear();
 		clearSounds();
 
 		tileStates.assign(world->tiles().shape(), seeEverything ? TileState::VISIBLE : TileState::UNSEEN);
@@ -59,8 +60,8 @@ namespace render {
 	}
 
 	void PlayerMap::updateActors() {
-		std::erase_if(seenActors_, [this, &player = world->player(), &world = *world](auto actor) -> bool {
-			return seeEverything || raycaster->canSee(player.position(), actor.position);
+		std::erase_if(seenActors_, [this](auto actor) -> bool {
+			return seeEverything || raycaster->canSee(world->player().position(), actor.position);
 		});
 
 		for (const auto& actor : world->actors())
@@ -73,6 +74,16 @@ namespace render {
 		std::ranges::sort(seenActors_, {}, [](SeenActor actor) {
 			return actor.position.y;
 		});
+	}
+
+	void PlayerMap::updateItems() {
+		std::erase_if(seenItems_, [this](auto item) -> bool {
+			return seeEverything || raycaster->canSee(world->player().position(), static_cast<sf::Vector3i>(item.position));
+		});
+
+		for (const auto& [position, item] : world->items())
+			if (!item->shouldDestroy() && (seeEverything || raycaster->canSee(world->player().position(), static_cast<sf::Vector3i>(position))))
+				seenItems_.emplace_back(position, &item->icon());
 	}
 
 	void PlayerMap::discoverLevelTiles(int z) {
@@ -182,7 +193,7 @@ namespace render {
 		});
 
 		visitor.key("texture").unique().required().callback([&](std::string_view data) {
-			result.texture = &assets->texture(data);
+			result.texture = &assets->parse(data);
 		});
 
 		util::forEackKeyValuePair(data, visitor);
@@ -194,6 +205,29 @@ namespace render {
 	[[nodiscard]] std::string PlayerMap::stringifySeenActor(SeenActor actor) const {
 		return std::format("position {}\nhp {}\nmaxHp {}\nmana {}\nmaxMana {}\naiState {}\ntexture {}\n",
 			               util::stringifyVector3(actor.position), actor.hp, actor.maxHp, actor.mana, actor.maxMana,
-			               stringifyAiState(actor.aiState), assets->texturePath(*actor.texture).generic_string());
+			               stringifyAiState(actor.aiState), assets->stringify(*actor.texture));
+	}
+
+	void PlayerMap::parseSeenItem(std::string_view data) {
+		SeenItem result;
+
+		util::KeyValueVisitor visitor;
+		visitor.key("position").unique().required().callback([&](std::string_view data) {
+			result.position = util::parsePositionInt(data);
+		});
+
+		visitor.key("texture").unique().required().callback([&](std::string_view data) {
+			result.texture = &assets->parse(data);
+		});
+
+		util::forEackKeyValuePair(data, visitor);
+		visitor.validate();
+
+		seenItems_.push_back(result);
+	}
+
+	[[nodiscard]] std::string PlayerMap::stringifySeenItem(SeenItem item) const {
+		return std::format("position {}\ntexture {}\n",
+			util::stringifyPosition(item.position), assets->stringify(*item.texture));
 	}
 }

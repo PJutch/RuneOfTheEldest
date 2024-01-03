@@ -127,22 +127,15 @@ namespace render {
 
         void draw(sf::RenderTarget& target,
                   const render::PlayerMap& playerMap, core::Position<float> cameraPos,
-                  core::Position<int> position, const core::Item& item) {
-            if (position.z != cameraPos.z)
+                  PlayerMap::SeenItem item) {
+            if (item.position.z != cameraPos.z)
                 return;
 
-            double colorMod;
-            switch (playerMap.tileState(sf::Vector3i{position})) {
-            case PlayerMap::TileState::VISIBLE: colorMod = 1.0; break;
-            case PlayerMap::TileState::MEMORIZED: colorMod = 0.5; break;
-            case PlayerMap::TileState::UNSEEN: colorMod = 0.0; break;
-            default: TROTE_ASSERT(false, "unreachable");
-            }
+            double colorMod = playerMap.canSee(static_cast<sf::Vector3i>(item.position)) ? 1.0 : 0.5;
 
-            sf::Vector2f spriteSize = util::geometry_cast<float>(item.icon().getSize());
-            sf::Vector2f maxHpBarSize{spriteSize.x, 2.f};
+            auto scale = static_cast<float>(tileSize.x) / item.texture->getSize().x;
 
-            drawSprite(target, toScreen(position.xy()), {0, 0}, item.icon(), colorMod, static_cast<float>(tileSize.x) / item.icon().getSize().x);
+            drawSprite(target, toScreen(item.position.xy()), {0, 0}, *item.texture, colorMod, scale);
         }
     }
 
@@ -156,8 +149,8 @@ namespace render {
 
         drawAreas(target, world, cameraPos);
 
-        for (const auto& [position, item] : world.items())
-            draw(target, playerMap, cameraPos, position, *item);
+        for (auto item : playerMap.seenItems())
+            draw(target, playerMap, cameraPos, item);
 
         for (const auto& actor : playerMap.seenActors())
             draw(target, assets, playerMap, cameraPos, actor);

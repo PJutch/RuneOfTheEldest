@@ -42,7 +42,7 @@ namespace core {
         }
 
         template <typename U>
-        explicit operator sf::Vector3<U>() {
+        explicit operator sf::Vector3<U>() const {
             return {static_cast<U>(x), static_cast<U>(y), static_cast<U>(z)};
         }
 
