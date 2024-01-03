@@ -1,4 +1,4 @@
-# discovers all tiles on the level
+# discovers all actors on the level
 
 name Sense monsters
 icon resources/textures/Spell/senseMonsters.png

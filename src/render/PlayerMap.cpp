@@ -123,6 +123,19 @@ namespace render {
 		});
 	}
 
+	void PlayerMap::discoverLevelItems(int z) {
+		if (seeEverything)
+			return;
+
+		std::erase_if(seenItems_, [z](auto item) -> bool {
+			return item.position.z == z;
+		});
+
+		for (const auto& [position, item] : world->items())
+			if (!item->shouldDestroy() && position.z == z)
+				seenItems_.emplace_back(position, &item->icon());
+	}
+
 	namespace {
 		class UnknownTileState : public util::RuntimeError {
 		public:
