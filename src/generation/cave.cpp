@@ -179,8 +179,8 @@ namespace generation {
             std::iota(aliases.begin(), aliases.end(), 0);
 
             while (!allSame(aliases)) {
-                int i = randomIndex(aliases, randomEngine);
-                int j = randomIndex(aliases, randomEngine);
+                ptrdiff_t i = randomIndex(aliases, randomEngine);
+                ptrdiff_t j = randomIndex(aliases, randomEngine);
 
                 if (aliases[i] == aliases[j])
                     continue;

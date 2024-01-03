@@ -58,7 +58,7 @@ namespace core {
 		}
 
 		/// Spell for Actor to start casting
-		virtual [[nodiscard]] std::shared_ptr<Spell> castedSpell() const {
+		[[nodiscard]] virtual std::shared_ptr<Spell> castedSpell() const {
 			return nullptr;
 		}
 
@@ -77,7 +77,7 @@ namespace core {
 			return name_;
 		}
 
-		virtual [[nodiscard]] bool shouldDestroy() const = 0;
+		[[nodiscard]] virtual bool shouldDestroy() const = 0;
 
 		[[nodiscard]] virtual std::unique_ptr<Item> clone() const = 0;
 
@@ -100,7 +100,7 @@ namespace core {
 			}
 		}
 
-		virtual [[nodiscard]] std::string stringifyData() const {
+		[[nodiscard]] virtual std::string stringifyData() const {
 			return "";
 		}
 	private:

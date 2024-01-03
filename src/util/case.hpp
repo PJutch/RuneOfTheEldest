@@ -22,7 +22,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 namespace util {
     inline std::string toLower(std::string s) {
         for (char& c : s) {
-            c = std::tolower(c);
+            c = static_cast<char>(std::tolower(c));
         }
         return s;
     }

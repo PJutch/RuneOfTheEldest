@@ -38,8 +38,8 @@ namespace util {
 
 			// checks points on line from pos1 to pos2 with step 1
 			for (double distance = offset; distance <= distance_ - offset; ++distance) {
-				int x = pos1.x + std::round(distance * cos);
-				int y = pos1.y + std::round(distance * sin);
+				int x = static_cast<int>(pos1.x + std::round(distance * cos));
+				int y = static_cast<int>(pos1.y + std::round(distance * sin));
 
 				if (!isPassable(world.tiles()[sf::Vector3i(x, y, z)]))
 					return true;

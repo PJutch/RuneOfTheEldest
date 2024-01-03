@@ -103,11 +103,11 @@ namespace core {
 			}
 		}
 
-		virtual [[nodiscard]] std::string stringify() const {
+		[[nodiscard]] virtual std::string stringify() const {
 			return id();
 		}
 
-		virtual [[nodiscatd]] bool hasScroll() const {
+		[[nodiscard]] virtual bool hasScroll() const {
 			return true;
 		}
 	protected:

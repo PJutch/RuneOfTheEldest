@@ -101,7 +101,7 @@ namespace core {
 			if (auto iter = items_.find(position); iter != items_.end()) {
 				auto item = std::move(iter->second);
 				items_.erase(iter);
-				return std::move(item);
+				return item;
 			}
 			return nullptr;
 		}
