@@ -75,7 +75,7 @@ namespace core {
 			spell->owner(std::move(actor));
 		}
 
-		virtual [[nodiscard]] bool shouldDestroy() const {
+		[[nodiscard]] virtual bool shouldDestroy() const {
 			return shouldDestroy_;
 		}
 	private:

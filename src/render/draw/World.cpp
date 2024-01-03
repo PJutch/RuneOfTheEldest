@@ -125,7 +125,7 @@ namespace render {
                 assets.aiStateIcon(actor.aiState), colorMod);
         }
 
-        void draw(sf::RenderTarget& target, const AssetManager& assets,
+        void draw(sf::RenderTarget& target,
                   const render::PlayerMap& playerMap, core::Position<float> cameraPos,
                   core::Position<int> position, const core::Item& item) {
             if (position.z != cameraPos.z)
@@ -157,7 +157,7 @@ namespace render {
         drawAreas(target, world, cameraPos);
 
         for (const auto& [position, item] : world.items())
-            draw(target, assets, playerMap, cameraPos, position, *item);
+            draw(target, playerMap, cameraPos, position, *item);
 
         for (const auto& actor : playerMap.seenActors())
             draw(target, assets, playerMap, cameraPos, actor);

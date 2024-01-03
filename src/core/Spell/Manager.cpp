@@ -128,7 +128,7 @@ namespace core {
 
 		template <>
 		struct parseImpl<ActorImpact> {
-			static ActorImpact parse(std::string_view s, EffectManager& effects, render::AssetManager&) {
+			static ActorImpact parse(std::string_view, EffectManager&, render::AssetManager&) {
 				throw ParseNotImplemented{"ActorImpact"};
 			}
 		};

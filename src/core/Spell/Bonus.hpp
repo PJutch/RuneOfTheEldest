@@ -60,7 +60,7 @@ namespace core {
 			}
 		}
 
-		[[nodiscatd]] bool hasScroll() const final {
+		[[nodiscard]] bool hasScroll() const final {
 			return false;
 		}
 	private:
