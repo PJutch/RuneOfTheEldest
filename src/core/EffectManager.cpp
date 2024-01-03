@@ -163,7 +163,7 @@ namespace core {
 		auto logger = loggerFactory.create("effects");
 		logger->info("Loading...");
 
-		std::filesystem::path basePath = "resources/Effects/";
+		std::filesystem::path basePath = "resources/descriptions/Effects/";
 		util::forEachFile(basePath, [&, this](std::ifstream& file, const std::filesystem::path& path) {
 			std::string id = util::toIdentifier(path, basePath);
 

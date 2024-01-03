@@ -320,7 +320,7 @@ namespace core {
 		auto logger = loggerFactory.create("effects");
 		logger->info("Loading...");
 
-		std::filesystem::path basePath = "resources/Spells/";
+		std::filesystem::path basePath = "resources/descriptions/Spells/";
 		util::forEachFile(basePath, [&, this](std::ifstream& file, const std::filesystem::path& path) {
 			std::string id = util::toIdentifier(path, basePath);
 			logger->info("Loading {} spell spec from {} ...", path.generic_string());

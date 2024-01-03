@@ -128,7 +128,7 @@ namespace core {
             randomEngine{&randomEngine_}, logger{loggerFactory.create("actors")} {
         logger->info("Loading...");
 
-        std::filesystem::path basePath = "resources/Actors/";
+        std::filesystem::path basePath = "resources/descriptions/Actors/";
         util::forEachFile(basePath, [&, this](std::ifstream& file, const std::filesystem::path& path) {
             std::string id = util::toIdentifier(path, basePath);
 
