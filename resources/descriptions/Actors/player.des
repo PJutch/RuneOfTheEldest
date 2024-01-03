@@ -23,3 +23,5 @@ controller player
 
 mana 10
 manaRegen 0.5
+
+spells dig

@@ -71,9 +71,7 @@ namespace core {
 			if (useMana && !owner_->useMana(stats.mana))
 				return UsageResult::FAILURE;
 
-			attack(*owner_, *other);
-
-			return UsageResult::SUCCESS;
+			return attack(*owner_, *other) ? UsageResult::SUCCESS : UsageResult::FAILURE;
 		}
 
 		[[nodiscard]] std::shared_ptr<Spell> clone() const final {
@@ -103,9 +101,9 @@ namespace core {
 			}
 		}
 
-		void attack(Actor& prev, Actor& next) {
+		bool attack(Actor& prev, Actor& next) {
 			if (!raycaster->canSee(prev.position(), next.position())) {
-				return;
+				return false;
 			}
 
 			stats.impact.apply(next);
@@ -116,6 +114,7 @@ namespace core {
 				if (actor.get() != &next && actor.get() != &prev && actor->isAlive() && actor->position().z == next.position().z
 				 && std::bernoulli_distribution{stats.chainChance}(*randomEngine))
 					attack(next, *actor);
+			return true;
 		}
 	};
 

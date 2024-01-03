@@ -67,7 +67,7 @@ namespace core {
 			particles{std::move(particles_)}, raycaster{std::move(raycaster_)} {}
 
 		UsageResult cast(core::Position<int> target, bool useMana = true) final {
-			if (useMana && !owner()->useMana(stats.mana)) {
+			if (!raycaster->canSee(owner()->position(), static_cast<sf::Vector3i>(target)) || useMana && !owner()->useMana(stats.mana)) {
 				return UsageResult::FAILURE;
 			}
 

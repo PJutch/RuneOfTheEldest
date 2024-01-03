@@ -58,10 +58,9 @@ namespace core {
 			raycaster{std::move(raycaster_)} {}
 
 		UsageResult cast(core::Position<int> target, bool useMana = true) final {
-			if (world->tiles()[static_cast<sf::Vector3i>(target)] != Tile::WALL)
-				return UsageResult::FAILURE;
-
-			if (useMana && !owner()->useMana(stats.mana))
+			if (world->tiles()[static_cast<sf::Vector3i>(target)] != Tile::WALL 
+			 || !raycaster->canSee(owner()->position(), static_cast<sf::Vector3i>(target))
+			 || useMana && !owner()->useMana(stats.mana))
 				return UsageResult::FAILURE;
 	
 			world->tiles()[static_cast<sf::Vector3i>(target)] = Tile::EMPTY;

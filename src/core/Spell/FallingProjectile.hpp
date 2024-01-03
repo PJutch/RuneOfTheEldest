@@ -53,15 +53,18 @@ namespace core {
 		};
 
 		FallingProjectileSpell(Stats stats_, const sf::Texture& icon, std::string_view id, std::string_view name,
-			                   std::shared_ptr<World> world_, std::shared_ptr<render::ParticleManager> particles_) :
-			Spell{icon, id, name}, stats{stats_}, world{std::move(world_)}, particles{std::move(particles_)} {}
+			                   std::shared_ptr<World> world_, std::shared_ptr<render::ParticleManager> particles_,
+							   std::shared_ptr<util::Raycaster> raycaster_) :
+			Spell{icon, id, name}, stats{stats_}, world{std::move(world_)}, 
+			particles{std::move(particles_)}, raycaster{std::move(raycaster_)} {}
 
 		UsageResult cast(core::Position<int> target, bool useMana = true) final {
 			auto other = world->actorAt(target);
 			if (!other)
 				return UsageResult::FAILURE;
 
-			if (useMana && !owner()->useMana(stats.mana))
+			if (!raycaster->canSee(owner()->position(), static_cast<sf::Vector3i>(target)) 
+			 || useMana && !owner()->useMana(stats.mana))
 				return UsageResult::FAILURE;
 
 			stats.impact.apply(*other);
@@ -79,6 +82,7 @@ namespace core {
 
 		std::shared_ptr<World> world;
 		std::shared_ptr<render::ParticleManager> particles;
+		std::shared_ptr<util::Raycaster> raycaster;
 
 		void spawnParticle(core::Position<int> target) {
 			auto pos2 = render::toScreen(util::geometry_cast<float>(target.xy()) + sf::Vector2f{0.5f, 0.5f});
