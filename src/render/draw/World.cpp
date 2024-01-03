@@ -38,7 +38,7 @@ namespace render {
             const sf::Texture& texture = assets.tileTexture(world.tiles()[position]);
             sf::Vector2f screenPos = toScreen(util::getXY(position));
 
-            switch (playerMap.tileState(position)) {
+            switch (playerMap.tileState(core::Position<int>{position})) {
             case PlayerMap::TileState::VISIBLE: drawSprite(target, screenPos, {0, 0}, texture); break;
             case PlayerMap::TileState::MEMORIZED: drawSprite(target, screenPos, {0, 0}, texture, 0.5); break;
             case PlayerMap::TileState::UNSEEN: break;
@@ -57,7 +57,7 @@ namespace render {
         void draw(sf::RenderTarget& target, const AssetManager& assets,
                   const core::World& world, const render::PlayerMap& playerMap,
                   core::Sound sound) {
-            if (playerMap.canSee(sound.position))
+            if (playerMap.canSee(core::Position<int>{sound.position}))
                 return;
 
             if (sound.volume(world.player().position()) < 0.01)
@@ -112,7 +112,7 @@ namespace render {
             sf::Vector2f aiStateIconSize = util::geometry_cast<float>(assets.aiStateIcon(actor.aiState).getSize());
             sf::Vector2f maxHpBarSize{spriteSize.x, 2.f};
 
-            sf::Vector2f topLeft = toScreen(util::getXY(actor.position))
+            sf::Vector2f topLeft = toScreen(actor.position.xy())
                 + util::bottomMiddle(util::geometry_cast<float>(render::tileSize))
                 - util::bottomMiddle(spriteSize);
 
@@ -131,7 +131,7 @@ namespace render {
             if (item.position.z != cameraPos.z)
                 return;
 
-            double colorMod = playerMap.canSee(static_cast<sf::Vector3i>(item.position)) ? 1.0 : 0.5;
+            double colorMod = playerMap.canSee(item.position) ? 1.0 : 0.5;
 
             auto scale = static_cast<float>(tileSize.x) / item.texture->getSize().x;
 

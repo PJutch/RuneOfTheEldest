@@ -155,7 +155,7 @@ namespace core {
 		sf::Vector3i nextStep_ = util::nextStep(player_->world(), player_->position(),
 				static_cast<sf::Vector3i>(travelTarget), *pathBuffer, 
 				[&playerMap = *renderContext.playerMap](const core::World& world, sf::Vector3i pos) {
-			return isPassable(world.tiles()[pos]) && playerMap.tileState(pos) != render::PlayerMap::TileState::UNSEEN;
+			return isPassable(world.tiles()[pos]) && playerMap.tileState(core::Position<int>{pos}) != render::PlayerMap::TileState::UNSEEN;
 		});
 
 		if (player_->tryMove(nextStep_, false)) {
@@ -172,7 +172,7 @@ namespace core {
 		auto player_ = player.lock();
 		if (auto nextStep = util::nextExploreStep(player_->world(), player_->position(), *pathBuffer,
 			[&playerMap = *renderContext.playerMap](const core::World&, sf::Vector3i pos) {
-			return playerMap.tileState(pos) == render::PlayerMap::TileState::UNSEEN;
+			return playerMap.tileState(core::Position<int>{pos}) == render::PlayerMap::TileState::UNSEEN;
 		})) {
 			if (player_->tryMove(*nextStep, false)) {
 				renderContext.playerMap->update();

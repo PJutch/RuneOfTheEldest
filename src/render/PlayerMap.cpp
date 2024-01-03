@@ -40,8 +40,8 @@ namespace render {
 		tileStates.assign(world->tiles().shape(), seeEverything ? TileState::VISIBLE : TileState::UNSEEN);
 	}
 
-	bool PlayerMap::canSee(sf::Vector3i position) const noexcept {
-		return seeEverything || raycaster->canSee(world->player().position(), position);
+	bool PlayerMap::canSee(core::Position<int> position) const noexcept {
+		return seeEverything || raycaster->canSee(world->player().position(), static_cast<sf::Vector3i>(position));
 	}
 
 	void PlayerMap::updateTiles() {
@@ -52,7 +52,7 @@ namespace render {
 		for (int z = 0; z < shapeZ; ++z) {
 			for (int x = 0; x < shapeX; ++x)
 				for (int y = 0; y < shapeY; ++y)
-					if (raycaster->canSee(world->player().position(), { x, y, z }))
+					if (canSee({ x, y, z }))
 						tileStates[{ x, y, z }] = TileState::VISIBLE;
 					else if (tileState({ x, y, z }) == TileState::VISIBLE)
 						tileStates[{ x, y, z }] = TileState::MEMORIZED;
@@ -61,12 +61,12 @@ namespace render {
 
 	void PlayerMap::updateActors() {
 		std::erase_if(seenActors_, [this](auto actor) -> bool {
-			return seeEverything || raycaster->canSee(world->player().position(), actor.position);
+			return canSee(actor.position);
 		});
 
 		for (const auto& actor : world->actors())
-			if (actor->isAlive() && (seeEverything || raycaster->canSee(world->player().position(), actor->position())))
-				seenActors_.emplace_back(actor->position(), 
+			if (actor->isAlive() && canSee(core::Position<int>{actor->position()}))
+				seenActors_.emplace_back(core::Position<int>{actor->position()},
 										 actor->hp(), actor->maxHp(), 
 										 actor->mana(), actor->maxMana(),
 					                     actor->controller().aiState(), actor->texture());
@@ -78,11 +78,11 @@ namespace render {
 
 	void PlayerMap::updateItems() {
 		std::erase_if(seenItems_, [this](auto item) -> bool {
-			return seeEverything || raycaster->canSee(world->player().position(), static_cast<sf::Vector3i>(item.position));
+			return canSee(item.position);
 		});
 
 		for (const auto& [position, item] : world->items())
-			if (!item->shouldDestroy() && (seeEverything || raycaster->canSee(world->player().position(), static_cast<sf::Vector3i>(position))))
+			if (!item->shouldDestroy() && canSee(position))
 				seenItems_.emplace_back(position, &item->icon());
 	}
 
@@ -113,7 +113,7 @@ namespace render {
 
 		for (const auto& actor : world->actors())
 			if (actor->isAlive() && actor->position().z == z)
-				seenActors_.emplace_back(actor->position(),
+				seenActors_.emplace_back(core::Position<int>{actor->position()},
 					actor->hp(), actor->maxHp(),
 					actor->mana(), actor->maxMana(),
 					actor->controller().aiState(), actor->texture());
@@ -182,7 +182,7 @@ namespace render {
 
 		util::KeyValueVisitor visitor;
 		visitor.key("position").unique().required().callback([&](std::string_view data) {
-			result.position = util::parseVector3i(data);
+			result.position = util::parsePositionInt(data);
 		});
 
 		visitor.key("hp").unique().required().callback([&](std::string_view data) {
@@ -217,7 +217,7 @@ namespace render {
 
 	[[nodiscard]] std::string PlayerMap::stringifySeenActor(SeenActor actor) const {
 		return std::format("position {}\nhp {}\nmaxHp {}\nmana {}\nmaxMana {}\naiState {}\ntexture {}\n",
-			               util::stringifyVector3(actor.position), actor.hp, actor.maxHp, actor.mana, actor.maxMana,
+			               util::stringifyPosition(actor.position), actor.hp, actor.maxHp, actor.mana, actor.maxMana,
 			               stringifyAiState(actor.aiState), assets->stringify(*actor.texture));
 	}
 

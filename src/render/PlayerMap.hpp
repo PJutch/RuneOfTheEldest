@@ -40,13 +40,13 @@ namespace render {
 			VISIBLE,
 		};
 
-		[[nodiscard]] TileState tileState(sf::Vector3i position) const noexcept {
-			return tileStates[position];
+		[[nodiscard]] TileState tileState(core::Position<int> position) const noexcept {
+			return tileStates[static_cast<sf::Vector3i>(position)];
 		}
 
 		/// Saves seen Actor state to draw it.
 		struct SeenActor {
-			sf::Vector3i position;
+			core::Position<int> position;
 
 			double hp;
 			double maxHp;
@@ -72,7 +72,7 @@ namespace render {
 			return seenItems_;
 		}
 
-		[[nodiscard]] bool canSee(sf::Vector3i position) const noexcept;
+		[[nodiscard]] bool canSee(core::Position<int> position) const noexcept;
 
 		void onGenerate();
 

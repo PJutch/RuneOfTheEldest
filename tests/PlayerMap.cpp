@@ -127,7 +127,7 @@ TEST(PlayerMap, seenActors) {
     playerMap.update();
 
     EXPECT_EQ(std::ssize(playerMap.seenActors()), 1);
-    EXPECT_EQ(playerMap.seenActors()[0].position, (sf::Vector3i{ 2, 0, 0 }));
+    EXPECT_EQ(playerMap.seenActors()[0].position, (core::Position<int>{ 2, 0, 0 }));
 }
 
 TEST(PlayerMap, seenActorsMemorization) {
@@ -145,5 +145,5 @@ TEST(PlayerMap, seenActorsMemorization) {
     actor->position({1, 0, 0});
 
     EXPECT_EQ(std::ssize(playerMap.seenActors()), 1);
-    EXPECT_EQ(playerMap.seenActors()[0].position, (sf::Vector3i{ 2, 0, 0 }));
+    EXPECT_EQ(playerMap.seenActors()[0].position, (core::Position<int>{ 2, 0, 0 }));
 }
