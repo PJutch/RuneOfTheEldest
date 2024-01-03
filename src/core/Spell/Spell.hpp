@@ -106,6 +106,10 @@ namespace core {
 		virtual [[nodiscard]] std::string stringify() const {
 			return id();
 		}
+
+		virtual [[nodiscatd]] bool hasScroll() const {
+			return true;
+		}
 	protected:
 		[[nodiscard]] std::shared_ptr<Actor> owner() const {
 			return owner_.lock();

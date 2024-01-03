@@ -29,8 +29,9 @@ namespace core {
 		logger->info("Loading...");
 
 		logger->info("Generating scrolls...");
-		for (const auto& spell : *spells)
+		for (const auto& spell : *spells | std::views::filter(&Spell::hasScroll)) {
 			items.push_back(std::make_unique<Scroll>(spell, assets->scrollTexture(spell->icon()), spells, *randomEngine));
+		}
 
 		logger->info("Loaded");
 	}

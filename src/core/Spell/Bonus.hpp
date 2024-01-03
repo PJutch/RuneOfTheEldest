@@ -59,6 +59,10 @@ namespace core {
 				return Spell::frameColor();
 			}
 		}
+
+		[[nodiscatd]] bool hasScroll() const final {
+			return false;
+		}
 	private:
 		class Bonus : public ConditionalBonus {
 		public:
