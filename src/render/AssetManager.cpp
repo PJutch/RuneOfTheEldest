@@ -15,6 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "AssetManager.hpp"
 
+#include "render/draw/Primitives.hpp"
+
 #include <string_view>
 #include <filesystem>
 
@@ -83,4 +85,20 @@ namespace render {
         if (!texture.loadFromFile(path.generic_string()))
             throw TextureLoadError{ std::format("Unable to load {}", name) };
     }
+
+    [[nodiscard]] const sf::Texture& AssetManager::scrollTexture(const sf::Texture& spellIcon) const {
+        sf::RenderTexture& result = scrollTextureCache[&spellIcon];
+        if (result.getSize() == sf::Vector2u{0, 0}) {
+            const sf::Texture& base = texture("resources/textures/scroll.png");
+            result.create(2 * base.getSize().x, 2 * base.getSize().y);
+
+            result.clear(sf::Color::Transparent);
+            drawSprite(result, {0, 0}, {0, 0}, base, 1.0, 2.0);
+            drawSprite(result, util::geometry_cast<float>(result.getSize()) / 2.f, 
+                       util::geometry_cast<float>(spellIcon.getSize()) / 2.f, spellIcon);
+            result.display();
+        }
+        return result.getTexture();
+    }
+
 }

@@ -142,11 +142,7 @@ namespace render {
             sf::Vector2f spriteSize = util::geometry_cast<float>(item.icon().getSize());
             sf::Vector2f maxHpBarSize{spriteSize.x, 2.f};
 
-            sf::Vector2f topLeft = toScreen(position.xy())
-                + util::bottomMiddle(util::geometry_cast<float>(render::tileSize))
-                - util::bottomMiddle(spriteSize);
-
-            drawSprite(target, topLeft, {0, 0}, item.icon(), colorMod);
+            drawSprite(target, toScreen(position.xy()), {0, 0}, item.icon(), colorMod, static_cast<float>(tileSize.x) / item.icon().getSize().x);
         }
     }
 

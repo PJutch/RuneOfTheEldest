@@ -30,7 +30,7 @@ namespace core {
 
 		logger->info("Generating scrolls...");
 		for (const auto& spell : *spells)
-			items.push_back(std::make_unique<Scroll>(spell, assets->texture("resources/textures/scroll.png"), spells, *randomEngine));
+			items.push_back(std::make_unique<Scroll>(spell, assets->scrollTexture(spell->icon()), spells, *randomEngine));
 
 		logger->info("Loaded");
 	}

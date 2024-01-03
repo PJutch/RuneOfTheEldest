@@ -63,12 +63,14 @@ namespace render {
             target.draw(text);
         }
 
+        const sf::Vector2f iconSize{32.f, 32.f};
+
         void drawIcon(sf::RenderTarget& target, sf::FloatRect rect, sf::Color boundaryColor, const sf::Texture& icon) {
             drawRect(target, rect, sf::Color{32, 32, 32}, boundaryColor, 2.f);
 
             sf::Vector2f iconCenter = util::geometry_cast<float>(icon.getSize()) / 2.f;
             sf::Vector2f center = rect.getPosition() + rect.getSize() / 2.f;
-            drawSprite(target, center, iconCenter, icon, 1.0, 2.f);
+            drawSprite(target, center, iconCenter, icon, 1.0, iconSize.x / icon.getSize().x);
         }
 
         enum class IconMode {
@@ -85,7 +87,6 @@ namespace render {
             target.setView(createFullscreenView(1000.f, target.getSize()));
 
             const sf::Vector2f screenSize = target.getView().getSize();
-            const sf::Vector2f iconSize{32.f, 32.f};
             const float padding = 4.f;
 
             const float firstXCenter = (mode == IconMode::TOP_RIGHT || mode == IconMode::BOTTOM_RIGHT
@@ -125,7 +126,6 @@ namespace render {
         target.setView(createFullscreenView(1000.f, target.getSize()));
 
         const sf::Vector2f screenSize = target.getView().getSize();
-        const sf::Vector2f iconSize{32.f, 32.f};
         float padding = 4.f;
 
         const float firstXCenter = (mode == IconMode::TOP_RIGHT || mode == IconMode::BOTTOM_RIGHT

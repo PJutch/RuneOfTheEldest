@@ -24,6 +24,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/Exception.hpp"
 
 #include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/Font.hpp>
 
@@ -75,6 +76,9 @@ namespace render {
 			return aiStateIcons[static_cast<int>(state)];
 		}
 
+		/// Creates and caches texture for scroll
+		[[nodiscard]] const sf::Texture& scrollTexture(const sf::Texture& spellIcon) const;
+
 		/// Gets default font
 		[[nodiscard]] const sf::Font& font() const noexcept {
 			return font_;
@@ -93,6 +97,8 @@ namespace render {
 		std::array<sf::Texture, core::Sound::totalTypes * 2> soundIcons;
 
 		std::array<sf::Texture, totalAiStates> aiStateIcons;
+
+		mutable std::unordered_map<const sf::Texture*, sf::RenderTexture> scrollTextureCache;
 
 		sf::Font font_;
 
