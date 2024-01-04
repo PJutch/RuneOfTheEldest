@@ -21,16 +21,21 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "render/AssetManager.hpp"
 
+#include "util/parse.hpp"
+
 namespace core {
 	ItemManager::ItemManager(std::shared_ptr<render::AssetManager> assets,
 							 std::shared_ptr<SpellManager> spells, std::shared_ptr<core::World> world_,
 							 util::RandomEngine& randomEngine_, util::LoggerFactory& loggerFactory) : 
-			logger{loggerFactory.create("items")}, world {std::move(world_)}, randomEngine{&randomEngine_} {
+		logger{loggerFactory.create("items")}, world{std::move(world_)}, spells{std::move(spells)}, 
+		assets{std::move(assets)}, randomEngine{&randomEngine_} {}
+
+	void ItemManager::load() {
 		logger->info("Loading...");
 
 		logger->info("Generating scrolls...");
 		for (const auto& spell : *spells | std::views::filter(&Spell::hasScroll)) {
-			items.push_back(std::make_unique<Scroll>(spell, assets->scrollTexture(spell->icon()), spells, *randomEngine));
+			items.push_back(std::make_unique<Scroll>(spell, shared_from_this(), assets, *randomEngine));
 		}
 
 		logger->info("Loaded");
@@ -47,5 +52,24 @@ namespace core {
 			}
 		}
 		logger->info("Spawned");
+	}
+
+	void ItemManager::parseIdentifiedItems(std::string_view data) {
+		for (std::string_view id : util::parseList(data)) {
+			identify(util::strip(id));
+		}
+	}
+
+	std::string ItemManager::stringifyIdentifiedItems() const {
+		std::string result;
+		for (std::string_view id : identifiedItems) {
+			if (result.empty()) {
+				result = id;
+			} else {
+				result += ", ";
+				result += id;
+			}
+		}
+		return result;
 	}
 }

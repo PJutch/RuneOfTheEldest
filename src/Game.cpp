@@ -53,6 +53,8 @@ Game::Game(std::shared_ptr<core::World> newWorld,
         renderContext{std::move(renderContext_)},
         generationLogger{ loggerFactory.create("generation") },
         saveLogger{loggerFactory.create("save")} {
+    items->load();
+
     addOnGenerateListener([camera = renderContext.camera]() { camera->reset(); });
     addOnGenerateListener([playerMap = renderContext.playerMap]() { playerMap->onGenerate(); });
     addOnGenerateListener([particles = renderContext.particles]() { particles->clear(); });
@@ -167,6 +169,9 @@ void Game::loadFromString(std::string_view s) {
     visitor.key("KnownItem").callback([&](std::string_view data) {
         renderContext.playerMap->parseSeenItem(data);
     });
+    visitor.key("IdentifiedItems").callback([&](std::string_view data) {
+        items->parseIdentifiedItems(data);
+    });
 
     util::forEachSection(s, visitor);
     visitor.validate();
@@ -277,6 +282,9 @@ void Game::save() const {
     for (const auto& sound : renderContext.playerMap->recentSounds()) {
         file << "[Sound]\n" << sound.stringify();
     }
+
+    saveLogger->info("Saving identified items...");
+    file << "[IdentifiedItems]\n" << items->stringifyIdentifiedItems() << '\n';
 
     saveLogger->info("Saving player leveling data...");
     file << "[Xp]\n" << xpManager->stringify();

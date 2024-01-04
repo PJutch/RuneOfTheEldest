@@ -20,6 +20,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "core/Item.hpp"
 #include "core/Spell/Spell.hpp"
 #include "core/Spell/Manager.hpp"
+#include "core/ItemManager.hpp"
+
+#include "render/AssetManager.hpp"
 
 #include "util/Exception.hpp"
 #include "util/random.hpp"
@@ -39,14 +42,15 @@ namespace core {
 	/// Scroll that Actor can use to cast spell to cast spell without using mana
 	class Scroll : public Item {
 	public:
-		Scroll(std::shared_ptr<Spell> spell_, const sf::Texture& icon_, 
-			   std::shared_ptr<SpellManager> spells_, util::RandomEngine& randomEngine_) :
-			Item{icon_, "scroll." + spell_->id(), spell_->name() + " scroll"}, 
-			spell{std::move(spell_)}, spells{std::move(spells_)}, randomEngine{&randomEngine_} {}
+		Scroll(std::shared_ptr<Spell> spell_, std::shared_ptr<ItemManager> items_, 
+			   std::shared_ptr<render::AssetManager> assets_, util::RandomEngine& randomEngine_) :
+			Item{"scroll." + spell_->id()}, spell{std::move(spell_)}, 
+			items{std::move(items_)}, assets{std::move(assets_)}, randomEngine{&randomEngine_} {}
 
 		UsageResult use(core::Position<int> target) final {
 			UsageResult result = spell->cast(target, false);
 			if (result == UsageResult::SUCCESS) {
+				items->identify(id());
 				shouldDestroy_ = true;
 			}
 			return result;
@@ -55,6 +59,7 @@ namespace core {
 		UsageResult use() final {
 			UsageResult result = spell->cast(false);
 			if (result == UsageResult::SUCCESS) {
+				items->identify(id());
 				shouldDestroy_ = true;
 			}
 			return result;
@@ -62,6 +67,15 @@ namespace core {
 
 		[[nodiscard]] std::shared_ptr<Spell> castedSpell() const final {
 			return spell;
+		}
+
+		[[nodiscard]] const sf::Texture& icon() const final {
+			return assets->scrollTexture(items->isIdentified(id()) ? spell->icon()
+																   : assets->texture("resources/textures/Spell/unknown.png"));
+		}
+
+		[[nodiscard]] std::string name() const final {
+			return items->isIdentified(id()) ? spell->name() + " scroll" : "Unknown scroll";
 		}
 
 		[[nodiscard]] std::unique_ptr<Item> clone() const final {
@@ -83,7 +97,8 @@ namespace core {
 		std::weak_ptr<Actor> self;
 		bool shouldDestroy_ = false;
 
-		std::shared_ptr<SpellManager> spells;
+		std::shared_ptr<ItemManager> items;
+		std::shared_ptr<render::AssetManager> assets;
 		util::RandomEngine* randomEngine;
 	};
 }

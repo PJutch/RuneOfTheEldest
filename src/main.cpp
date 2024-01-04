@@ -93,7 +93,7 @@ int main() {
         logger->critical("Error occured: {}\nStacktrace:\n{}", 
                          e.what(), e.stacktrace());
     } catch (const std::exception& e) {
-        logger->critical("Error occured: {}", e.what());
+       logger->critical("Error occured: {}", e.what());
     }
 
     logger->info("Exited");

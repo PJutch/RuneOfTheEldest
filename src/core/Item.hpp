@@ -38,8 +38,7 @@ namespace core {
 	/// Item that Actor can carry around and use
 	class Item {
 	public:
-		Item(const sf::Texture& newIcon, std::string_view newId, std::string_view newName) :
-			icon_{&newIcon}, id_{newId}, name_{newName} {}
+		Item(std::string_view newId) : id_{newId} {}
 		virtual ~Item() = default;
 
 		/// @brief Uses item
@@ -62,20 +61,16 @@ namespace core {
 			return nullptr;
 		}
 
-		/// Item icon for ingame display
-		[[nodiscard]] const sf::Texture& icon() const {
-			return *icon_;
-		}
-
 		/// Item name for dev use
 		[[nodiscard]] const std::string& id() const {
 			return id_;
 		}
 
+		/// Item icon for ingame display
+		[[nodiscard]] virtual const sf::Texture& icon() const = 0;
+
 		/// Item name for ingame display
-		[[nodiscard]] const std::string& name() const {
-			return name_;
-		}
+		[[nodiscard]] virtual std::string name() const = 0;
 
 		[[nodiscard]] virtual bool shouldDestroy() const = 0;
 
@@ -104,9 +99,7 @@ namespace core {
 			return "";
 		}
 	private:
-		const sf::Texture* icon_;
 		std::string id_;
-		std::string name_;
 	};
 }
 

@@ -24,14 +24,18 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "util/log.hpp"
 
+#include <unordered_set>
+
 namespace core {
 	/// Manages loading items
-	class ItemManager {
+	class ItemManager : public std::enable_shared_from_this<ItemManager> {
 	public:
 		ItemManager() = default;
 		ItemManager(std::shared_ptr<render::AssetManager> assets,
 			        std::shared_ptr<SpellManager> spells, std::shared_ptr<core::World> world, 
 					util::RandomEngine& randomEngine, util::LoggerFactory& loggerFactory);
+
+		void load();
 
 		auto begin() {
 			return items.begin();
@@ -65,12 +69,26 @@ namespace core {
 		}
 
 		void spawn();
+
+		bool isIdentified(std::string_view itemId) {
+			return identifiedItems.contains(std::string{itemId});
+		}
+
+		void identify(std::string_view itemId) {
+			identifiedItems.insert(std::string{itemId});
+		}
+
+		void parseIdentifiedItems(std::string_view data);
+		std::string stringifyIdentifiedItems() const;
 	private:
 		std::vector<std::unique_ptr<Item>> items;
+		std::unordered_set<std::string> identifiedItems;
 
 		std::shared_ptr<spdlog::logger> logger;
 
 		std::shared_ptr<World> world;
+		std::shared_ptr<SpellManager> spells;
+		std::shared_ptr<render::AssetManager> assets;
 		util::RandomEngine* randomEngine;
 	};
 }
