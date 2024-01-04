@@ -30,6 +30,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "SenseMonsters.hpp"
 #include "SenseItems.hpp"
 #include "Banish.hpp"
+#include "Identify.hpp"
 
 #include "core/DamageType.hpp"
 
@@ -356,6 +357,8 @@ namespace core {
 				spells.push_back(loadSpell<SenseItemsSpell>(params, id, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
 			} else if (type == "banish") {
 				spells.push_back(loadSpell<BanishSpell>(params, id, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
+			} else if (type == "identify") {
+				spells.push_back(loadSpell<IdentifySpell>(params, id, effectManager, assets, world, particles, playerMap, raycaster, randomEngine));
 			} else if (type == "bonus") {
 				spells.push_back(loadBonusSpell(params, id, assets));
 			} else if (type == "concentrationBonus") {

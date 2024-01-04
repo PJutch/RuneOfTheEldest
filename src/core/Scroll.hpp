@@ -50,7 +50,16 @@ namespace core {
 		UsageResult use(core::Position<int> target) final {
 			UsageResult result = spell->cast(target, false);
 			if (result == UsageResult::SUCCESS) {
-				items->identify(id());
+				identify();
+				shouldDestroy_ = true;
+			}
+			return result;
+		}
+
+		UsageResult use(Item& target) final {
+			UsageResult result = spell->cast(target, false);
+			if (result == UsageResult::SUCCESS) {
+				identify();
 				shouldDestroy_ = true;
 			}
 			return result;
@@ -59,7 +68,7 @@ namespace core {
 		UsageResult use() final {
 			UsageResult result = spell->cast(false);
 			if (result == UsageResult::SUCCESS) {
-				items->identify(id());
+				identify();
 				shouldDestroy_ = true;
 			}
 			return result;
@@ -67,6 +76,10 @@ namespace core {
 
 		[[nodiscard]] std::shared_ptr<Spell> castedSpell() const final {
 			return spell;
+		}
+
+		void identify() final {
+			items->identify(id());
 		}
 
 		[[nodiscard]] const sf::Texture& icon() const final {

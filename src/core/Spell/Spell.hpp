@@ -48,6 +48,13 @@ namespace core {
 		}
 
 		/// @brief Casts spell
+		/// @param target Item selected by player
+		/// @returns Feedback for gui
+		virtual UsageResult cast([[maybe_unused]] Item& target, [[maybe_unused]] bool useMana = true) {
+			return UsageResult::NOT_SUPPORTED;
+		}
+
+		/// @brief Casts spell
 		/// @returns Feedback for gui
 		virtual UsageResult cast([[maybe_unused]] bool useMana = true) {
 			return UsageResult::NOT_SUPPORTED;

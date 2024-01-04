@@ -103,19 +103,40 @@ namespace core {
 			default:
 				TROTE_ASSERT(false, "unreachable");
 			}
-		} else if (auto newCurrentItem = render::clickedItem(clickPos, *renderContext.window, *player_)) {
-			const auto& item = player_->items()[*newCurrentItem];
-			switch (item->use()) {
-			case UsageResult::SUCCESS:
-				endTurn(item->castedSpell());
-				break;
-			case UsageResult::FAILURE:
-				break;
-			case UsageResult::NOT_SUPPORTED:
-				selectedAbility_ = SelectedItem{*newCurrentItem};
-				break;
-			default:
-				TROTE_ASSERT(false, "unreachable");
+		} else if (auto iClickedItem = render::clickedItem(clickPos, *renderContext.window, *player_)) {
+			auto& clickedItem = player_->items()[*iClickedItem];
+			if (!std::visit([&]<typename T>(T v) {
+				if constexpr (std::same_as<T, SelectedSpell>) {
+					auto spell = player_->spells()[v.i];
+					if (spell->cast(*clickedItem) == UsageResult::SUCCESS) {
+						endTurn(spell);
+					}
+					return true;
+				} else if constexpr (std::same_as<T, SelectedItem>) {
+					const auto& item = player_->items()[v.i];
+					if (item->use(*clickedItem) == UsageResult::SUCCESS) {
+						if (item->shouldDestroy()) {
+							selectedAbility_ = {};
+						}
+						endTurn(item->castedSpell());
+					}
+					return true;
+				} else {
+					return false;
+				}
+			}, selectedAbility())) {
+				switch (clickedItem->use()) {
+				case UsageResult::SUCCESS:
+					endTurn(clickedItem->castedSpell());
+					break;
+				case UsageResult::FAILURE:
+					break;
+				case UsageResult::NOT_SUPPORTED:
+					selectedAbility_ = SelectedItem{*iClickedItem};
+					break;
+				default:
+					TROTE_ASSERT(false, "unreachable");
+				}
 			}
 		} else if (!std::visit([&]<typename T>(T v) {
 			if constexpr (std::same_as<T, SelectedSpell>) {

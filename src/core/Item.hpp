@@ -42,7 +42,6 @@ namespace core {
 		virtual ~Item() = default;
 
 		/// @brief Uses item
-		/// @param self Using Actor
 		/// @param target Tile selected by player
 		/// @returns Feedback for gui
 		virtual UsageResult use([[maybe_unused]] core::Position<int> target) {
@@ -50,7 +49,13 @@ namespace core {
 		}
 
 		/// @brief Uses item
-		/// @param self Using Actor
+		/// @param target Item selected by player
+		/// @returns Feedback for gui
+		virtual UsageResult use([[maybe_unused]] Item& target) {
+			return UsageResult::NOT_SUPPORTED;
+		}
+
+		/// @brief Uses item
 		/// @returns Feedback for gui
 		virtual UsageResult use() {
 			return UsageResult::NOT_SUPPORTED;
@@ -60,6 +65,9 @@ namespace core {
 		[[nodiscard]] virtual std::shared_ptr<Spell> castedSpell() const {
 			return nullptr;
 		}
+
+		/// Reveals this item type to player
+		virtual void identify() = 0;
 
 		/// Item name for dev use
 		[[nodiscard]] const std::string& id() const {
