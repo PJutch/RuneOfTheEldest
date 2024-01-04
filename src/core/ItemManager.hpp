@@ -78,6 +78,10 @@ namespace core {
 			identifiedItems.insert(std::string{itemId});
 		}
 
+		void clearIdentifiedItems() {
+			identifiedItems.clear();
+		}
+
 		void parseIdentifiedItems(std::string_view data);
 		std::string stringifyIdentifiedItems() const;
 	private:

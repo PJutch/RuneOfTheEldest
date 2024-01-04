@@ -212,6 +212,7 @@ void Game::generate() {
     generationLogger->info("Resetting world...");
     world->clearActors();
     world->clearItems();
+    items->clearIdentifiedItems();
     world->tiles().assign({ 50, 50, 10 }, core::Tile::WALL);
 
     generationLogger->info("Generating dungeon...");
