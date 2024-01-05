@@ -232,7 +232,7 @@ namespace core {
 			state = State::WAITING_MANA;
 		}
 		renderContext.playerMap->clearSounds();
-		player_->endTurn();
+		player_->endTurn(player_->castedSpell());
 	}
 
 	bool PlayerController::shouldRest() const {
@@ -255,7 +255,8 @@ namespace core {
 		case State::WAITING_HP:
 		case State::WAITING_MANA: {
 			if (shouldRest()) {
-				player.lock()->endTurn();
+				auto player_ = player.lock();
+				player_->endTurn(player_->castedSpell());
 				return true;
 			} else {
 				state = State::WAITING_INPUT;
