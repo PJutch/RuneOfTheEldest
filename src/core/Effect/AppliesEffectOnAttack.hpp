@@ -28,8 +28,16 @@ namespace core {
 				const sf::Texture& icon_, std::string_view id_, std::string_view name_) :
 			Effect{icon_, id_, name_, false}, appliedEffectName{appliedEffect_} {}
 
+		class UnknownEffect : public util::RuntimeError {
+		public:
+			UnknownEffect(std::string_view name, util::Stacktrace stacktrace = {}) :
+				util::RuntimeError{std::format("Can't find effect \"{}\"", name), std::move(stacktrace)} {}
+		};
+
 		void init(const EffectManager& effects) final {
 			appliedEffect = effects.findEffect(appliedEffectName);
+			if (!appliedEffect)
+				throw UnknownEffect{appliedEffectName};
 		}
 
 		void onAttack(Actor& actor) const final {

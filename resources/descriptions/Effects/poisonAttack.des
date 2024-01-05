@@ -3,4 +3,4 @@ icon resources/textures/Effects/poisonAttack.png
 
 type appliesEffectOnAttack
 
-applies Poison
+applies poison
