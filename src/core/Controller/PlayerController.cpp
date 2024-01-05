@@ -108,19 +108,33 @@ namespace core {
 			if (!std::visit([&]<typename T>(T v) {
 				if constexpr (std::same_as<T, SelectedSpell>) {
 					auto spell = player_->spells()[v.i];
-					if (spell->cast(*clickedItem) == UsageResult::SUCCESS) {
+					switch (spell->cast(*clickedItem)) {
+					case UsageResult::SUCCESS:
 						endTurn(spell);
+						return true;
+					case UsageResult::FAILURE:
+						return true;
+					case UsageResult::NOT_SUPPORTED:
+						return false;
+					default:
+						TROTE_ASSERT(false, "unreachable");
 					}
-					return true;
 				} else if constexpr (std::same_as<T, SelectedItem>) {
 					const auto& item = player_->items()[v.i];
-					if (item->use(*clickedItem) == UsageResult::SUCCESS) {
+					switch (item->use(*clickedItem)) {
+					case UsageResult::SUCCESS:
 						if (item->shouldDestroy()) {
 							selectedAbility_ = {};
 						}
 						endTurn(item->castedSpell());
+						return true;
+					case UsageResult::FAILURE:
+						return true;
+					case UsageResult::NOT_SUPPORTED:
+						return false;
+					default:
+						TROTE_ASSERT(false, "unreachable");
 					}
-					return true;
 				} else {
 					return false;
 				}
