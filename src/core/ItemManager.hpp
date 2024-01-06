@@ -68,6 +68,13 @@ namespace core {
 			return iter == items.end() ? nullptr : iter->get();
 		}
 
+		Item* findItem(std::string_view id) {
+			auto iter = std::ranges::find(items, id, [](const auto& item) {
+				return item->id();
+			});
+			return iter == items.end() ? nullptr : iter->get();
+		}
+
 		void spawn();
 
 		bool isIdentified(std::string_view itemId) {
@@ -84,8 +91,11 @@ namespace core {
 
 		void parseIdentifiedItems(std::string_view data);
 		std::string stringifyIdentifiedItems() const;
+
+		void parseItemTextures(std::string_view data);
+		std::string stringifyItemTextures() const;
 	private:
-		std::vector<std::unique_ptr<Item>> items;
+		std::vector<std::shared_ptr<Item>> items;
 		std::unordered_set<std::string> identifiedItems;
 
 		std::shared_ptr<spdlog::logger> logger;

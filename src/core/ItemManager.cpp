@@ -38,7 +38,7 @@ namespace core {
 
 		// logger->info("Generating scrolls...");
 		// for (const auto& spell : *spells | std::views::filter(&Spell::hasScroll)) {
-		// 	items.push_back(std::make_unique<Scroll>(spell, shared_from_this(), assets, *randomEngine));
+		// 	items.push_back(std::make_shared<Scroll>(spell, shared_from_this(), assets, *randomEngine));
 		// }
 
 		logger->info("Loading potions...");
@@ -63,7 +63,7 @@ namespace core {
 			util::forEackKeyValuePair(is, visitor);
 			visitor.validate();
 
-			items.push_back(std::make_unique<Potion>(hp, id, name, shared_from_this(), assets, *randomEngine));
+			items.push_back(std::make_shared<Potion>(hp, id, name, shared_from_this(), assets, *randomEngine));
 		});
 
 		logger->info("Loaded");
@@ -96,6 +96,34 @@ namespace core {
 			} else {
 				result += ", ";
 				result += id;
+			}
+		}
+		return result;
+	}
+
+	namespace {
+		class UnknownItem : public util::RuntimeError {
+		public:
+			UnknownItem(std::string_view item, util::Stacktrace stacktrace = {}) :
+				util::RuntimeError{std::format("Can't find \"{}\" item", item), std::move(stacktrace)} {}
+		};
+	}
+
+	void ItemManager::parseItemTextures(std::string_view s) {
+		util::forEackKeyValuePair(s, [&](std::string_view id, std::string_view data) {
+			if (Item* item = findItem(id)) {
+				item->parseTextureData(data);
+			} else {
+				throw UnknownItem{id};
+			}
+		});
+	}
+
+	std::string ItemManager::stringifyItemTextures() const {
+		std::string result;
+		for (const auto& item : items) {
+			if (auto data = item->stringifyTextureData()) {
+				result += std::format("{} {}", item->id(), *data);
 			}
 		}
 		return result;

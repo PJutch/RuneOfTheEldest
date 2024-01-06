@@ -77,6 +77,18 @@ namespace core {
 		[[nodiscard]] virtual bool shouldDestroy() const {
 			return shouldDestroy_;
 		}
+
+		void parseTextureData(std::string_view data) final {
+			icon_ = &assets->parse(data);
+		}
+
+		[[nodiscard]] std::optional<std::string> stringifyTextureData() const final {
+			return assets->stringify(*icon_);
+		}
+
+		void onLoad() final {
+			icon_ = &items->findItem(id())->icon();
+		}
 	private:
 		double hp;
 

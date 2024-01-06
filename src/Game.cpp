@@ -172,9 +172,22 @@ void Game::loadFromString(std::string_view s) {
     visitor.key("IdentifiedItems").callback([&](std::string_view data) {
         items->parseIdentifiedItems(data);
     });
+    visitor.key("ItemTextures").callback([&](std::string_view data) {
+        items->parseItemTextures(data);
+    });
 
     util::forEachSection(s, visitor);
     visitor.validate();
+
+    for (const auto& [position, item] : world->items()) {
+        item->onLoad();
+    }
+
+    for (const auto& actor : world->actors()) {
+        for (const auto& item : actor->items()) {
+            item->onLoad();
+        }
+    }
 
     actorSpawner->onSaveLoaded();
     saveLogger->info("Loading finished");
@@ -286,6 +299,9 @@ void Game::save() const {
 
     saveLogger->info("Saving identified items...");
     file << "[IdentifiedItems]\n" << items->stringifyIdentifiedItems() << '\n';
+
+    saveLogger->info("Saving item textures...");
+    file << "[ItemTextures]\n" << items->stringifyItemTextures() << '\n';
 
     saveLogger->info("Saving player leveling data...");
     file << "[Xp]\n" << xpManager->stringify();

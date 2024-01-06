@@ -33,6 +33,7 @@ namespace sf {
 #include <string>
 #include <string_view>
 #include <memory>
+#include <optional>
 
 namespace core {
 	/// Item that Actor can carry around and use
@@ -106,6 +107,16 @@ namespace core {
 		[[nodiscard]] virtual std::string stringifyData() const {
 			return "";
 		}
+
+		virtual void parseTextureData(std::string_view data) {
+			throw UnexpectedData{};
+		}
+
+		[[nodiscard]] virtual std::optional<std::string> stringifyTextureData() const {
+			return std::nullopt;
+		}
+
+		virtual void onLoad() {}
 	private:
 		std::string id_;
 	};
