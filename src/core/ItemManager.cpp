@@ -16,12 +16,15 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "ItemManager.hpp"
 
 #include "Scroll.hpp"
+#include "Potion.hpp"
 
 #include "World.hpp"
 
 #include "render/AssetManager.hpp"
 
 #include "util/parse.hpp"
+#include "util/filesystem.hpp"
+#include "util/parseKeyValue.hpp"
 
 namespace core {
 	ItemManager::ItemManager(std::shared_ptr<render::AssetManager> assets,
@@ -33,10 +36,35 @@ namespace core {
 	void ItemManager::load() {
 		logger->info("Loading...");
 
-		logger->info("Generating scrolls...");
-		for (const auto& spell : *spells | std::views::filter(&Spell::hasScroll)) {
-			items.push_back(std::make_unique<Scroll>(spell, shared_from_this(), assets, *randomEngine));
-		}
+		// logger->info("Generating scrolls...");
+		// for (const auto& spell : *spells | std::views::filter(&Spell::hasScroll)) {
+		// 	items.push_back(std::make_unique<Scroll>(spell, shared_from_this(), assets, *randomEngine));
+		// }
+
+		logger->info("Loading potions...");
+		std::filesystem::path basePath{"resources/descriptions/Potions/"};
+		util::forEachFile(basePath, [&](std::ifstream& is, const std::filesystem::path& path) {
+			std::string id = "potion." + util::toIdentifier(path, basePath);
+
+			logger->info("Loading {} spec from {} ...", id, path.generic_string());
+
+			util::KeyValueVisitor visitor;
+
+			double hp = 0;
+			visitor.key("hp").unique().callback([&](std::string_view data) {
+				hp = util::parseReal(data);
+			});
+
+			std::string_view name;
+			visitor.key("name").unique().callback([&](std::string_view data) {
+				name = data;
+			});
+
+			util::forEackKeyValuePair(is, visitor);
+			visitor.validate();
+
+			items.push_back(std::make_unique<Potion>(hp, id, name, shared_from_this(), assets, *randomEngine));
+		});
 
 		logger->info("Loaded");
 	}

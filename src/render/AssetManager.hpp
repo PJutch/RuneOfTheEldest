@@ -22,6 +22,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "util/log.hpp"
 #include "util/Exception.hpp"
+#include "util/random.hpp"
 
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
@@ -52,7 +53,7 @@ namespace render {
 
 		/// @brief creates AssetManager and loads textures
 		/// @throws AssetManager::TextureLoadError
-		AssetManager(util::LoggerFactory& loggerFactory);
+		AssetManager(util::LoggerFactory& loggerFactory, util::RandomEngine& randomEngine);
 
 		/// @brief Gets texture from given file
 		/// @details Loads texture from given file and caches it
@@ -75,6 +76,11 @@ namespace render {
 
 		/// Creates and caches texture for scroll
 		[[nodiscard]] const sf::Texture& scrollTexture(const sf::Texture& spellIcon) const;
+
+		/// Chooses a random texture for potion
+		[[nodiscard]] const sf::Texture& randomPotionTexture() const {
+			return *potionTextures[std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(potionTextures) - 1}(*randomEngine)];
+		}
 
 		/// Gets default font
 		[[nodiscard]] const sf::Font& font() const noexcept {
@@ -100,7 +106,11 @@ namespace render {
 
 		mutable std::unordered_map<const sf::Texture*, sf::RenderTexture> scrollTextureCache;
 
+		std::vector<const sf::Texture*> potionTextures;
+
 		sf::Font font_;
+
+		util::RandomEngine* randomEngine;
 
 		std::shared_ptr<spdlog::logger> logger;
 

@@ -18,13 +18,14 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "render/draw/Primitives.hpp"
 
 #include "util/parseKeyValue.hpp"
+#include "util/filesystem.hpp"
 
 #include <string_view>
-#include <filesystem>
 
 namespace render {
-    AssetManager::AssetManager(util::LoggerFactory& loggerFactory) : logger{ loggerFactory.create("assets") } {
-        logger->info("Loading...");
+    AssetManager::AssetManager(util::LoggerFactory& loggerFactory, util::RandomEngine& randomEngine_) : 
+            logger{loggerFactory.create("assets")}, randomEngine{&randomEngine_} {
+        logger->info("Loading textures...");
 
         loadTexture(tileTextureMut(core::Tile::EMPTY), "floor tile texture", "resources/textures/Tiles/floor.png");
         loadTexture(tileTextureMut(core::Tile::WALL), "wall tile texture", "resources/textures/Tiles/wall.png");
@@ -49,6 +50,11 @@ namespace render {
         loadTexture(soundIconMut(core::Sound::Type::WALK, true   ),   "friend walk sound icon", "resources/textures/Sounds/walkFriend.png"  );
         loadTexture(soundIconMut(core::Sound::Type::ATTACK, false),  "enemy attack sound icon", "resources/textures/Sounds/attackEnemy.png" );
         loadTexture(soundIconMut(core::Sound::Type::ATTACK, true ), "friend attack sound icon", "resources/textures/Sounds/attackFriend.png");
+
+        logger->info("Loading potion textures...");
+        util::forEachFile("resources/textures/Potions", [&](const std::filesystem::path& path) {
+            potionTextures.push_back(&texture(path));
+        });
 
         logger->info("Loading font...");
         if (!font_.loadFromFile("resources/fonts/Roboto/Roboto-Medium.ttf"))
