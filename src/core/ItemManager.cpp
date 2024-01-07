@@ -60,15 +60,15 @@ namespace core {
 				name = data;
 			});
 
-			const sf::Texture* effectIcon = nullptr;
-			visitor.key("icon").unique().required().callback([&](std::string_view data) {
-				effectIcon = &assets->texture(data);
+			const sf::Texture* label = nullptr;
+			visitor.key("label").unique().required().callback([&](std::string_view data) {
+				label = &assets->texture(data);
 			});
 
 			util::forEackKeyValuePair(is, visitor);
 			visitor.validate();
 
-			potions.push_back(std::make_shared<Potion>(hp, id, name, *effectIcon, shared_from_this(), assets, *randomEngine));
+			potions.push_back(std::make_shared<Potion>(hp, id, name, *label, shared_from_this(), assets, *randomEngine));
 		});
 
 		logger->info("Loaded");

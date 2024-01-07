@@ -78,7 +78,7 @@ namespace render {
 		[[nodiscard]] const sf::Texture& scrollTexture(const sf::Texture& spellIcon) const;
 
 		/// Creates and caches texture for potion
-		[[nodiscard]] const sf::Texture& potionTexture(const sf::Texture& base, const sf::Texture& icon) const;
+		[[nodiscard]] const sf::Texture& potionTexture(const sf::Texture& base, const sf::Texture& label) const;
 
 		/// Chooses a random base texture for potion
 		[[nodiscard]] const sf::Texture& randomPotionBaseTexture() const {

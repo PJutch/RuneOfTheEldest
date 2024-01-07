@@ -92,14 +92,14 @@ namespace render {
         return result.getTexture();
     }
 
-    [[nodiscard]] const sf::Texture& AssetManager::potionTexture(const sf::Texture& base, const sf::Texture& icon) const {
-        sf::RenderTexture& result = potionTextureCache[{&base, & icon}];
+    [[nodiscard]] const sf::Texture& AssetManager::potionTexture(const sf::Texture& base, const sf::Texture& label) const {
+        sf::RenderTexture& result = potionTextureCache[{&base, &label}];
         if (result.getSize() == sf::Vector2u{0, 0}) {
             result.create(base.getSize().x, base.getSize().y);
 
             result.clear(sf::Color::Transparent);
             drawSprite(result, {0, 0}, {0, 0}, base);
-            drawSprite(result, {0, 0}, {0, 0}, icon);
+            drawSprite(result, {0, 0}, {0, 0}, label);
             result.display();
         }
         return result.getTexture();
@@ -127,15 +127,15 @@ namespace render {
                 base = &parse(data);
             });
 
-            const sf::Texture* icon;
-            visitor.key("icon").unique().required().callback([&](std::string_view data) {
-                icon = &parse(data);
+            const sf::Texture* label;
+            visitor.key("label").unique().required().callback([&](std::string_view data) {
+                label = &parse(data);
             });
 
             util::forEackInlineKeyValuePair(data, visitor);
             visitor.validate();
 
-            return potionTexture(*base, *icon);
+            return potionTexture(*base, *label);
         } else {
             throw UnknownTextureType(type);
         }
@@ -158,7 +158,7 @@ namespace render {
             return std::format("scroll {}", stringify(*iter->first));
         } else if (auto iter = std::ranges::find(potionTextureCache, &t, [](const auto& p) { return &p.second.getTexture(); });
                 iter != potionTextureCache.end()) {
-            return std::format("potion base {}, icon {}", stringify(*iter->first.first), stringify(*iter->first.second));
+            return std::format("potion base {}, label {}", stringify(*iter->first.first), stringify(*iter->first.second));
         } else {
             throw UnknownTexture{};
         }
