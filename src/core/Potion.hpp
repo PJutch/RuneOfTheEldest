@@ -43,13 +43,14 @@ namespace core {
 	/// Potion that Actor can drink to get Effect or an instant bonus
 	class Potion : public Item {
 	public:
-		Potion(double hp_, std::string_view id, std::string_view name, std::shared_ptr<ItemManager> items_,
+		Potion(double hp_, std::string_view id, std::string_view name, const sf::Texture& effectIcon_, std::shared_ptr<ItemManager> items_,
 			   std::shared_ptr<render::AssetManager> assets_, util::RandomEngine& randomEngine_) :
-			Item{id}, hp{hp_}, name_ {name}, icon_{&assets_->randomPotionTexture()},
+			Item{id}, hp{hp_}, name_ {name}, icon_{&assets_->randomPotionBaseTexture()}, effectIcon{&effectIcon_},
 			items{std::move(items_)}, assets{std::move(assets_)}, randomEngine{&randomEngine_} {}
 
 		UsageResult use() final {
 			self.lock()->heal(hp);
+			identify();
 			shouldDestroy_ = true;
 			return UsageResult::SUCCESS;
 		}
@@ -59,7 +60,7 @@ namespace core {
 		}
 
 		[[nodiscard]] const sf::Texture& icon() const final {
-			return *icon_;
+			return items->isIdentified(id()) ? assets->potionTexture(*icon_, *effectIcon) : *icon_;
 		}
 
 		[[nodiscard]] std::string name() const final {
@@ -87,7 +88,11 @@ namespace core {
 		}
 
 		void onLoad() final {
-			icon_ = &items->findItem(id())->icon();
+			icon_ = &dynamic_cast<Potion&>(*items->findItem(id())).baseIcon();
+		}
+
+		const sf::Texture& baseIcon() const noexcept {
+			return *icon_;
 		}
 	private:
 		double hp;
@@ -97,6 +102,7 @@ namespace core {
 
 		std::string name_;
 		const sf::Texture* icon_;
+		const sf::Texture* effectIcon;
 
 		std::shared_ptr<ItemManager> items;
 		std::shared_ptr<render::AssetManager> assets;

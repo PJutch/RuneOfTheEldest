@@ -23,6 +23,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/log.hpp"
 #include "util/Exception.hpp"
 #include "util/random.hpp"
+#include "util/Map.hpp"
 
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
@@ -30,7 +31,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <SFML/Graphics/Font.hpp>
 
 #include <filesystem>
-#include <unordered_map>
 
 namespace render {
 	/// Loads and manages textures
@@ -77,8 +77,11 @@ namespace render {
 		/// Creates and caches texture for scroll
 		[[nodiscard]] const sf::Texture& scrollTexture(const sf::Texture& spellIcon) const;
 
-		/// Chooses a random texture for potion
-		[[nodiscard]] const sf::Texture& randomPotionTexture() const {
+		/// Creates and caches texture for potion
+		[[nodiscard]] const sf::Texture& potionTexture(const sf::Texture& base, const sf::Texture& icon) const;
+
+		/// Chooses a random base texture for potion
+		[[nodiscard]] const sf::Texture& randomPotionBaseTexture() const {
 			return *potionTextures[std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(potionTextures) - 1}(*randomEngine)];
 		}
 
@@ -95,7 +98,7 @@ namespace render {
 		[[nodiscard]] const sf::Texture& parse(std::string_view data) const;
 		[[nodiscard]] std::string stringify(const sf::Texture& texture) const;
 	private:
-		mutable std::unordered_map<std::filesystem::path, sf::Texture> textureCache;
+		mutable util::UnorderedMap<std::filesystem::path, sf::Texture> textureCache;
 
 		inline const static sf::Vector2i tileSize_{ 16, 16 };
 		std::array<sf::Texture, core::totalTiles> tileTextures;
@@ -104,7 +107,8 @@ namespace render {
 
 		std::array<sf::Texture, totalAiStates> aiStateIcons;
 
-		mutable std::unordered_map<const sf::Texture*, sf::RenderTexture> scrollTextureCache;
+		mutable util::UnorderedMap<const sf::Texture*, sf::RenderTexture> scrollTextureCache;
+		mutable util::UnorderedMap<std::pair<const sf::Texture*, const sf::Texture*>, sf::RenderTexture> potionTextureCache;
 
 		std::vector<const sf::Texture*> potionTextures;
 

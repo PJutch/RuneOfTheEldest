@@ -226,6 +226,7 @@ void Game::generate() {
     world->clearActors();
     world->clearItems();
     items->clearIdentifiedItems();
+    items->randomizeTextures();
     world->tiles().assign({ 50, 50, 10 }, core::Tile::WALL);
 
     generationLogger->info("Generating dungeon...");

@@ -1,3 +1,4 @@
 name Health potion
 
 hp 3
+icon resources/textures/PotionEffects/health.png
