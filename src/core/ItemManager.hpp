@@ -37,42 +37,32 @@ namespace core {
 
 		void load();
 
-		auto begin() {
-			return items.begin();
-		}
-
-		auto begin() const {
-			return items.begin();
-		}
-
-		auto cbegin() const {
-			return items.cbegin();
-		}
-
-		auto end() {
-			return items.end();
-		}
-
-		auto end() const {
-			return items.end();
-		}
-
-		auto cend() const {
-			return items.cend();
-		}
-
 		const Item* findItem(std::string_view id) const {
-			auto iter = std::ranges::find(items, id, [](const auto& item) {
+			if (auto iter = std::ranges::find(scrolls, id, [](const auto& item) {
 				return item->id();
-			});
-			return iter == items.end() ? nullptr : iter->get();
+			}); iter != scrolls.end()) {
+				return iter->get();
+			} else if (auto iter = std::ranges::find(potions, id, [](const auto& item) {
+				return item->id();
+			}); iter != potions.end()) {
+				return iter->get();
+			} else {
+				return nullptr;
+			}
 		}
 
 		Item* findItem(std::string_view id) {
-			auto iter = std::ranges::find(items, id, [](const auto& item) {
+			if (auto iter = std::ranges::find(scrolls, id, [](const auto& item) {
 				return item->id();
-			});
-			return iter == items.end() ? nullptr : iter->get();
+			}); iter != scrolls.end()) {
+				return iter->get();
+			} else if (auto iter = std::ranges::find(potions, id, [](const auto& item) {
+				return item->id();
+			}); iter != potions.end()) {
+				return iter->get();
+			} else {
+				return nullptr;
+			}
 		}
 
 		void spawn();
@@ -95,7 +85,8 @@ namespace core {
 		void parseItemTextures(std::string_view data);
 		std::string stringifyItemTextures() const;
 	private:
-		std::vector<std::shared_ptr<Item>> items;
+		std::vector<std::shared_ptr<Item>> scrolls;
+		std::vector<std::shared_ptr<Item>> potions;
 		std::unordered_set<std::string> identifiedItems;
 
 		std::shared_ptr<spdlog::logger> logger;

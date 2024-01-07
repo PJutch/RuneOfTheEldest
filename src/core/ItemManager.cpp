@@ -36,10 +36,10 @@ namespace core {
 	void ItemManager::load() {
 		logger->info("Loading...");
 
-		// logger->info("Generating scrolls...");
-		// for (const auto& spell : *spells | std::views::filter(&Spell::hasScroll)) {
-		// 	items.push_back(std::make_shared<Scroll>(spell, shared_from_this(), assets, *randomEngine));
-		// }
+		logger->info("Generating scrolls...");
+		for (const auto& spell : *spells | std::views::filter(&Spell::hasScroll)) {
+		 	scrolls.push_back(std::make_shared<Scroll>(spell, shared_from_this(), assets, *randomEngine));
+		}
 
 		logger->info("Loading potions...");
 		std::filesystem::path basePath{"resources/descriptions/Potions/"};
@@ -63,7 +63,7 @@ namespace core {
 			util::forEackKeyValuePair(is, visitor);
 			visitor.validate();
 
-			items.push_back(std::make_shared<Potion>(hp, id, name, shared_from_this(), assets, *randomEngine));
+			potions.push_back(std::make_shared<Potion>(hp, id, name, shared_from_this(), assets, *randomEngine));
 		});
 
 		logger->info("Loaded");
@@ -74,8 +74,13 @@ namespace core {
 		for (int z = 0; z < world->tiles().shape().z; ++z) {
 			for (int i = 0; i < std::uniform_int_distribution{1, 4}(*randomEngine); ++i) {
 				if (auto pos = world->randomPositionAt(z, 1000, &World::isFree)) {
-					auto iitem = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(items) - 1}(*randomEngine);
-					world->addItem(core::Position<int>{*pos}, items[iitem]->clone());
+					if (std::uniform_real_distribution{}(*randomEngine) < 0.5) {
+						auto iitem = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(scrolls) - 1}(*randomEngine);
+						world->addItem(core::Position<int>{*pos}, scrolls[iitem]->clone());
+					} else {
+						auto iitem = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(potions) - 1}(*randomEngine);
+						world->addItem(core::Position<int>{*pos}, potions[iitem]->clone());
+					}
 				}
 			}
 		}
@@ -121,9 +126,9 @@ namespace core {
 
 	std::string ItemManager::stringifyItemTextures() const {
 		std::string result;
-		for (const auto& item : items) {
-			if (auto data = item->stringifyTextureData()) {
-				result += std::format("{} {}", item->id(), *data);
+		for (const auto& potion : potions) {
+			if (auto data = potion->stringifyTextureData()) {
+				result += std::format("{} {}", potion->id(), *data);
 			}
 		}
 		return result;
