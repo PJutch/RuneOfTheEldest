@@ -56,7 +56,7 @@ namespace core {
 			});
 
 			std::string_view name;
-			visitor.key("name").unique().callback([&](std::string_view data) {
+			visitor.key("name").unique().required().callback([&](std::string_view data) {
 				name = data;
 			});
 
