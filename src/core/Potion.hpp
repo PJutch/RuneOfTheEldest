@@ -91,6 +91,10 @@ namespace core {
 			icon_ = &dynamic_cast<Potion&>(*items->findItem(id())).baseIcon();
 		}
 
+		void onTextureRandomize() final {
+			icon_ = &assets->randomPotionBaseTexture();
+		}
+
 		const sf::Texture& baseIcon() const noexcept {
 			return *icon_;
 		}

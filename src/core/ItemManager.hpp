@@ -84,6 +84,8 @@ namespace core {
 
 		void parseItemTextures(std::string_view data);
 		std::string stringifyItemTextures() const;
+
+		void randomizeTextures();
 	private:
 		std::vector<std::shared_ptr<Item>> scrolls;
 		std::vector<std::shared_ptr<Item>> potions;

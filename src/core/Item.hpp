@@ -117,6 +117,8 @@ namespace core {
 		}
 
 		virtual void onLoad() {}
+
+		virtual void onTextureRandomize() {}
 	private:
 		std::string id_;
 	};

@@ -138,4 +138,10 @@ namespace core {
 		}
 		return result;
 	}
+
+	void ItemManager::randomizeTextures() {
+		for (const auto& potion : potions) {
+			potion->onTextureRandomize();
+		}
+	}
 }
