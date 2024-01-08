@@ -55,6 +55,11 @@ namespace core {
 				hp = util::parseReal(data);
 			});
 
+			double mana = 0;
+			visitor.key("mana").unique().callback([&](std::string_view data) {
+				mana = util::parseReal(data);
+			});
+
 			std::string name;
 			visitor.key("name").unique().required().callback([&](std::string_view data) {
 				name = data;
@@ -68,7 +73,7 @@ namespace core {
 			util::forEackKeyValuePair(is, visitor);
 			visitor.validate();
 
-			potions.push_back(std::make_shared<Potion>(hp, id, name, *label, shared_from_this(), assets, *randomEngine));
+			potions.push_back(std::make_shared<Potion>(hp, mana, id, name, *label, shared_from_this(), assets, *randomEngine));
 		});
 
 		logger->info("Loaded");
@@ -133,7 +138,7 @@ namespace core {
 		std::string result;
 		for (const auto& potion : potions) {
 			if (auto data = potion->stringifyTextureData()) {
-				result += std::format("{} {}", potion->id(), *data);
+				result += std::format("{} {}\n", potion->id(), *data);
 			}
 		}
 		return result;

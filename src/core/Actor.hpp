@@ -195,6 +195,12 @@ namespace core {
 			return true;
 		}
 
+		/// Adds mana to Actor's mana respecting maxMana
+		void restoreMana(double dmana) noexcept {
+			mana_ += dmana;
+			mana_ = std::min(mana_, maxMana());
+		}
+
 		[[nodiscard]] const sf::Texture* texture() const noexcept {
 			return stats().texture;
 		}

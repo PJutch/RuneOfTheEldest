@@ -43,13 +43,14 @@ namespace core {
 	/// Potion that Actor can drink to get Effect or an instant bonus
 	class Potion : public Item {
 	public:
-		Potion(double hp_, std::string_view id, std::string_view name, const sf::Texture& label_, std::shared_ptr<ItemManager> items_,
+		Potion(double hp_, double mana_, std::string_view id, std::string_view name, const sf::Texture& label_, std::shared_ptr<ItemManager> items_,
 			   std::shared_ptr<render::AssetManager> assets_, util::RandomEngine& randomEngine_) :
-			Item{id}, hp{hp_}, name_ {name}, icon_{&assets_->randomPotionBaseTexture()}, label{&label_},
+			Item{id}, hp{hp_}, mana{mana_}, name_{name}, icon_{&assets_->randomPotionBaseTexture()}, label{&label_},
 			items{std::move(items_)}, assets{std::move(assets_)}, randomEngine{&randomEngine_} {}
 
 		UsageResult use() final {
 			self.lock()->heal(hp);
+			self.lock()->restoreMana(mana);
 			identify();
 			shouldDestroy_ = true;
 			return UsageResult::SUCCESS;
@@ -100,6 +101,7 @@ namespace core {
 		}
 	private:
 		double hp;
+		double mana;
 
 		std::weak_ptr<Actor> self;
 		bool shouldDestroy_ = false;

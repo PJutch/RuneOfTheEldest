@@ -1,0 +1,4 @@
+name Mana potion
+
+mana 3
+label resources/textures/PotionEffects/mana.png
