@@ -28,9 +28,11 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace core {
 	ItemManager::ItemManager(std::shared_ptr<render::AssetManager> assets,
-							 std::shared_ptr<SpellManager> spells, std::shared_ptr<core::World> world_,
+							 std::shared_ptr<SpellManager> spells_, std::shared_ptr<XpManager> xpManager_, 
+		                     std::shared_ptr<core::World> world_,
 							 util::RandomEngine& randomEngine_, util::LoggerFactory& loggerFactory) : 
-		logger{loggerFactory.create("items")}, world{std::move(world_)}, spells{std::move(spells)}, 
+		logger{loggerFactory.create("items")}, world{std::move(world_)}, 
+		spells{std::move(spells_)}, xpManager{std::move(xpManager_)},
 		assets{std::move(assets)}, randomEngine{&randomEngine_} {}
 
 	void ItemManager::load() {
@@ -60,6 +62,11 @@ namespace core {
 				mana = util::parseReal(data);
 			});
 
+			double xp = 0;
+			visitor.key("xp").unique().callback([&](std::string_view data) {
+				xp = util::parseReal(data);
+			});
+
 			std::string name;
 			visitor.key("name").unique().required().callback([&](std::string_view data) {
 				name = data;
@@ -73,7 +80,7 @@ namespace core {
 			util::forEackKeyValuePair(is, visitor);
 			visitor.validate();
 
-			potions.push_back(std::make_shared<Potion>(hp, mana, id, name, *label, shared_from_this(), assets, *randomEngine));
+			potions.push_back(std::make_shared<Potion>(hp, mana, xp, id, name, *label, shared_from_this(), xpManager, assets, *randomEngine));
 		});
 
 		logger->info("Loaded");
@@ -82,7 +89,7 @@ namespace core {
 	void ItemManager::spawn() {
 		logger->info("Spawning...");
 		for (int z = 0; z < world->tiles().shape().z; ++z) {
-			for (int i = 0; i < std::uniform_int_distribution{1, 4}(*randomEngine); ++i) {
+			for (int i = 0; i < std::uniform_int_distribution{3, 10}(*randomEngine); ++i) {
 				if (auto pos = world->randomPositionAt(z, 1000, &World::isFree)) {
 					if (std::uniform_real_distribution{}(*randomEngine) < 0.5) {
 						auto iitem = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(scrolls) - 1}(*randomEngine);
