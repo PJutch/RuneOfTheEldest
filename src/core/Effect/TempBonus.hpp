@@ -49,6 +49,10 @@ namespace core {
 			return duration <= 0;
 		}
 
+		[[nodiscard]] bool isCancelable() const final {
+			return true;
+		}
+
 		std::unique_ptr<Effect> clone() const final {
 			return std::make_unique<TempBonus>(*this);
 		}

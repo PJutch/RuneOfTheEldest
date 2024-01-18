@@ -1,0 +1,4 @@
+name Cancelation potion
+
+cancelEffects true
+label resources/textures/PotionEffects/cancelation.png

@@ -277,6 +277,12 @@ namespace core {
 			return effects_;
 		}
 
+		void cancelEffects() {
+			std::erase_if(effects_, [&](const auto& effect) {
+				return effect->isCancelable();
+			});
+		}
+
 		void addSpell(std::shared_ptr<Spell> spell) {
 			spell->owner(weak_from_this());
 			spells_.push_back(std::move(spell));

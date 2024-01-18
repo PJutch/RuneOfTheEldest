@@ -84,6 +84,11 @@ namespace core {
 				}
 			});
 
+			bool cancelEffects = false;
+			visitor.key("cancelEffects").unique().callback([&](std::string_view data) {
+				cancelEffects = util::parseBool(data);
+			});
+
 			std::string name;
 			visitor.key("name").unique().required().callback([&](std::string_view data) {
 				name = data;
@@ -97,7 +102,8 @@ namespace core {
 			util::forEackKeyValuePair(is, visitor);
 			visitor.validate();
 
-			potions.push_back(std::make_shared<Potion>(hp, mana, xp, effect, id, name, *label, shared_from_this(), xpManager, assets, *randomEngine));
+			potions.push_back(std::make_shared<Potion>(hp, mana, xp, effect, cancelEffects, id, name,
+				*label, shared_from_this(), xpManager, assets, *randomEngine));
 		});
 
 		logger->info("Loaded");

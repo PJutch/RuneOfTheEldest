@@ -105,6 +105,11 @@ namespace core {
 			return false;
 		}
 
+		/// Checks if can be removed by cancelation potion
+		[[nodiscard]] virtual bool isCancelable() const {
+			return false;
+		}
+
 		/// Copies this Skill
 		virtual std::unique_ptr<Effect> clone() const = 0;
 
