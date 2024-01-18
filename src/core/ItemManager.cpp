@@ -28,12 +28,20 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace core {
 	ItemManager::ItemManager(std::shared_ptr<render::AssetManager> assets,
-							 std::shared_ptr<SpellManager> spells_, std::shared_ptr<XpManager> xpManager_, 
-		                     std::shared_ptr<core::World> world_,
+							 std::shared_ptr<SpellManager> spells_, std::shared_ptr<EffectManager> effects_, 
+		                     std::shared_ptr<XpManager> xpManager_, std::shared_ptr<core::World> world_,
 							 util::RandomEngine& randomEngine_, util::LoggerFactory& loggerFactory) : 
 		logger{loggerFactory.create("items")}, world{std::move(world_)}, 
-		spells{std::move(spells_)}, xpManager{std::move(xpManager_)},
+		spells{std::move(spells_)}, effects{std::move(effects_)}, xpManager{std::move(xpManager_)},
 		assets{std::move(assets)}, randomEngine{&randomEngine_} {}
+
+	namespace {
+		class UnknownEffect : public util::RuntimeError {
+		public:
+			UnknownEffect(std::string_view name, util::Stacktrace stacktrace = {}) :
+				util::RuntimeError{std::format("Unknow effect \"{}\"", name), std::move(stacktrace)} {}
+		};
+	}
 
 	void ItemManager::load() {
 		logger->info("Loading...");
@@ -67,6 +75,15 @@ namespace core {
 				xp = util::parseReal(data);
 			});
 
+			const Effect* effect = nullptr;
+			visitor.key("effect").unique().callback([&](std::string_view data) {
+				if (auto effect_ = effects->findEffect(data)) {
+					effect = effect_;
+				} else {
+					throw UnknownEffect{data};
+				}
+			});
+
 			std::string name;
 			visitor.key("name").unique().required().callback([&](std::string_view data) {
 				name = data;
@@ -80,7 +97,7 @@ namespace core {
 			util::forEackKeyValuePair(is, visitor);
 			visitor.validate();
 
-			potions.push_back(std::make_shared<Potion>(hp, mana, xp, id, name, *label, shared_from_this(), xpManager, assets, *randomEngine));
+			potions.push_back(std::make_shared<Potion>(hp, mana, xp, effect, id, name, *label, shared_from_this(), xpManager, assets, *randomEngine));
 		});
 
 		logger->info("Loaded");

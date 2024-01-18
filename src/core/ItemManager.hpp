@@ -32,7 +32,8 @@ namespace core {
 	public:
 		ItemManager() = default;
 		ItemManager(std::shared_ptr<render::AssetManager> assets,
-			        std::shared_ptr<SpellManager> spells, std::shared_ptr<XpManager> xpManager, std::shared_ptr<core::World> world,
+			        std::shared_ptr<SpellManager> spells, std::shared_ptr<EffectManager> effects, 
+			        std::shared_ptr<XpManager> xpManager, std::shared_ptr<core::World> world,
 					util::RandomEngine& randomEngine, util::LoggerFactory& loggerFactory);
 
 		void load();
@@ -95,6 +96,7 @@ namespace core {
 
 		std::shared_ptr<World> world;
 		std::shared_ptr<SpellManager> spells;
+		std::shared_ptr<EffectManager> effects;
 		std::shared_ptr<XpManager> xpManager;
 		std::shared_ptr<render::AssetManager> assets;
 		util::RandomEngine* randomEngine;
