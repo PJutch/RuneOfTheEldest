@@ -302,10 +302,9 @@ namespace core {
         visitor.key("item").callback([&](std::string_view s) {
             auto [id, data] = util::parseKeyValuePair(s);
 
-            if (auto item = itemManager->findItem(id)) {
-                auto newItem = item->clone();
-                newItem->parseData(data);
-                result->addItem(std::move(newItem));
+            if (auto item = itemManager->newItem(id)) {
+                item->parseData(data);
+                result->addItem(std::move(item));
             } else {
                 throw ItemNotFound{id};
             }

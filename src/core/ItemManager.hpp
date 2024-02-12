@@ -18,6 +18,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Item.hpp"
 
+#include "Potion.hpp"
+
 #include "Spell/Manager.hpp"
 
 #include "render/fwd.hpp"
@@ -38,33 +40,7 @@ namespace core {
 
 		void load();
 
-		const Item* findItem(std::string_view id) const {
-			if (auto iter = std::ranges::find(scrolls, id, [](const auto& item) {
-				return item->id();
-			}); iter != scrolls.end()) {
-				return iter->get();
-			} else if (auto iter = std::ranges::find(potions, id, [](const auto& item) {
-				return item->id();
-			}); iter != potions.end()) {
-				return iter->get();
-			} else {
-				return nullptr;
-			}
-		}
-
-		Item* findItem(std::string_view id) {
-			if (auto iter = std::ranges::find(scrolls, id, [](const auto& item) {
-				return item->id();
-			}); iter != scrolls.end()) {
-				return iter->get();
-			} else if (auto iter = std::ranges::find(potions, id, [](const auto& item) {
-				return item->id();
-			}); iter != potions.end()) {
-				return iter->get();
-			} else {
-				return nullptr;
-			}
-		}
+		std::unique_ptr<Item> newItem(std::string_view id);
 
 		void spawn();
 
@@ -83,13 +59,24 @@ namespace core {
 		void parseIdentifiedItems(std::string_view data);
 		std::string stringifyIdentifiedItems() const;
 
-		void parseItemTextures(std::string_view data);
-		std::string stringifyItemTextures() const;
+		void parsePotionTextures(std::string_view data);
+		std::string stringifyPotionTextures() const;
 
 		void randomizeTextures();
+
+		const sf::Texture* potionIcon(std::string_view id) {
+			if (auto iter = std::ranges::find(potions, id, [](const auto& item) {
+				return item.id;
+			}); iter != potions.end()) {
+				return potionTextures[iter - potions.begin()];
+			} else {
+				return nullptr;
+			}
+		}
 	private:
 		std::vector<std::shared_ptr<Item>> scrolls;
-		std::vector<std::shared_ptr<Item>> potions;
+		std::vector<Potion::Stats> potions;
+		std::vector<const sf::Texture*> potionTextures;
 		std::unordered_set<std::string> identifiedItems;
 
 		std::shared_ptr<spdlog::logger> logger;

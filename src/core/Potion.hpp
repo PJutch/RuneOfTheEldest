@@ -20,7 +20,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "core/Item.hpp"
 #include "core/Spell/Spell.hpp"
 #include "core/Spell/Manager.hpp"
-#include "core/ItemManager.hpp"
 #include "core/Actor.hpp"
 
 #include "render/AssetManager.hpp"
@@ -50,15 +49,15 @@ namespace core {
 			const core::Effect* effect = nullptr;
 			bool cancelEffects = false;
 
-			std::string_view id; 
-			std::string_view name; 
+			std::string id; 
+			std::string name; 
 			const sf::Texture* label = nullptr;
 		};
 
-		Potion(Stats stats_, 
+		Potion(Stats stats_, const sf::Texture& newIcon,
 			   std::shared_ptr<ItemManager> items_, std::shared_ptr<XpManager> xpManager_,
 			   std::shared_ptr<render::AssetManager> assets_, util::RandomEngine& randomEngine_) :
-			Item{stats_.id}, stats{stats_}, icon_{&assets_->randomPotionBaseTexture()},
+			Item{stats_.id}, stats{stats_}, icon_{&newIcon},
 			items{std::move(items_)}, xpManager{std::move(xpManager_)}, assets{std::move(assets_)}, randomEngine{&randomEngine_} {}
 
 		UsageResult use() final {
@@ -77,17 +76,11 @@ namespace core {
 			return UsageResult::SUCCESS;
 		}
 
-		void identify() final {
-			items->identify(id());
-		}
+		void identify() final;
 
-		[[nodiscard]] const sf::Texture& icon() const final {
-			return items->isIdentified(id()) ? assets->potionTexture(*icon_, *stats.label) : *icon_;
-		}
+		[[nodiscard]] const sf::Texture& icon() const final;
 
-		[[nodiscard]] std::string name() const final {
-			return items->isIdentified(id()) ? std::string{stats.name} : "Unknown potion";
-		}
+		[[nodiscard]] std::string name() const final;
 
 		[[nodiscard]] std::unique_ptr<Item> clone() const final {
 			return std::make_unique<Potion>(*this);
@@ -109,9 +102,7 @@ namespace core {
 			return assets->stringify(*icon_);
 		}
 
-		void onLoad() final {
-			icon_ = &dynamic_cast<Potion&>(*items->findItem(id())).baseIcon();
-		}
+		void onLoad() final;
 
 		void onTextureRandomize() final {
 			icon_ = &assets->randomPotionBaseTexture();

@@ -158,10 +158,9 @@ void Game::loadFromString(std::string_view s) {
         util::forEackKeyValuePair(s, visitor);
         visitor.validate();
 
-        if (auto item = items->findItem(id)) {
-            auto newItem = item->clone();
-            newItem->parseData(data);
-            world->addItem(position, std::move(newItem));
+        if (auto item = items->newItem(id)) {
+            item->parseData(data);
+            world->addItem(position, std::move(item));
         } else {
             throw ItemNotFound{id};
         }
@@ -172,8 +171,8 @@ void Game::loadFromString(std::string_view s) {
     visitor.key("IdentifiedItems").callback([&](std::string_view data) {
         items->parseIdentifiedItems(data);
     });
-    visitor.key("ItemTextures").callback([&](std::string_view data) {
-        items->parseItemTextures(data);
+    visitor.key("PotionTextures").callback([&](std::string_view data) {
+        items->parsePotionTextures(data);
     });
 
     util::forEachSection(s, visitor);
@@ -301,8 +300,8 @@ void Game::save() const {
     saveLogger->info("Saving identified items...");
     file << "[IdentifiedItems]\n" << items->stringifyIdentifiedItems() << '\n';
 
-    saveLogger->info("Saving item textures...");
-    file << "[ItemTextures]\n" << items->stringifyItemTextures() << '\n';
+    saveLogger->info("Saving potion textures...");
+    file << "[PotionTextures]\n" << items->stringifyPotionTextures() << '\n';
 
     saveLogger->info("Saving player leveling data...");
     file << "[Xp]\n" << xpManager->stringify();

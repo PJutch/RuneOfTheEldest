@@ -96,10 +96,30 @@ namespace core {
 			util::forEackKeyValuePair(is, visitor);
 			visitor.validate();
 
-			potions.push_back(std::make_shared<Potion>(stats, shared_from_this(), xpManager, assets, *randomEngine));
+			potions.push_back(stats);
 		});
 
+		logger->info("Loading potion textures...");
+		util::forEachFile("resources/textures/Potions", [&](const std::filesystem::path& path) {
+			potionTextures.push_back(&assets->texture(path));
+		});
+		randomizeTextures();
+
 		logger->info("Loaded");
+	}
+
+	std::unique_ptr<Item> ItemManager::newItem(std::string_view id) {
+		if (auto iter = std::ranges::find(scrolls, id, [](const auto& item) {
+			return item->id();
+		}); iter != scrolls.end()) {
+			return (*iter)->clone();
+		} else if (auto iter = std::ranges::find(potions, id, [](const auto& item) {
+			return item.id;
+		}); iter != potions.end()) {
+			return std::make_unique<Potion>(*iter, *potionTextures[iter - potions.begin()], shared_from_this(), xpManager, assets, *randomEngine);
+		} else {
+			return nullptr;
+		}
 	}
 
 	void ItemManager::spawn() {
@@ -112,7 +132,8 @@ namespace core {
 						world->addItem(core::Position<int>{*pos}, scrolls[iitem]->clone());
 					} else {
 						auto iitem = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(potions) - 1}(*randomEngine);
-						world->addItem(core::Position<int>{*pos}, potions[iitem]->clone());
+						auto item = std::make_unique<Potion>(potions[iitem], *potionTextures[iitem], shared_from_this(), xpManager, assets, *randomEngine);
+						world->addItem(core::Position<int>{*pos}, std::move(item));
 					}
 				}
 			}
@@ -147,29 +168,29 @@ namespace core {
 		};
 	}
 
-	void ItemManager::parseItemTextures(std::string_view s) {
+	void ItemManager::parsePotionTextures(std::string_view s) {
 		util::forEackKeyValuePair(s, [&](std::string_view id, std::string_view data) {
-			if (Item* item = findItem(id)) {
-				item->parseTextureData(data);
-			} else {
+			int iitem = std::ranges::find(potions, id, [](const auto& item) {
+				return item.id;
+			}) - potions.begin();
+
+			if (iitem == std::ssize(potions)) {
 				throw UnknownItem{id};
 			}
+
+			potionTextures[iitem] = &assets->parse(data);
 		});
 	}
 
-	std::string ItemManager::stringifyItemTextures() const {
+	std::string ItemManager::stringifyPotionTextures() const {
 		std::string result;
-		for (const auto& potion : potions) {
-			if (auto data = potion->stringifyTextureData()) {
-				result += std::format("{} {}\n", potion->id(), *data);
-			}
+		for (int i = 0; i < std::ssize(potions); ++i) {
+			result += std::format("{} {}\n", potions[i].id, assets->stringify(*potionTextures[i]));
 		}
 		return result;
 	}
 
 	void ItemManager::randomizeTextures() {
-		for (const auto& potion : potions) {
-			potion->onTextureRandomize();
-		}
+		std::ranges::shuffle(potionTextures, *randomEngine);
 	}
 }
