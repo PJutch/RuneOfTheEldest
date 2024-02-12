@@ -59,51 +59,44 @@ namespace core {
 			logger->info("Loading {} spec from {} ...", id, path.generic_string());
 
 			util::KeyValueVisitor visitor;
+			Potion::Stats stats{.id = id};
 
-			double hp = 0;
 			visitor.key("hp").unique().callback([&](std::string_view data) {
-				hp = util::parseReal(data);
+				stats.hp = util::parseReal(data);
 			});
 
-			double mana = 0;
 			visitor.key("mana").unique().callback([&](std::string_view data) {
-				mana = util::parseReal(data);
+				stats.mana = util::parseReal(data);
 			});
 
-			double xp = 0;
 			visitor.key("xp").unique().callback([&](std::string_view data) {
-				xp = util::parseReal(data);
+				stats.xp = util::parseReal(data);
 			});
 
-			const Effect* effect = nullptr;
 			visitor.key("effect").unique().callback([&](std::string_view data) {
 				if (auto effect_ = effects->findEffect(data)) {
-					effect = effect_;
+					stats.effect = effect_;
 				} else {
 					throw UnknownEffect{data};
 				}
 			});
 
-			bool cancelEffects = false;
 			visitor.key("cancelEffects").unique().callback([&](std::string_view data) {
-				cancelEffects = util::parseBool(data);
+				stats.cancelEffects = util::parseBool(data);
 			});
 
-			std::string name;
 			visitor.key("name").unique().required().callback([&](std::string_view data) {
-				name = data;
+				stats.name = data;
 			});
 
-			const sf::Texture* label = nullptr;
 			visitor.key("label").unique().required().callback([&](std::string_view data) {
-				label = &assets->texture(data);
+				stats.label = &assets->texture(data);
 			});
 
 			util::forEackKeyValuePair(is, visitor);
 			visitor.validate();
 
-			potions.push_back(std::make_shared<Potion>(hp, mana, xp, effect, cancelEffects, id, name,
-				*label, shared_from_this(), xpManager, assets, *randomEngine));
+			potions.push_back(std::make_shared<Potion>(stats, shared_from_this(), xpManager, assets, *randomEngine));
 		});
 
 		logger->info("Loaded");

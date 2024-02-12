@@ -43,23 +43,33 @@ namespace core {
 	/// Potion that Actor can drink to get Effect or an instant bonus
 	class Potion : public Item {
 	public:
-		Potion(double hp_, double mana_, double xp_, const core::Effect* effect_, bool cancelEffects_,
-			   std::string_view id, std::string_view name, const sf::Texture& label_, 
+		struct Stats {
+			double hp = 0;
+			double mana = 0;
+			double xp = 0;
+			const core::Effect* effect = nullptr;
+			bool cancelEffects = false;
+
+			std::string_view id; 
+			std::string_view name; 
+			const sf::Texture* label = nullptr;
+		};
+
+		Potion(Stats stats_, 
 			   std::shared_ptr<ItemManager> items_, std::shared_ptr<XpManager> xpManager_,
 			   std::shared_ptr<render::AssetManager> assets_, util::RandomEngine& randomEngine_) :
-			Item{id}, hp{hp_}, mana{mana_}, xp{xp_}, effect{effect_}, cancelEffects{cancelEffects_},
-			name_{name}, icon_{&assets_->randomPotionBaseTexture()}, label{&label_},
+			Item{stats_.id}, stats{stats_}, icon_{&assets_->randomPotionBaseTexture()},
 			items{std::move(items_)}, xpManager{std::move(xpManager_)}, assets{std::move(assets_)}, randomEngine{&randomEngine_} {}
 
 		UsageResult use() final {
-			self.lock()->heal(hp);
-			self.lock()->restoreMana(mana);
-			xpManager->addXp(xp);
-			if (cancelEffects) {
+			self.lock()->heal(stats.hp);
+			self.lock()->restoreMana(stats.mana);
+			xpManager->addXp(stats.xp);
+			if (stats.cancelEffects) {
 				self.lock()->cancelEffects();
 			}
-			if (effect) {
-				self.lock()->addEffect(effect->clone());
+			if (stats.effect) {
+				self.lock()->addEffect(stats.effect->clone());
 			}
 			
 			identify();
@@ -72,11 +82,11 @@ namespace core {
 		}
 
 		[[nodiscard]] const sf::Texture& icon() const final {
-			return items->isIdentified(id()) ? assets->potionTexture(*icon_, *label) : *icon_;
+			return items->isIdentified(id()) ? assets->potionTexture(*icon_, *stats.label) : *icon_;
 		}
 
 		[[nodiscard]] std::string name() const final {
-			return items->isIdentified(id()) ? name_ : "Unknown potion";
+			return items->isIdentified(id()) ? std::string{stats.name} : "Unknown potion";
 		}
 
 		[[nodiscard]] std::unique_ptr<Item> clone() const final {
@@ -111,18 +121,12 @@ namespace core {
 			return *icon_;
 		}
 	private:
-		double hp;
-		double mana;
-		double xp;
-		const core::Effect* effect;
-		bool cancelEffects;
+		Stats stats;
 
 		std::weak_ptr<Actor> self;
 		bool shouldDestroy_ = false;
 
-		std::string name_;
 		const sf::Texture* icon_;
-		const sf::Texture* label;
 
 		std::shared_ptr<ItemManager> items;
 		std::shared_ptr<XpManager> xpManager;
