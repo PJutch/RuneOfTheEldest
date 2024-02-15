@@ -74,7 +74,6 @@ namespace core {
 			}
 		}
 	private:
-		std::vector<std::shared_ptr<Item>> scrolls;
 		std::vector<Potion::Stats> potions;
 		std::vector<const sf::Texture*> potionTextures;
 		std::unordered_set<std::string> identifiedItems;

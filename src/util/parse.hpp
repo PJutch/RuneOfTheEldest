@@ -26,6 +26,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <algorithm>
 #include <string>
 #include <string_view>
+#include <optional>
 #include <concepts>
 #include <cctype>
 
@@ -388,6 +389,15 @@ namespace util {
 		}
 
 		return {parseInt<T>(strip(values[0])), parseInt<T>(strip(values[1])), parseInt(strip(values[2]))};
+	}
+
+	/// Returns rest of the string if it starts with prefix or std::nullopt if it doesn't
+	inline std::optional<std::string_view> parsePrefixed(std::string_view data, std::string_view prefix) {
+		if (data.starts_with(prefix)) {
+			return data.substr(std::ssize(prefix), std::ssize(data) - std::ssize(prefix));
+		} else {
+			return std::nullopt;
+		}
 	}
 }
 

@@ -46,11 +46,6 @@ namespace core {
 	void ItemManager::load() {
 		logger->info("Loading...");
 
-		logger->info("Generating scrolls...");
-		for (const auto& spell : *spells | std::views::filter(&Spell::hasScroll)) {
-		 	scrolls.push_back(std::make_shared<Scroll>(spell, shared_from_this(), assets, *randomEngine));
-		}
-
 		logger->info("Loading potions...");
 		std::filesystem::path basePath{"resources/descriptions/Potions/"};
 		util::forEachFile(basePath, [&](std::ifstream& is, const std::filesystem::path& path) {
@@ -109,11 +104,16 @@ namespace core {
 	}
 
 	std::unique_ptr<Item> ItemManager::newItem(std::string_view id) {
-		if (auto iter = std::ranges::find(scrolls, id, [](const auto& item) {
-			return item->id();
-		}); iter != scrolls.end()) {
-			return (*iter)->clone();
-		} else if (auto iter = std::ranges::find(potions, id, [](const auto& item) {
+		if (auto spellId = util::parsePrefixed(id, "scroll.")) {
+			auto scrollableSpells = *spells | std::views::filter(&Spell::hasScroll);
+			if (auto iter = std::ranges::find(scrollableSpells, *spellId, [](const auto& spell) {
+				return spell->id();
+			}); iter != scrollableSpells.end()) {
+				return std::make_unique<Scroll>(*iter, shared_from_this(), assets, *randomEngine);
+			}
+		}
+
+		if (auto iter = std::ranges::find(potions, id, [](const auto& item) {
 			return item.id;
 		}); iter != potions.end()) {
 			return std::make_unique<Potion>(*iter, *potionTextures[iter - potions.begin()], shared_from_this(), xpManager, assets, *randomEngine);
@@ -123,13 +123,16 @@ namespace core {
 	}
 
 	void ItemManager::spawn() {
+		std::vector<std::shared_ptr<Spell>> scrollableSpells;
+		std::ranges::copy_if(*spells, std::back_inserter(scrollableSpells), &Spell::hasScroll);
+
 		logger->info("Spawning...");
 		for (int z = 0; z < world->tiles().shape().z; ++z) {
 			for (int i = 0; i < std::uniform_int_distribution{3, 10}(*randomEngine); ++i) {
 				if (auto pos = world->randomPositionAt(z, 1000, &World::isFree)) {
 					if (std::uniform_real_distribution{}(*randomEngine) < 0.5) {
-						auto iitem = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(scrolls) - 1}(*randomEngine);
-						world->addItem(core::Position<int>{*pos}, scrolls[iitem]->clone());
+						auto ispell = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(scrollableSpells) - 1}(*randomEngine);
+						world->addItem(core::Position<int>{*pos}, std::make_unique<Scroll>(scrollableSpells[ispell], shared_from_this(), assets, *randomEngine));
 					} else {
 						auto iitem = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(potions) - 1}(*randomEngine);
 						auto item = std::make_unique<Potion>(potions[iitem], *potionTextures[iitem], shared_from_this(), xpManager, assets, *randomEngine);
