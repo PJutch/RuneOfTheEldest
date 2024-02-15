@@ -94,23 +94,7 @@ namespace core {
 			return shouldDestroy_;
 		}
 
-		void parseTextureData(std::string_view data) final {
-			icon_ = &assets->parse(data);
-		}
-
-		[[nodiscard]] std::optional<std::string> stringifyTextureData() const final {
-			return assets->stringify(*icon_);
-		}
-
 		void onLoad() final;
-
-		void onTextureRandomize() final {
-			icon_ = &assets->randomPotionBaseTexture();
-		}
-
-		const sf::Texture& baseIcon() const noexcept {
-			return *icon_;
-		}
 	private:
 		Stats stats;
 

@@ -108,17 +108,7 @@ namespace core {
 			return "";
 		}
 
-		virtual void parseTextureData(std::string_view data) {
-			throw UnexpectedData{};
-		}
-
-		[[nodiscard]] virtual std::optional<std::string> stringifyTextureData() const {
-			return std::nullopt;
-		}
-
 		virtual void onLoad() {}
-
-		virtual void onTextureRandomize() {}
 	private:
 		std::string id_;
 	};
