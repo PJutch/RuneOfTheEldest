@@ -106,7 +106,7 @@ namespace core {
 	std::unique_ptr<Item> ItemManager::newItem(std::string_view id) {
 		if (auto spellId = util::parsePrefixed(id, "scroll.")) {
 			if (auto spell = spells->findSpell(*spellId); spell && spell->hasScroll()) {
-				return std::make_unique<Scroll>(spell, shared_from_this(), assets, *randomEngine);
+				return std::make_unique<Scroll>(spell->clone(), shared_from_this(), assets, *randomEngine);
 			}
 		}
 
