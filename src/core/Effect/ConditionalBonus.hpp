@@ -18,7 +18,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "Effect.hpp"
 
-#include "../Actor.hpp"
+#include "core/StatBoosts.hpp"
+#include "core/Actor.hpp"
 
 #include <array>
 
@@ -26,71 +27,53 @@ namespace core {
 	/// Provides bonuses based on condition
 	class ConditionalBonus : public Effect {
 	public:
-		struct Bonuses {
-			double regenBonus = 0;
-			double manaRegenBonus = 0;
-
-			double speedBonus = 0;
-			double accuracyBonus = 0;
-			double evasionBonus = 0;
-
-			double xpMul = 1;
-
-			double hpBonus = 0;
-			double manaBonus = 0;
-
-			double damageBonus = 0;
-
-			std::array<double, util::nEnumerators<DamageType>> defenceBonuses{};
-		};
-
-		ConditionalBonus(Bonuses bonuses_, 
+		ConditionalBonus(StatBoosts boosts_,
 				const sf::Texture& icon_, std::string_view id_, std::string_view name_, bool isSkill) :
-			Effect{icon_, id_, name_, isSkill}, bonuses{bonuses_} {}
+			Effect{icon_, id_, name_, isSkill}, boosts{boosts_} {}
 
 		double regenBonus() const final {
-			return shouldApply() ? bonuses.regenBonus : 0;
+			return shouldApply() ? boosts.regenBonus : 0;
 		}
 
 		double manaRegenBonus() const final {
-			return shouldApply() ? bonuses.manaRegenBonus : 0;
+			return shouldApply() ? boosts.manaRegenBonus : 0;
 		}
 
 		double damageBonus(const Actor&) const final {
-			return shouldApply() ? bonuses.damageBonus : 0;
+			return shouldApply() ? boosts.damageBonus : 0;
 		}
 
 		double speedBonus() const final {
-			return shouldApply() ? bonuses.speedBonus : 0;
+			return shouldApply() ? boosts.speedBonus : 0;
 		}
 
 		double accuracyBonus() const final {
-			return shouldApply() ? bonuses.accuracyBonus : 0;
+			return shouldApply() ? boosts.accuracyBonus : 0;
 		}
 
 		double evasionBonus() const final {
-			return shouldApply() ? bonuses.evasionBonus : 0;
+			return shouldApply() ? boosts.evasionBonus : 0;
 		}
 
 		double xpMul() const final {
-			return shouldApply() ? bonuses.xpMul : 1;
+			return shouldApply() ? boosts.xpMul : 1;
 		}
 
 		double hpBonus() const final {
-			return shouldApply() ? bonuses.hpBonus : 0;
+			return shouldApply() ? boosts.hpBonus : 0;
 		}
 
 		double manaBonus() const final {
-			return shouldApply() ? bonuses.manaBonus : 0;
+			return shouldApply() ? boosts.manaBonus : 0;
 		}
 
 		double defenceBonus(DamageType damageType) const final {
-			return shouldApply() ? bonuses.defenceBonuses[static_cast<size_t>(damageType)] : 0;
+			return shouldApply() ? boosts.defenceBonuses[static_cast<size_t>(damageType)] : 0;
 		}
 
 		virtual bool shouldApply() const = 0;
 	private:
-		Bonuses bonuses;
+		StatBoosts boosts;
 	};
 }
 

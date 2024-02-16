@@ -24,12 +24,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/log.hpp"
 
 namespace core {
-	/// @brief Loads bonuses
-	/// @param params Map with params. Consumed
-	/// @throws anonymous::UnknowParams if some of params are unknown
-	/// @todo Choose a better place
-	ConditionalBonus::Bonuses loadBonuses(std::unordered_map<std::string, std::string>& params);
-
 	/// Manages loading effects
 	class EffectManager {
 	public:

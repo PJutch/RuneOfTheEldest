@@ -26,10 +26,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 namespace core {
 	class BonusSpell : public Spell {
 	public:
-		BonusSpell(ConditionalBonus::Bonuses bonuses, double mana_, 
+		BonusSpell(StatBoosts boosts, double mana_,
 				const sf::Texture& icon, std::string_view id, std::string_view name) :
 			Spell{icon, id, name}, mana{mana_}, 
-			bonus{std::make_shared<Bonus>(bonuses, icon, std::format("{}__spellBonus", id), name)} {}
+			bonus{std::make_shared<Bonus>(boosts, icon, std::format("{}__spellBonus", id), name)} {}
 
 		UsageResult cast(bool useMana_ = true) final {
 			isOn = !isOn;
@@ -71,11 +71,11 @@ namespace core {
 				using RuntimeError::RuntimeError;
 			};
 
-			Bonus(ConditionalBonus::Bonuses bonuses, const sf::Texture& icon, std::string_view id, std::string_view name) :
-					ConditionalBonus{bonuses, icon, id, name, false} {
-				if (bonuses.hpBonus != 0)
+			Bonus(StatBoosts boosts, const sf::Texture& icon, std::string_view id, std::string_view name) :
+					ConditionalBonus{boosts, icon, id, name, false} {
+				if (boosts.hpBonus != 0)
 					throw RequirementNotMet{"BonusSpell can't change max hp"};
-				if (bonuses.manaBonus != 0)
+				if (boosts.manaBonus != 0)
 					throw RequirementNotMet{"BonusSpell can't change max mana"};
 			}
 

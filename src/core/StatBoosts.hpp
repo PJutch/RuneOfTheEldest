@@ -13,28 +13,35 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with the Rune of the Eldest.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef UNCONDITIONAL_SKILL_HPP_
-#define UNCONDITIONAL_SKILL_HPP_
+#ifndef STAT_BOOSTS_HPP_
+#define STAT_BOOSTS_HPP_
 
-#include "ConditionalBonus.hpp"
+#include "core/DamageType.hpp"
 
 namespace core {
-	/// @brief Always applies
-	/// @details Type in skill file is "unconditional".
-	/// Default skill type.
-	class UnconditionalSkill : public ConditionalBonus {
-	public:
-		UnconditionalSkill(StatBoosts boosts, const sf::Texture& icon, std::string_view id, std::string_view name) :
-			ConditionalBonus{boosts, icon, id, name, true} {}
+	struct StatBoosts {
+		double regenBonus = 0;
+		double manaRegenBonus = 0;
 
-		bool shouldApply() const final {
-			return true;
-		}
-		
-		std::unique_ptr<Effect> clone() const final {
-			return std::make_unique<UnconditionalSkill>(*this);
-		}
+		double speedBonus = 0;
+		double accuracyBonus = 0;
+		double evasionBonus = 0;
+
+		double xpMul = 1;
+
+		double hpBonus = 0;
+		double manaBonus = 0;
+
+		double damageBonus = 0;
+
+		std::array<double, util::nEnumerators<DamageType>> defenceBonuses{};
 	};
+
+	/// @brief Loads bonuses
+	/// @param params Map with params. Consumed
+	/// @throws anonymous::UnknowParams if some of params are unknown
+	/// @todo Choose a better place
+	StatBoosts loadBonuses(std::unordered_map<std::string, std::string>& params);
 }
 
 #endif

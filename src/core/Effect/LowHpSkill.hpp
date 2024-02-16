@@ -33,11 +33,11 @@ namespace core {
 			using RuntimeError::RuntimeError;
 		};
 
-		LowHpSkill(Bonuses bonuses, const sf::Texture& icon, std::string_view id, std::string_view name) :
-				ConditionalBonus{bonuses, icon, id, name, true} {
-			if (bonuses.hpBonus != 0)
+		LowHpSkill(StatBoosts boosts, const sf::Texture& icon, std::string_view id, std::string_view name) :
+				ConditionalBonus{boosts, icon, id, name, true} {
+			if (boosts.hpBonus != 0)
 				throw RequirementNotMet{"LowHpSkill can't change max hp"};
-			if (bonuses.manaBonus != 0)
+			if (boosts.manaBonus != 0)
 				throw RequirementNotMet{"LowHpSkill can't change max mana"};
 		}
 

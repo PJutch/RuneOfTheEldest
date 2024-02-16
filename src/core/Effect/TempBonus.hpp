@@ -29,11 +29,11 @@ namespace core {
 			using RuntimeError::RuntimeError;
 		};
 
-		TempBonus(Bonuses bonuses, double duration_, const sf::Texture& icon, std::string_view id, std::string_view name) :
-				ConditionalBonus{bonuses, icon, id, name, false}, duration{duration_} {
-			if (bonuses.hpBonus != 0)
+		TempBonus(StatBoosts boosts, double duration_, const sf::Texture& icon, std::string_view id, std::string_view name) :
+				ConditionalBonus{boosts, icon, id, name, false}, duration{duration_} {
+			if (boosts.hpBonus != 0)
 				throw RequirementNotMet{"TempBonus can't change max hp"};
-			if (bonuses.manaBonus != 0)
+			if (boosts.manaBonus != 0)
 				throw RequirementNotMet{"TempBonus can't change max mana"};
 		}
 
