@@ -105,11 +105,8 @@ namespace core {
 
 	std::unique_ptr<Item> ItemManager::newItem(std::string_view id) {
 		if (auto spellId = util::parsePrefixed(id, "scroll.")) {
-			auto scrollableSpells = *spells | std::views::filter(&Spell::hasScroll);
-			if (auto iter = std::ranges::find(scrollableSpells, *spellId, [](const auto& spell) {
-				return spell->id();
-			}); iter != scrollableSpells.end()) {
-				return std::make_unique<Scroll>(*iter, shared_from_this(), assets, *randomEngine);
+			if (auto spell = spells->findSpell(*spellId); spell && spell->hasScroll()) {
+				return std::make_unique<Scroll>(spell, shared_from_this(), assets, *randomEngine);
 			}
 		}
 
