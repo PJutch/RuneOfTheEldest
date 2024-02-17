@@ -23,6 +23,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "DamageType.hpp"
 #include "Spell/Spell.hpp"
 #include "Item.hpp"
+#include "Equipment.hpp"
 
 #include "render/ParticleManager.hpp"
 #include "render/coords.hpp"
@@ -336,6 +337,33 @@ namespace core {
 		void castedSpell(std::shared_ptr<Spell> spell) {
 			castedSpell_ = spell;
 		}
+
+		bool equip(Equipment& piece, EquipmentSlot slot) {
+			auto& slots = equipment[static_cast<int>(slot)];
+			if (slots.empty()) {
+				return false;
+			}
+
+			auto pieceIter = std::ranges::find_if(items_, [&](const auto& ptr) {
+				return ptr.get() == &piece;
+			});
+			if (pieceIter == items_.end()) {
+				return false;
+			}
+
+			std::unique_ptr<Equipment> piecePtr{static_cast<Equipment*>(pieceIter->release())};
+			items_.erase(pieceIter);
+
+			if (auto iter = std::ranges::find_if(slots, [](const auto& ptr) {
+				return ptr == nullptr;
+			}); iter != slots.end()) {
+				*iter = std::move(piecePtr);
+			} else {
+				std::ranges::rotate(slots, slots.end() - 1);
+				addItem(std::exchange(slots.front(), std::move(piecePtr)));
+			}
+			return true;
+		}
 	private:
 		Stats stats_;
 		std::unique_ptr<Controller> controller_;
@@ -343,6 +371,7 @@ namespace core {
 		std::vector<std::shared_ptr<Spell>> spells_;
 		std::vector<std::unique_ptr<Item>> items_;
 		std::shared_ptr<Spell> castedSpell_;
+		std::array<std::vector<std::unique_ptr<Equipment>>, util::nEnumerators<EquipmentSlot>> equipment;
 
 		double nextTurn_ = 0;
 		sf::Vector3i position_;

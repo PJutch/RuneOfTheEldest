@@ -1,0 +1,6 @@
+name Protection ring
+icon resources/textures/Equipment/protectionRing.png
+
+slot ring
+
+physicalDefenceBonus 4

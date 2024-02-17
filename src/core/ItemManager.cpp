@@ -41,15 +41,29 @@ namespace core {
 			UnknownEffect(std::string_view name, util::Stacktrace stacktrace = {}) :
 				util::RuntimeError{std::format("Unknow effect \"{}\"", name), std::move(stacktrace)} {}
 		};
+
+		class UnknownEquipmentSlotError : public util::RuntimeError {
+		public:
+			UnknownEquipmentSlotError(std::string_view equipmentSlot, util::Stacktrace currentStacktrace = {}) noexcept :
+				RuntimeError{std::format("Unknown equipment slot \"{}\"", equipmentSlot),
+				std::move(currentStacktrace)} {}
+		};
+
+		EquipmentSlot getEquipmentSlot(const std::string& name) {
+			if (auto v = util::getOptional(equipmentSlotByName, name))
+				return *v;
+			else
+				throw UnknownEquipmentSlotError{name};
+		}
 	}
 
 	void ItemManager::load() {
 		logger->info("Loading...");
 
 		logger->info("Loading potions...");
-		std::filesystem::path basePath{"resources/descriptions/Potions/"};
-		util::forEachFile(basePath, [&](std::ifstream& is, const std::filesystem::path& path) {
-			std::string id = "potion." + util::toIdentifier(path, basePath);
+		std::filesystem::path potionPath{"resources/descriptions/Potions/"};
+		util::forEachFile(potionPath, [&](std::ifstream& is, const std::filesystem::path& path) {
+			std::string id = "potion." + util::toIdentifier(path, potionPath);
 
 			logger->info("Loading {} spec from {} ...", id, path.generic_string());
 
@@ -100,6 +114,24 @@ namespace core {
 		});
 		randomizeTextures();
 
+		logger->info("Loading equipment...");
+		std::filesystem::path equipmentPath{"resources/descriptions/Equipment/"};
+		util::forEachFile(equipmentPath, [&](std::ifstream& is, const std::filesystem::path& path) {
+			Equipment::Stats stats;
+			stats.id = "equipment." + util::toIdentifier(path, equipmentPath);
+
+			logger->info("Loading {} spec from {} ...", stats.id, path.generic_string());
+
+			auto params = util::parseMapping(is);
+
+			stats.slot = getEquipmentSlot(util::getAndEraseRequired(params, "slot"));
+			stats.name = util::getAndEraseRequired(params, "name");
+			stats.icon = &assets->texture(util::getAndEraseRequired(params, "icon"));
+			stats.boosts = loadBonuses(params);
+
+			equipment.push_back(stats);
+		});
+
 		logger->info("Loaded");
 	}
 
@@ -114,6 +146,10 @@ namespace core {
 			return item.id;
 		}); iter != potions.end()) {
 			return std::make_unique<Potion>(*iter, *potionTextures[iter - potions.begin()], shared_from_this(), xpManager, assets, *randomEngine);
+		} else if (auto iter = std::ranges::find(equipment, id, [](const auto& item) {
+			return item.id;
+		}); iter != equipment.end()) {
+			return std::make_unique<Equipment>(*iter, shared_from_this(), xpManager, assets, *randomEngine);
 		} else {
 			return nullptr;
 		}
@@ -127,13 +163,24 @@ namespace core {
 		for (int z = 0; z < world->tiles().shape().z; ++z) {
 			for (int i = 0; i < std::uniform_int_distribution{3, 10}(*randomEngine); ++i) {
 				if (auto pos = world->randomPositionAt(z, 1000, &World::isFree)) {
-					if (std::uniform_real_distribution{}(*randomEngine) < 0.5) {
+					switch (std::uniform_int_distribution{0, 2}(*randomEngine)) {
+					case 0: {
 						auto ispell = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(scrollableSpells) - 1}(*randomEngine);
 						world->addItem(core::Position<int>{*pos}, std::make_unique<Scroll>(scrollableSpells[ispell], shared_from_this(), assets, *randomEngine));
-					} else {
+						break;
+					}
+					case 1: {
 						auto iitem = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(potions) - 1}(*randomEngine);
 						auto item = std::make_unique<Potion>(potions[iitem], *potionTextures[iitem], shared_from_this(), xpManager, assets, *randomEngine);
 						world->addItem(core::Position<int>{*pos}, std::move(item));
+						break;
+					}
+					case 2: {
+						auto iitem = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(equipment) - 1}(*randomEngine);
+						auto item = std::make_unique<Equipment>(equipment[iitem], shared_from_this(), xpManager, assets, *randomEngine);
+						world->addItem(core::Position<int>{*pos}, std::move(item));
+						break;
+					}
 					}
 				}
 			}

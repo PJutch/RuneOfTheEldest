@@ -23,9 +23,11 @@ namespace core {
 		         std::shared_ptr<World> newWorld, std::shared_ptr<XpManager> xpManager_,
 				 std::shared_ptr<render::ParticleManager> particles_,
 		         util::RandomEngine* newRandomEngine) :
-		stats_{newStats}, position_{newPosition}, hp_{newStats.maxHp}, mana_{newStats.maxMana},
-		world_{ std::move(newWorld) }, xpManager{ std::move(xpManager_) },
-		particles{particles_}, randomEngine_ {newRandomEngine} {}
+			stats_{newStats}, position_{newPosition}, hp_{newStats.maxHp}, mana_{newStats.maxMana},
+			world_{ std::move(newWorld) }, xpManager{ std::move(xpManager_) },
+			particles{particles_}, randomEngine_ {newRandomEngine} {
+		equipment[static_cast<int>(EquipmentSlot::RING)].resize(2);
+	}
 
 	Actor::Actor(Stats stats_, 
 		         std::shared_ptr<World> newWorld, std::shared_ptr<XpManager> xpManager, 

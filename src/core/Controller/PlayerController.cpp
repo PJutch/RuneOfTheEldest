@@ -104,11 +104,11 @@ namespace core {
 				TROTE_ASSERT(false, "unreachable");
 			}
 		} else if (auto iClickedItem = render::clickedItem(clickPos, *renderContext.window, *player_)) {
-			auto& clickedItem = player_->items()[*iClickedItem];
+			auto& clickedItem = *player_->items()[*iClickedItem];
 			if (!std::visit([&]<typename T>(T v) {
 				if constexpr (std::same_as<T, SelectedSpell>) {
 					auto spell = player_->spells()[v.i];
-					switch (spell->cast(*clickedItem)) {
+					switch (spell->cast(clickedItem)) {
 					case UsageResult::SUCCESS:
 						endTurn(spell);
 						return true;
@@ -121,7 +121,7 @@ namespace core {
 					}
 				} else if constexpr (std::same_as<T, SelectedItem>) {
 					const auto& item = player_->items()[v.i];
-					switch (item->use(*clickedItem)) {
+					switch (item->use(clickedItem)) {
 					case UsageResult::SUCCESS:
 						if (item->shouldDestroy()) {
 							selectedAbility_ = {};
@@ -139,9 +139,9 @@ namespace core {
 					return false;
 				}
 			}, selectedAbility())) {
-				switch (clickedItem->use()) {
+				switch (clickedItem.use()) {
 				case UsageResult::SUCCESS:
-					endTurn(clickedItem->castedSpell());
+					endTurn(clickedItem.castedSpell());
 					break;
 				case UsageResult::FAILURE:
 					break;

@@ -19,6 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "Item.hpp"
 
 #include "Potion.hpp"
+#include "Equipment.hpp"
 
 #include "Spell/Manager.hpp"
 
@@ -77,6 +78,7 @@ namespace core {
 		std::vector<Potion::Stats> potions;
 		std::vector<const sf::Texture*> potionTextures;
 		std::unordered_set<std::string> identifiedItems;
+		std::vector<Equipment::Stats> equipment;
 
 		std::shared_ptr<spdlog::logger> logger;
 

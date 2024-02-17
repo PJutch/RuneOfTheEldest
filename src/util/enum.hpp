@@ -47,6 +47,17 @@ namespace util {
 
 	template <typename T> requires std::is_enum_v<T>
 	inline const int nEnumerators = nEnumeratorsImpl(std::type_identity<T>{});
+
+	template <typename Enum> requires std::is_enum_v<Enum>
+	std::string enumeratorName(Enum enumerator) {
+		std::string result;
+		boost::mp11::mp_for_each<boost::describe::describe_enumerators<Enum>>([&](auto D) {
+			if (D.value == enumerator) {
+				result = D.name;
+			}
+		});
+		return result;
+	}
 }
 
 /// returns 10 argument
