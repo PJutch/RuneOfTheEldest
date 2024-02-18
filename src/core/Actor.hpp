@@ -30,6 +30,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "util/geometry.hpp"
 #include "util/random.hpp"
+#include "util/reduce.hpp"
 
 #include <SFML/Graphics/Texture.hpp>
 
@@ -362,7 +363,24 @@ namespace core {
 				std::ranges::rotate(slots, slots.end() - 1);
 				addItem(std::exchange(slots.front(), std::move(piecePtr)));
 			}
+
+			updateHp();
+
 			return true;
+		}
+
+		template <typename T, typename Op, typename Proj = std::identity>
+		auto reduceStatBoosters(T init, Op op = {}, Proj proj = {}) const {
+			T res = std::move(init);
+			for (const auto& effect : effects()) {
+				res = std::invoke(op, std::move(res), std::invoke(proj, *effect));
+			}
+			for (const auto& piece : equipment | std::views::join) {
+				if (piece) {
+					res = std::invoke(op, std::move(res), std::invoke(proj, *piece));
+				}
+			}
+			return res;
 		}
 	private:
 		Stats stats_;

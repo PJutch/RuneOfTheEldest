@@ -34,7 +34,11 @@ namespace util {
               BinaryOp<T> Op = std::plus<>> 
         requires std::same_as<std::ranges::range_value_t<Range>, T>
     T reduce(const Range& range, T init = T{}, Op op = Op{}) {
-        return std::reduce(range.begin(), range.end(), init, op);
+        T result = std::move(init);
+        for (auto&& v : range) {
+            result = op(result, v);
+        }
+        return result;
     }
 
     template <std::ranges::forward_range Range, typename U, 

@@ -156,66 +156,49 @@ namespace core {
 	}
 
 	double Actor::regen() {
-		return stats().regen * util::reduce(effects_, 1., std::plus<>{}, [](const auto& effect) {
-			return effect->regenBonus();
-		});
+		return stats().regen * reduceStatBoosters(1., std::plus<>{}, &StatBooster::regenBonus);
 	}
 
 	double Actor::manaRegen() {
-		return stats().manaRegen * util::reduce(effects_, 1., std::plus<>{}, [](const auto& effect) {
-			return effect->manaRegenBonus();
-		});
+		return stats().manaRegen * reduceStatBoosters(1., std::plus<>{}, &StatBooster::manaRegenBonus);
 	}
 
 	double Actor::damage(const Actor& target) {
-		return stats().damage * util::reduce(effects_, 1., std::plus<>{}, [&target](const auto& effect) {
-			return effect->damageBonus(target);
+		return stats().damage * reduceStatBoosters(1., std::plus<>{}, [&](const StatBooster& booster) {
+			return booster.damageBonus(target);
 		});
 	}
 
 	double Actor::turnDelay() {
-		double speed = util::reduce(effects_, 0., std::plus<>{}, [](const auto& effect) {
-			return effect->speedBonus();
-		});
-
+		double speed = reduceStatBoosters(0., std::plus<>{}, & StatBooster::speedBonus);
 		return stats().turnDelay * (speed >= 0 ? 1 / (speed + 1) : 1 - speed);
 	}
 
 	double Actor::xpMul() const {
-		return util::reduce(effects_, 1., std::multiplies<>{}, [](const auto& effect) {
-			return effect->xpMul();
-		});
+		return reduceStatBoosters(1., std::multiplies<>{}, &StatBooster::xpMul);
 	}
 
 	double Actor::evasion() {
-		return util::reduce(effects_, stats().evasion, std::plus<>{}, [](const auto& effect) {
-			return effect->evasionBonus();
-		});
+		return reduceStatBoosters(stats().evasion, std::plus<>{}, &StatBooster::evasionBonus);
 	}
 
 	double Actor::accuracy() {
-		return util::reduce(effects_, stats().accuracy, std::plus<>{}, [](const auto& effect) {
-			return effect->accuracyBonus();
-		});
+		return reduceStatBoosters(stats().accuracy, std::plus<>{}, &StatBooster::accuracyBonus);
 	}
 
 	double Actor::defence(DamageType damageType) {
-		return util::reduce(effects_, stats().defences[static_cast<int>(damageType)], std::plus<>{}, [damageType](const auto& effect) {
-			return effect->defenceBonus(damageType);
+		return reduceStatBoosters(stats().defences[static_cast<int>(damageType)], std::plus<>{}, [damageType](const auto& booster) {
+			return booster.defenceBonus(damageType);
 		});
 	}
 
 	void Actor::updateHp() {
-		double newMHpul = util::reduce(effects_, 1., std::plus<>{}, [](const auto& effect) {
-			return effect->hpBonus();
-		});
+		double newMHpul = reduceStatBoosters(1., std::plus<>{}, &StatBooster::hpBonus);
 
 		hp_ *= newMHpul / hpMul;
 		hpMul = newMHpul;
 
-		double newManaMul = util::reduce(effects_, 1., std::plus<>{}, [](const auto& effect) {
-			return effect->manaBonus();
-		});
+		double newManaMul = reduceStatBoosters(1., std::plus<>{}, &StatBooster::manaBonus);
 
 		mana_ *= newManaMul / manaMul;
 		manaMul = newManaMul;

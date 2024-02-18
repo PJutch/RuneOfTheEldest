@@ -83,6 +83,46 @@ namespace core {
 		}
 
 		void onLoad() final;
+
+		double regenBonus() const final {
+			return stats.boosts.regenBonus;
+		}
+
+		double manaRegenBonus() const final {
+			return stats.boosts.manaRegenBonus;
+		}
+
+		double damageBonus(const Actor&) const final {
+			return stats.boosts.damageBonus;
+		}
+
+		double speedBonus() const final {
+			return stats.boosts.speedBonus;
+		}
+
+		double accuracyBonus() const final {
+			return stats.boosts.accuracyBonus;
+		}
+
+		double evasionBonus() const final {
+			return stats.boosts.evasionBonus;
+		}
+
+		double xpMul() const final {
+			return stats.boosts.xpMul;
+		}
+
+		double hpBonus() const final {
+			return stats.boosts.hpBonus;
+		}
+
+		double manaBonus() const final {
+			return stats.boosts.manaBonus;
+		}
+
+		double defenceBonus(DamageType damageType) const final {
+			return stats.boosts.defenceBonuses[static_cast<size_t>(damageType)];
+		}
 	private:
 		Stats stats;
 
