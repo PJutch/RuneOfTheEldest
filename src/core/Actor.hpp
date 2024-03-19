@@ -340,7 +340,7 @@ namespace core {
 		}
 
 		bool equip(Equipment& piece, EquipmentSlot slot) {
-			auto& slots = equipment[static_cast<int>(slot)];
+			auto& slots = equipment_[static_cast<int>(slot)];
 			if (slots.empty()) {
 				return false;
 			}
@@ -369,13 +369,22 @@ namespace core {
 			return true;
 		}
 
+		std::span<const std::vector<std::unique_ptr<Equipment>>, util::nEnumerators<EquipmentSlot>> equipment() const noexcept {
+			return equipment_;
+		}
+
+		void setEquipment(std::unique_ptr<Equipment> piece, EquipmentSlot slotType, int slotIndex) {
+			equipment_[static_cast<int>(slotType)][slotIndex] = std::move(piece);
+			updateHp();
+		}
+
 		template <typename T, typename Op, typename Proj = std::identity>
 		auto reduceStatBoosters(T init, Op op = {}, Proj proj = {}) const {
 			T res = std::move(init);
 			for (const auto& effect : effects()) {
 				res = std::invoke(op, std::move(res), std::invoke(proj, *effect));
 			}
-			for (const auto& piece : equipment | std::views::join) {
+			for (const auto& piece : equipment_ | std::views::join) {
 				if (piece) {
 					res = std::invoke(op, std::move(res), std::invoke(proj, *piece));
 				}
@@ -389,7 +398,7 @@ namespace core {
 		std::vector<std::shared_ptr<Spell>> spells_;
 		std::vector<std::unique_ptr<Item>> items_;
 		std::shared_ptr<Spell> castedSpell_;
-		std::array<std::vector<std::unique_ptr<Equipment>>, util::nEnumerators<EquipmentSlot>> equipment;
+		std::array<std::vector<std::unique_ptr<Equipment>>, util::nEnumerators<EquipmentSlot>> equipment_;
 
 		double nextTurn_ = 0;
 		sf::Vector3i position_;

@@ -26,7 +26,7 @@ namespace core {
 			stats_{newStats}, position_{newPosition}, hp_{newStats.maxHp}, mana_{newStats.maxMana},
 			world_{ std::move(newWorld) }, xpManager{ std::move(xpManager_) },
 			particles{particles_}, randomEngine_ {newRandomEngine} {
-		equipment[static_cast<int>(EquipmentSlot::RING)].resize(2);
+		equipment_[static_cast<int>(EquipmentSlot::RING)].resize(2);
 	}
 
 	Actor::Actor(Stats stats_, 

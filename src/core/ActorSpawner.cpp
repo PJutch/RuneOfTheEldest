@@ -15,6 +15,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "ActorSpawner.hpp"
 
+#include "Item.hpp"
+
 #include "Controller/EnemyAi.hpp"
 #include "Controller/PlayerController.hpp"
 
@@ -249,6 +251,22 @@ namespace core {
         };
     }
 
+    namespace {
+        class UnknownEquipmentSlotError : public util::RuntimeError {
+        public:
+            UnknownEquipmentSlotError(std::string_view equipmentSlot, util::Stacktrace currentStacktrace = {}) noexcept :
+                RuntimeError{std::format("Unknown equipment slot \"{}\"", equipmentSlot),
+                std::move(currentStacktrace)} {}
+        };
+
+        EquipmentSlot getEquipmentSlot(std::string_view name) {
+            if (auto v = util::getOptional(equipmentSlotByName, std::string{name}))
+                return *v;
+            else
+                throw UnknownEquipmentSlotError{name};
+        }
+    }
+
     std::shared_ptr<core::Actor> ActorSpawner::parseActor(std::string_view s) {
         util::KeyValueVisitor visitor;
         auto result = std::make_shared<core::Actor>(world, xpManager, renderContext.particles, randomEngine);
@@ -318,6 +336,22 @@ namespace core {
             }
         });
 
+        visitor.key("equiped").callback([&](std::string_view s) {
+            auto [slotTypeStr, rest1] = util::parseKeyValuePair(s);
+            auto [slotIndexStr, rest2] = util::parseKeyValuePair(rest1);
+            auto [id, data] = util::parseKeyValuePair(rest2);
+
+            auto slotType = getEquipmentSlot(slotTypeStr);
+            int slotIndex = util::parseInt(slotIndexStr);
+
+            if (std::unique_ptr<Equipment> item{dynamic_cast<Equipment*>(itemManager->newItem(id).release())}) {
+                item->parseData(data);
+                result->setEquipment(std::move(item), slotType, slotIndex);       
+            } else {
+                throw ItemNotFound{id};
+            }
+        });
+
         util::forEackKeyValuePair(s, visitor);
         visitor.validate();
 
@@ -352,6 +386,15 @@ namespace core {
         for (const auto& item : actor.items()) {
             result.append(std::format("item {} {}\n", item->id(), item->stringifyData()));
         }
+
+        boost::mp11::mp_for_each<boost::describe::describe_enumerators<EquipmentSlot>>([&](auto D) {
+            const auto& slots = actor.equipment()[static_cast<int>(D.value)];
+            for (int i = 0; i < std::ssize(slots); ++i) {
+                if (slots[i]) {
+                    result.append(std::format("equiped {} {} {} {}\n", util::toLower(D.name), i, slots[i]->id(), slots[i]->stringifyData()));
+                }
+            }
+        });
 
         return result;
     }
