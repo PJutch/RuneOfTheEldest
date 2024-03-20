@@ -369,6 +369,12 @@ namespace core {
 			return true;
 		}
 
+		void unequip(EquipmentSlot slot, int index) {
+			if (auto& item = equipment_[static_cast<int>(slot)][index]) {
+				addItem(static_cast<std::unique_ptr<Item>>(std::exchange(item, nullptr)));
+			}
+		}
+
 		std::span<const std::vector<std::unique_ptr<Equipment>>, util::nEnumerators<EquipmentSlot>> equipment() const noexcept {
 			return equipment_;
 		}

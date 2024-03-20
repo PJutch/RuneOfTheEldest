@@ -19,10 +19,12 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "render/fwd.hpp"
 #include "core/fwd.hpp"
 #include "core/World.hpp"
+#include "core/Equipment.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
 
 #include <optional>
+#include <utility>
 
 namespace render {
 	void drawHud(sf::RenderTarget& target, const AssetManager& assets, 
@@ -30,6 +32,8 @@ namespace render {
 
 	std::optional<int> clickedSpell(sf::Vector2i clickPos, sf::RenderTarget& target, const core::Actor& player);
 	std::optional<int> clickedItem(sf::Vector2i clickPos, sf::RenderTarget& target, const core::Actor& player);
+	std::optional<std::pair<EquipmentSlot, int>> clickedEquipment(sf::Vector2i clickPos,
+																  sf::RenderTarget& target, const core::Actor& player);
 }
 
 #endif

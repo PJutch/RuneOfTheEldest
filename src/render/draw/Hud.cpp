@@ -65,17 +65,20 @@ namespace render {
 
         const sf::Vector2f iconSize{32.f, 32.f};
 
-        void drawIcon(sf::RenderTarget& target, sf::FloatRect rect, sf::Color boundaryColor, const sf::Texture& icon) {
+        void drawIcon(sf::RenderTarget& target, sf::FloatRect rect, sf::Color boundaryColor, const sf::Texture* icon) {
             drawRect(target, rect, sf::Color{32, 32, 32}, boundaryColor, 2.f);
 
-            sf::Vector2f iconCenter = util::geometry_cast<float>(icon.getSize()) / 2.f;
-            sf::Vector2f center = rect.getPosition() + rect.getSize() / 2.f;
-            drawSprite(target, center, iconCenter, icon, 1.0, iconSize.x / icon.getSize().x);
+            if (icon) {
+                sf::Vector2f iconCenter = util::geometry_cast<float>(icon->getSize()) / 2.f;
+                sf::Vector2f center = rect.getPosition() + rect.getSize() / 2.f;
+                drawSprite(target, center, iconCenter, *icon, 1.0, iconSize.x / icon->getSize().x);
+            }
         }
 
         enum class IconMode {
             TOP_RIGHT,
             TOP_LEFT,
+            TOP_LEFT_ROW2,
             BOTTOM_LEFT,
             BOTTOM_RIGHT,
         };
@@ -89,18 +92,19 @@ namespace render {
             const sf::Vector2f screenSize = target.getView().getSize();
             const float padding = 4.f;
 
-            const float firstXCenter = (mode == IconMode::TOP_RIGHT || mode == IconMode::BOTTOM_RIGHT
-                                       ? screenSize.x - padding - iconSize.x / 2
-                                       :                padding + iconSize.x / 2);
+            const bool isLeft = mode == IconMode::BOTTOM_LEFT || mode == IconMode::TOP_LEFT || mode == IconMode::TOP_LEFT_ROW2;
+            const float firstXCenter = (isLeft ? padding + iconSize.x / 2 : screenSize.x - padding - iconSize.x / 2);
 
             float x = firstXCenter;
-            const float y = (mode == IconMode::TOP_RIGHT || mode == IconMode::TOP_LEFT ? 20.f : 970.f);
+            const float y = (mode == IconMode::TOP_RIGHT || mode == IconMode::TOP_LEFT ? 20.f 
+                          : (mode == IconMode::TOP_LEFT_ROW2 ? 20.f + 2 * padding + iconSize.y : 970.f));
             int i = 0;
 
             for (const auto& element : elements) {
-                drawIcon(target, sf::FloatRect{sf::Vector2f{x, y} - iconSize / 2.f, iconSize}, getBoundaryColor(element, i), element.icon());
+                const sf::Texture* icon = element ? &element->icon() : nullptr;
+                drawIcon(target, sf::FloatRect{sf::Vector2f{x, y} - iconSize / 2.f, iconSize}, getBoundaryColor(element, i), icon);
 
-                x += (iconSize.x + 2 * padding) * (mode == IconMode::BOTTOM_LEFT || mode == IconMode::TOP_LEFT ? 1 : -1);
+                x += (iconSize.x + 2 * padding) * (isLeft ? 1 : -1);
                 ++i;
             }
 
@@ -109,15 +113,17 @@ namespace render {
             for (const auto& element : elements) {
                 sf::FloatRect rect{sf::Vector2f{x, y} - iconSize / 2.f, iconSize};
 
-                util::UnorderedMap<IconMode, TooltipMode> tooltipModes{{IconMode::BOTTOM_LEFT , TooltipMode::UP_RIGHT  },
-                                                                       {IconMode::BOTTOM_RIGHT, TooltipMode::UP_LEFT   },
-                                                                       {IconMode::TOP_LEFT    , TooltipMode::DOWN_RIGHT},
-                                                                       {IconMode::TOP_RIGHT   , TooltipMode::DOWN_LEFT }};
+                util::UnorderedMap<IconMode, TooltipMode> tooltipModes{{IconMode::BOTTOM_LEFT  , TooltipMode::UP_RIGHT  },
+                                                                       {IconMode::BOTTOM_RIGHT , TooltipMode::UP_LEFT   },
+                                                                       {IconMode::TOP_LEFT     , TooltipMode::DOWN_RIGHT},
+                                                                       {IconMode::TOP_RIGHT    , TooltipMode::DOWN_LEFT },
+                                                                       {IconMode::TOP_LEFT_ROW2, TooltipMode::DOWN_RIGHT}};
 
-                if (rect.contains(target.mapPixelToCoords(sf::Mouse::getPosition())))
-                    drawTooltip(target, assets, element, tooltipModes[mode]);
+                if (element && rect.contains(target.mapPixelToCoords(sf::Mouse::getPosition()))) {
+                    drawTooltip(target, assets, *element, tooltipModes[mode]);
+                }
 
-                x += (iconSize.x + 2 * padding) * (mode == IconMode::BOTTOM_LEFT || mode == IconMode::TOP_LEFT ? 1 : -1);
+                x += (iconSize.x + 2 * padding) * (isLeft ? 1 : -1);
             }
         }
     }
@@ -128,18 +134,18 @@ namespace render {
         const sf::Vector2f screenSize = target.getView().getSize();
         float padding = 4.f;
 
-        const float firstXCenter = (mode == IconMode::TOP_RIGHT || mode == IconMode::BOTTOM_RIGHT
-                                   ? screenSize.x - padding - iconSize.x / 2
-                                   : padding + iconSize.x / 2);
+        const bool isLeft = mode == IconMode::BOTTOM_LEFT || mode == IconMode::TOP_LEFT || mode == IconMode::TOP_LEFT_ROW2;
+        const float firstXCenter = (isLeft ? padding + iconSize.x / 2 : screenSize.x - padding - iconSize.x / 2);
 
         float x = firstXCenter;
-        const float y = (mode == IconMode::TOP_RIGHT || mode == IconMode::TOP_LEFT ? 20.f : 970.f);
+        const float y = (mode == IconMode::TOP_RIGHT || mode == IconMode::TOP_LEFT ? 20.f
+            : (mode == IconMode::TOP_LEFT_ROW2 ? 20.f + 2 * padding + iconSize.y : 970.f));
 
         for (int i = 0; i < n_icons; ++i) {
             if (sf::FloatRect{sf::Vector2f{x, y} - iconSize / 2.f, iconSize}.contains(target.mapPixelToCoords(clickPos)))
                 return i;
 
-            x += (iconSize.x + 2 * padding) * (mode == IconMode::BOTTOM_LEFT || mode == IconMode::TOP_LEFT ? 1 : -1);
+            x += (iconSize.x + 2 * padding) * (isLeft ? 1 : -1);
         }
 
         return std::nullopt;
@@ -149,30 +155,29 @@ namespace render {
                  const core::World& world, const core::XpManager& xpManager) {
         drawXpBar(target, xpManager);
         drawIcons(target, assets, world.player().effects() 
-                                | std::views::transform([](const auto& ptr) -> const auto& { return *ptr; })
-                                | std::views::filter([](const auto& effect) { return effect.isVisible() && effect.isSkill(); }),
+                                | std::views::filter([](const auto& effect) { return effect->isVisible() && effect->isSkill(); }),
                   IconMode::BOTTOM_RIGHT, [](const auto&, int) { return sf::Color{128, 128, 128}; });
         drawIcons(target, assets, world.player().effects()
-                                | std::views::transform([](const auto& ptr) -> const auto& { return *ptr; })
-                                | std::views::filter([](const auto& effect) { return effect.isVisible() && !effect.isSkill(); }),
+                                | std::views::filter([](const auto& effect) { return effect->isVisible() && !effect->isSkill(); }),
                   IconMode::TOP_RIGHT, [](const auto&, int) { return sf::Color{128, 128, 128}; });
-        drawIcons(target, assets, world.player().spells()
-                                | std::views::transform([](const auto& ptr) -> const auto& { return *ptr; }),
-                  IconMode::BOTTOM_LEFT, [&](const auto& spell, int i) { 
+        drawIcons(target, assets, world.player().spells(), IconMode::BOTTOM_LEFT, [&](const auto& spell, int i) { 
             return std::visit([&]<typename T>(T v) {
                 if constexpr (std::same_as<T, core::Controller::SelectedSpell>) {
                     if (v.i == i) {
                         return sf::Color::Yellow;
                     } else {
-                        return spell.frameColor();
+                        return spell->frameColor();
                     }
                 } else {
-                    return spell.frameColor();
+                    return spell->frameColor();
                 }
             }, world.player().controller().selectedAbility());
         });
-        drawIcons(target, assets, world.player().items()
-                                | std::views::transform([](const auto& ptr) -> const auto& { return *ptr; }),
+        drawIcons(target, assets, world.player().equipment() | std::views::join,
+            IconMode::TOP_LEFT_ROW2, [&](const auto&, int i) {
+            return sf::Color{128, 128, 128};
+        });
+        drawIcons(target, assets, world.player().items(),
                   IconMode::TOP_LEFT, [&](const auto&, int i) { 
             return std::visit([&]<typename T>(T v) {
                 if constexpr (std::same_as<T, core::Controller::SelectedItem>) {
@@ -194,5 +199,26 @@ namespace render {
 
     std::optional<int> clickedItem(sf::Vector2i clickPos, sf::RenderTarget& target, const core::Actor& player) {
         return clickedIcon(clickPos, target, std::ssize(player.items()), IconMode::TOP_LEFT);
+    }
+
+    std::optional<std::pair<EquipmentSlot, int>> clickedEquipment(sf::Vector2i clickPos, 
+                                                                  sf::RenderTarget& target, const core::Actor& player) {
+        int nIcons = util::reduce(player.equipment() 
+            | std::views::transform([](const auto& v) { return static_cast<int>(std::ssize(v)); }), 0, std::plus<>{});
+
+        auto optIconIndex = clickedIcon(clickPos, target, nIcons, IconMode::TOP_LEFT_ROW2);
+        if (!optIconIndex) {
+            return std::nullopt;
+        }
+
+        int iconIndex = *optIconIndex;
+        for (int i = 0; i < std::ssize(player.equipment()); ++i) {
+            if (iconIndex < std::ssize(player.equipment()[i])) {
+                return std::pair{static_cast<EquipmentSlot>(i), iconIndex};
+            }
+            
+            iconIndex -= std::ssize(player.equipment()[i]);
+        }
+        return std::nullopt;
     }
 }

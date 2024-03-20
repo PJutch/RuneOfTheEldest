@@ -152,6 +152,8 @@ namespace core {
 					TROTE_ASSERT(false, "unreachable");
 				}
 			}
+		} else if (auto clickedEquipment = render::clickedEquipment(clickPos, *renderContext.window, *player_)) {
+			player_->unequip(clickedEquipment->first, clickedEquipment->second);
 		} else if (!std::visit([&]<typename T>(T v) {
 			if constexpr (std::same_as<T, SelectedSpell>) {
 				auto target = render::mouseTile(clickPos, renderContext.camera->position(), *renderContext.window);
