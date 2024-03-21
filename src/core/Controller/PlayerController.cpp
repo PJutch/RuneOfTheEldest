@@ -273,8 +273,8 @@ namespace core {
 				return false;
 			}
 		case State::EXPLORING:
-			if (!canSeeEnemy()) {
-				return explore();
+			if (!canSeeEnemy() && explore()) {
+				return true;
 			} else {
 				state = State::WAITING_INPUT;
 				return false;
