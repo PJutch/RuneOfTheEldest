@@ -25,15 +25,11 @@ namespace core {
 
 	[[nodiscard]] const sf::Texture& Equipment::icon() const {
 		// return items->isIdentified(id()) ? assets->potionTexture(*icon_, *stats.label) : *icon_;
-		return *stats.icon;
+		return *texture;
 	}
 
 	[[nodiscard]] std::string Equipment::name() const {
 		return items->isIdentified(id()) ? stats.name : std::format("Unknown {}", util::toLower(util::enumeratorName(stats.slot)));
-	}
-
-	void Equipment::onLoad() {
-		// icon_ = items->equipmentIcon(slot);
 	}
 
 	UsageResult Equipment::use() {
@@ -45,4 +41,7 @@ namespace core {
 		}
 	}
 
+	void Equipment::onLoad() {
+		texture = items->texture(stats.id);
+	}
 }

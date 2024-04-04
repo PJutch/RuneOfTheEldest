@@ -52,14 +52,13 @@ namespace core {
 			StatBoosts boosts;
 			EquipmentSlot slot;
 			std::string id;
-			std::string name; 
-			const sf::Texture* icon = nullptr;
+			std::string name;
 		};
 
-		Equipment(Stats stats_,
+		Equipment(Stats stats_, const sf::Texture* texture_,
 				 std::shared_ptr<ItemManager> items_, std::shared_ptr<XpManager> xpManager_,
 				 std::shared_ptr<render::AssetManager> assets_, util::RandomEngine& randomEngine_) :
-			Item{stats_.id}, stats{stats_},
+			Item{stats_.id}, stats{stats_}, texture{texture_},
 			items{std::move(items_)}, xpManager{std::move(xpManager_)}, assets{std::move(assets_)}, randomEngine{&randomEngine_} {}
 
 		UsageResult use() final;
@@ -125,6 +124,7 @@ namespace core {
 		}
 	private:
 		Stats stats;
+		const sf::Texture* texture;
 
 		std::weak_ptr<Actor> self;
 

@@ -108,12 +108,6 @@ namespace core {
 			potions.push_back(stats);
 		});
 
-		logger->info("Loading potion textures...");
-		util::forEachFile("resources/textures/Potions", [&](const std::filesystem::path& path) {
-			potionTextures.push_back(&assets->texture(path));
-		});
-		randomizeTextures();
-
 		logger->info("Loading equipment...");
 		std::filesystem::path equipmentPath{"resources/descriptions/Equipment/"};
 		util::forEachFile(equipmentPath, [&](std::ifstream& is, const std::filesystem::path& path) {
@@ -126,11 +120,25 @@ namespace core {
 
 			stats.slot = getEquipmentSlot(util::getAndEraseRequired(params, "slot"));
 			stats.name = util::getAndEraseRequired(params, "name");
-			stats.icon = &assets->texture(util::getAndEraseRequired(params, "icon"));
 			stats.boosts = loadBonuses(params);
 
-			equipment.push_back(stats);
+			equipment[stats.slot].push_back(stats);
 		});
+
+		logger->info("Loading potion textures...");
+		util::forEachFile("resources/textures/Potions", [&](const std::filesystem::path& path) {
+			potionTextures.push_back(&assets->texture(path));
+		});
+
+		logger->info("Loading equipment textures...");
+		const std::filesystem::path equipmentTexturesPath = "resources/textures/Equipment";
+		boost::mp11::mp_for_each<boost::describe::describe_enumerators<EquipmentSlot>>([&](auto D) {
+			util::forEachFile(equipmentTexturesPath / util::toTitle(D.name), [&](const std::filesystem::path& path) {
+				equipmentTextures[static_cast<int>(D.value)].push_back(&assets->texture(path));
+			});
+		});
+
+		randomizeTextures();
 
 		logger->info("Loaded");
 	}
@@ -146,12 +154,18 @@ namespace core {
 			return item.id;
 		}); iter != potions.end()) {
 			return std::make_unique<Potion>(*iter, *potionTextures[iter - potions.begin()], shared_from_this(), xpManager, assets, *randomEngine);
-		} else if (auto iter = std::ranges::find(equipment, id, [](const auto& item) {
-			return item.id;
-		}); iter != equipment.end()) {
-			return std::make_unique<Equipment>(*iter, shared_from_this(), xpManager, assets, *randomEngine);
 		} else {
-			return nullptr;
+			std::unique_ptr<Item> res = nullptr;
+			boost::mp11::mp_for_each<boost::describe::describe_enumerators<EquipmentSlot>>([&](auto D) {
+				auto& slotEquipment = equipment[static_cast<int>(D.value)];
+				if (auto iter = std::ranges::find(slotEquipment, id, [](const auto& item) {
+					return item.id;
+				}); iter != slotEquipment.end()) {
+					const sf::Texture* texture = equipmentTextures[iter->slot][iter - slotEquipment.begin()];
+					res = std::make_unique<Equipment>(*iter, texture, shared_from_this(), xpManager, assets, *randomEngine);
+				}
+			});
+			return res;
 		}
 	}
 
@@ -176,8 +190,10 @@ namespace core {
 						break;
 					}
 					case 2: {
-						auto iitem = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(equipment) - 1}(*randomEngine);
-						auto item = std::make_unique<Equipment>(equipment[iitem], shared_from_this(), xpManager, assets, *randomEngine);
+						auto islot = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(equipment) - 1}(*randomEngine);
+						auto iitem = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(equipment[islot]) - 1}(*randomEngine);
+						auto item = std::make_unique<Equipment>(equipment[islot][iitem], equipmentTextures[islot][iitem], 
+							                                    shared_from_this(), xpManager, assets, *randomEngine);
 						world->addItem(core::Position<int>{*pos}, std::move(item));
 						break;
 					}
@@ -215,29 +231,52 @@ namespace core {
 		};
 	}
 
-	void ItemManager::parsePotionTextures(std::string_view s) {
+	void ItemManager::parseTextures(std::string_view s) {
 		util::forEackKeyValuePair(s, [&](std::string_view id, std::string_view data) {
-			int iitem = std::ranges::find(potions, id, [](const auto& item) {
+			if (auto iter = std::ranges::find(potions, id, [](const auto& item) {
 				return item.id;
-			}) - potions.begin();
+			}); iter != potions.end()) {
+				potionTextures[iter - potions.begin()] = &assets->parse(data);
+			} else {
+				bool found = false;
+				boost::mp11::mp_for_each<boost::describe::describe_enumerators<EquipmentSlot>>([&](auto D) {
+					auto& slotEquipment = equipment[static_cast<int>(D.value)];
+					if (auto iter = std::ranges::find(slotEquipment, id, [](const auto& item) {
+						return item.id;
+					}); iter != slotEquipment.end()) {
+						equipmentTextures[iter->slot][iter - slotEquipment.begin()] = &assets->parse(data);
+						found = true;
+					}
+				});
 
-			if (iitem == std::ssize(potions)) {
-				throw UnknownItem{id};
-			}
-
-			potionTextures[iitem] = &assets->parse(data);
+				if (!found) {
+					throw UnknownItem{id};
+				}
+			}	
 		});
 	}
 
-	std::string ItemManager::stringifyPotionTextures() const {
+	std::string ItemManager::stringifyTextures() const {
 		std::string result;
+
 		for (int i = 0; i < std::ssize(potions); ++i) {
 			result += std::format("{} {}\n", potions[i].id, assets->stringify(*potionTextures[i]));
 		}
+
+		boost::mp11::mp_for_each<boost::describe::describe_enumerators<EquipmentSlot>>([&](auto D) {
+			int slotIndex = static_cast<int>(D.value);
+			for (int i = 0; i < std::ssize(equipment[slotIndex]); ++i) {
+				result += std::format("{} {}\n", equipment[slotIndex][i].id, assets->stringify(*equipmentTextures[slotIndex][i]));
+			}
+		});
+
 		return result;
 	}
 
 	void ItemManager::randomizeTextures() {
 		std::ranges::shuffle(potionTextures, *randomEngine);
+		boost::mp11::mp_for_each<boost::describe::describe_enumerators<EquipmentSlot>>([&](auto D) {
+			std::ranges::shuffle(equipmentTextures[static_cast<int>(D.value)], *randomEngine);
+		});
 	}
 }

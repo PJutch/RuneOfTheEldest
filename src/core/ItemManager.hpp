@@ -60,25 +60,35 @@ namespace core {
 		void parseIdentifiedItems(std::string_view data);
 		std::string stringifyIdentifiedItems() const;
 
-		void parsePotionTextures(std::string_view data);
-		std::string stringifyPotionTextures() const;
+		void parseTextures(std::string_view data);
+		std::string stringifyTextures() const;
 
 		void randomizeTextures();
 
-		const sf::Texture* potionIcon(std::string_view id) {
+		const sf::Texture* texture(std::string_view id) {
 			if (auto iter = std::ranges::find(potions, id, [](const auto& item) {
 				return item.id;
 			}); iter != potions.end()) {
 				return potionTextures[iter - potions.begin()];
 			} else {
-				return nullptr;
+				const sf::Texture* res = nullptr;
+				boost::mp11::mp_for_each<boost::describe::describe_enumerators<EquipmentSlot>>([&](auto D) {
+					int slotIndex = static_cast<int>(D.value);
+					if (auto iter = std::ranges::find(equipment[slotIndex], id, [](const auto& item) {
+						return item.id;
+					}); iter != equipment[slotIndex].end()) {
+						res = equipmentTextures[slotIndex][iter - equipment[slotIndex].begin()];
+					}
+				});
+				return res;
 			}
 		}
 	private:
 		std::vector<Potion::Stats> potions;
+		std::array<std::vector<Equipment::Stats>, util::nEnumerators<EquipmentSlot>> equipment;
 		std::vector<const sf::Texture*> potionTextures;
+		std::array<std::vector<const sf::Texture*>, util::nEnumerators<EquipmentSlot>> equipmentTextures;
 		std::unordered_set<std::string> identifiedItems;
-		std::vector<Equipment::Stats> equipment;
 
 		std::shared_ptr<spdlog::logger> logger;
 

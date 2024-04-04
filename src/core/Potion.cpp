@@ -31,6 +31,6 @@ namespace core {
 	}
 
 	void Potion::onLoad() {
-		icon_ = items->potionIcon(stats.id);
+		icon_ = items->texture(stats.id);
 	}
 }

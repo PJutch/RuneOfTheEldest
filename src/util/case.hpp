@@ -26,6 +26,13 @@ namespace util {
         }
         return s;
     }
+
+    inline std::string toTitle(std::string s) {
+        for (int i = 1; i < std::ssize(s); ++i) {
+            s[i] = static_cast<char>(std::tolower(s[i]));
+        }
+        return s;
+    }
 }
 
 #endif

@@ -171,8 +171,8 @@ void Game::loadFromString(std::string_view s) {
     visitor.key("IdentifiedItems").callback([&](std::string_view data) {
         items->parseIdentifiedItems(data);
     });
-    visitor.key("PotionTextures").callback([&](std::string_view data) {
-        items->parsePotionTextures(data);
+    visitor.key("ItemTextures").callback([&](std::string_view data) {
+        items->parseTextures(data);
     });
 
     util::forEachSection(s, visitor);
@@ -185,6 +185,14 @@ void Game::loadFromString(std::string_view s) {
     for (const auto& actor : world->actors()) {
         for (const auto& item : actor->items()) {
             item->onLoad();
+        }
+        
+        for (const auto& slotEquipment : actor->equipment()) {
+            for (const auto& piece : slotEquipment) {
+                if (piece) {
+                    piece->onLoad();
+                }
+            }
         }
     }
 
@@ -274,6 +282,9 @@ void Game::save() const {
         file << "[Actor]\n" << actorSpawner->stringifyActor(*actor);
     }
 
+    saveLogger->info("Saving item textures...");
+    file << "[ItemTextures]\n" << items->stringifyTextures() << '\n';
+
     saveLogger->info("Saving items...");
     for (const auto& [position, item] : world->items()) {
         file << std::format("[Item]\nid {}\ndata {}\nposition {}\n", item->id(), item->stringifyData(), util::stringifyPosition(position));
@@ -299,9 +310,6 @@ void Game::save() const {
 
     saveLogger->info("Saving identified items...");
     file << "[IdentifiedItems]\n" << items->stringifyIdentifiedItems() << '\n';
-
-    saveLogger->info("Saving potion textures...");
-    file << "[PotionTextures]\n" << items->stringifyPotionTextures() << '\n';
 
     saveLogger->info("Saving player leveling data...");
     file << "[Xp]\n" << xpManager->stringify();
