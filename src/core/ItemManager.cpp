@@ -191,7 +191,9 @@ namespace core {
 					}
 					case 2: {
 						auto islot = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(equipment) - 1}(*randomEngine);
-						auto iitem = std::uniform_int_distribution<ptrdiff_t>{0, std::ssize(equipment[islot]) - 1}(*randomEngine);
+
+						auto iitem = std::uniform_int_distribution<ptrdiff_t>{0, nEquipment(static_cast<EquipmentSlot>(islot)) - 1}(*randomEngine);
+
 						auto item = std::make_unique<Equipment>(equipment[islot][iitem], equipmentTextures[islot][iitem], 
 							                                    shared_from_this(), xpManager, assets, *randomEngine);
 						world->addItem(core::Position<int>{*pos}, std::move(item));
@@ -265,7 +267,7 @@ namespace core {
 
 		boost::mp11::mp_for_each<boost::describe::describe_enumerators<EquipmentSlot>>([&](auto D) {
 			int slotIndex = static_cast<int>(D.value);
-			for (int i = 0; i < std::ssize(equipment[slotIndex]); ++i) {
+			for (int i = 0; i < nEquipment(D.value); ++i) {
 				result += std::format("{} {}\n", equipment[slotIndex][i].id, assets->stringify(*equipmentTextures[slotIndex][i]));
 			}
 		});

@@ -83,6 +83,10 @@ namespace core {
 				return res;
 			}
 		}
+
+		int nEquipment(EquipmentSlot slot) const {
+			return std::min(std::ssize(equipment[static_cast<int>(slot)]), std::ssize(equipmentTextures[static_cast<int>(slot)]));
+		}
 	private:
 		std::vector<Potion::Stats> potions;
 		std::array<std::vector<Equipment::Stats>, util::nEnumerators<EquipmentSlot>> equipment;
