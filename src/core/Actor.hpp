@@ -372,6 +372,7 @@ namespace core {
 		void unequip(EquipmentSlot slot, int index) {
 			if (auto& item = equipment_[static_cast<int>(slot)][index]) {
 				addItem(static_cast<std::unique_ptr<Item>>(std::exchange(item, nullptr)));
+				updateHp();
 			}
 		}
 
