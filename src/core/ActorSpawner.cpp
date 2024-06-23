@@ -107,7 +107,7 @@ namespace core {
             boost::mp11::mp_for_each<boost::describe::describe_enumerators<DamageType>>([&](auto D) {
                 using namespace std::literals;
                 if (auto v = util::getAndErase(params, util::toLower(D.name) + "Defence"s))
-                    result.defences[static_cast<int>(D.value)] = util::parseReal(*v);
+                    result.defences[D.value] = util::parseReal(*v);
             });
 
             result.texture = &assets.texture(util::getAndEraseRequired(params, "texture"));

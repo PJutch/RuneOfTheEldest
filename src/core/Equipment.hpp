@@ -120,7 +120,7 @@ namespace core {
 		}
 
 		double defenceBonus(DamageType damageType) const final {
-			return stats.boosts.defenceBonuses[static_cast<size_t>(damageType)];
+			return stats.boosts.defenceBonuses[damageType];
 		}
 	private:
 		Stats stats;

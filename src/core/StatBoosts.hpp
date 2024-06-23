@@ -18,6 +18,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "core/DamageType.hpp"
 
+#include "util/EnumMap.hpp"
+
 namespace core {
 	struct StatBoosts {
 		double regenBonus = 0;
@@ -34,7 +36,7 @@ namespace core {
 
 		double damageBonus = 0;
 
-		std::array<double, util::nEnumerators<DamageType>> defenceBonuses{};
+		util::EnumMap<DamageType, double> defenceBonuses{};
 	};
 
 	/// @brief Loads bonuses

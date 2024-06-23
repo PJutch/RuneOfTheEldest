@@ -68,7 +68,7 @@ namespace core {
 		}
 
 		double defenceBonus(DamageType damageType) const final {
-			return shouldApply() ? boosts.defenceBonuses[static_cast<size_t>(damageType)] : 0;
+			return shouldApply() ? boosts.defenceBonuses[damageType] : 0;
 		}
 
 		virtual bool shouldApply() const = 0;

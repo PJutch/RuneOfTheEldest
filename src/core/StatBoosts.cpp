@@ -69,13 +69,13 @@ namespace core {
 		if (auto v = util::getAndErase(params, "xpMul"))
 			xpMul = util::parseReal(*v);
 
-		std::array<double, util::nEnumerators<DamageType>> defenceBonuses;
+		util::EnumMap<DamageType, double> defenceBonuses;
 		defenceBonuses.fill(0);
 
 		boost::mp11::mp_for_each<boost::describe::describe_enumerators<DamageType>>([&](auto D) {
 			using namespace std::literals;
 			if (auto v = util::getAndErase(params, util::toLower(D.name) + "DefenceBonus"s))
-				defenceBonuses[static_cast<int>(D.value)] = util::parseReal(*v);
+				defenceBonuses[D.value] = util::parseReal(*v);
 		});
 
 		double damageBonus = 0;

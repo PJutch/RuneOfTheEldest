@@ -46,7 +46,7 @@ namespace {
 	auto testXpManager = std::make_shared<core::XpManager>();
 
 	auto defaultDefences() {
-		std::array<double, util::nEnumerators<core::DamageType>> defences;
+		util::EnumMap<core::DamageType, double> defences;
 		defences.fill(0);
 		return defences;
 	}
@@ -66,7 +66,7 @@ namespace {
 			               nullptr, xpManager, nullptr, nullptr};
 	}
 
-	core::Actor makeTestActor(double maxHp, std::array<double, util::nEnumerators<core::DamageType>> defences) {
+	core::Actor makeTestActor(double maxHp, util::EnumMap<core::DamageType, double> defences) {
 		return core::Actor{core::Actor::Stats{ "test", maxHp, 0, 0, 0, 0, 1, 1, defences, 1.0, 0, nullptr, false, nullptr, sf::Time::Zero },
 						   nullptr, testXpManager, nullptr, nullptr};
 	}
@@ -115,7 +115,9 @@ TEST(Actor, beDamagedLethal) {
 }
 
 TEST(Actor, beDamagedDefence) {
-	core::Actor actor = makeTestActor(5.0, {1, 0});
+	auto defences = defaultDefences();
+	defences[core::DamageType::PHYSICAL] = 1;
+	core::Actor actor = makeTestActor(5.0, defences);
 
 	actor.beDamaged(4, core::DamageType::PHYSICAL);
 
@@ -124,7 +126,9 @@ TEST(Actor, beDamagedDefence) {
 }
 
 TEST(Actor, beDamagedNoDefence) {
-	core::Actor actor = makeTestActor(5.0, {1, 0});
+	auto defences = defaultDefences();
+	defences[core::DamageType::PHYSICAL] = 1;
+	core::Actor actor = makeTestActor(5.0, defences);
 
 	actor.beDamaged(4, core::DamageType::POISON);
 

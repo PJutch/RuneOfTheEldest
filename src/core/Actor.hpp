@@ -31,6 +31,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/geometry.hpp"
 #include "util/random.hpp"
 #include "util/reduce.hpp"
+#include "util/EnumMap.hpp"
 
 #include <SFML/Graphics/Texture.hpp>
 
@@ -53,7 +54,7 @@ namespace core {
 
 			double evasion;
 
-			std::array<double, util::nEnumerators<DamageType>> defences;
+			util::EnumMap<DamageType, double> defences;
 
 			double turnDelay;
 
