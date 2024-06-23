@@ -21,8 +21,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <boost/describe.hpp>
 #include <boost/mp11.hpp>
 
+#include <optional>
 #include <unordered_map>
 #include <span>
+#include <string_view>
 #include <string>
 #include <type_traits>
 
@@ -54,6 +56,17 @@ namespace util {
 		boost::mp11::mp_for_each<boost::describe::describe_enumerators<Enum>>([&](auto D) {
 			if (D.value == enumerator) {
 				result = D.name;
+			}
+		});
+		return result;
+	}
+
+	template <typename Enum> requires std::is_enum_v<Enum>
+	std::optional<Enum> enumeratorFromName(std::string_view name) {
+		std::optional<Enum> result;
+		boost::mp11::mp_for_each<boost::describe::describe_enumerators<Enum>>([&](auto D) {
+			if (D.name == name) {
+				result = D.value;
 			}
 		});
 		return result;

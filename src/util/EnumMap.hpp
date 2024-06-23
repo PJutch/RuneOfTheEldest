@@ -19,6 +19,9 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "enum.hpp"
 #include "assert.hpp"
 
+#include <JutchsON.hpp>
+
+#include <unordered_map>
 #include <concepts>
 #include <type_traits>
 
@@ -55,6 +58,41 @@ namespace util {
 		}
 	private:
 		std::array<T, nEnumerators<Enum>> elements;
+	};
+}
+
+namespace JutchsON {
+	template <typename Enum, typename T>
+	struct Parser<util::EnumMap<Enum, T>> {
+		ParseResult<util::EnumMap<Enum, T>> operator() (StringView s, Context context) {
+			return parse<std::unordered_map<std::string, T>>(s, context).then([](const auto& map) {
+				util::EnumMap result;
+				std::vector<ParseError> errors;
+				for (const auto& [name, value] : map) {
+					if (auto enumerator = util::enumeratorFromName<Enum>(name)) {
+						result[*enumerator] = value;
+					} else {
+						errors.emplace_back(s.location(), std::format("{} is invalid enum value"));
+					}
+				}
+
+				if (!errors.empty()) {
+					return errors;
+				}
+				return result;
+			});
+		}
+	};
+
+	template <typename Enum, typename T>
+	struct Writer<util::EnumMap<Enum, T>> {
+		std::string operator() (const util::EnumMap<Enum, T>& v, Context context) {
+			std::unordered_map<std::string, std::string> map;
+			for (int i = 0; i < util::nEnumerators<Enum>; ++i) {
+				map[util::enumeratorName(static_cast<Enum>(i))] = v[static_cast<Enum>(i)];
+			}
+			return write(map);
+		}
 	};
 }
 
