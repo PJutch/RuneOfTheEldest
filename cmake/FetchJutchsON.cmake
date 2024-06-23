@@ -13,15 +13,10 @@
 # You should have received a copy of the GNU General Public License along with the Rune of the Eldest. 
 # If not, see <https://www.gnu.org/licenses/>.
 
-add_library(dependencies INTERFACE)
-add_library(test_dependencies INTERFACE)
+if(NOT TARGET JutchsON)
+    include(cmake/Utility.cmake)
 
-include(FetchContent)
+    fetchGit(JutchsON JutchsON.zip https://github.com/PJutch/JutchsON v0.1.2)
+endif()
 
-include(cmake/FetchGoogleTest.cmake)
-include(cmake/FetchSpdlog.cmake)
-include(cmake/FetchBoost.cmake)
-include(cmake/FetchSFML.cmake)
-include(cmake/FetchJutchsON.cmake)
-
-target_link_libraries(test_dependencies INTERFACE dependencies)
+addDependency(dependencies JutchsON)

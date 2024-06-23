@@ -33,6 +33,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/filesystem.hpp"
 #include "util/case.hpp"
 
+#include <JutchsON.hpp>
+
 namespace core {
 	namespace {
 		std::string unknownParamsMessage(std::unordered_map<std::string, std::string> params) {
