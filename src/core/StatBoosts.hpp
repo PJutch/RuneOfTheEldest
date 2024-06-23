@@ -39,6 +39,10 @@ namespace core {
 		util::EnumMap<DamageType, double> defenceBonuses{};
 	};
 
+	BOOST_DESCRIBE_STRUCT(StatBoosts, (), (
+		regenBonus, manaRegenBonus, speedBonus, accuracyBonus, evasionBonus, xpMul, hpBonus, manaBonus, damageBonus, defenceBonuses
+	))
+
 	/// @brief Loads bonuses
 	/// @param params Map with params. Consumed
 	/// @throws anonymous::UnknowParams if some of params are unknown

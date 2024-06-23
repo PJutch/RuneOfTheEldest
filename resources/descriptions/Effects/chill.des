@@ -1,7 +1,0 @@
-name Chill
-icon resources/textures/Effects/chill.png
-
-type tempBonus
-
-speed -1
-duration 5

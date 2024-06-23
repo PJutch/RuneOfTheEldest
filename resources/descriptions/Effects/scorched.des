@@ -1,7 +1,0 @@
-name Scorched
-icon resources/textures/Effects/scorched.png
-
-type tempBonus
-
-fireDefenceBonus -1
-duration 5

@@ -1,0 +1,11 @@
+tempBonus {
+    name Scorched
+    iconPath resources/textures/Effects/scorched.png
+
+    boosts {
+        defenceBonuses {
+            FIRE -1
+        }
+    }
+    duration 5
+}

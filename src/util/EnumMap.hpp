@@ -57,7 +57,7 @@ namespace util {
 			return result;
 		}
 	private:
-		std::array<T, nEnumerators<Enum>> elements;
+		std::array<T, nEnumerators<Enum>> elements{};
 	};
 }
 
@@ -65,14 +65,14 @@ namespace JutchsON {
 	template <typename Enum, typename T>
 	struct Parser<util::EnumMap<Enum, T>> {
 		ParseResult<util::EnumMap<Enum, T>> operator() (StringView s, Context context) {
-			return parse<std::unordered_map<std::string, T>>(s, context).then([](const auto& map) {
-				util::EnumMap result;
+			return parse<std::unordered_map<std::string, T>>(s, context).then([&](const auto& map) -> ParseResult<util::EnumMap<Enum, T>> {
+				util::EnumMap<Enum, T> result;
 				std::vector<ParseError> errors;
 				for (const auto& [name, value] : map) {
 					if (auto enumerator = util::enumeratorFromName<Enum>(name)) {
 						result[*enumerator] = value;
 					} else {
-						errors.emplace_back(s.location(), std::format("{} is invalid enum value"));
+						errors.emplace_back(s.location(), std::format("{} is invalid enum value", name));
 					}
 				}
 

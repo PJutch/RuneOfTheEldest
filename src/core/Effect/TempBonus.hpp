@@ -20,20 +20,29 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "../Actor.hpp"
 
+#include <boost/describe.hpp>
+
 namespace core {
 	/// Modifies speed for some time
 	class TempBonus : public ConditionalBonus {
 	public:
+		struct Data {
+			double duration;
+			StatBoosts boosts;
+			std::string name;
+			std::string iconPath;
+		};
+
 		struct RequirementNotMet : public util::RuntimeError {
 		public:
 			using RuntimeError::RuntimeError;
 		};
 
-		TempBonus(StatBoosts boosts, double duration_, const sf::Texture& icon, std::string_view id, std::string_view name) :
-				ConditionalBonus{boosts, icon, id, name, false}, duration{duration_} {
-			if (boosts.hpBonus != 0)
+		TempBonus(Data data, std::string_view id, std::shared_ptr<render::AssetManager> assets) :
+				ConditionalBonus{data.boosts, assets->texture(data.iconPath), id, data.name, false}, duration{data.duration} {
+			if (data.boosts.hpBonus != 0)
 				throw RequirementNotMet{"TempBonus can't change max hp"};
-			if (boosts.manaBonus != 0)
+			if (data.boosts.manaBonus != 0)
 				throw RequirementNotMet{"TempBonus can't change max mana"};
 		}
 
@@ -74,6 +83,8 @@ namespace core {
 	private:
 		double duration;
 	};
+
+	BOOST_DESCRIBE_STRUCT(TempBonus::Data, (), (duration, boosts, name, iconPath))
 }
 
 #endif

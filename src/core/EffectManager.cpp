@@ -58,6 +58,21 @@ namespace core {
 				std::move(currentStacktrace)} {}
 		};
 
+		std::string errorString(const std::vector<JutchsON::ParseError>& errors) {
+			std::string res;
+			res.append(std::format("Parse failed with {} errors", std::ssize(errors)));
+			for (const JutchsON::ParseError& error : errors) {
+				res.append(std::format("\n{}:{} {}", error.location.line, error.location.column, error.what));
+			}
+			return res;
+		}
+
+		class ParseError : public util::RuntimeError {
+		public:
+			ParseError(const std::vector<JutchsON::ParseError>& errors, util::Stacktrace currentStacktrace = {}) noexcept :
+				RuntimeError{errorString(errors), std::move(currentStacktrace)} {}
+		};
+
 		std::unique_ptr<Effect> createTargetFullHpSkill(std::unordered_map<std::string, std::string>& params,
 				std::string_view id, std::string_view name, const sf::Texture& icon) {
 			double damageBonus = 0;
@@ -97,10 +112,13 @@ namespace core {
 			return std::make_unique<AppliesEffectOnAttack>(appliedName, icon, id, name);
 		}
 
-		std::unique_ptr<TempBonus> createTempBonus(std::unordered_map<std::string, std::string>& params,
-				std::string_view id, std::string_view name, const sf::Texture& icon) {
-			double duration = util::parseReal(util::getAndEraseRequired(params, "duration"));
-			return std::make_unique<TempBonus>(loadBonuses(params), duration, icon, id, name);
+		std::unique_ptr<TempBonus> createTempBonus(JutchsON::StringView s, std::string_view id, 
+												   std::shared_ptr<render::AssetManager> assets) {
+			if (auto data = JutchsON::parse<TempBonus::Data>(s, JutchsON::Context::LINE_REST)) {
+				return std::make_unique<TempBonus>(*data, id, assets);
+			} else {
+				throw ParseError{data.errors()};
+			}
 		}
 	}
 
@@ -115,29 +133,33 @@ namespace core {
 
 			logger->info("Loading {} skill spec from {} ...", id, path.generic_string());
 
-			auto params = util::parseMapping(file);
+			auto fileStr = JutchsON::readWholeFile(path);
+			auto parsed = JutchsON::parseVariant(fileStr);
+			if (parsed && parsed->first == "tempBonus") {
+				effects.push_back(createTempBonus(parsed->second, id, assets));
+			} else {
+				auto params = util::parseMapping(file);
 
-			std::string type = "unconditionalSkill";
-			if (auto v = util::getAndErase(params, "type"))
-				type = *v;
+				std::string type = "unconditionalSkill";
+				if (auto v = util::getAndErase(params, "type"))
+					type = *v;
 
-			const sf::Texture& icon = assets->texture(util::getAndEraseRequired(params, "icon"));
-			std::string name = util::getAndEraseRequired(params, "name");
+				const sf::Texture& icon = assets->texture(util::getAndEraseRequired(params, "icon"));
+				std::string name = util::getAndEraseRequired(params, "name");
 
-			if (type == "unconditionalSkill") {
-				effects.push_back(std::make_unique<UnconditionalSkill>(loadBonuses(params), icon, id, name));
-			} else if (type == "lowHpSkill") {
-				effects.push_back(std::make_unique<LowHpSkill>(loadBonuses(params), icon, id, name));
-			} else if (type == "targetFullHpSkill")
-				effects.push_back(createTargetFullHpSkill(params, id, name, icon));
-			else if (type == "poison")
-				effects.push_back(createPoison(params, id, name, icon));
-			else if (type == "appliesEffectOnAttack")
-				effects.push_back(createAppliesEffect(params, id, name, icon));
-			else if (type == "tempBonus")
-				effects.push_back(createTempBonus(params, id, name, icon));
-			else 
-				throw UnknownSkillTypeError(type);
+				if (type == "unconditionalSkill") {
+					effects.push_back(std::make_unique<UnconditionalSkill>(loadBonuses(params), icon, id, name));
+				} else if (type == "lowHpSkill") {
+					effects.push_back(std::make_unique<LowHpSkill>(loadBonuses(params), icon, id, name));
+				} else if (type == "targetFullHpSkill")
+					effects.push_back(createTargetFullHpSkill(params, id, name, icon));
+				else if (type == "poison")
+					effects.push_back(createPoison(params, id, name, icon));
+				else if (type == "appliesEffectOnAttack")
+					effects.push_back(createAppliesEffect(params, id, name, icon));
+				else
+					throw UnknownSkillTypeError(type);
+			}
 		});
 
 		logger->info("Initializing...");
