@@ -1,0 +1,8 @@
+skill {
+    name Mana regen
+    iconPath resources/textures/Effects/manaRegen.png
+
+    boosts {
+        manaRegenBonus 0.5
+    }
+}

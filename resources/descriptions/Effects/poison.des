@@ -1,7 +1,0 @@
-name Poison
-icon resources/textures/Effects/poison.png
-
-type poison
-
-damageOverTime 0.5
-duration 5

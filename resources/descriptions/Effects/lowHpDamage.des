@@ -1,5 +1,0 @@
-name Berserck
-icon resources/textures/Effects/lowHpDamage.png
-
-damageBonus 2
-type lowHpSkill

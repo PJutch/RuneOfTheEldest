@@ -1,0 +1,8 @@
+skill {
+    name Health
+    iconPath resources/textures/Effects/hp.png
+
+    boosts {
+        hpBonus 1
+    }
+}

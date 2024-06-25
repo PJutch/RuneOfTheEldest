@@ -22,13 +22,22 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "util/parseKeyValue.hpp"
 
+#include <boost/describe.hpp>
+
 namespace core {
 	/// Lose hp with time. Type name is poison.
 	class Poison : public Effect {
 	public:
-		Poison(double damageOverTime_, double duration_, 
-			   const sf::Texture& icon_, std::string_view id_, std::string_view name_) :
-			Effect{icon_, id_, name_, false}, damageOverTime{damageOverTime_}, duration{duration_} {}
+		struct Data {
+			double damageOverTime;
+			double duration;
+			std::string iconPath;
+			std::string name;
+		};
+
+		Poison(Data data, std::string_view id_, std::shared_ptr<render::AssetManager> assets) :
+			Effect{assets->texture(data.iconPath), id_, data.name, false}, 
+			damageOverTime{data.damageOverTime}, duration{data.duration} {}
 
 		void update(double time) final {
 			owner_.lock()->beDamaged(time * damageOverTime, DamageType::POISON);
@@ -67,6 +76,8 @@ namespace core {
 
 		std::weak_ptr<Actor> owner_;
 	};
+
+	BOOST_DESCRIBE_STRUCT(Poison::Data, (), (damageOverTime, duration, iconPath, name))
 }
 
 #endif

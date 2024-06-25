@@ -73,49 +73,11 @@ namespace core {
 				RuntimeError{errorString(errors), std::move(currentStacktrace)} {}
 		};
 
-		std::unique_ptr<Effect> createTargetFullHpSkill(std::unordered_map<std::string, std::string>& params,
-				std::string_view id, std::string_view name, const sf::Texture& icon) {
-			double damageBonus = 0;
-			if (auto v = util::getAndErase(params, "damageBonus"))
-				damageBonus = util::parseReal(*v);
-
-			if (!params.empty())
-				throw UnknownParamsError{params};
-
-			return std::make_unique<TargetFullHpSkill>(damageBonus, icon, id, name);
-		}
-
-		std::unique_ptr<Poison> createPoison(std::unordered_map<std::string, std::string>& params,
-				std::string_view id, std::string_view name, const sf::Texture& icon) {
-			double damageOverTime = 1;
-			double duration = 1;
-
-			if (auto v = util::getAndErase(params, "damageOverTime"))
-				damageOverTime = util::parseReal(*v);
-
-			if (auto v = util::getAndErase(params, "duration"))
-				duration = util::parseReal(*v);
-
-			if (!params.empty())
-				throw UnknownParamsError{params};
-
-			return std::make_unique<Poison>(damageOverTime, duration, icon, id, name);
-		}
-
-		std::unique_ptr<AppliesEffectOnAttack> createAppliesEffect(std::unordered_map<std::string, std::string>& params,
-				std::string_view id, std::string_view name, const sf::Texture& icon) {
-			std::string appliedName = util::getAndEraseRequired(params, "applies");
-
-			if (!params.empty())
-				throw UnknownParamsError{params};
-
-			return std::make_unique<AppliesEffectOnAttack>(appliedName, icon, id, name);
-		}
-
-		std::unique_ptr<TempBonus> createTempBonus(JutchsON::StringView s, std::string_view id, 
-												   std::shared_ptr<render::AssetManager> assets) {
-			if (auto data = JutchsON::parse<TempBonus::Data>(s, JutchsON::Context::LINE_REST)) {
-				return std::make_unique<TempBonus>(*data, id, assets);
+		template <typename Skill>
+		std::unique_ptr<Skill> parseSkillByJutchsON(JutchsON::StringView s, std::string_view id,
+											        std::shared_ptr<render::AssetManager> assets) {
+			if (auto data = JutchsON::parse<typename Skill::Data>(s, JutchsON::Context::LINE_REST)) {
+				return std::make_unique<Skill>(*data, id, assets);
 			} else {
 				throw ParseError{data.errors()};
 			}
@@ -135,30 +97,24 @@ namespace core {
 
 			auto fileStr = JutchsON::readWholeFile(path);
 			auto parsed = JutchsON::parseVariant(fileStr);
-			if (parsed && parsed->first == "tempBonus") {
-				effects.push_back(createTempBonus(parsed->second, id, assets));
+			if (!parsed) {
+				throw ParseError{parsed.errors()};
+			}
+
+			if (parsed->first == "tempBonus") {
+				effects.push_back(parseSkillByJutchsON<TempBonus>(parsed->second, id, assets));
+			} else if(parsed->first == "poison") {
+				effects.push_back(parseSkillByJutchsON<Poison>(parsed->second, id, assets));
+			} else if (parsed->first == "appliesEffectOnAttack") {
+				effects.push_back(parseSkillByJutchsON<AppliesEffectOnAttack>(parsed->second, id, assets));
+			} else if (parsed->first == "targetFullHpSkill") {
+				effects.push_back(parseSkillByJutchsON<TargetFullHpSkill>(parsed->second, id, assets));
+			} else if (parsed->first == "skill") {
+				effects.push_back(parseSkillByJutchsON<UnconditionalSkill>(parsed->second, id, assets));
+			} else if (parsed->first == "lowHpSkill") {
+				effects.push_back(parseSkillByJutchsON<LowHpSkill>(parsed->second, id, assets));
 			} else {
-				auto params = util::parseMapping(file);
-
-				std::string type = "unconditionalSkill";
-				if (auto v = util::getAndErase(params, "type"))
-					type = *v;
-
-				const sf::Texture& icon = assets->texture(util::getAndEraseRequired(params, "icon"));
-				std::string name = util::getAndEraseRequired(params, "name");
-
-				if (type == "unconditionalSkill") {
-					effects.push_back(std::make_unique<UnconditionalSkill>(loadBonuses(params), icon, id, name));
-				} else if (type == "lowHpSkill") {
-					effects.push_back(std::make_unique<LowHpSkill>(loadBonuses(params), icon, id, name));
-				} else if (type == "targetFullHpSkill")
-					effects.push_back(createTargetFullHpSkill(params, id, name, icon));
-				else if (type == "poison")
-					effects.push_back(createPoison(params, id, name, icon));
-				else if (type == "appliesEffectOnAttack")
-					effects.push_back(createAppliesEffect(params, id, name, icon));
-				else
-					throw UnknownSkillTypeError(type);
+				throw UnknownSkillTypeError(parsed->first.asStd());
 			}
 		});
 

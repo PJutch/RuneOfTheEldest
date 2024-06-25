@@ -18,14 +18,26 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "ConditionalBonus.hpp"
 
+#include "render/fwd.hpp"
+
+#include <boost/describe.hpp>
+
+#include <memory>
+
 namespace core {
 	/// @brief Always applies
 	/// @details Type in skill file is "unconditional".
 	/// Default skill type.
 	class UnconditionalSkill : public ConditionalBonus {
 	public:
-		UnconditionalSkill(StatBoosts boosts, const sf::Texture& icon, std::string_view id, std::string_view name) :
-			ConditionalBonus{boosts, icon, id, name, true} {}
+		struct Data {
+			StatBoosts boosts;
+			std::string iconPath;
+			std::string name;
+		};
+
+		UnconditionalSkill(Data data, std::string_view id, std::shared_ptr<render::AssetManager> assets) :
+			ConditionalBonus{data.boosts, assets->texture(data.iconPath), id, data.name, true} {}
 
 		bool shouldApply() const final {
 			return true;
@@ -35,6 +47,8 @@ namespace core {
 			return std::make_unique<UnconditionalSkill>(*this);
 		}
 	};
+
+	BOOST_DESCRIBE_STRUCT(UnconditionalSkill::Data, (), (boosts, iconPath, name))
 }
 
 #endif

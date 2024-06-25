@@ -1,5 +1,0 @@
-name First hit
-icon resources/textures/Effects/targetFullHpDamage.png
-
-damageBonus 2
-type targetFullHpSkill

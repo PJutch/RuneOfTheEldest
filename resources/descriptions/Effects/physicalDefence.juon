@@ -1,0 +1,10 @@
+skill {
+    name Defence
+    iconPath resources/textures/Effects/defence.png
+
+    boosts {
+        defenceBonuses {
+            PHYSICAL 1
+        }
+    }
+}

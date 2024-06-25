@@ -1,0 +1,8 @@
+skill {
+    name Damage
+    iconPath resources/textures/Effects/damage.png
+
+    boosts {
+        damageBonus 1
+    }
+}

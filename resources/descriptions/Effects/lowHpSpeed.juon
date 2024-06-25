@@ -1,0 +1,8 @@
+lowHpSkill {
+    name Fear
+    iconPath resources/textures/Effects/lowHpSpeed.png
+
+    boosts {
+        speedBonus 0.5
+    }
+}

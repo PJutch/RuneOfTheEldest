@@ -1,5 +1,0 @@
-name Fear
-icon resources/textures/Effects/lowHpSpeed.png
-
-speed 0.5
-type lowHpSkill

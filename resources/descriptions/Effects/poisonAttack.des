@@ -1,6 +1,0 @@
-name Poison attack
-icon resources/textures/Effects/poisonAttack.png
-
-type appliesEffectOnAttack
-
-applies poison

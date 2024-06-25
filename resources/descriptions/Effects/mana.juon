@@ -1,0 +1,8 @@
+skill {
+    name Mana
+    iconPath resources/textures/Effects/mana.png
+
+    boosts {
+        manaBonus 1
+    }
+}

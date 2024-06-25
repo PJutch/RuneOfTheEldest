@@ -1,0 +1,8 @@
+skill {
+    name Regen
+    iconPath resources/textures/Effects/regen.png
+
+    boosts {
+        regenBonus 0.5
+    }
+}

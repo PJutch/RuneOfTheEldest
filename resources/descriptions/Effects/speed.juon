@@ -1,0 +1,8 @@
+skill {
+    name Speed
+    iconPath resources/textures/Effects/speed.png
+
+    boosts {
+        speedBonus +0.25
+    }
+}

@@ -1,0 +1,10 @@
+skill {
+    name Poison defence
+    iconPath resources/textures/Effects/poisonDefence.png
+
+    boosts {
+        defenceBonuses {
+            PHYSICAL 1
+        }
+    }
+}

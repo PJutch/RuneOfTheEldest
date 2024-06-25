@@ -1,5 +1,0 @@
-name Pain to mana
-icon resources/textures/Effects/manaLowHp.png
-
-manaRegenBonus 1
-type lowHpSkill

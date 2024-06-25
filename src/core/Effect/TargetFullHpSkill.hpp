@@ -25,8 +25,14 @@ namespace core {
 	/// @details Type in skill file is "targetFullHp"
 	class TargetFullHpSkill : public Effect {
 	public:
-		TargetFullHpSkill(double newDamageMul, const sf::Texture& icon_, std::string_view id_, std::string_view name_) :
-			Effect{icon_, id_, name_, true}, damageBonus_{newDamageMul} {}
+		struct Data {
+			double damageBonus;
+			std::string iconPath;
+			std::string name; 
+		};
+
+		TargetFullHpSkill(Data data, std::string_view id_, std::shared_ptr<render::AssetManager> assets) :
+			Effect{assets->texture(data.iconPath), id_, data.name, true}, damageBonus_{data.damageBonus} {}
 
 		double damageBonus(const Actor& target) const final {
 			return target.hp() == target.maxHp() ? damageBonus_ : 0;
@@ -38,6 +44,8 @@ namespace core {
 	private:
 		double damageBonus_;
 	};
+
+	BOOST_DESCRIBE_STRUCT(TargetFullHpSkill::Data, (), (damageBonus, iconPath, name))
 }
 
 #endif

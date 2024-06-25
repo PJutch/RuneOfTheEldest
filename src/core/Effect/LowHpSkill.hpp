@@ -20,7 +20,13 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "../Actor.hpp"
 
+#include "render/fwd.hpp"
+
 #include "util/Exception.hpp"
+
+#include "boost/describe.hpp"
+
+#include <memory>
 
 namespace core {
 	/// @brief Applies if Actor has low hp
@@ -28,16 +34,22 @@ namespace core {
 	/// Type in skill file is "lowHp"
 	class LowHpSkill : public ConditionalBonus {
 	public:
+		struct Data {
+			StatBoosts boosts;
+			std::string iconPath;
+			std::string name;
+		};
+
 		struct RequirementNotMet : public util::RuntimeError {
 		public:
 			using RuntimeError::RuntimeError;
 		};
 
-		LowHpSkill(StatBoosts boosts, const sf::Texture& icon, std::string_view id, std::string_view name) :
-				ConditionalBonus{boosts, icon, id, name, true} {
-			if (boosts.hpBonus != 0)
+		LowHpSkill(Data data, std::string_view id, std::shared_ptr<render::AssetManager> assets) :
+				ConditionalBonus{data.boosts, assets->texture(data.iconPath), id, data.name, true} {
+			if (data.boosts.hpBonus != 0)
 				throw RequirementNotMet{"LowHpSkill can't change max hp"};
-			if (boosts.manaBonus != 0)
+			if (data.boosts.manaBonus != 0)
 				throw RequirementNotMet{"LowHpSkill can't change max mana"};
 		}
 
@@ -56,6 +68,8 @@ namespace core {
 	private:
 		std::weak_ptr<Actor> owner_;
 	};
+
+	BOOST_DESCRIBE_STRUCT(LowHpSkill::Data, (), (boosts, iconPath, name))
 }
 
 #endif

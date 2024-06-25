@@ -20,13 +20,20 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "../Actor.hpp"
 
+#include <boost/describe.hpp>
+
 namespace core {
 	/// Lose hp with time. Type name is poison.
 	class AppliesEffectOnAttack : public Effect {
 	public:
-		AppliesEffectOnAttack(std::string_view appliedEffect_, 
-				const sf::Texture& icon_, std::string_view id_, std::string_view name_) :
-			Effect{icon_, id_, name_, false}, appliedEffectName{appliedEffect_} {}
+		struct Data {
+			std::string applies;
+			std::string iconPath;
+			std::string name;
+		};
+
+		AppliesEffectOnAttack(Data data, std::string_view id_, std::shared_ptr<render::AssetManager> assets) :
+			Effect{assets->texture(data.iconPath), id_, data.name, false}, appliedEffectName{data.applies} {}
 
 		class UnknownEffect : public util::RuntimeError {
 		public:
@@ -51,6 +58,8 @@ namespace core {
 		std::string appliedEffectName;
 		const Effect* appliedEffect = nullptr;
 	};
+
+	BOOST_DESCRIBE_STRUCT(AppliesEffectOnAttack::Data, (), (applies, iconPath, name))
 }
 
 #endif

@@ -1,0 +1,7 @@
+poison {
+    name Poison
+    iconPath resources/textures/Effects/poison.png
+
+    damageOverTime 0.5
+    duration 5
+}

@@ -1,0 +1,8 @@
+skill {
+    name Accuracy
+    iconPath resources/textures/Effects/accuracy.png
+
+    boosts {
+        accuracyBonus +1
+    }
+}
