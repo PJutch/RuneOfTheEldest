@@ -3,6 +3,6 @@ lowHpSkill {
     iconPath resources/textures/Effects/manaLowHp.png
 
     boosts {
-        manaRegenBonus 1
+        manaRegen +1
     }
 }

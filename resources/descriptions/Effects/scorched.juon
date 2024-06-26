@@ -3,7 +3,7 @@ tempBonus {
     iconPath resources/textures/Effects/scorched.png
 
     boosts {
-        defenceBonuses {
+        defences {
             FIRE -1
         }
     }

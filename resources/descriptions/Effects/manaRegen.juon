@@ -3,6 +3,6 @@ skill {
     iconPath resources/textures/Effects/manaRegen.png
 
     boosts {
-        manaRegenBonus 0.5
+        manaRegen +0.5
     }
 }

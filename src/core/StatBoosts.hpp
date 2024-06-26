@@ -22,25 +22,25 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace core {
 	struct StatBoosts {
-		double regenBonus = 0;
-		double manaRegenBonus = 0;
+		double regen = 0;
+		double manaRegen = 0;
 
-		double speedBonus = 0;
-		double accuracyBonus = 0;
-		double evasionBonus = 0;
+		double speed = 0;
+		double accuracy = 0;
+		double evasion = 0;
 
 		double xpMul = 1;
 
-		double hpBonus = 0;
-		double manaBonus = 0;
+		double hp = 0;
+		double mana = 0;
 
-		double damageBonus = 0;
+		double damage = 0;
 
-		util::EnumMap<DamageType, double> defenceBonuses{};
+		util::EnumMap<DamageType, double> defences{};
 	};
 
 	BOOST_DESCRIBE_STRUCT(StatBoosts, (), (
-		regenBonus, manaRegenBonus, speedBonus, accuracyBonus, evasionBonus, xpMul, hpBonus, manaBonus, damageBonus, defenceBonuses
+		regen, manaRegen, speed, accuracy, evasion, xpMul, hp, mana, damage, defences
 	))
 
 	/// @brief Loads bonuses

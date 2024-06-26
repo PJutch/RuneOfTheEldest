@@ -3,6 +3,6 @@ skill {
     iconPath resources/textures/Effects/damage.png
 
     boosts {
-        damageBonus 1
+        damage +1
     }
 }

@@ -3,6 +3,6 @@ skill {
     iconPath resources/textures/Effects/mana.png
 
     boosts {
-        manaBonus 1
+        mana +1
     }
 }

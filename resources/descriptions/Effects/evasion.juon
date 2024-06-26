@@ -3,6 +3,6 @@ skill {
     iconPath resources/textures/Effects/evasion.png
 
     boosts {
-        evasionBonus +1
+        evasion +1
     }
 }

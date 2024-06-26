@@ -84,27 +84,27 @@ namespace core {
 		void onLoad() final;
 
 		double regenBonus() const final {
-			return stats.boosts.regenBonus;
+			return stats.boosts.regen;
 		}
 
 		double manaRegenBonus() const final {
-			return stats.boosts.manaRegenBonus;
+			return stats.boosts.manaRegen;
 		}
 
 		double damageBonus(const Actor&) const final {
-			return stats.boosts.damageBonus;
+			return stats.boosts.damage;
 		}
 
 		double speedBonus() const final {
-			return stats.boosts.speedBonus;
+			return stats.boosts.speed;
 		}
 
 		double accuracyBonus() const final {
-			return stats.boosts.accuracyBonus;
+			return stats.boosts.accuracy;
 		}
 
 		double evasionBonus() const final {
-			return stats.boosts.evasionBonus;
+			return stats.boosts.evasion;
 		}
 
 		double xpMul() const final {
@@ -112,15 +112,15 @@ namespace core {
 		}
 
 		double hpBonus() const final {
-			return stats.boosts.hpBonus;
+			return stats.boosts.hp;
 		}
 
 		double manaBonus() const final {
-			return stats.boosts.manaBonus;
+			return stats.boosts.mana;
 		}
 
 		double defenceBonus(DamageType damageType) const final {
-			return stats.boosts.defenceBonuses[damageType];
+			return stats.boosts.defences[damageType];
 		}
 	private:
 		Stats stats;

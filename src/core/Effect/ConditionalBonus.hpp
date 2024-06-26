@@ -32,27 +32,27 @@ namespace core {
 			Effect{icon_, id_, name_, isSkill}, boosts{boosts_} {}
 
 		double regenBonus() const final {
-			return shouldApply() ? boosts.regenBonus : 0;
+			return shouldApply() ? boosts.regen : 0;
 		}
 
 		double manaRegenBonus() const final {
-			return shouldApply() ? boosts.manaRegenBonus : 0;
+			return shouldApply() ? boosts.manaRegen : 0;
 		}
 
 		double damageBonus(const Actor&) const final {
-			return shouldApply() ? boosts.damageBonus : 0;
+			return shouldApply() ? boosts.damage : 0;
 		}
 
 		double speedBonus() const final {
-			return shouldApply() ? boosts.speedBonus : 0;
+			return shouldApply() ? boosts.speed : 0;
 		}
 
 		double accuracyBonus() const final {
-			return shouldApply() ? boosts.accuracyBonus : 0;
+			return shouldApply() ? boosts.accuracy : 0;
 		}
 
 		double evasionBonus() const final {
-			return shouldApply() ? boosts.evasionBonus : 0;
+			return shouldApply() ? boosts.evasion : 0;
 		}
 
 		double xpMul() const final {
@@ -60,15 +60,15 @@ namespace core {
 		}
 
 		double hpBonus() const final {
-			return shouldApply() ? boosts.hpBonus : 0;
+			return shouldApply() ? boosts.hp : 0;
 		}
 
 		double manaBonus() const final {
-			return shouldApply() ? boosts.manaBonus : 0;
+			return shouldApply() ? boosts.mana : 0;
 		}
 
 		double defenceBonus(DamageType damageType) const final {
-			return shouldApply() ? boosts.defenceBonuses[damageType] : 0;
+			return shouldApply() ? boosts.defences[damageType] : 0;
 		}
 
 		virtual bool shouldApply() const = 0;

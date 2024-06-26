@@ -3,6 +3,6 @@ skill {
     iconPath resources/textures/Effects/regen.png
 
     boosts {
-        regenBonus 0.5
+        regen +0.5
     }
 }

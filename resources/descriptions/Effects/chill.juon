@@ -3,7 +3,7 @@ tempBonus {
     iconPath resources/textures/Effects/chill.png
 
     boosts {
-        speedBonus -1
+        speed -1
     }
     duration 5
 }

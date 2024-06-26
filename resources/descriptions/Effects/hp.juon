@@ -3,6 +3,6 @@ skill {
     iconPath resources/textures/Effects/hp.png
 
     boosts {
-        hpBonus 1
+        hp +1
     }
 }

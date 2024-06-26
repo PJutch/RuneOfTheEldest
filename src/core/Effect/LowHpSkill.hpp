@@ -47,9 +47,9 @@ namespace core {
 
 		LowHpSkill(Data data, std::string_view id, std::shared_ptr<render::AssetManager> assets) :
 				ConditionalBonus{data.boosts, assets->texture(data.iconPath), id, data.name, true} {
-			if (data.boosts.hpBonus != 0)
+			if (data.boosts.hp != 0)
 				throw RequirementNotMet{"LowHpSkill can't change max hp"};
-			if (data.boosts.manaBonus != 0)
+			if (data.boosts.mana != 0)
 				throw RequirementNotMet{"LowHpSkill can't change max mana"};
 		}
 

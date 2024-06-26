@@ -73,9 +73,9 @@ namespace core {
 
 			Bonus(StatBoosts boosts, const sf::Texture& icon, std::string_view id, std::string_view name) :
 					ConditionalBonus{boosts, icon, id, name, false} {
-				if (boosts.hpBonus != 0)
+				if (boosts.hp != 0)
 					throw RequirementNotMet{"BonusSpell can't change max hp"};
-				if (boosts.manaBonus != 0)
+				if (boosts.mana != 0)
 					throw RequirementNotMet{"BonusSpell can't change max mana"};
 			}
 

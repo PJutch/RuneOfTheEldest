@@ -3,6 +3,6 @@ lowHpSkill {
     iconPath resources/textures/Effects/lowHpDamage.png
 
     boosts {
-        damageBonus 2
+        damage +2
     }
 }

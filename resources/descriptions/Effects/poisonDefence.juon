@@ -3,8 +3,8 @@ skill {
     iconPath resources/textures/Effects/poisonDefence.png
 
     boosts {
-        defenceBonuses {
-            PHYSICAL 1
+        defences {
+            PHYSICAL +1
         }
     }
 }

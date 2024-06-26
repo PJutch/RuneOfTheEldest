@@ -3,6 +3,6 @@ skill {
     iconPath resources/textures/Effects/accuracy.png
 
     boosts {
-        accuracyBonus +1
+        accuracy +1
     }
 }

@@ -40,9 +40,9 @@ namespace core {
 
 		TempBonus(Data data, std::string_view id, std::shared_ptr<render::AssetManager> assets) :
 				ConditionalBonus{data.boosts, assets->texture(data.iconPath), id, data.name, false}, duration{data.duration} {
-			if (data.boosts.hpBonus != 0)
+			if (data.boosts.hp != 0)
 				throw RequirementNotMet{"TempBonus can't change max hp"};
-			if (data.boosts.manaBonus != 0)
+			if (data.boosts.mana != 0)
 				throw RequirementNotMet{"TempBonus can't change max mana"};
 		}
 
