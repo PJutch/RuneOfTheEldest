@@ -134,7 +134,7 @@ namespace core {
         util::forEachFile(basePath, [&, this](std::ifstream& file, const std::filesystem::path& path) {
             std::string id = util::toIdentifier(path, basePath);
 
-            logger->info("Loading {} spec from {} ...", id, path.generic_string());
+            logger->info("Loading {} spec from {}...", id, path.generic_string());
 
             auto params = util::parseMapping(file);
 

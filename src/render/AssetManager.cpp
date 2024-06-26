@@ -72,7 +72,7 @@ namespace render {
     }
 
     void AssetManager::loadTexture(sf::Texture& texture, std::string_view name, const std::filesystem::path& path) const {
-        logger->info("Loading {} ...", name);
+        logger->info("Loading {}...", name);
         if (!texture.loadFromFile(path.generic_string()))
             throw TextureLoadError{ std::format("Unable to load {}", name) };
     }

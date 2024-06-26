@@ -65,7 +65,7 @@ namespace core {
 		util::forEachFile(potionPath, [&](std::ifstream& is, const std::filesystem::path& path) {
 			std::string id = "potion." + util::toIdentifier(path, potionPath);
 
-			logger->info("Loading {} spec from {} ...", id, path.generic_string());
+			logger->info("Loading {} spec from {}...", id, path.generic_string());
 
 			util::KeyValueVisitor visitor;
 			Potion::Stats stats{.id = id};
@@ -114,7 +114,7 @@ namespace core {
 			Equipment::Stats stats;
 			stats.id = "equipment." + util::toIdentifier(path, equipmentPath);
 
-			logger->info("Loading {} spec from {} ...", stats.id, path.generic_string());
+			logger->info("Loading {} spec from {}...", stats.id, path.generic_string());
 
 			auto params = util::parseMapping(is);
 
