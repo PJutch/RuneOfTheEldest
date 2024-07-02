@@ -76,7 +76,7 @@ namespace core {
 		template <typename Skill>
 		std::unique_ptr<Skill> parseSkillByJutchsON(JutchsON::StringView s, std::string_view id,
 											        std::shared_ptr<render::AssetManager> assets) {
-			if (auto data = JutchsON::parse<typename Skill::Data>(s, JutchsON::Context::LINE_REST)) {
+			if (auto data = JutchsON::parse<typename Skill::Data>(s, {}, JutchsON::Context::LINE_REST)) {
 				return std::make_unique<Skill>(*data, id, assets);
 			} else {
 				throw ParseError{data.errors()};

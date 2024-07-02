@@ -16,7 +16,7 @@
 if(NOT TARGET JutchsON)
     include(cmake/Utility.cmake)
 
-    fetchGit(JutchsON JutchsON.zip https://github.com/PJutch/JutchsON v0.1.2)
+    fetchGit(JutchsON JutchsON.zip https://github.com/PJutch/JutchsON v0.1.3)
 endif()
 
 addDependency(dependencies JutchsON)

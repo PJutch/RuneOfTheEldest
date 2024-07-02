@@ -64,8 +64,10 @@ namespace util {
 namespace JutchsON {
 	template <typename Enum, typename T>
 	struct Parser<util::EnumMap<Enum, T>> {
-		ParseResult<util::EnumMap<Enum, T>> operator() (StringView s, Context context) {
-			return parse<std::unordered_map<std::string, T>>(s, context).then([&](const auto& map) -> ParseResult<util::EnumMap<Enum, T>> {
+		template <typename Env>
+		ParseResult<util::EnumMap<Enum, T>> operator() (StringView s, Env&& env, Context context) {
+			return parse<std::unordered_map<std::string, T>>(s, std::forward<Env>(env), context)
+					.then([&](const auto& map) -> ParseResult<util::EnumMap<Enum, T>> {
 				util::EnumMap<Enum, T> result;
 				std::vector<ParseError> errors;
 				for (const auto& [name, value] : map) {
