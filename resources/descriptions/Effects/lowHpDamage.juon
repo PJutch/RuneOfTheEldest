@@ -1,4 +1,4 @@
-lowHpSkill {
+LowHpSkill {
     name Berserck
     iconPath resources/textures/Effects/lowHpDamage.png
 

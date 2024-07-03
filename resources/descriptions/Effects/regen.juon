@@ -1,4 +1,4 @@
-skill {
+UnconditionalSkill {
     name Regen
     iconPath resources/textures/Effects/regen.png
 

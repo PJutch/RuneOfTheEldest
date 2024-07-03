@@ -1,4 +1,4 @@
-appliesEffectOnAttack {
+AppliesEffectOnAttack {
     name Poison attack
     iconPath resources/textures/Effects/poisonAttack.png
 

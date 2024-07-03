@@ -101,20 +101,20 @@ namespace core {
 				throw ParseError{parsed.errors()};
 			}
 
-			if (parsed->first == "tempBonus") {
-				effects.push_back(parseSkillByJutchsON<TempBonus>(parsed->second, id, assets));
-			} else if(parsed->first == "poison") {
-				effects.push_back(parseSkillByJutchsON<Poison>(parsed->second, id, assets));
-			} else if (parsed->first == "appliesEffectOnAttack") {
-				effects.push_back(parseSkillByJutchsON<AppliesEffectOnAttack>(parsed->second, id, assets));
-			} else if (parsed->first == "targetFullHpSkill") {
-				effects.push_back(parseSkillByJutchsON<TargetFullHpSkill>(parsed->second, id, assets));
-			} else if (parsed->first == "skill") {
-				effects.push_back(parseSkillByJutchsON<UnconditionalSkill>(parsed->second, id, assets));
-			} else if (parsed->first == "lowHpSkill") {
-				effects.push_back(parseSkillByJutchsON<LowHpSkill>(parsed->second, id, assets));
-			} else {
-				throw UnknownSkillTypeError(parsed->first.asStd());
+			std::tuple typenames{
+				JUTCHSON_TAGGED_TYPE_NAME(TempBonus),
+				JUTCHSON_TAGGED_TYPE_NAME(Poison),
+				JUTCHSON_TAGGED_TYPE_NAME(AppliesEffectOnAttack),
+				JUTCHSON_TAGGED_TYPE_NAME(TargetFullHpSkill),
+				JUTCHSON_TAGGED_TYPE_NAME(UnconditionalSkill),
+				JUTCHSON_TAGGED_TYPE_NAME(LowHpSkill)
+			};
+
+			if (auto result = JutchsON::parseType(parsed->first, typenames, [&](auto tag) {
+				effects.push_back(parseSkillByJutchsON<JutchsON::PayloadType<decltype(tag)>>(parsed->second, id, assets));
+				return true;
+			}); !result) {
+				throw ParseError{result.errors()};
 			}
 		});
 

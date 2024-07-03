@@ -1,4 +1,4 @@
-skill {
+UnconditionalSkill {
     name Mana regen
     iconPath resources/textures/Effects/manaRegen.png
 

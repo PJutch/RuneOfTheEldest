@@ -1,4 +1,4 @@
-skill {
+UnconditionalSkill {
     name Damage
     iconPath resources/textures/Effects/damage.png
 

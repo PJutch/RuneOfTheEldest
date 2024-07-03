@@ -1,4 +1,4 @@
-skill {
+UnconditionalSkill {
     name Defence
     iconPath resources/textures/Effects/defence.png
 

@@ -1,4 +1,4 @@
-tempBonus {
+TempBonus {
     name Scorched
     iconPath resources/textures/Effects/scorched.png
 

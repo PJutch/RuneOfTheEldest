@@ -1,4 +1,4 @@
-lowHpSkill {
+LowHpSkill {
     name Fear
     iconPath resources/textures/Effects/lowHpSpeed.png
 

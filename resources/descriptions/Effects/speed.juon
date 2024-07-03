@@ -1,4 +1,4 @@
-skill {
+UnconditionalSkill {
     name Speed
     iconPath resources/textures/Effects/speed.png
 

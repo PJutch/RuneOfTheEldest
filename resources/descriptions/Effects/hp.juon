@@ -1,4 +1,4 @@
-skill {
+UnconditionalSkill {
     name Health
     iconPath resources/textures/Effects/hp.png
 

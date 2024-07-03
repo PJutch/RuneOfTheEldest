@@ -1,4 +1,4 @@
-skill {
+UnconditionalSkill {
     name Accuracy
     iconPath resources/textures/Effects/accuracy.png
 

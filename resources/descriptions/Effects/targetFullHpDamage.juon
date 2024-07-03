@@ -1,4 +1,4 @@
-targetFullHpSkill {
+TargetFullHpSkill {
     name First hit
     iconPath resources/textures/Effects/targetFullHpDamage.png
 

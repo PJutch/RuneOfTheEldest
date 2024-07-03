@@ -1,4 +1,4 @@
-tempBonus {
+TempBonus {
     name Chill
     iconPath resources/textures/Effects/chill.png
 

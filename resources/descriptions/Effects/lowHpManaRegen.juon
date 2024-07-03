@@ -1,4 +1,4 @@
-lowHpSkill {
+LowHpSkill {
     name Pain to mana
     iconPath resources/textures/Effects/manaLowHp.png
 
