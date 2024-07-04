@@ -15,7 +15,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "EffectManager.hpp"
 
-#include "Effect/UnconditionalSkill.hpp"
+#include "Effect/Skill.hpp"
 #include "Effect/LowHpSkill.hpp"
 #include "Effect/TargetFullHpSkill.hpp"
 #include "Effect/Poison.hpp"
@@ -106,7 +106,7 @@ namespace core {
 				JUTCHSON_TAGGED_TYPE_NAME(Poison),
 				JUTCHSON_TAGGED_TYPE_NAME(AppliesEffectOnAttack),
 				JUTCHSON_TAGGED_TYPE_NAME(TargetFullHpSkill),
-				JUTCHSON_TAGGED_TYPE_NAME(UnconditionalSkill),
+				JUTCHSON_TAGGED_TYPE_NAME(Skill),
 				JUTCHSON_TAGGED_TYPE_NAME(LowHpSkill)
 			};
 

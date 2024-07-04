@@ -1,4 +1,4 @@
-UnconditionalSkill {
+Skill {
     name Xp x3
     iconPath resources/textures/Effects/xp.png
 

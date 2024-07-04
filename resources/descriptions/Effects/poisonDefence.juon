@@ -1,10 +1,10 @@
-UnconditionalSkill {
+Skill {
     name Poison defence
     iconPath resources/textures/Effects/poisonDefence.png
 
     boosts {
         defences {
-            PHYSICAL +1
+            POISON +1
         }
     }
 }

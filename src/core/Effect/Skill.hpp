@@ -25,10 +25,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include <memory>
 
 namespace core {
-	/// @brief Always applies
-	/// @details Type in skill file is "unconditional".
-	/// Default skill type.
-	class UnconditionalSkill : public ConditionalBonus {
+	/// @brief Skill that always applies
+	class Skill : public ConditionalBonus {
 	public:
 		struct Data {
 			StatBoosts boosts;
@@ -36,7 +34,7 @@ namespace core {
 			std::string name;
 		};
 
-		UnconditionalSkill(Data data, std::string_view id, std::shared_ptr<render::AssetManager> assets) :
+		Skill(Data data, std::string_view id, std::shared_ptr<render::AssetManager> assets) :
 			ConditionalBonus{data.boosts, assets->texture(data.iconPath), id, data.name, true} {}
 
 		bool shouldApply() const final {
@@ -44,11 +42,11 @@ namespace core {
 		}
 		
 		std::unique_ptr<Effect> clone() const final {
-			return std::make_unique<UnconditionalSkill>(*this);
+			return std::make_unique<Skill>(*this);
 		}
 	};
 
-	BOOST_DESCRIBE_STRUCT(UnconditionalSkill::Data, (), (boosts, iconPath, name))
+	BOOST_DESCRIBE_STRUCT(Skill::Data, (), (boosts, iconPath, name))
 }
 
 #endif
