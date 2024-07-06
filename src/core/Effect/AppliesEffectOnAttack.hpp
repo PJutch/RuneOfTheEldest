@@ -32,8 +32,7 @@ namespace core {
 			std::string name;
 		};
 
-		AppliesEffectOnAttack(Data data, std::string_view id_) :
-			Effect{*data.icon, id_, data.name, false}, appliedEffectName{data.applies} {}
+		AppliesEffectOnAttack(Data data_, std::string_view newId) : data{data_}, id_{newId} {}
 
 		class UnknownEffect : public util::RuntimeError {
 		public:
@@ -42,9 +41,9 @@ namespace core {
 		};
 
 		void init(const EffectManager& effects) final {
-			appliedEffect = effects.findEffect(appliedEffectName);
+			appliedEffect = effects.findEffect(data.applies);
 			if (!appliedEffect)
-				throw UnknownEffect{appliedEffectName};
+				throw UnknownEffect{data.applies};
 		}
 
 		void onAttack(Actor& actor) const final {
@@ -54,8 +53,25 @@ namespace core {
 		std::unique_ptr<Effect> clone() const final {
 			return std::make_unique<AppliesEffectOnAttack>(*this);
 		}
+
+		[[nodiscard]] const sf::Texture& icon() const final {
+			return *data.icon;
+		}
+
+		[[nodiscard]] const std::string& id() const final {
+			return id_;
+		}
+
+		[[nodiscard]] const std::string& name() const final {
+			return data.name;
+		}
+
+		[[nodiscard]] bool isSkill() const final {
+			return false;
+		}
 	private:
-		std::string appliedEffectName;
+		Data data;
+		std::string id_;
 		const Effect* appliedEffect = nullptr;
 	};
 

@@ -35,17 +35,15 @@ namespace core {
 			std::string name;
 		};
 
-		Poison(Data data, std::string_view id_) :
-			Effect{*data.icon, id_, data.name, false}, 
-			damageOverTime{data.damageOverTime}, duration{data.duration} {}
+		Poison(Data data_, std::string_view newId) : data{data_}, id_{newId} {}
 
 		void update(double time) final {
-			owner_.lock()->beDamaged(time * damageOverTime, DamageType::POISON);
-			duration -= time;
+			owner_.lock()->beDamaged(time * data.damageOverTime, DamageType::POISON);
+			data.duration -= time;
 		}
 
 		virtual bool shouldBeRemoved() const {
-			return duration <= 0;
+			return data.duration <= 0;
 		}
 
 		std::unique_ptr<Effect> clone() const final {
@@ -56,23 +54,39 @@ namespace core {
 			owner_ = std::move(newOwner);
 		}
 
-		void parseData(std::string_view data) final {
+		void parseData(std::string_view parsedData) final {
 			util::KeyValueVisitor visitor;
 
-			visitor.key("duration").unique().required().callback([&](std::string_view data) {
-				duration = util::parseReal(data);
+			visitor.key("duration").unique().required().callback([&](std::string_view parsedData) {
+				data.duration = util::parseReal(parsedData);
 			});
 
-			util::forEackInlineKeyValuePair(data, visitor);
+			util::forEackInlineKeyValuePair(parsedData, visitor);
 			visitor.validate();
 		}
 
 		[[nodiscard]] std::optional<std::string> stringify() const final {
-			return std::format("{} duration {}", id(), duration);
+			return std::format("{} duration {}", id(), data.duration);
+		}
+
+		[[nodiscard]] const sf::Texture& icon() const final {
+			return *data.icon;
+		}
+
+		[[nodiscard]] const std::string& id() const final {
+			return id_;
+		}
+
+		[[nodiscard]] const std::string& name() const final {
+			return data.name;
+		}
+
+		[[nodiscard]] bool isSkill() const final {
+			return false;
 		}
 	private:
-		double damageOverTime;
-		double duration;
+		Data data;
+		std::string id_;
 
 		std::weak_ptr<Actor> owner_;
 	};

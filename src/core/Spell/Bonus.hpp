@@ -71,11 +71,11 @@ namespace core {
 				using RuntimeError::RuntimeError;
 			};
 
-			Bonus(StatBoosts boosts, const sf::Texture& icon, std::string_view id, std::string_view name) :
-					ConditionalBonus{boosts, icon, id, name, false} {
-				if (boosts.hp != 0)
+			Bonus(StatBoosts newBoosts, const sf::Texture& newIcon, std::string_view newId, std::string_view newName) :
+					boosts_{newBoosts}, icon_{&newIcon}, id_{newId}, name_{newName} {
+				if (boosts_.hp != 0)
 					throw RequirementNotMet{"BonusSpell can't change max hp"};
-				if (boosts.mana != 0)
+				if (boosts_.mana != 0)
 					throw RequirementNotMet{"BonusSpell can't change max mana"};
 			}
 
@@ -115,7 +115,31 @@ namespace core {
 			[[nodiscard]] std::optional<std::string> stringify() const final {
 				return std::nullopt;
 			}
+
+			[[nodiscard]] const sf::Texture& icon() const final {
+				return *icon_;
+			}
+
+			[[nodiscard]] const std::string& id() const final {
+				return id_;
+			}
+
+			[[nodiscard]] const std::string& name() const final {
+				return name_;
+			}
+
+			[[nodiscard]] bool isSkill() const final {
+				return true;
+			}
+		protected:
+			[[nodiscard]] const StatBoosts& boosts() const final {
+				return boosts_;
+			}
 		private:
+			StatBoosts boosts_;
+			const sf::Texture* icon_;
+			std::string id_;
+			std::string name_;
 			std::weak_ptr<BonusSpell> spell_;
 			std::weak_ptr<core::Actor> owner_;
 		};

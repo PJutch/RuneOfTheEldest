@@ -34,8 +34,7 @@ namespace core {
 	/// Effect modifying Actor stats
 	class Effect : public StatBooster {
 	public:
-		Effect(const sf::Texture& newIcon, std::string_view newId, std::string_view newName, bool isSkill) : 
-			icon_{&newIcon}, id_{newId}, name_{newName}, isSkill_{isSkill} {}
+		Effect() {}
 
 		virtual ~Effect() = default;
 
@@ -65,23 +64,17 @@ namespace core {
 		virtual void owner([[maybe_unused]] std::weak_ptr<Actor> newOwner) {}
 
 		/// Skill icon for level up menu
-		[[nodiscard]] const sf::Texture& icon() const {
-			return *icon_;
-		}
+		[[nodiscard]] virtual const sf::Texture& icon() const = 0;
 
 		/// Skill name for dev usage
-		[[nodiscard]] const std::string& id() const {
-			return id_;
-		}
+		[[nodiscard]] virtual const std::string& id() const = 0;
 
 		/// Skill name for level up menu
-		[[nodiscard]] const std::string& name() const {
-			return name_;
-		}
+		[[nodiscard]] virtual const std::string& name() const = 0;
 
 		/// Checks if Effect is Skill
-		[[nodiscard]] bool isSkill() const {
-			return isSkill_;
+		[[nodiscard]] virtual bool isSkill() const {
+			return false;
 		}
 
 		/// Checks if Effect should be drawn
@@ -106,11 +99,6 @@ namespace core {
 		[[nodiscard]] virtual std::optional<std::string> stringify() const {
 			return id();
 		}
-	private:
-		const sf::Texture* icon_;
-		std::string id_;
-		std::string name_;
-		bool isSkill_;
 	};
 }
 

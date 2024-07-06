@@ -38,8 +38,7 @@ namespace core {
 			using RuntimeError::RuntimeError;
 		};
 
-		TempBonus(Data data, std::string_view id) :
-				ConditionalBonus{data.boosts, *data.icon, id, data.name, false}, duration{data.duration} {
+		TempBonus(Data data_, std::string_view newId) : data{data_}, id_{newId} {
 			if (data.boosts.hp != 0)
 				throw RequirementNotMet{"TempBonus can't change max hp"};
 			if (data.boosts.mana != 0)
@@ -51,11 +50,11 @@ namespace core {
 		}
 
 		void update(double time) final {
-			duration -= time;
+			data.duration -= time;
 		}
 
 		bool shouldBeRemoved() const final {
-			return duration <= 0;
+			return data.duration <= 0;
 		}
 
 		[[nodiscard]] bool isCancelable() const final {
@@ -66,22 +65,43 @@ namespace core {
 			return std::make_unique<TempBonus>(*this);
 		}
 		
-		void parseData(std::string_view data) final {
+		void parseData(std::string_view parsedData) final {
 			util::KeyValueVisitor visitor;
 
-			visitor.key("duration").unique().required().callback([&](std::string_view data) {
-				duration = util::parseReal(data);
+			visitor.key("duration").unique().required().callback([&](std::string_view parsedData) {
+				data.duration = util::parseReal(parsedData);
 			});
 
-			util::forEackInlineKeyValuePair(data, visitor);
+			util::forEackInlineKeyValuePair(parsedData, visitor);
 			visitor.validate();
 		}
 
 		[[nodiscard]] std::optional<std::string> stringify() const final {
-			return std::format("{} duration {}", id(), duration);
+			return std::format("{} duration {}", id(), data.duration);
+		}
+
+		[[nodiscard]] const sf::Texture& icon() const final {
+			return *data.icon;
+		}
+
+		[[nodiscard]] const std::string& id() const final {
+			return id_;
+		}
+
+		[[nodiscard]] const std::string& name() const final {
+			return data.name;
+		}
+
+		[[nodiscard]] bool isSkill() const final {
+			return false;
+		}
+	protected:
+		[[nodiscard]] const StatBoosts& boosts() const final {
+			return data.boosts;
 		}
 	private:
-		double duration;
+		Data data;
+		std::string id_;
 	};
 
 	BOOST_DESCRIBE_STRUCT(TempBonus::Data, (), (duration, boosts, name, icon))

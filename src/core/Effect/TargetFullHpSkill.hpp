@@ -31,18 +31,34 @@ namespace core {
 			std::string name; 
 		};
 
-		TargetFullHpSkill(Data data, std::string_view id_) :
-			Effect{*data.icon, id_, data.name, true}, damageBonus_{data.damage} {}
+		TargetFullHpSkill(Data data_, std::string_view newId) : data{data_}, id_{newId} {}
 
 		double damageBonus(const Actor& target) const final {
-			return target.hp() == target.maxHp() ? damageBonus_ : 0;
+			return target.hp() == target.maxHp() ? data.damage : 0;
 		}
 
 		std::unique_ptr<Effect> clone() const final {
 			return std::make_unique<TargetFullHpSkill>(*this);
+		} 
+		
+		[[nodiscard]] const sf::Texture& icon() const final {
+			return *data.icon;
+		}
+
+		[[nodiscard]] const std::string& id() const final {
+			return id_;
+		}
+
+		[[nodiscard]] const std::string& name() const final {
+			return data.name;
+		}
+
+		[[nodiscard]] bool isSkill() const final {
+			return true;
 		}
 	private:
-		double damageBonus_;
+		Data data;
+		std::string id_;
 	};
 
 	BOOST_DESCRIBE_STRUCT(TargetFullHpSkill::Data, (), (damage, icon, name))

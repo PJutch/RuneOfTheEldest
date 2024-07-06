@@ -27,53 +27,51 @@ namespace core {
 	/// Provides bonuses based on condition
 	class ConditionalBonus : public Effect {
 	public:
-		ConditionalBonus(StatBoosts boosts_,
-				const sf::Texture& icon_, std::string_view id_, std::string_view name_, bool isSkill) :
-			Effect{icon_, id_, name_, isSkill}, boosts{boosts_} {}
+		ConditionalBonus() {}
 
 		double regenBonus() const final {
-			return shouldApply() ? boosts.regen : 0;
+			return shouldApply() ? boosts().regen : 0;
 		}
 
 		double manaRegenBonus() const final {
-			return shouldApply() ? boosts.manaRegen : 0;
+			return shouldApply() ? boosts().manaRegen : 0;
 		}
 
 		double damageBonus(const Actor&) const final {
-			return shouldApply() ? boosts.damage : 0;
+			return shouldApply() ? boosts().damage : 0;
 		}
 
 		double speedBonus() const final {
-			return shouldApply() ? boosts.speed : 0;
+			return shouldApply() ? boosts().speed : 0;
 		}
 
 		double accuracyBonus() const final {
-			return shouldApply() ? boosts.accuracy : 0;
+			return shouldApply() ? boosts().accuracy : 0;
 		}
 
 		double evasionBonus() const final {
-			return shouldApply() ? boosts.evasion : 0;
+			return shouldApply() ? boosts().evasion : 0;
 		}
 
 		double xpMul() const final {
-			return shouldApply() ? boosts.xpMul : 1;
+			return shouldApply() ? boosts().xpMul : 1;
 		}
 
 		double hpBonus() const final {
-			return shouldApply() ? boosts.hp : 0;
+			return shouldApply() ? boosts().hp : 0;
 		}
 
 		double manaBonus() const final {
-			return shouldApply() ? boosts.mana : 0;
+			return shouldApply() ? boosts().mana : 0;
 		}
 
 		double defenceBonus(DamageType damageType) const final {
-			return shouldApply() ? boosts.defences[damageType] : 0;
+			return shouldApply() ? boosts().defences[damageType] : 0;
 		}
 
 		virtual bool shouldApply() const = 0;
-	private:
-		StatBoosts boosts;
+	protected:
+		[[nodiscard]] virtual const StatBoosts& boosts() const = 0;
 	};
 }
 

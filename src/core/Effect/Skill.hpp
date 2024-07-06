@@ -34,8 +34,7 @@ namespace core {
 			std::string name;
 		};
 
-		Skill(Data data, std::string_view id) :
-			ConditionalBonus{data.boosts, *data.icon, id, data.name, true} {}
+		Skill(Data data_, std::string_view newId) : data{data_}, id_{newId} {}
 
 		bool shouldApply() const final {
 			return true;
@@ -44,6 +43,29 @@ namespace core {
 		std::unique_ptr<Effect> clone() const final {
 			return std::make_unique<Skill>(*this);
 		}
+
+		[[nodiscard]] const sf::Texture& icon() const final {
+			return *data.icon;
+		}
+
+		[[nodiscard]] const std::string& id() const final {
+			return id_;
+		}
+
+		[[nodiscard]] const std::string& name() const final {
+			return data.name;
+		}
+
+		[[nodiscard]] bool isSkill() const final {
+			return true;
+		}
+	protected:
+		[[nodiscard]] const StatBoosts& boosts() const final {
+			return data.boosts;
+		}
+	private:
+		Data data;
+		std::string id_;
 	};
 
 	BOOST_DESCRIBE_STRUCT(Skill::Data, (), (boosts, icon, name))
