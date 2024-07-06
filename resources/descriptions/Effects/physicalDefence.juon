@@ -1,6 +1,6 @@
 Skill {
     name Defence
-    iconPath resources/textures/Effects/defence.png
+    icon resources/textures/Effects/defence.png
 
     boosts {
         defences {

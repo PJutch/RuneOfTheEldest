@@ -31,12 +31,12 @@ namespace core {
 		struct Data {
 			double damageOverTime;
 			double duration;
-			std::string iconPath;
+			const sf::Texture* icon;
 			std::string name;
 		};
 
-		Poison(Data data, std::string_view id_, std::shared_ptr<render::AssetManager> assets) :
-			Effect{assets->texture(data.iconPath), id_, data.name, false}, 
+		Poison(Data data, std::string_view id_) :
+			Effect{*data.icon, id_, data.name, false}, 
 			damageOverTime{data.damageOverTime}, duration{data.duration} {}
 
 		void update(double time) final {
@@ -77,7 +77,7 @@ namespace core {
 		std::weak_ptr<Actor> owner_;
 	};
 
-	BOOST_DESCRIBE_STRUCT(Poison::Data, (), (damageOverTime, duration, iconPath, name))
+	BOOST_DESCRIBE_STRUCT(Poison::Data, (), (damageOverTime, duration, icon, name))
 }
 
 #endif

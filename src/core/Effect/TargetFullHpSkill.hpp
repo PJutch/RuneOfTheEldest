@@ -27,12 +27,12 @@ namespace core {
 	public:
 		struct Data {
 			double damage;
-			std::string iconPath;
+			const sf::Texture* icon;
 			std::string name; 
 		};
 
-		TargetFullHpSkill(Data data, std::string_view id_, std::shared_ptr<render::AssetManager> assets) :
-			Effect{assets->texture(data.iconPath), id_, data.name, true}, damageBonus_{data.damage} {}
+		TargetFullHpSkill(Data data, std::string_view id_) :
+			Effect{*data.icon, id_, data.name, true}, damageBonus_{data.damage} {}
 
 		double damageBonus(const Actor& target) const final {
 			return target.hp() == target.maxHp() ? damageBonus_ : 0;
@@ -45,7 +45,7 @@ namespace core {
 		double damageBonus_;
 	};
 
-	BOOST_DESCRIBE_STRUCT(TargetFullHpSkill::Data, (), (damage, iconPath, name))
+	BOOST_DESCRIBE_STRUCT(TargetFullHpSkill::Data, (), (damage, icon, name))
 }
 
 #endif

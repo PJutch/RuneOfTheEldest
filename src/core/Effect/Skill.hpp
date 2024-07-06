@@ -30,12 +30,12 @@ namespace core {
 	public:
 		struct Data {
 			StatBoosts boosts;
-			std::string iconPath;
+			const sf::Texture* icon;
 			std::string name;
 		};
 
-		Skill(Data data, std::string_view id, std::shared_ptr<render::AssetManager> assets) :
-			ConditionalBonus{data.boosts, assets->texture(data.iconPath), id, data.name, true} {}
+		Skill(Data data, std::string_view id) :
+			ConditionalBonus{data.boosts, *data.icon, id, data.name, true} {}
 
 		bool shouldApply() const final {
 			return true;
@@ -46,7 +46,7 @@ namespace core {
 		}
 	};
 
-	BOOST_DESCRIBE_STRUCT(Skill::Data, (), (boosts, iconPath, name))
+	BOOST_DESCRIBE_STRUCT(Skill::Data, (), (boosts, icon, name))
 }
 
 #endif

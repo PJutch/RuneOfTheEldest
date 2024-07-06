@@ -1,6 +1,6 @@
 Skill {
     name Evasion
-    iconPath resources/textures/Effects/evasion.png
+    icon resources/textures/Effects/evasion.png
 
     boosts {
         evasion +1

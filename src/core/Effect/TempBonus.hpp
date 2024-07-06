@@ -30,7 +30,7 @@ namespace core {
 			double duration;
 			StatBoosts boosts;
 			std::string name;
-			std::string iconPath;
+			const sf::Texture* icon;
 		};
 
 		struct RequirementNotMet : public util::RuntimeError {
@@ -38,8 +38,8 @@ namespace core {
 			using RuntimeError::RuntimeError;
 		};
 
-		TempBonus(Data data, std::string_view id, std::shared_ptr<render::AssetManager> assets) :
-				ConditionalBonus{data.boosts, assets->texture(data.iconPath), id, data.name, false}, duration{data.duration} {
+		TempBonus(Data data, std::string_view id) :
+				ConditionalBonus{data.boosts, *data.icon, id, data.name, false}, duration{data.duration} {
 			if (data.boosts.hp != 0)
 				throw RequirementNotMet{"TempBonus can't change max hp"};
 			if (data.boosts.mana != 0)
@@ -84,7 +84,7 @@ namespace core {
 		double duration;
 	};
 
-	BOOST_DESCRIBE_STRUCT(TempBonus::Data, (), (duration, boosts, name, iconPath))
+	BOOST_DESCRIBE_STRUCT(TempBonus::Data, (), (duration, boosts, name, icon))
 }
 
 #endif

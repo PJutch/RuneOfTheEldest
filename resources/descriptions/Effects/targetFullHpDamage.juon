@@ -1,6 +1,6 @@
 TargetFullHpSkill {
     name First hit
-    iconPath resources/textures/Effects/targetFullHpDamage.png
+    icon resources/textures/Effects/targetFullHpDamage.png
 
     damage +2
 }

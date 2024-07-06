@@ -1,6 +1,6 @@
 AppliesEffectOnAttack {
     name Poison attack
-    iconPath resources/textures/Effects/poisonAttack.png
+    icon resources/textures/Effects/poisonAttack.png
 
     applies poison
 }

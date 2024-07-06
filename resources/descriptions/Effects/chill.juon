@@ -1,6 +1,6 @@
 TempBonus {
     name Chill
-    iconPath resources/textures/Effects/chill.png
+    icon resources/textures/Effects/chill.png
 
     boosts {
         speed -1

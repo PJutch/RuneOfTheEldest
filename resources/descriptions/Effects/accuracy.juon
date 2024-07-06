@@ -1,6 +1,6 @@
 Skill {
     name Accuracy
-    iconPath resources/textures/Effects/accuracy.png
+    icon resources/textures/Effects/accuracy.png
 
     boosts {
         accuracy +1

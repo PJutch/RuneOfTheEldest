@@ -1,6 +1,6 @@
 Skill {
     name Damage
-    iconPath resources/textures/Effects/damage.png
+    icon resources/textures/Effects/damage.png
 
     boosts {
         damage +1

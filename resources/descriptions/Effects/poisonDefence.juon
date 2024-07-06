@@ -1,6 +1,6 @@
 Skill {
     name Poison defence
-    iconPath resources/textures/Effects/poisonDefence.png
+    icon resources/textures/Effects/poisonDefence.png
 
     boosts {
         defences {

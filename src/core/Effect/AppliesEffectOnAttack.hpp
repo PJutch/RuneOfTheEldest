@@ -28,12 +28,12 @@ namespace core {
 	public:
 		struct Data {
 			std::string applies;
-			std::string iconPath;
+			const sf::Texture* icon;
 			std::string name;
 		};
 
-		AppliesEffectOnAttack(Data data, std::string_view id_, std::shared_ptr<render::AssetManager> assets) :
-			Effect{assets->texture(data.iconPath), id_, data.name, false}, appliedEffectName{data.applies} {}
+		AppliesEffectOnAttack(Data data, std::string_view id_) :
+			Effect{*data.icon, id_, data.name, false}, appliedEffectName{data.applies} {}
 
 		class UnknownEffect : public util::RuntimeError {
 		public:
@@ -59,7 +59,7 @@ namespace core {
 		const Effect* appliedEffect = nullptr;
 	};
 
-	BOOST_DESCRIBE_STRUCT(AppliesEffectOnAttack::Data, (), (applies, iconPath, name))
+	BOOST_DESCRIBE_STRUCT(AppliesEffectOnAttack::Data, (), (applies, icon, name))
 }
 
 #endif

@@ -1,6 +1,6 @@
 Skill {
     name Health
-    iconPath resources/textures/Effects/hp.png
+    icon resources/textures/Effects/hp.png
 
     boosts {
         hp +1

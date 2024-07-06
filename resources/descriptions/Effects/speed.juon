@@ -1,6 +1,6 @@
 Skill {
     name Speed
-    iconPath resources/textures/Effects/speed.png
+    icon resources/textures/Effects/speed.png
 
     boosts {
         speed +0.25

@@ -1,6 +1,6 @@
 Skill {
     name Mana
-    iconPath resources/textures/Effects/mana.png
+    icon resources/textures/Effects/mana.png
 
     boosts {
         mana +1

@@ -1,6 +1,6 @@
 LowHpSkill {
     name Berserck
-    iconPath resources/textures/Effects/lowHpDamage.png
+    icon resources/textures/Effects/lowHpDamage.png
 
     boosts {
         damage +2

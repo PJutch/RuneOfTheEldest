@@ -1,6 +1,6 @@
 Skill {
     name Regen
-    iconPath resources/textures/Effects/regen.png
+    icon resources/textures/Effects/regen.png
 
     boosts {
         regen +0.5

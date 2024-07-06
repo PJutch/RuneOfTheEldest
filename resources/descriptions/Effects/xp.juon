@@ -1,6 +1,6 @@
 Skill {
     name Xp x3
-    iconPath resources/textures/Effects/xp.png
+    icon resources/textures/Effects/xp.png
 
     boosts {
         xpMul 3

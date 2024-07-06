@@ -1,6 +1,6 @@
 TempBonus {
     name Scorched
-    iconPath resources/textures/Effects/scorched.png
+    icon resources/textures/Effects/scorched.png
 
     boosts {
         defences {

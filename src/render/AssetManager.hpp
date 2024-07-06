@@ -25,6 +25,8 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/random.hpp"
 #include "util/Map.hpp"
 
+#include <JutchsON.hpp>
+
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/Image.hpp>
@@ -139,6 +141,17 @@ namespace render {
 
 		void loadTexture(sf::Texture& texture, std::string_view logMessage,
 			const std::filesystem::path& file) const;
+	};
+}
+
+namespace JutchsON {
+	template <>
+	struct Parser<const sf::Texture*> {
+		ParseResult<const sf::Texture*> operator() (StringView s, const auto& env, Context context) {
+			return parse<std::string>(s, env, context).map([&](std::string_view s) {
+				return &env.assets->texture(s);
+			});
+		}
 	};
 }
 

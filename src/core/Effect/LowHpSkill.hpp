@@ -36,7 +36,7 @@ namespace core {
 	public:
 		struct Data {
 			StatBoosts boosts;
-			std::string iconPath;
+			const sf::Texture* icon;
 			std::string name;
 		};
 
@@ -45,8 +45,8 @@ namespace core {
 			using RuntimeError::RuntimeError;
 		};
 
-		LowHpSkill(Data data, std::string_view id, std::shared_ptr<render::AssetManager> assets) :
-				ConditionalBonus{data.boosts, assets->texture(data.iconPath), id, data.name, true} {
+		LowHpSkill(Data data, std::string_view id) :
+				ConditionalBonus{data.boosts, *data.icon, id, data.name, true} {
 			if (data.boosts.hp != 0)
 				throw RequirementNotMet{"LowHpSkill can't change max hp"};
 			if (data.boosts.mana != 0)
@@ -69,7 +69,7 @@ namespace core {
 		std::weak_ptr<Actor> owner_;
 	};
 
-	BOOST_DESCRIBE_STRUCT(LowHpSkill::Data, (), (boosts, iconPath, name))
+	BOOST_DESCRIBE_STRUCT(LowHpSkill::Data, (), (boosts, icon, name))
 }
 
 #endif

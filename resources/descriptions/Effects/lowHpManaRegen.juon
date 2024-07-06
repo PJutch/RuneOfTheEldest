@@ -1,6 +1,6 @@
 LowHpSkill {
     name Pain to mana
-    iconPath resources/textures/Effects/manaLowHp.png
+    icon resources/textures/Effects/manaLowHp.png
 
     boosts {
         manaRegen +1
