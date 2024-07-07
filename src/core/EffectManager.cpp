@@ -37,27 +37,6 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 namespace core {
 	namespace {
-		std::string unknownParamsMessage(std::unordered_map<std::string, std::string> params) {
-			std::string message = "Unknown params: ";
-			for (auto [name, value] : params)
-				message += std::format("\"{}\" ", name);
-			return message;
-		}
-
-		class UnknownParamsError : public util::RuntimeError {
-		public:
-			UnknownParamsError(std::unordered_map<std::string, std::string> params,
-				util::Stacktrace currentStacktrace = {}) noexcept :
-				RuntimeError{unknownParamsMessage(params), std::move(currentStacktrace)} {}
-		};
-
-		class UnknownSkillTypeError : public util::RuntimeError {
-		public:
-			UnknownSkillTypeError(std::string_view type, util::Stacktrace currentStacktrace = {}) noexcept :
-				RuntimeError{std::format("Unknown skill type \"{}\"", type),
-				std::move(currentStacktrace)} {}
-		};
-
 		std::string errorString(const std::vector<JutchsON::ParseError>& errors) {
 			std::string res;
 			res.append(std::format("Parse failed with {} errors", std::ssize(errors)));
@@ -75,19 +54,23 @@ namespace core {
 
 		struct Env {
 			std::shared_ptr<render::AssetManager> assets;
+			std::string_view id;
 		};
-
-		template <typename Skill>
-		std::unique_ptr<Skill> parseSkillByJutchsON(JutchsON::StringView s, std::string_view id,
-											        std::shared_ptr<render::AssetManager> assets) {
-			if (auto data = JutchsON::parse<typename Skill::Data>(s, Env{assets}, JutchsON::Context::LINE_REST)) {
-				return std::make_unique<Skill>(*data, id);
-			} else {
-				throw ParseError{data.errors()};
-			}
-		}
 	}
+}
 
+namespace JutchsON {
+	template <std::derived_from<core::Effect> Effect>
+	struct Parser<Effect> {
+		ParseResult<Effect> operator() (StringView s, const auto& env, Context context) {
+			return parse<typename Effect::Data>(s, env, context).map([&](auto data) {
+				return Effect{data, env.id};
+			});
+		}
+	};
+}
+
+namespace core {
 	EffectManager::EffectManager(std::shared_ptr<render::AssetManager> assets,
 		                         util::LoggerFactory& loggerFactory) {
 		auto logger = loggerFactory.create("effects");
@@ -99,12 +82,6 @@ namespace core {
 
 			logger->info("Loading {} skill spec from {}...", id, path.generic_string());
 
-			auto fileStr = JutchsON::readWholeFile(path);
-			auto parsed = JutchsON::parseVariant(fileStr);
-			if (!parsed) {
-				throw ParseError{parsed.errors()};
-			}
-
 			std::tuple typenames{
 				JUTCHSON_TAGGED_TYPE_NAME(TempBonus),
 				JUTCHSON_TAGGED_TYPE_NAME(Poison),
@@ -114,10 +91,10 @@ namespace core {
 				JUTCHSON_TAGGED_TYPE_NAME(LowHpSkill)
 			};
 
-			if (auto result = JutchsON::parseType(parsed->first, typenames, [&](auto tag) {
-				effects.push_back(parseSkillByJutchsON<JutchsON::PayloadType<decltype(tag)>>(parsed->second, id, assets));
-				return true;
-			}); !result) {
+			auto fileStr = JutchsON::readWholeFile(path);
+			if (auto result = JutchsON::parseTypeVariant<Effect>(fileStr, typenames, Env{assets, id})) {
+				effects.push_back(std::move(*result));
+			} else {
 				throw ParseError{result.errors()};
 			}
 		});
