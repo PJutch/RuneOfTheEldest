@@ -68,6 +68,25 @@ namespace JutchsON {
 			});
 		}
 	};
+
+	template <>
+	struct Parser<std::unique_ptr<core::Effect>> {
+		template <typename Env>
+		ParseResult<std::unique_ptr<core::Effect>> operator() (StringView s, Env&& env, Context context) {
+			using namespace core;
+
+			std::tuple typenames{
+				JUTCHSON_TAGGED_TYPE_NAME(TempBonus),
+				JUTCHSON_TAGGED_TYPE_NAME(Poison),
+				JUTCHSON_TAGGED_TYPE_NAME(AppliesEffectOnAttack),
+				JUTCHSON_TAGGED_TYPE_NAME(TargetFullHpSkill),
+				JUTCHSON_TAGGED_TYPE_NAME(Skill),
+				JUTCHSON_TAGGED_TYPE_NAME(LowHpSkill)
+			};
+
+			return JutchsON::parseTypeVariant<core::Effect>(s, typenames, std::forward<Env>(env));
+		}
+	};
 }
 
 namespace core {
@@ -82,17 +101,8 @@ namespace core {
 
 			logger->info("Loading {} skill spec from {}...", id, path.generic_string());
 
-			std::tuple typenames{
-				JUTCHSON_TAGGED_TYPE_NAME(TempBonus),
-				JUTCHSON_TAGGED_TYPE_NAME(Poison),
-				JUTCHSON_TAGGED_TYPE_NAME(AppliesEffectOnAttack),
-				JUTCHSON_TAGGED_TYPE_NAME(TargetFullHpSkill),
-				JUTCHSON_TAGGED_TYPE_NAME(Skill),
-				JUTCHSON_TAGGED_TYPE_NAME(LowHpSkill)
-			};
-
 			auto fileStr = JutchsON::readWholeFile(path);
-			if (auto result = JutchsON::parseTypeVariant<Effect>(fileStr, typenames, Env{assets, id})) {
+			if (auto result = JutchsON::parse<std::unique_ptr<Effect>>(fileStr, Env{assets, id})) {
 				effects.push_back(std::move(*result));
 			} else {
 				throw ParseError{result.errors()};
