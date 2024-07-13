@@ -42,20 +42,18 @@ namespace core {
 	class DigSpell : public Spell {
 	public:
 		struct Stats {
+			const sf::Texture* icon;
+			std::string name;
+
 			double mana;
 
 			sf::Time flightTime;
 			const sf::Texture* projectileTexture = nullptr;
 		};
 
-		DigSpell(Stats stats_, const sf::Texture& icon, std::string_view id, std::string_view name,
-				 std::shared_ptr<World> world_, 
-				 std::shared_ptr<render::ParticleManager> particles_, 
-				 std::shared_ptr<render::PlayerMap> playerMap_, 
-				 std::shared_ptr<util::Raycaster> raycaster_) :
-			Spell{icon, id, name}, stats{stats_}, world{std::move(world_)}, 
-			particles{std::move(particles_)}, playerMap{std::move(playerMap_)}, 
-			raycaster{std::move(raycaster_)} {}
+		DigSpell(Stats stats_, const auto& env) :
+			Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{env.world},
+			particles{env.particles}, playerMap{env.playerMap}, raycaster{env.raycaster} {}
 
 		UsageResult cast(core::Position<int> target, bool useMana = true) final {
 			if (world->tiles()[static_cast<sf::Vector3i>(target)] != Tile::WALL 
@@ -89,7 +87,7 @@ namespace core {
 		}
 	};
 
-	BOOST_DESCRIBE_STRUCT(DigSpell::Stats, (), (mana, flightTime, projectileTexture))
+	BOOST_DESCRIBE_STRUCT(DigSpell::Stats, (), (icon, name, mana, flightTime, projectileTexture))
 }
 
 #endif

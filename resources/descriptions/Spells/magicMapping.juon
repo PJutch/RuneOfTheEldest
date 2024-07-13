@@ -1,0 +1,6 @@
+MagicMappingSpell {
+    name Magic mapping
+    icon resources/textures/Spell/magicMapping.png
+
+    mana 7
+}

@@ -1,0 +1,10 @@
+BonusSpell {
+    name Speed
+    icon resources/textures/Spell/speed.png
+
+    boosts {
+        speed +1
+    }
+
+    mana 1
+}

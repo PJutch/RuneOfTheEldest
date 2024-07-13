@@ -1,0 +1,14 @@
+ConcentrationBonusSpell {
+    name Ice shell
+    icon resources/textures/Spell/iceShell.png
+
+    boosts {
+        defences {
+            PHYSICAL +10
+        }
+    }
+
+    mana 3
+
+    particleTexture resources/textures/Particles/iceShell.png
+}

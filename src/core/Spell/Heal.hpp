@@ -39,12 +39,15 @@ namespace core {
 	class HealSpell : public Spell {
 	public:
 		struct Stats {
+			const sf::Texture* icon;
+			std::string name;
+
 			double healed;
 			double mana;
 		};
 
-		HealSpell(Stats stats_, const sf::Texture& icon, std::string_view id, std::string_view name) :
-			Spell{icon, id, name}, stats{stats_} {}
+		HealSpell(Stats stats_, const auto& env) :
+			Spell{*stats_.icon, env.id, stats_.name}, stats{stats_} {}
 
 		UsageResult cast(bool useMana = true) final {
 			if (useMana && !owner()->useMana(stats.mana))
@@ -64,7 +67,7 @@ namespace core {
 		std::shared_ptr<render::ParticleManager> particles;
 	};
 
-	BOOST_DESCRIBE_STRUCT(HealSpell::Stats, (), (healed, mana))
+	BOOST_DESCRIBE_STRUCT(HealSpell::Stats, (), (name, icon, healed, mana))
 }
 
 #endif

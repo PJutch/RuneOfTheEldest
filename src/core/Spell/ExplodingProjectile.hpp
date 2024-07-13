@@ -47,6 +47,9 @@ namespace core {
 	class ExplodingProjectileSpell : public Spell {
 	public:
 		struct Stats {
+			const sf::Texture* icon;
+			std::string name;
+
 			ActorImpact impact;
 
 			double explosionRadius;
@@ -60,11 +63,9 @@ namespace core {
 			const sf::Texture* explosionAnimation = nullptr;
 		};
 
-		ExplodingProjectileSpell(Stats stats_, const sf::Texture& icon, std::string_view id, std::string_view name,
-			std::shared_ptr<World> world_, std::shared_ptr<render::ParticleManager> particles_,
-			std::shared_ptr<util::Raycaster> raycaster_) :
-			Spell{icon, id, name}, stats{stats_}, world{std::move(world_)},
-			particles{std::move(particles_)}, raycaster{std::move(raycaster_)} {}
+		ExplodingProjectileSpell(Stats stats_, const auto& env) :
+			Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{env.world},
+			particles{env.particles}, raycaster{env.raycaster} {}
 
 		UsageResult cast(core::Position<int> target, bool useMana = true) final {
 			if (!raycaster->canSee(owner()->position(), static_cast<sf::Vector3i>(target)) || useMana && !owner()->useMana(stats.mana)) {
@@ -158,7 +159,7 @@ namespace core {
 	};
 
 	BOOST_DESCRIBE_STRUCT(ExplodingProjectileSpell::Stats, (), (
-		impact, explosionRadius, mana, 
+		icon, name, impact, explosionRadius, mana, 
 		flightTime, projectileTexture, explosionFrameLength, explosionAnimation
 	))
 }

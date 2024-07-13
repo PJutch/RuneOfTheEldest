@@ -40,17 +40,18 @@ namespace core {
 	class BanishSpell : public Spell {
 	public:
 		struct Stats {
+			const sf::Texture* icon = nullptr;
+			std::string name;
+
 			double manaPerHp;
 
 			sf::Time visibleTime;
 			const sf::Texture* particleTexture = nullptr;
 		};
-
-		BanishSpell(Stats stats_, const sf::Texture& icon, std::string_view id, std::string_view name,
-				std::shared_ptr<World> world_, std::shared_ptr<render::ParticleManager> particles_, 
-				std::shared_ptr<util::Raycaster> raycaster_) :
-			Spell{icon, id, name}, stats{stats_}, world{std::move(world_)}, 
-			particles{std::move(particles_)}, raycaster{std::move(raycaster_)} {}
+		
+		BanishSpell(Stats stats_, const auto& env) :
+			Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{std::move(env.world)},
+			particles{std::move(env.particles)}, raycaster{std::move(env.raycaster)} {}
 
 		UsageResult cast(core::Position<int> target, bool useMana = true) final {
 			auto other = world->actorAt(target);
@@ -86,7 +87,7 @@ namespace core {
 		}
 	};
 
-	BOOST_DESCRIBE_STRUCT(BanishSpell::Stats, (), (manaPerHp, visibleTime, particleTexture))
+	BOOST_DESCRIBE_STRUCT(BanishSpell::Stats, (), (name, icon, manaPerHp, visibleTime, particleTexture))
 }
 
 #endif

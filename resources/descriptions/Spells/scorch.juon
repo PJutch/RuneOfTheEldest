@@ -1,0 +1,18 @@
+ProjectileSpell {
+    name Scorch
+    icon resources/textures/Spell/scorch.png
+
+    impact {
+        damage 1
+        damageType FIRE
+
+        effect scorched
+
+        accuracy 2
+    }
+
+    mana 2
+
+    projectileTexture resources/textures/Particles/scorch.png
+    flightTime 0.2
+}

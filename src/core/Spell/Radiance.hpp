@@ -48,6 +48,9 @@ namespace core {
 	class RadianceSpell : public Spell {
 	public:
 		struct Stats {
+			const sf::Texture* icon;
+			std::string name;
+
 			ActorImpact impact;
 
 			double mana;
@@ -56,11 +59,9 @@ namespace core {
 			const sf::Texture* tileTexture = nullptr;
 		};
 
-		RadianceSpell(Stats stats_, const sf::Texture& icon, std::string_view id, std::string_view name,
-			          std::shared_ptr<World> world_, std::shared_ptr<render::ParticleManager> particles_,
-					  std::shared_ptr<util::Raycaster> raycaster_) :
-			Spell{icon, id, name}, stats{stats_}, world{std::move(world_)}, 
-			particles{std::move(particles_)}, raycaster{std::move(raycaster_)} {}
+		RadianceSpell(Stats stats_, const auto& env) :
+			Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{env.world},
+			particles{env.particles}, raycaster{env.raycaster} {}
 
 		UsageResult cast(bool useMana = true) final {
 			if (useMana && !owner()->useMana(stats.mana))
@@ -99,7 +100,7 @@ namespace core {
 		}
 	};
 
-	BOOST_DESCRIBE_STRUCT(RadianceSpell::Stats, (), (impact, mana, visibleTime, tileTexture))
+	BOOST_DESCRIBE_STRUCT(RadianceSpell::Stats, (), (icon, name, impact, mana, visibleTime, tileTexture))
 }
 
 #endif

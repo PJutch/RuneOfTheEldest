@@ -1,0 +1,16 @@
+ProjectileSpell {
+    name Magic missle
+    icon resources/textures/Spell/magicMissle.png
+
+    impact {
+        damage 3
+        damageType MAGIC
+
+        accuracy 2
+    }
+
+    mana 2
+
+    projectileTexture resources/textures/Particles/magicMissle.png
+    flightTime 0.2
+}

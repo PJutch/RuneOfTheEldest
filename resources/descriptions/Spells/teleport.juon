@@ -1,0 +1,6 @@
+TeleportSpell {
+    name Teleport
+    icon resources/textures/Spell/teleport.png
+
+    mana 5
+}

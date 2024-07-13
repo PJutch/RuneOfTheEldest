@@ -1,8 +1,0 @@
-# sends monster to abyss, effectively killing it without gaining xp
-
-name Identify
-icon resources/textures/Spell/identify.png
-
-type identify
-
-mana 7

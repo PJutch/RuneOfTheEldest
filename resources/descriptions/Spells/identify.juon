@@ -1,0 +1,6 @@
+IdentifySpell {
+    name Identify
+    icon resources/textures/Spell/identify.png
+
+    mana 7
+}

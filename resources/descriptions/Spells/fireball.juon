@@ -1,0 +1,21 @@
+ExplodingProjectileSpell {
+    name Fireball
+    icon resources/textures/Spell/fireball.png
+
+    impact {
+        damage 3
+        damageType FIRE
+
+        accuracy 5
+    }
+
+    explosionRadius 3
+
+    mana 1
+
+    projectileTexture resources/textures/Particles/fireball.png
+    flightTime 0.2
+
+    explosionAnimation resources/textures/Particles/explosion.png
+    explosionFrameLength 0.05
+}

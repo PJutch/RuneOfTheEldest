@@ -45,6 +45,9 @@ namespace core {
 	class BranchingRaySpell : public Spell {
 	public:
 		struct Stats {
+			const sf::Texture* icon = nullptr;
+			std::string name;
+
 			ActorImpact impact;
 
 			double mana;
@@ -55,11 +58,9 @@ namespace core {
 			const sf::Texture* rayTexture = nullptr;
 		};
 
-		BranchingRaySpell(Stats stats_, const sf::Texture& icon, std::string_view id, std::string_view name,
-			              std::shared_ptr<World> world_, std::shared_ptr<render::ParticleManager> particles_,
-						  std::shared_ptr<util::Raycaster> raycaster_, util::RandomEngine& randomEngine_) :
-			Spell{icon, id, name}, stats{stats_}, world{std::move(world_)}, 
-			particles{std::move(particles_)}, raycaster{std::move(raycaster_)}, randomEngine{&randomEngine_} {}
+		BranchingRaySpell(Stats stats_, const auto& env) :
+			Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{env.world},
+			particles{env.particles}, raycaster{env.raycaster}, randomEngine{env.randomEngine} {}
 
 		UsageResult cast(core::Position<int> target, bool useMana = true) final {
 			auto owner_ = owner();
@@ -118,7 +119,7 @@ namespace core {
 		}
 	};
 
-	BOOST_DESCRIBE_STRUCT(BranchingRaySpell::Stats, (), (impact, mana, chainChance, visibleTime, rayTexture))
+	BOOST_DESCRIBE_STRUCT(BranchingRaySpell::Stats, (), (icon, name, impact, mana, chainChance, visibleTime, rayTexture))
 }
 
 #endif

@@ -1,0 +1,18 @@
+BranchingRaySpell {
+    name Lightning
+    icon resources/textures/Spell/lightning.png
+
+    impact {
+        damage 1
+        damageType ELECTRICITY
+
+        accuracy 2
+    }
+
+    mana 4
+
+    chainChance 0.5
+
+    rayTexture resources/textures/Particles/lightning.png
+    visibleTime 0.2
+}

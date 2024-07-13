@@ -1,9 +1,0 @@
-# healing spell
-
-name Heal
-icon resources/textures/Spell/heal.png
-
-type heal
-
-healed 2
-mana 1

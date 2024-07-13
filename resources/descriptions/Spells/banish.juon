@@ -1,0 +1,9 @@
+BanishSpell {
+    name Banish
+    icon resources/textures/Spell/banish.png
+
+    manaPerHp 3
+
+    particleTexture resources/textures/Particles/banish.png
+    visibleTime 0.1
+}

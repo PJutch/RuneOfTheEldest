@@ -39,12 +39,14 @@ namespace core {
 	class TeleportSpell : public Spell {
 	public:
 		struct Stats {
+			const sf::Texture* icon;
+			std::string name;
+
 			double mana;
 		};
 
-		TeleportSpell(Stats stats_, const sf::Texture& icon, std::string_view id, std::string_view name, 
-				std::shared_ptr<World> world_) :
-			Spell{icon, id, name}, stats{stats_}, world{std::move(world_)} {}
+		TeleportSpell(Stats stats_, const auto& env) :
+			Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{env.world} {}
 
 		UsageResult cast(bool useMana = true) final {
 			if (useMana && !owner()->useMana(stats.mana))
@@ -67,7 +69,7 @@ namespace core {
 		std::shared_ptr<render::ParticleManager> particles;
 	};
 
-	BOOST_DESCRIBE_STRUCT(TeleportSpell::Stats, (), (mana))
+	BOOST_DESCRIBE_STRUCT(TeleportSpell::Stats, (), (icon, name, mana))
 }
 
 #endif

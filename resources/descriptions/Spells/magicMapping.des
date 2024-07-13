@@ -1,8 +1,0 @@
-# discovers all tiles on the level
-
-name Magic mapping
-icon resources/textures/Spell/magicMapping.png
-
-type magicMapping
-
-mana 7

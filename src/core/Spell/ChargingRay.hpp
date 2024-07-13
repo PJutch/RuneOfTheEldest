@@ -46,6 +46,9 @@ namespace core {
 	class ChargingRaySpell : public Spell, public std::enable_shared_from_this<ChargingRaySpell> {
 	public:
 		struct Stats {
+			const sf::Texture* icon = nullptr;
+			std::string name;
+
 			double damage;
 			DamageType damageType;
 			double damageGrowthMul;
@@ -58,11 +61,9 @@ namespace core {
 			const sf::Texture* rayTexture = nullptr;
 		};
 
-		ChargingRaySpell(Stats stats_, const sf::Texture& icon, std::string_view id, std::string_view name,
-				std::shared_ptr<World> world_, std::shared_ptr<render::ParticleManager> particles_,
-				std::shared_ptr<util::Raycaster> raycaster_) :
-			Spell{icon, id, name}, stats{stats_}, world{std::move(world_)},
-			particles{std::move(particles_)}, raycaster{std::move(raycaster_)} {}
+		ChargingRaySpell(Stats stats_, const auto& env) :
+			Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{env.world},
+			particles{env.particles}, raycaster{env.raycaster} {}
 
 		UsageResult cast(core::Position<int> targetPos, bool useMana_ = false) final {
 			auto target_ = world->actorAt(targetPos);
@@ -210,7 +211,7 @@ namespace core {
 	};
 
 	BOOST_DESCRIBE_STRUCT(ChargingRaySpell::Stats, (), (
-		damage, damageType, damageGrowthMul, accuracy, mana, minVisibleTime, rayTexture
+		icon, name, damage, damageType, damageGrowthMul, accuracy, mana, minVisibleTime, rayTexture
 	))
 }
 

@@ -38,12 +38,14 @@ namespace core {
 	class MagicMappingSpell : public Spell {
 	public:
 		struct Stats {
+			const sf::Texture* icon;
+			std::string name;
+
 			double mana;
 		};
 
-		MagicMappingSpell(Stats stats_, const sf::Texture& icon, std::string_view id, std::string_view name,
-				std::shared_ptr<render::PlayerMap> playerMap_) :
-			Spell{icon, id, name}, stats{stats_}, playerMap{std::move(playerMap_)} {}
+		MagicMappingSpell(Stats stats_, const auto& env) :
+			Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, playerMap{env.playerMap} {}
 
 		UsageResult cast(bool useMana = true) final {
 			if (useMana && !owner()->useMana(stats.mana))
@@ -61,7 +63,7 @@ namespace core {
 		std::shared_ptr<render::PlayerMap> playerMap;
 	};
 
-	BOOST_DESCRIBE_STRUCT(MagicMappingSpell::Stats, (), (mana))
+	BOOST_DESCRIBE_STRUCT(MagicMappingSpell::Stats, (), (icon, name, mana))
 }
 
 #endif

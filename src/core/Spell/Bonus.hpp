@@ -26,10 +26,17 @@ If not, see <https://www.gnu.org/licenses/>. */
 namespace core {
 	class BonusSpell : public Spell {
 	public:
-		BonusSpell(StatBoosts boosts, double mana_,
-				const sf::Texture& icon, std::string_view id, std::string_view name) :
-			Spell{icon, id, name}, mana{mana_}, 
-			bonus{std::make_shared<Bonus>(boosts, icon, std::format("{}__spellBonus", id), name)} {}
+		struct Stats {
+			const sf::Texture* icon = nullptr;
+			std::string name;
+
+			StatBoosts boosts;
+			double mana;
+		};
+
+		BonusSpell(Stats stats, const auto& env) :
+			Spell{*stats.icon, env.id, stats.name}, mana{stats.mana},
+			bonus{std::make_shared<Bonus>(stats.boosts, *stats.icon, std::format("{}__spellBonus", env.id), stats.name)} {}
 
 		UsageResult cast(bool useMana_ = true) final {
 			isOn = !isOn;
@@ -150,6 +157,8 @@ namespace core {
 		std::shared_ptr<Bonus> bonus;
 		std::weak_ptr<core::Actor> owner_;
 	};
+
+	BOOST_DESCRIBE_STRUCT(BonusSpell::Stats, (), (icon, name, boosts, mana))
 }
 
 #endif

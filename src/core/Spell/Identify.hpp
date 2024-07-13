@@ -40,12 +40,14 @@ namespace core {
 	class IdentifySpell : public Spell {
 	public:
 		struct Stats {
+			const sf::Texture* icon;
+			std::string name;
+
 			double mana;
 		};
 
-		IdentifySpell(Stats stats_, const sf::Texture& icon, std::string_view id, std::string_view name,
-					  std::shared_ptr<World> world_) :
-			Spell{icon, id, name}, stats{stats_} {}
+		IdentifySpell(Stats stats_, const auto& env) :
+			Spell{*stats_.icon, env.id, stats_.name}, stats{stats_} {}
 
 		UsageResult cast(Item& target, bool useMana = true) final {
 			if (useMana && !owner()->useMana(stats.mana))
@@ -64,7 +66,7 @@ namespace core {
 		std::shared_ptr<render::ParticleManager> particles;
 	};
 
-	BOOST_DESCRIBE_STRUCT(IdentifySpell::Stats, (), (mana))
+	BOOST_DESCRIBE_STRUCT(IdentifySpell::Stats, (), (icon, name, mana))
 }
 
 #endif

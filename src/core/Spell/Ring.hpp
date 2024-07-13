@@ -47,6 +47,9 @@ namespace core {
 	class RingSpell : public Spell {
 	public:
 		struct Stats {
+			const sf::Texture* icon;
+			std::string name;
+
 			ActorImpact impact;
 
 			double accuracy;
@@ -59,11 +62,9 @@ namespace core {
 			const sf::Texture* texture = nullptr;
 		};
 
-		RingSpell(Stats stats_, const sf::Texture& icon, std::string_view id, std::string_view name,
-				std::shared_ptr<World> world_, std::shared_ptr<render::ParticleManager> particles_,
-				std::shared_ptr<util::Raycaster> raycaster_, util::RandomEngine& randomEngine_) :
-			Spell{icon, id, name}, stats{stats_}, world{std::move(world_)},
-			particles{std::move(particles_)}, raycaster{std::move(raycaster_)}, randomEngine{&randomEngine_} {}
+		RingSpell(Stats stats_, const auto& env) :
+			Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{env.world},
+			particles{env.particles}, raycaster{env.raycaster}, randomEngine{env.randomEngine} {}
 
 		UsageResult cast(bool useMana = true) final {
 			if (useMana && !owner()->useMana(stats.mana)) {
@@ -145,7 +146,7 @@ namespace core {
 		}
 	};
 
-	BOOST_DESCRIBE_STRUCT(RingSpell::Stats, (), (impact, radius, mana, visibleTime, texture))
+	BOOST_DESCRIBE_STRUCT(RingSpell::Stats, (), (icon, name, impact, radius, mana, visibleTime, texture))
 }
 
 #endif

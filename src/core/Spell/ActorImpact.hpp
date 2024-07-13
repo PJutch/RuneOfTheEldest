@@ -20,42 +20,22 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "core/Actor.hpp"
 
 namespace core {
-    class ActorImpact {
-    public:
-        ActorImpact() = default;
+    struct ActorImpact {
+        double damage = 0.0;
+        DamageType damageType = DamageType::PHYSICAL;
 
-        ActorImpact(double newDamage, DamageType newDamageType, double newAccuracy) :
-            damage_{newDamage}, damageType_{newDamageType}, accuracy_{newAccuracy} {}
+        const Effect* effect = nullptr;
 
-        ActorImpact(const Effect* newEffect, double newAccuracy) :
-            effect_{newEffect}, accuracy_{newAccuracy} {}
+        double accuracy = 0.0;
 
         void apply(core::Actor& actor) const {
-            if (actor.beAttacked(damage_, accuracy_, damageType_) && effect_) {
-                actor.addEffect(effect_->clone());
+            if (actor.beAttacked(damage, accuracy, damageType) && effect) {
+                actor.addEffect(effect->clone());
             }
         }
-
-        void accuracy(double newAccuracy) {
-            accuracy_ = newAccuracy;
-        }
-
-        void damage(double newDamage, DamageType newDamageType) {
-            damage_ = newDamage;
-            damageType_ = newDamageType;
-        }
-
-        void effect(const Effect* newEffect) {
-            effect_ = newEffect;
-        }
-    private:
-        double damage_ = 0.0;
-        DamageType damageType_ = DamageType::PHYSICAL;
-
-        const Effect* effect_ = nullptr;
-
-        double accuracy_ = 0.0;
     };
+
+    BOOST_DESCRIBE_STRUCT(ActorImpact, (), (damage, damageType, effect, accuracy))
 }
 
 #endif

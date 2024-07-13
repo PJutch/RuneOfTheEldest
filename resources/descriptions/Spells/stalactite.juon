@@ -1,0 +1,17 @@
+FallingProjectileSpell {
+    name Stalactite
+    icon resources/textures/Spell/stalactite.png
+
+    impact {
+        damage 5
+        damageType PHYSICAL
+
+        accuracy 2
+    }
+
+    mana 1
+
+    projectileTexture resources/textures/Particles/stalactite.png
+    fallTime 0.2
+    fallHeight 100
+}

@@ -1,8 +1,0 @@
-# discovers all items on the level
-
-name Sense items
-icon resources/textures/Spell/senseItems.png
-
-type senseItems
-
-mana 7

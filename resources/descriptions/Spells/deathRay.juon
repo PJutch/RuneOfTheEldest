@@ -1,0 +1,15 @@
+ChargingRaySpell {
+    name Death ray
+    icon resources/textures/Spell/deathRay.png
+
+    damage 3
+    damageType DEATH
+    damageGrowthMul 2
+
+    accuracy 2
+
+    mana 1
+
+    rayTexture resources/textures/Particles/deathRay.png
+    minVisibleTime 0.2
+}

@@ -43,6 +43,9 @@ namespace core {
 	class ProjectileSpell : public Spell {
 	public:
 		struct Stats {
+			const sf::Texture* icon;
+			std::string name;
+
 			ActorImpact impact;
 
 			double mana;
@@ -51,11 +54,9 @@ namespace core {
 			const sf::Texture* projectileTexture = nullptr;
 		};
 
-		ProjectileSpell(Stats stats_, const sf::Texture& icon, std::string_view id, std::string_view name,
-			            std::shared_ptr<World> world_, std::shared_ptr<render::ParticleManager> particles_,
-						std::shared_ptr<util::Raycaster> raycaster_) :
-			Spell{icon, id, name}, stats{stats_}, world{std::move(world_)}, 
-			particles{std::move(particles_)}, raycaster{std::move(raycaster_)} {}
+		ProjectileSpell(Stats stats_, const auto& env) :
+			Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{env.world},
+			particles{env.particles}, raycaster{env.raycaster} {}
 
 		UsageResult cast(core::Position<int> target, bool useMana = true) final {
 			auto other = world->actorAt(target);
@@ -90,7 +91,7 @@ namespace core {
 		}
 	};
 
-	BOOST_DESCRIBE_STRUCT(ProjectileSpell::Stats, (), (impact, mana, flightTime, projectileTexture))
+	BOOST_DESCRIBE_STRUCT(ProjectileSpell::Stats, (), (icon, name, impact, mana, flightTime, projectileTexture))
 }
 
 #endif

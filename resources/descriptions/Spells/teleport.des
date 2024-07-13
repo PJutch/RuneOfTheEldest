@@ -1,8 +1,0 @@
-# teleport to random place on the same level
-
-name Teleport
-icon resources/textures/Spell/teleport.png
-
-type teleport
-
-mana 5

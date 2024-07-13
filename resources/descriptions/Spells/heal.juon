@@ -1,0 +1,7 @@
+HealSpell {
+    name Heal
+    icon resources/textures/Spell/heal.png
+
+    healed 2
+    mana 1
+}

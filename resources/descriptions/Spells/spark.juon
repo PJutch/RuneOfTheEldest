@@ -1,0 +1,16 @@
+ProjectileSpell {
+    name Spark
+    icon resources/textures/Spell/spark.png
+
+    impact {
+        damage 1
+        damageType MAGIC
+
+        accuracy 2
+    }
+
+    mana 1
+
+    projectileTexture resources/textures/Particles/spark.png
+    flightTime 0.2
+}

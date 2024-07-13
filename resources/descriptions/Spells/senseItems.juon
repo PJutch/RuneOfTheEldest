@@ -1,0 +1,6 @@
+SenseItemsSpell {
+    name Sense items
+    icon resources/textures/Spell/senseItems.png
+
+    mana 7
+}

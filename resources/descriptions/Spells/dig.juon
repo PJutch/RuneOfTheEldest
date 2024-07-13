@@ -1,0 +1,9 @@
+DigSpell {
+    name Dig
+    icon resources/textures/Spell/dig.png
+
+    mana 4
+
+    projectileTexture resources/textures/Particles/dig.png
+    flightTime 0.2
+}
