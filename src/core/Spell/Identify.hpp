@@ -36,37 +36,38 @@ namespace sf {
 #include <memory>
 
 namespace core {
-	/// Spell that Actor can cast
-	class IdentifySpell : public Spell {
-	public:
-		struct Stats {
-			const sf::Texture* icon;
-			std::string name;
+	namespace Spells {
+		class Identify : public Spell {
+		public:
+			struct Stats {
+				const sf::Texture* icon;
+				std::string name;
 
-			double mana;
+				double mana;
+			};
+
+			Identify(Stats stats_, const auto& env) :
+				Spell{*stats_.icon, env.id, stats_.name}, stats{stats_} {}
+
+			UsageResult cast(Item& target, bool useMana = true) final {
+				if (useMana && !owner()->useMana(stats.mana))
+					return UsageResult::FAILURE;
+
+				target.identify();
+				return UsageResult::SUCCESS;
+			}
+
+			[[nodiscard]] std::shared_ptr<Spell> clone() const final {
+				return std::make_shared<Identify>(*this);
+			}
+		private:
+			Stats stats;
+
+			std::shared_ptr<render::ParticleManager> particles;
 		};
 
-		IdentifySpell(Stats stats_, const auto& env) :
-			Spell{*stats_.icon, env.id, stats_.name}, stats{stats_} {}
-
-		UsageResult cast(Item& target, bool useMana = true) final {
-			if (useMana && !owner()->useMana(stats.mana))
-				return UsageResult::FAILURE;
-
-			target.identify();
-			return UsageResult::SUCCESS;
-		}
-
-		[[nodiscard]] std::shared_ptr<Spell> clone() const final {
-			return std::make_shared<IdentifySpell>(*this);
-		}
-	private:
-		Stats stats;
-
-		std::shared_ptr<render::ParticleManager> particles;
-	};
-
-	BOOST_DESCRIBE_STRUCT(IdentifySpell::Stats, (), (icon, name, mana))
+		BOOST_DESCRIBE_STRUCT(Identify::Stats, (), (icon, name, mana))
+	}
 }
 
 #endif

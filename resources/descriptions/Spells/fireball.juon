@@ -1,4 +1,4 @@
-ExplodingProjectileSpell {
+ExplodingProjectile {
     name Fireball
     icon resources/textures/Spell/fireball.png
 

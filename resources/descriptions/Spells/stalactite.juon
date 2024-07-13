@@ -1,4 +1,4 @@
-FallingProjectileSpell {
+FallingProjectile {
     name Stalactite
     icon resources/textures/Spell/stalactite.png
 

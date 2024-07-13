@@ -35,39 +35,40 @@ namespace sf {
 #include <memory>
 
 namespace core {
-	/// Spell that Actor can cast
-	class HealSpell : public Spell {
-	public:
-		struct Stats {
-			const sf::Texture* icon;
-			std::string name;
+	namespace Spells {
+		class Heal : public Spell {
+		public:
+			struct Stats {
+				const sf::Texture* icon;
+				std::string name;
 
-			double healed;
-			double mana;
+				double healed;
+				double mana;
+			};
+
+			Heal(Stats stats_, const auto& env) :
+				Spell{*stats_.icon, env.id, stats_.name}, stats{stats_} {}
+
+			UsageResult cast(bool useMana = true) final {
+				if (useMana && !owner()->useMana(stats.mana))
+					return UsageResult::FAILURE;
+
+				owner()->heal(stats.healed);
+				return UsageResult::SUCCESS;
+			}
+
+			[[nodiscard]] std::shared_ptr<Spell> clone() const final {
+				return std::make_shared<Heal>(*this);
+			}
+		private:
+			Stats stats;
+
+			std::shared_ptr<World> world;
+			std::shared_ptr<render::ParticleManager> particles;
 		};
 
-		HealSpell(Stats stats_, const auto& env) :
-			Spell{*stats_.icon, env.id, stats_.name}, stats{stats_} {}
-
-		UsageResult cast(bool useMana = true) final {
-			if (useMana && !owner()->useMana(stats.mana))
-				return UsageResult::FAILURE;
-
-			owner()->heal(stats.healed);
-			return UsageResult::SUCCESS;
-		}
-
-		[[nodiscard]] std::shared_ptr<Spell> clone() const final {
-			return std::make_shared<HealSpell>(*this);
-		}
-	private:
-		Stats stats;
-
-		std::shared_ptr<World> world;
-		std::shared_ptr<render::ParticleManager> particles;
-	};
-
-	BOOST_DESCRIBE_STRUCT(HealSpell::Stats, (), (name, icon, healed, mana))
+		BOOST_DESCRIBE_STRUCT(Heal::Stats, (), (name, icon, healed, mana))
+	}
 }
 
 #endif

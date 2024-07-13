@@ -44,109 +44,111 @@ namespace sf {
 #include <memory>
 
 namespace core {
-	class RingSpell : public Spell {
-	public:
-		struct Stats {
-			const sf::Texture* icon;
-			std::string name;
-
-			ActorImpact impact;
-
-			double accuracy;
-
-			double radius;
-
-			double mana;
-
-			sf::Time visibleTime;
-			const sf::Texture* texture = nullptr;
-		};
-
-		RingSpell(Stats stats_, const auto& env) :
-			Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{env.world},
-			particles{env.particles}, raycaster{env.raycaster}, randomEngine{env.randomEngine} {}
-
-		UsageResult cast(bool useMana = true) final {
-			if (useMana && !owner()->useMana(stats.mana)) {
-				return UsageResult::FAILURE;
-			}
-
-			for (const auto& actor : world->actors()) {
-				if (actor.get() != owner().get()
-				 && util::distance(util::getXY(actor->position()), util::getXY(owner()->position())) <= stats.radius
-				 && raycaster->canSee(owner()->position(), actor->position())) {
-					stats.impact.apply(*actor);
-					world->makeSound({Sound::Type::ATTACK, true, actor->position()});
-				}
-			}
-
-			spawnRing(static_cast<core::Position<int>>(owner()->position()));
-
-			return UsageResult::SUCCESS;
-		}
-
-		[[nodiscard]] std::shared_ptr<Spell> clone() const final {
-			return std::make_shared<RingSpell>(*this);
-		}
-	private:
-		class Ring : public render::ParticleManager::CustomParticle {
+	namespace Spells {
+		class Ring : public Spell {
 		public:
-			Ring(core::Position<float> position_, float maxTileRadius_,
-				 sf::Time maxLifetime_, const sf::Texture* texture_) :
-				position{position_}, maxLifetime{maxLifetime_}, 
-				texture{texture_}, maxTileRadius{maxTileRadius_} {}
+			struct Stats {
+				const sf::Texture* icon;
+				std::string name;
 
-			void update(sf::Time elapsedTime) final {
-				lifetime += elapsedTime;
+				ActorImpact impact;
+
+				double accuracy;
+
+				double radius;
+
+				double mana;
+
+				sf::Time visibleTime;
+				const sf::Texture* texture = nullptr;
+			};
+
+			Ring(Stats stats_, const auto& env) :
+				Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{env.world},
+				particles{env.particles}, raycaster{env.raycaster}, randomEngine{env.randomEngine} {}
+
+			UsageResult cast(bool useMana = true) final {
+				if (useMana && !owner()->useMana(stats.mana)) {
+					return UsageResult::FAILURE;
+				}
+
+				for (const auto& actor : world->actors()) {
+					if (actor.get() != owner().get()
+						&& util::distance(util::getXY(actor->position()), util::getXY(owner()->position())) <= stats.radius
+						&& raycaster->canSee(owner()->position(), actor->position())) {
+						stats.impact.apply(*actor);
+						world->makeSound({Sound::Type::ATTACK, true, actor->position()});
+					}
+				}
+
+				spawnRing(static_cast<core::Position<int>>(owner()->position()));
+
+				return UsageResult::SUCCESS;
 			}
 
-			void draw(sf::RenderTarget& target, core::Position<float> cameraPos) const {
-				if (position.z != cameraPos.z)
-					return;
-
-				sf::Sprite sprite(*texture);
-
-				sprite.setPosition(position.xy());
-				sprite.setOrigin(util::geometry_cast<float>(texture->getSize()) / 2.f);
-				sprite.setScale(scale());
-
-				target.draw(sprite);
-			}
-
-			bool shouldBeDeleted() const {
-				return lifetime >= maxLifetime;
+			[[nodiscard]] std::shared_ptr<Spell> clone() const final {
+				return std::make_shared<Ring>(*this);
 			}
 		private:
-			core::Position<float> position;
-			sf::Time maxLifetime;
-			const sf::Texture* texture;
-			float maxTileRadius;
+			class Particle : public render::ParticleManager::CustomParticle {
+			public:
+				Particle(core::Position<float> position_, float maxTileRadius_,
+					sf::Time maxLifetime_, const sf::Texture* texture_) :
+					position{position_}, maxLifetime{maxLifetime_},
+					texture{texture_}, maxTileRadius{maxTileRadius_} {}
 
-			sf::Time lifetime;
+				void update(sf::Time elapsedTime) final {
+					lifetime += elapsedTime;
+				}
 
-			sf::Vector2f scale() const {
-				float tileRadius = lifetime / maxLifetime * maxTileRadius;
-				sf::Vector2f pixelSize = 2 * tileRadius * util::geometry_cast<float>(render::tileSize);
-				auto textureSize = util::geometry_cast<float>(texture->getSize());
-				return {pixelSize.x / textureSize.x, pixelSize.y / textureSize.y};
+				void draw(sf::RenderTarget& target, core::Position<float> cameraPos) const {
+					if (position.z != cameraPos.z)
+						return;
+
+					sf::Sprite sprite(*texture);
+
+					sprite.setPosition(position.xy());
+					sprite.setOrigin(util::geometry_cast<float>(texture->getSize()) / 2.f);
+					sprite.setScale(scale());
+
+					target.draw(sprite);
+				}
+
+				bool shouldBeDeleted() const {
+					return lifetime >= maxLifetime;
+				}
+			private:
+				core::Position<float> position;
+				sf::Time maxLifetime;
+				const sf::Texture* texture;
+				float maxTileRadius;
+
+				sf::Time lifetime;
+
+				sf::Vector2f scale() const {
+					float tileRadius = lifetime / maxLifetime * maxTileRadius;
+					sf::Vector2f pixelSize = 2 * tileRadius * util::geometry_cast<float>(render::tileSize);
+					auto textureSize = util::geometry_cast<float>(texture->getSize());
+					return {pixelSize.x / textureSize.x, pixelSize.y / textureSize.y};
+				}
+			};
+
+			Stats stats;
+
+			std::shared_ptr<World> world;
+			std::shared_ptr<render::ParticleManager> particles;
+			std::shared_ptr<util::Raycaster> raycaster;
+			util::RandomEngine* randomEngine;
+
+			void spawnRing(core::Position<int> self) {
+				auto pos = render::toScreen(util::geometry_cast<float>(self.xy()) + sf::Vector2f{0.5f, 0.5f});
+				particles->add(std::make_unique<Particle>(core::Position<float>{pos, self.z}, stats.radius,
+					stats.visibleTime, stats.texture));
 			}
 		};
 
-		Stats stats;
-
-		std::shared_ptr<World> world;
-		std::shared_ptr<render::ParticleManager> particles;
-		std::shared_ptr<util::Raycaster> raycaster;
-		util::RandomEngine* randomEngine;
-
-		void spawnRing(core::Position<int> self) {
-			auto pos = render::toScreen(util::geometry_cast<float>(self.xy()) + sf::Vector2f{0.5f, 0.5f});
-			particles->add(std::make_unique<Ring>(core::Position<float>{pos, self.z}, stats.radius,
-						   stats.visibleTime, stats.texture));
-		}
-	};
-
-	BOOST_DESCRIBE_STRUCT(RingSpell::Stats, (), (icon, name, impact, radius, mana, visibleTime, texture))
+		BOOST_DESCRIBE_STRUCT(Ring::Stats, (), (icon, name, impact, radius, mana, visibleTime, texture))
+	}
 }
 
 #endif

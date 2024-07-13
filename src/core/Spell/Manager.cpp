@@ -98,25 +98,26 @@ namespace JutchsON {
 		template <typename Env>
 		ParseResult<std::unique_ptr<core::Spell>> operator() (StringView s, Env&& env, Context context) {
 			using namespace core;
+			using namespace core::Spells;
 
 			std::tuple typenames{
-				JUTCHSON_TAGGED_TYPE_NAME(BanishSpell),
-				JUTCHSON_TAGGED_TYPE_NAME(BonusSpell),
-				JUTCHSON_TAGGED_TYPE_NAME(BranchingRaySpell),
-				JUTCHSON_TAGGED_TYPE_NAME(ChargingRaySpell),
-				JUTCHSON_TAGGED_TYPE_NAME(ConcentrationBonusSpell),
-				JUTCHSON_TAGGED_TYPE_NAME(DigSpell),
-				JUTCHSON_TAGGED_TYPE_NAME(HealSpell),
-				JUTCHSON_TAGGED_TYPE_NAME(FallingProjectileSpell),
-				JUTCHSON_TAGGED_TYPE_NAME(ExplodingProjectileSpell),
-				JUTCHSON_TAGGED_TYPE_NAME(IdentifySpell),
-				JUTCHSON_TAGGED_TYPE_NAME(MagicMappingSpell),
-				JUTCHSON_TAGGED_TYPE_NAME(ProjectileSpell),
-				JUTCHSON_TAGGED_TYPE_NAME(RadianceSpell),
-				JUTCHSON_TAGGED_TYPE_NAME(RingSpell),
-				JUTCHSON_TAGGED_TYPE_NAME(SenseItemsSpell),
-				JUTCHSON_TAGGED_TYPE_NAME(SenseMonstersSpell),
-				JUTCHSON_TAGGED_TYPE_NAME(TeleportSpell)
+				JUTCHSON_TAGGED_TYPE_NAME(Banish),
+				JUTCHSON_TAGGED_TYPE_NAME(Bonus),
+				JUTCHSON_TAGGED_TYPE_NAME(BranchingRay),
+				JUTCHSON_TAGGED_TYPE_NAME(ChargingRay),
+				JUTCHSON_TAGGED_TYPE_NAME(ConcentrationBonus),
+				JUTCHSON_TAGGED_TYPE_NAME(Dig),
+				JUTCHSON_TAGGED_TYPE_NAME(Heal),
+				JUTCHSON_TAGGED_TYPE_NAME(FallingProjectile),
+				JUTCHSON_TAGGED_TYPE_NAME(ExplodingProjectile),
+				JUTCHSON_TAGGED_TYPE_NAME(Identify),
+				JUTCHSON_TAGGED_TYPE_NAME(MagicMapping),
+				JUTCHSON_TAGGED_TYPE_NAME(Projectile),
+				JUTCHSON_TAGGED_TYPE_NAME(Radiance),
+				JUTCHSON_TAGGED_TYPE_NAME(Ring),
+				JUTCHSON_TAGGED_TYPE_NAME(SenseItems),
+				JUTCHSON_TAGGED_TYPE_NAME(SenseMonsters),
+				JUTCHSON_TAGGED_TYPE_NAME(Teleport)
 			};
 
 			return JutchsON::parseTypeVariant<core::Spell>(s, typenames, std::forward<Env>(env));

@@ -36,58 +36,59 @@ namespace sf {
 #include <memory>
 
 namespace core {
-	/// Spell that Actor can cast
-	class BanishSpell : public Spell {
-	public:
-		struct Stats {
-			const sf::Texture* icon = nullptr;
-			std::string name;
+	namespace Spells {
+		class Banish : public Spell {
+		public:
+			struct Stats {
+				const sf::Texture* icon = nullptr;
+				std::string name;
 
-			double manaPerHp;
+				double manaPerHp;
 
-			sf::Time visibleTime;
-			const sf::Texture* particleTexture = nullptr;
+				sf::Time visibleTime;
+				const sf::Texture* particleTexture = nullptr;
+			};
+
+			Banish(Stats stats_, const auto& env) :
+				Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{std::move(env.world)},
+				particles{std::move(env.particles)}, raycaster{std::move(env.raycaster)} {}
+
+			UsageResult cast(core::Position<int> target, bool useMana = true) final {
+				auto other = world->actorAt(target);
+				if (!other)
+					return UsageResult::FAILURE;
+
+				if (!raycaster->canSee(owner()->position(), static_cast<sf::Vector3i>(target))
+					|| useMana && !owner()->useMana(stats.manaPerHp * other->hp()))
+					return UsageResult::FAILURE;
+
+				other->beBanished();
+
+				world->makeSound({Sound::Type::ATTACK, true, owner()->position()});
+				spawnParticle(target);
+
+				return UsageResult::SUCCESS;
+			}
+
+			[[nodiscard]] std::shared_ptr<Spell> clone() const final {
+				return std::make_shared<Banish>(*this);
+			}
+		private:
+			Stats stats;
+
+			std::shared_ptr<World> world;
+			std::shared_ptr<render::ParticleManager> particles;
+			std::shared_ptr<util::Raycaster> raycaster;
+
+			void spawnParticle(core::Position<int> target) {
+				auto pos = render::toScreen(util::geometry_cast<float>(target.xy()) + sf::Vector2f{0.5f, 0.5f});
+
+				particles->add(pos, target.z, stats.visibleTime, stats.particleTexture);
+			}
 		};
-		
-		BanishSpell(Stats stats_, const auto& env) :
-			Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{std::move(env.world)},
-			particles{std::move(env.particles)}, raycaster{std::move(env.raycaster)} {}
 
-		UsageResult cast(core::Position<int> target, bool useMana = true) final {
-			auto other = world->actorAt(target);
-			if (!other)
-				return UsageResult::FAILURE;
-
-			if (!raycaster->canSee(owner()->position(), static_cast<sf::Vector3i>(target)) 
-			 || useMana && !owner()->useMana(stats.manaPerHp * other->hp()))
-				return UsageResult::FAILURE;
-
-			other->beBanished();
-
-			world->makeSound({Sound::Type::ATTACK, true, owner()->position()});
-			spawnParticle(target);
-
-			return UsageResult::SUCCESS;
-		}
-
-		[[nodiscard]] std::shared_ptr<Spell> clone() const final {
-			return std::make_shared<BanishSpell>(*this);
-		}
-	private:
-		Stats stats;
-
-		std::shared_ptr<World> world;
-		std::shared_ptr<render::ParticleManager> particles;
-		std::shared_ptr<util::Raycaster> raycaster;
-
-		void spawnParticle(core::Position<int> target) {
-			auto pos = render::toScreen(util::geometry_cast<float>(target.xy()) + sf::Vector2f{0.5f, 0.5f});
-
-			particles->add(pos, target.z, stats.visibleTime, stats.particleTexture);
-		}
-	};
-
-	BOOST_DESCRIBE_STRUCT(BanishSpell::Stats, (), (name, icon, manaPerHp, visibleTime, particleTexture))
+		BOOST_DESCRIBE_STRUCT(Banish::Stats, (), (name, icon, manaPerHp, visibleTime, particleTexture))
+	}
 }
 
 #endif

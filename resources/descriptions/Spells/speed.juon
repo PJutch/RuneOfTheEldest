@@ -1,4 +1,4 @@
-BonusSpell {
+Bonus {
     name Speed
     icon resources/textures/Spell/speed.png
 

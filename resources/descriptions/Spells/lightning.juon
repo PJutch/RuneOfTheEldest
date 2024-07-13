@@ -1,4 +1,4 @@
-BranchingRaySpell {
+BranchingRay {
     name Lightning
     icon resources/textures/Spell/lightning.png
 

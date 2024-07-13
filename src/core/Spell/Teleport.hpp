@@ -35,41 +35,42 @@ namespace sf {
 #include <memory>
 
 namespace core {
-	/// Spell that Actor can cast
-	class TeleportSpell : public Spell {
-	public:
-		struct Stats {
-			const sf::Texture* icon;
-			std::string name;
+	namespace Spells {
+		class Teleport : public Spell {
+		public:
+			struct Stats {
+				const sf::Texture* icon;
+				std::string name;
 
-			double mana;
+				double mana;
+			};
+
+			Teleport(Stats stats_, const auto& env) :
+				Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{env.world} {}
+
+			UsageResult cast(bool useMana = true) final {
+				if (useMana && !owner()->useMana(stats.mana))
+					return UsageResult::FAILURE;
+
+				owner()->position(world->randomPositionAt(owner()->position().z, [](const core::World& world, sf::Vector3i pos) {
+					return world.isFree(pos);
+				}));
+
+				return UsageResult::SUCCESS;
+			}
+
+			[[nodiscard]] std::shared_ptr<Spell> clone() const final {
+				return std::make_shared<Teleport>(*this);
+			}
+		private:
+			Stats stats;
+
+			std::shared_ptr<World> world;
+			std::shared_ptr<render::ParticleManager> particles;
 		};
 
-		TeleportSpell(Stats stats_, const auto& env) :
-			Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{env.world} {}
-
-		UsageResult cast(bool useMana = true) final {
-			if (useMana && !owner()->useMana(stats.mana))
-				return UsageResult::FAILURE;
-
-			owner()->position(world->randomPositionAt(owner()->position().z, [](const core::World& world, sf::Vector3i pos) {
-				return world.isFree(pos);
-			}));
-
-			return UsageResult::SUCCESS;
-		}
-
-		[[nodiscard]] std::shared_ptr<Spell> clone() const final {
-			return std::make_shared<TeleportSpell>(*this);
-		}
-	private:
-		Stats stats;
-
-		std::shared_ptr<World> world;
-		std::shared_ptr<render::ParticleManager> particles;
-	};
-
-	BOOST_DESCRIBE_STRUCT(TeleportSpell::Stats, (), (icon, name, mana))
+		BOOST_DESCRIBE_STRUCT(Teleport::Stats, (), (icon, name, mana))
+	}
 }
 
 #endif

@@ -1,4 +1,4 @@
-TeleportSpell {
+Teleport {
     name Teleport
     icon resources/textures/Spell/teleport.png
 

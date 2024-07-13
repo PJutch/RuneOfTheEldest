@@ -39,62 +39,64 @@ namespace sf {
 #include <memory>
 
 namespace core {
-	/// Spell that Actor can cast
-	class FallingProjectileSpell : public Spell {
-	public:
-		struct Stats {
-			const sf::Texture* icon;
-			std::string name;
+	namespace Spells {
+		/// Spell that Actor can cast
+		class FallingProjectile : public Spell {
+		public:
+			struct Stats {
+				const sf::Texture* icon;
+				std::string name;
 
-			ActorImpact impact;
+				ActorImpact impact;
 
-			double mana;
+				double mana;
 
-			float fallHeight;
-			sf::Time fallTime;
-			const sf::Texture* projectileTexture = nullptr;
+				float fallHeight;
+				sf::Time fallTime;
+				const sf::Texture* projectileTexture = nullptr;
+			};
+
+			FallingProjectile(Stats stats_, const auto& env) :
+				Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{env.world},
+				particles{env.particles}, raycaster{env.raycaster} {}
+
+			UsageResult cast(core::Position<int> target, bool useMana = true) final {
+				auto other = world->actorAt(target);
+				if (!other)
+					return UsageResult::FAILURE;
+
+				if (!raycaster->canSee(owner()->position(), static_cast<sf::Vector3i>(target))
+					|| useMana && !owner()->useMana(stats.mana))
+					return UsageResult::FAILURE;
+
+				stats.impact.apply(*other);
+				world->makeSound({Sound::Type::ATTACK, true, owner()->position()});
+				spawnParticle(target);
+
+				return UsageResult::SUCCESS;
+			}
+
+			[[nodiscard]] std::shared_ptr<Spell> clone() const final {
+				return std::make_shared<FallingProjectile>(*this);
+			}
+		private:
+			Stats stats;
+
+			std::shared_ptr<World> world;
+			std::shared_ptr<render::ParticleManager> particles;
+			std::shared_ptr<util::Raycaster> raycaster;
+
+			void spawnParticle(core::Position<int> target) {
+				auto pos2 = render::toScreen(util::geometry_cast<float>(target.xy()) + sf::Vector2f{0.5f, 0.5f});
+				auto pos1 = pos2;
+				pos1.y -= stats.fallHeight;
+
+				particles->add(pos1, pos2, target.z, stats.fallTime, stats.projectileTexture);
+			}
 		};
 
-		FallingProjectileSpell(Stats stats_, const auto& env) :
-			Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{env.world}, 
-			particles{env.particles}, raycaster{env.raycaster} {}
-
-		UsageResult cast(core::Position<int> target, bool useMana = true) final {
-			auto other = world->actorAt(target);
-			if (!other)
-				return UsageResult::FAILURE;
-
-			if (!raycaster->canSee(owner()->position(), static_cast<sf::Vector3i>(target)) 
-			 || useMana && !owner()->useMana(stats.mana))
-				return UsageResult::FAILURE;
-
-			stats.impact.apply(*other);
-			world->makeSound({Sound::Type::ATTACK, true, owner()->position()});
-			spawnParticle(target);
-
-			return UsageResult::SUCCESS;
-		}
-
-		[[nodiscard]] std::shared_ptr<Spell> clone() const final {
-			return std::make_shared<FallingProjectileSpell>(*this);
-		}
-	private:
-		Stats stats;
-
-		std::shared_ptr<World> world;
-		std::shared_ptr<render::ParticleManager> particles;
-		std::shared_ptr<util::Raycaster> raycaster;
-
-		void spawnParticle(core::Position<int> target) {
-			auto pos2 = render::toScreen(util::geometry_cast<float>(target.xy()) + sf::Vector2f{0.5f, 0.5f});
-			auto pos1 = pos2;
-			pos1.y -= stats.fallHeight;
-
-			particles->add(pos1, pos2, target.z, stats.fallTime, stats.projectileTexture);
-		}
-	};
-
-	BOOST_DESCRIBE_STRUCT(FallingProjectileSpell::Stats, (), (icon, name, impact, mana, fallHeight, fallTime, projectileTexture))
+		BOOST_DESCRIBE_STRUCT(FallingProjectile::Stats, (), (icon, name, impact, mana, fallHeight, fallTime, projectileTexture))
+	}
 }
 
 #endif

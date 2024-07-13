@@ -1,4 +1,4 @@
-ConcentrationBonusSpell {
+ConcentrationBonus {
     name Ice shell
     icon resources/textures/Spell/iceShell.png
 

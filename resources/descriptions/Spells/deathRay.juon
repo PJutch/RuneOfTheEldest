@@ -1,4 +1,4 @@
-ChargingRaySpell {
+ChargingRay {
     name Death ray
     icon resources/textures/Spell/deathRay.png
 

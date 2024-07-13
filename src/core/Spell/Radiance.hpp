@@ -45,62 +45,64 @@ namespace sf {
 #include <memory>
 
 namespace core {
-	class RadianceSpell : public Spell {
-	public:
-		struct Stats {
-			const sf::Texture* icon;
-			std::string name;
+	namespace Spells {
+		class Radiance : public Spell {
+		public:
+			struct Stats {
+				const sf::Texture* icon;
+				std::string name;
 
-			ActorImpact impact;
+				ActorImpact impact;
 
-			double mana;
+				double mana;
 
-			sf::Time visibleTime;
-			const sf::Texture* tileTexture = nullptr;
+				sf::Time visibleTime;
+				const sf::Texture* tileTexture = nullptr;
+			};
+
+			Radiance(Stats stats_, const auto& env) :
+				Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{env.world},
+				particles{env.particles}, raycaster{env.raycaster} {}
+
+			UsageResult cast(bool useMana = true) final {
+				if (useMana && !owner()->useMana(stats.mana))
+					return UsageResult::FAILURE;
+
+				world->makeSound({Sound::Type::ATTACK, true, owner()->position()});
+
+				for (const auto& actor : world->actors())
+					if (actor.get() != owner().get() && raycaster->canSee(owner()->position(), actor->position())) {
+						stats.impact.apply(*actor);
+					}
+
+				spawnAura(core::Position<int>{owner()->position()});
+
+				return UsageResult::SUCCESS;
+			}
+
+			[[nodiscard]] std::shared_ptr<Spell> clone() const final {
+				return std::make_shared<Radiance>(*this);
+			}
+		private:
+			Stats stats;
+
+			std::shared_ptr<World> world;
+			std::shared_ptr<render::ParticleManager> particles;
+			std::shared_ptr<util::Raycaster> raycaster;
+
+			void spawnAura(core::Position<int> self) {
+				for (int x = 0; x < world->tiles().shape().x; ++x)
+					for (int y = 0; y < world->tiles().shape().y; ++y) {
+						if (raycaster->canSee(static_cast<sf::Vector3i>(self), {x, y, self.z})) {
+							sf::Vector2f pos = render::toScreen(sf::Vector2f{x + 0.5f, y + 0.5f});
+							particles->add(pos, self.z, stats.visibleTime, stats.tileTexture);
+						}
+					}
+			}
 		};
 
-		RadianceSpell(Stats stats_, const auto& env) :
-			Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{env.world},
-			particles{env.particles}, raycaster{env.raycaster} {}
-
-		UsageResult cast(bool useMana = true) final {
-			if (useMana && !owner()->useMana(stats.mana))
-				return UsageResult::FAILURE;
-
-			world->makeSound({Sound::Type::ATTACK, true, owner()->position()});
-
-			for (const auto& actor : world->actors())
-				if (actor.get() != owner().get() && raycaster->canSee(owner()->position(), actor->position())) {
-					stats.impact.apply(*actor);
-				}
-
-			spawnAura(core::Position<int>{owner()->position()});
-
-			return UsageResult::SUCCESS;
-		}
-
-		[[nodiscard]] std::shared_ptr<Spell> clone() const final {
-			return std::make_shared<RadianceSpell>(*this);
-		}
-	private:
-		Stats stats;
-
-		std::shared_ptr<World> world;
-		std::shared_ptr<render::ParticleManager> particles;
-		std::shared_ptr<util::Raycaster> raycaster;
-
-		void spawnAura(core::Position<int> self) {
-			for (int x = 0; x < world->tiles().shape().x; ++x)
-				for (int y = 0; y < world->tiles().shape().y; ++y) {
-					if (raycaster->canSee(static_cast<sf::Vector3i>(self), {x, y, self.z})) {
-						sf::Vector2f pos = render::toScreen(sf::Vector2f{x + 0.5f, y + 0.5f});
-						particles->add(pos, self.z, stats.visibleTime, stats.tileTexture);
-					}
-				}
-		}
-	};
-
-	BOOST_DESCRIBE_STRUCT(RadianceSpell::Stats, (), (icon, name, impact, mana, visibleTime, tileTexture))
+		BOOST_DESCRIBE_STRUCT(Radiance::Stats, (), (icon, name, impact, mana, visibleTime, tileTexture))
+	}
 }
 
 #endif

@@ -1,4 +1,4 @@
-ProjectileSpell {
+Projectile {
     name Magic missle
     icon resources/textures/Spell/magicMissle.png
 

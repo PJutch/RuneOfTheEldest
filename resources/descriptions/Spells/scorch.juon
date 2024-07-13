@@ -1,4 +1,4 @@
-ProjectileSpell {
+Projectile {
     name Scorch
     icon resources/textures/Spell/scorch.png
 

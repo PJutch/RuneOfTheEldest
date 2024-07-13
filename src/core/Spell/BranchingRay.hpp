@@ -42,84 +42,86 @@ namespace sf {
 #include <memory>
 
 namespace core {
-	class BranchingRaySpell : public Spell {
-	public:
-		struct Stats {
-			const sf::Texture* icon = nullptr;
-			std::string name;
+	namespace Spells {
+		class BranchingRay : public Spell {
+		public:
+			struct Stats {
+				const sf::Texture* icon = nullptr;
+				std::string name;
 
-			ActorImpact impact;
+				ActorImpact impact;
 
-			double mana;
+				double mana;
 
-			double chainChance;
+				double chainChance;
 
-			sf::Time visibleTime;
-			const sf::Texture* rayTexture = nullptr;
+				sf::Time visibleTime;
+				const sf::Texture* rayTexture = nullptr;
+			};
+
+			BranchingRay(Stats stats_, const auto& env) :
+				Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{env.world},
+				particles{env.particles}, raycaster{env.raycaster}, randomEngine{env.randomEngine} {}
+
+			UsageResult cast(core::Position<int> target, bool useMana = true) final {
+				auto owner_ = owner();
+
+				auto other = world->actorAt(target);
+				if (!other)
+					return UsageResult::FAILURE;
+
+				if (useMana && !owner_->useMana(stats.mana))
+					return UsageResult::FAILURE;
+
+				return attack(*owner_, *other) ? UsageResult::SUCCESS : UsageResult::FAILURE;
+			}
+
+			[[nodiscard]] std::shared_ptr<Spell> clone() const final {
+				return std::make_shared<BranchingRay>(*this);
+			}
+		private:
+			Stats stats;
+
+			std::shared_ptr<World> world;
+			std::shared_ptr<render::ParticleManager> particles;
+			std::shared_ptr<util::Raycaster> raycaster;
+			util::RandomEngine* randomEngine;
+
+			void spawnRay(core::Position<int> prev, core::Position<int> next) {
+				auto pos1 = render::toScreen(util::geometry_cast<float>(prev.xy()) + sf::Vector2f{0.5f, 0.5f});
+				auto pos2 = render::toScreen(util::geometry_cast<float>(next.xy()) + sf::Vector2f{0.5f, 0.5f});
+
+				float polarAnlge = util::polarAngle(pos2 - pos1);
+				float rotation = util::toDegrees(polarAnlge) + 90.f;
+
+				float distance = util::distance(pos1, pos2);
+
+				auto segmentLen = static_cast<float>(stats.rayTexture->getSize().y);
+				for (float d = 0; d < distance; d += segmentLen) {
+					sf::Vector2f pos = util::lerp(pos1, pos2, d / distance);
+					particles->add(pos, prev.z, rotation, stats.visibleTime, stats.rayTexture);
+				}
+			}
+
+			bool attack(Actor& prev, Actor& next) {
+				if (!raycaster->canSee(prev.position(), next.position())) {
+					return false;
+				}
+
+				stats.impact.apply(next);
+				world->makeSound({Sound::Type::ATTACK, true, prev.position()});
+				spawnRay(core::Position<int>{prev.position()}, core::Position<int>{next.position()});
+
+				for (const auto& actor : world->actors())
+					if (actor.get() != &next && actor.get() != &prev && actor->isAlive() && actor->position().z == next.position().z
+						&& std::bernoulli_distribution{stats.chainChance}(*randomEngine))
+						attack(next, *actor);
+				return true;
+			}
 		};
 
-		BranchingRaySpell(Stats stats_, const auto& env) :
-			Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{env.world},
-			particles{env.particles}, raycaster{env.raycaster}, randomEngine{env.randomEngine} {}
-
-		UsageResult cast(core::Position<int> target, bool useMana = true) final {
-			auto owner_ = owner();
-
-			auto other = world->actorAt(target);
-			if (!other)
-				return UsageResult::FAILURE;
-
-			if (useMana && !owner_->useMana(stats.mana))
-				return UsageResult::FAILURE;
-
-			return attack(*owner_, *other) ? UsageResult::SUCCESS : UsageResult::FAILURE;
-		}
-
-		[[nodiscard]] std::shared_ptr<Spell> clone() const final {
-			return std::make_shared<BranchingRaySpell>(*this);
-		}
-	private:
-		Stats stats;
-
-		std::shared_ptr<World> world;
-		std::shared_ptr<render::ParticleManager> particles;
-		std::shared_ptr<util::Raycaster> raycaster;
-		util::RandomEngine* randomEngine;
-
-		void spawnRay(core::Position<int> prev, core::Position<int> next) {
-			auto pos1 = render::toScreen(util::geometry_cast<float>(prev.xy()) + sf::Vector2f{0.5f, 0.5f});
-			auto pos2 = render::toScreen(util::geometry_cast<float>(next.xy()) + sf::Vector2f{0.5f, 0.5f});
-
-			float polarAnlge = util::polarAngle(pos2 - pos1);
-			float rotation = util::toDegrees(polarAnlge) + 90.f;
-
-			float distance = util::distance(pos1, pos2);
-
-			auto segmentLen = static_cast<float>(stats.rayTexture->getSize().y);
-			for (float d = 0; d < distance; d += segmentLen) {
-				sf::Vector2f pos = util::lerp(pos1, pos2, d / distance);
-				particles->add(pos, prev.z, rotation, stats.visibleTime, stats.rayTexture);
-			}
-		}
-
-		bool attack(Actor& prev, Actor& next) {
-			if (!raycaster->canSee(prev.position(), next.position())) {
-				return false;
-			}
-
-			stats.impact.apply(next);
-			world->makeSound({Sound::Type::ATTACK, true, prev.position()});
-			spawnRay(core::Position<int>{prev.position()}, core::Position<int>{next.position()});
-
-			for (const auto& actor : world->actors())
-				if (actor.get() != &next && actor.get() != &prev && actor->isAlive() && actor->position().z == next.position().z
-				 && std::bernoulli_distribution{stats.chainChance}(*randomEngine))
-					attack(next, *actor);
-			return true;
-		}
-	};
-
-	BOOST_DESCRIBE_STRUCT(BranchingRaySpell::Stats, (), (icon, name, impact, mana, chainChance, visibleTime, rayTexture))
+		BOOST_DESCRIBE_STRUCT(BranchingRay::Stats, (), (icon, name, impact, mana, chainChance, visibleTime, rayTexture))
+	}
 }
 
 #endif

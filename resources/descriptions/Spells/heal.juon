@@ -1,4 +1,4 @@
-HealSpell {
+Heal {
     name Heal
     icon resources/textures/Spell/heal.png
 

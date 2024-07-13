@@ -35,35 +35,37 @@ namespace sf {
 #include <memory>
 
 namespace core {
-	class MagicMappingSpell : public Spell {
-	public:
-		struct Stats {
-			const sf::Texture* icon;
-			std::string name;
+	namespace Spells {
+		class MagicMapping : public Spell {
+		public:
+			struct Stats {
+				const sf::Texture* icon;
+				std::string name;
 
-			double mana;
+				double mana;
+			};
+
+			MagicMapping(Stats stats_, const auto& env) :
+				Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, playerMap{env.playerMap} {}
+
+			UsageResult cast(bool useMana = true) final {
+				if (useMana && !owner()->useMana(stats.mana))
+					return UsageResult::FAILURE;
+
+				playerMap->discoverLevelTiles(owner()->position().z);
+				return UsageResult::SUCCESS;
+			}
+
+			[[nodiscard]] std::shared_ptr<Spell> clone() const final {
+				return std::make_shared<MagicMapping>(*this);
+			}
+		private:
+			Stats stats;
+			std::shared_ptr<render::PlayerMap> playerMap;
 		};
 
-		MagicMappingSpell(Stats stats_, const auto& env) :
-			Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, playerMap{env.playerMap} {}
-
-		UsageResult cast(bool useMana = true) final {
-			if (useMana && !owner()->useMana(stats.mana))
-				return UsageResult::FAILURE;
-
-			playerMap->discoverLevelTiles(owner()->position().z);
-			return UsageResult::SUCCESS;
-		}
-
-		[[nodiscard]] std::shared_ptr<Spell> clone() const final {
-			return std::make_shared<MagicMappingSpell>(*this);
-		}
-	private:
-		Stats stats;
-		std::shared_ptr<render::PlayerMap> playerMap;
-	};
-
-	BOOST_DESCRIBE_STRUCT(MagicMappingSpell::Stats, (), (icon, name, mana))
+		BOOST_DESCRIBE_STRUCT(MagicMapping::Stats, (), (icon, name, mana))
+	}
 }
 
 #endif

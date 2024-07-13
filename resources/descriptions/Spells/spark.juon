@@ -1,4 +1,4 @@
-ProjectileSpell {
+Projectile {
     name Spark
     icon resources/textures/Spell/spark.png
 

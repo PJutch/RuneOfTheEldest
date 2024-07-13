@@ -38,56 +38,57 @@ namespace sf {
 #include <memory>
 
 namespace core {
-	/// Spell that Actor can cast
-	class DigSpell : public Spell {
-	public:
-		struct Stats {
-			const sf::Texture* icon;
-			std::string name;
+	namespace Spells {
+		class Dig : public Spell {
+		public:
+			struct Stats {
+				const sf::Texture* icon;
+				std::string name;
 
-			double mana;
+				double mana;
 
-			sf::Time flightTime;
-			const sf::Texture* projectileTexture = nullptr;
+				sf::Time flightTime;
+				const sf::Texture* projectileTexture = nullptr;
+			};
+
+			Dig(Stats stats_, const auto& env) :
+				Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{env.world},
+				particles{env.particles}, playerMap{env.playerMap}, raycaster{env.raycaster} {}
+
+			UsageResult cast(core::Position<int> target, bool useMana = true) final {
+				if (world->tiles()[static_cast<sf::Vector3i>(target)] != Tile::WALL
+					|| !raycaster->canSee(owner()->position(), static_cast<sf::Vector3i>(target))
+					|| useMana && !owner()->useMana(stats.mana))
+					return UsageResult::FAILURE;
+
+				world->tiles()[static_cast<sf::Vector3i>(target)] = Tile::EMPTY;
+				raycaster->clear();
+				playerMap->updateTiles();
+				spawnParticle(core::Position<int>{owner()->position()}, target);
+
+				return UsageResult::SUCCESS;
+			}
+
+			[[nodiscard]] std::shared_ptr<Spell> clone() const final {
+				return std::make_shared<Dig>(*this);
+			}
+		private:
+			Stats stats;
+
+			std::shared_ptr<World> world;
+			std::shared_ptr<render::ParticleManager> particles;
+			std::shared_ptr<render::PlayerMap> playerMap;
+			std::shared_ptr<util::Raycaster> raycaster;
+
+			void spawnParticle(core::Position<int> self, core::Position<int> target) {
+				auto pos1 = render::toScreen(util::geometry_cast<float>(self.xy()) + sf::Vector2f{0.5f, 0.5f});
+				auto pos2 = render::toScreen(util::geometry_cast<float>(target.xy()) + sf::Vector2f{0.5f, 0.5f});
+				particles->add(pos1, pos2, self.z, stats.flightTime, stats.projectileTexture);
+			}
 		};
 
-		DigSpell(Stats stats_, const auto& env) :
-			Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{env.world},
-			particles{env.particles}, playerMap{env.playerMap}, raycaster{env.raycaster} {}
-
-		UsageResult cast(core::Position<int> target, bool useMana = true) final {
-			if (world->tiles()[static_cast<sf::Vector3i>(target)] != Tile::WALL 
-			 || !raycaster->canSee(owner()->position(), static_cast<sf::Vector3i>(target))
-			 || useMana && !owner()->useMana(stats.mana))
-				return UsageResult::FAILURE;
-	
-			world->tiles()[static_cast<sf::Vector3i>(target)] = Tile::EMPTY;
-			raycaster->clear();
-			playerMap->updateTiles();
-			spawnParticle(core::Position<int>{owner()->position()}, target);
-
-			return UsageResult::SUCCESS;
-		}
-
-		[[nodiscard]] std::shared_ptr<Spell> clone() const final {
-			return std::make_shared<DigSpell>(*this);
-		}
-	private:
-		Stats stats;
-
-		std::shared_ptr<World> world;
-		std::shared_ptr<render::ParticleManager> particles;
-		std::shared_ptr<render::PlayerMap> playerMap;
-		std::shared_ptr<util::Raycaster> raycaster;
-
-		void spawnParticle(core::Position<int> self, core::Position<int> target) {
-			auto pos1 = render::toScreen(util::geometry_cast<float>(self.xy()) + sf::Vector2f{0.5f, 0.5f});
-			auto pos2 = render::toScreen(util::geometry_cast<float>(target.xy()) + sf::Vector2f{0.5f, 0.5f});
-			particles->add(pos1, pos2, self.z, stats.flightTime, stats.projectileTexture);
-		}
-	};
-
-	BOOST_DESCRIBE_STRUCT(DigSpell::Stats, (), (icon, name, mana, flightTime, projectileTexture))
+		BOOST_DESCRIBE_STRUCT(Dig::Stats, (), (icon, name, mana, flightTime, projectileTexture))
+	}
 }
 
 #endif
