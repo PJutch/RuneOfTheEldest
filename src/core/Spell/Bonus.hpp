@@ -27,7 +27,7 @@ namespace core {
 	namespace Spells {
 		class Bonus : public Spell {
 		public:
-			struct Stats {
+			struct Data {
 				const sf::Texture* icon = nullptr;
 				std::string name;
 
@@ -35,9 +35,9 @@ namespace core {
 				double mana;
 			};
 
-			Bonus(Stats stats, const auto& env) :
-				Spell{*stats.icon, env.id, stats.name}, mana{stats.mana},
-				bonus{std::make_shared<Effect>(stats.boosts, *stats.icon, std::format("{}__spellBonus", env.id), stats.name)} {}
+			Bonus(Data data, const auto& env) :
+				Spell{*data.icon, env.id, data.name}, mana{data.mana},
+				bonus{std::make_shared<Effect>(data.boosts, *data.icon, std::format("{}__spellBonus", env.id), data.name)} {}
 
 			UsageResult cast(bool useMana_ = true) final {
 				isOn = !isOn;
@@ -159,7 +159,7 @@ namespace core {
 			std::weak_ptr<core::Actor> owner_;
 		};
 
-		BOOST_DESCRIBE_STRUCT(Bonus::Stats, (), (icon, name, boosts, mana))
+		BOOST_DESCRIBE_STRUCT(Bonus::Data, (), (icon, name, boosts, mana))
 	}
 }
 

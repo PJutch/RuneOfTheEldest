@@ -38,18 +38,18 @@ namespace core {
 	namespace Spells {
 		class SenseItems : public Spell {
 		public:
-			struct Stats {
+			struct Data {
 				const sf::Texture* icon;
 				std::string name;
 
 				double mana;
 			};
 
-			SenseItems(Stats stats_, const auto& env) :
-				Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, playerMap{env.playerMap} {}
+			SenseItems(Data data_, const auto& env) :
+				Spell{*data_.icon, env.id, data_.name}, data{data_}, playerMap{env.playerMap} {}
 
 			UsageResult cast(bool useMana = true) final {
-				if (useMana && !owner()->useMana(stats.mana))
+				if (useMana && !owner()->useMana(data.mana))
 					return UsageResult::FAILURE;
 
 				playerMap->discoverLevelItems(owner()->position().z);
@@ -60,11 +60,11 @@ namespace core {
 				return std::make_shared<SenseItems>(*this);
 			}
 		private:
-			Stats stats;
+			Data data;
 			std::shared_ptr<render::PlayerMap> playerMap;
 		};
 
-		BOOST_DESCRIBE_STRUCT(SenseItems::Stats, (), (icon, name, mana))
+		BOOST_DESCRIBE_STRUCT(SenseItems::Data, (), (icon, name, mana))
 	}
 }
 

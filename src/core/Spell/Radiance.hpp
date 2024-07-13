@@ -48,7 +48,7 @@ namespace core {
 	namespace Spells {
 		class Radiance : public Spell {
 		public:
-			struct Stats {
+			struct Data {
 				const sf::Texture* icon;
 				std::string name;
 
@@ -60,19 +60,19 @@ namespace core {
 				const sf::Texture* tileTexture = nullptr;
 			};
 
-			Radiance(Stats stats_, const auto& env) :
-				Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{env.world},
+			Radiance(Data data_, const auto& env) :
+				Spell{*data_.icon, env.id, data_.name}, data{data_}, world{env.world},
 				particles{env.particles}, raycaster{env.raycaster} {}
 
 			UsageResult cast(bool useMana = true) final {
-				if (useMana && !owner()->useMana(stats.mana))
+				if (useMana && !owner()->useMana(data.mana))
 					return UsageResult::FAILURE;
 
 				world->makeSound({Sound::Type::ATTACK, true, owner()->position()});
 
 				for (const auto& actor : world->actors())
 					if (actor.get() != owner().get() && raycaster->canSee(owner()->position(), actor->position())) {
-						stats.impact.apply(*actor);
+						data.impact.apply(*actor);
 					}
 
 				spawnAura(core::Position<int>{owner()->position()});
@@ -84,7 +84,7 @@ namespace core {
 				return std::make_shared<Radiance>(*this);
 			}
 		private:
-			Stats stats;
+			Data data;
 
 			std::shared_ptr<World> world;
 			std::shared_ptr<render::ParticleManager> particles;
@@ -95,13 +95,13 @@ namespace core {
 					for (int y = 0; y < world->tiles().shape().y; ++y) {
 						if (raycaster->canSee(static_cast<sf::Vector3i>(self), {x, y, self.z})) {
 							sf::Vector2f pos = render::toScreen(sf::Vector2f{x + 0.5f, y + 0.5f});
-							particles->add(pos, self.z, stats.visibleTime, stats.tileTexture);
+							particles->add(pos, self.z, data.visibleTime, data.tileTexture);
 						}
 					}
 			}
 		};
 
-		BOOST_DESCRIBE_STRUCT(Radiance::Stats, (), (icon, name, impact, mana, visibleTime, tileTexture))
+		BOOST_DESCRIBE_STRUCT(Radiance::Data, (), (icon, name, impact, mana, visibleTime, tileTexture))
 	}
 }
 

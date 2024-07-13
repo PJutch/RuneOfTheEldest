@@ -87,7 +87,7 @@ namespace JutchsON {
 	template <std::derived_from<core::Spell> Spell>
 	struct Parser<Spell> {
 		ParseResult<Spell> operator() (StringView s, const auto& env, Context context) {
-			return parse<typename Spell::Stats>(s, env, context).map([&](auto data) {
+			return parse<typename Spell::Data>(s, env, context).map([&](auto data) {
 				return Spell{data, env};
 			});
 		}

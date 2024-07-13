@@ -47,7 +47,7 @@ namespace core {
 	namespace Spells {
 		class ExplodingProjectile : public Spell {
 		public:
-			struct Stats {
+			struct Data {
 				const sf::Texture* icon;
 				std::string name;
 
@@ -64,19 +64,19 @@ namespace core {
 				const sf::Texture* explosionAnimation = nullptr;
 			};
 
-			ExplodingProjectile(Stats stats_, const auto& env) :
-				Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{env.world},
+			ExplodingProjectile(Data data_, const auto& env) :
+				Spell{*data_.icon, env.id, data_.name}, data{data_}, world{env.world},
 				particles{env.particles}, raycaster{env.raycaster} {}
 
 			UsageResult cast(core::Position<int> target, bool useMana = true) final {
-				if (!raycaster->canSee(owner()->position(), static_cast<sf::Vector3i>(target)) || useMana && !owner()->useMana(stats.mana)) {
+				if (!raycaster->canSee(owner()->position(), static_cast<sf::Vector3i>(target)) || useMana && !owner()->useMana(data.mana)) {
 					return UsageResult::FAILURE;
 				}
 
 				for (const auto& actor : world->actors()) {
-					if (util::distance(util::getXY(actor->position()), target.xy()) <= stats.explosionRadius
+					if (util::distance(util::getXY(actor->position()), target.xy()) <= data.explosionRadius
 						&& raycaster->canSee(static_cast<sf::Vector3i>(target), actor->position())) {
-						stats.impact.apply(*actor);
+						data.impact.apply(*actor);
 						world->makeSound({Sound::Type::ATTACK, true, actor->position()});
 					}
 				}
@@ -143,7 +143,7 @@ namespace core {
 				}
 			};
 
-			Stats stats;
+			Data data;
 
 			std::shared_ptr<World> world;
 			std::shared_ptr<render::ParticleManager> particles;
@@ -152,14 +152,14 @@ namespace core {
 			void spawnParticles(core::Position<int> self, core::Position<int> target) {
 				auto pos1 = render::toScreen(util::geometry_cast<float>(self.xy()) + sf::Vector2f{0.5f, 0.5f});
 				auto pos2 = render::toScreen(util::geometry_cast<float>(target.xy()) + sf::Vector2f{0.5f, 0.5f});
-				particles->add(pos1, pos2, self.z, stats.flightTime, stats.projectileTexture);
+				particles->add(pos1, pos2, self.z, data.flightTime, data.projectileTexture);
 
-				particles->add(std::make_unique<Explosion>(core::Position<float>{pos2, target.z}, stats.explosionRadius,
-					stats.flightTime, stats.explosionFrameLength, stats.explosionAnimation));
+				particles->add(std::make_unique<Explosion>(core::Position<float>{pos2, target.z}, data.explosionRadius,
+					data.flightTime, data.explosionFrameLength, data.explosionAnimation));
 			}
 		};
 
-		BOOST_DESCRIBE_STRUCT(ExplodingProjectile::Stats, (), (
+		BOOST_DESCRIBE_STRUCT(ExplodingProjectile::Data, (), (
 			icon, name, impact, explosionRadius, mana,
 			flightTime, projectileTexture, explosionFrameLength, explosionAnimation
 		))

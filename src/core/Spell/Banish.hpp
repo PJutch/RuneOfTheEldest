@@ -39,7 +39,7 @@ namespace core {
 	namespace Spells {
 		class Banish : public Spell {
 		public:
-			struct Stats {
+			struct Data {
 				const sf::Texture* icon = nullptr;
 				std::string name;
 
@@ -49,8 +49,8 @@ namespace core {
 				const sf::Texture* particleTexture = nullptr;
 			};
 
-			Banish(Stats stats_, const auto& env) :
-				Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{std::move(env.world)},
+			Banish(Data data_, const auto& env) :
+				Spell{*data_.icon, env.id, data_.name}, data{data_}, world{std::move(env.world)},
 				particles{std::move(env.particles)}, raycaster{std::move(env.raycaster)} {}
 
 			UsageResult cast(core::Position<int> target, bool useMana = true) final {
@@ -59,7 +59,7 @@ namespace core {
 					return UsageResult::FAILURE;
 
 				if (!raycaster->canSee(owner()->position(), static_cast<sf::Vector3i>(target))
-					|| useMana && !owner()->useMana(stats.manaPerHp * other->hp()))
+					|| useMana && !owner()->useMana(data.manaPerHp * other->hp()))
 					return UsageResult::FAILURE;
 
 				other->beBanished();
@@ -74,7 +74,7 @@ namespace core {
 				return std::make_shared<Banish>(*this);
 			}
 		private:
-			Stats stats;
+			Data data;
 
 			std::shared_ptr<World> world;
 			std::shared_ptr<render::ParticleManager> particles;
@@ -83,11 +83,11 @@ namespace core {
 			void spawnParticle(core::Position<int> target) {
 				auto pos = render::toScreen(util::geometry_cast<float>(target.xy()) + sf::Vector2f{0.5f, 0.5f});
 
-				particles->add(pos, target.z, stats.visibleTime, stats.particleTexture);
+				particles->add(pos, target.z, data.visibleTime, data.particleTexture);
 			}
 		};
 
-		BOOST_DESCRIBE_STRUCT(Banish::Stats, (), (name, icon, manaPerHp, visibleTime, particleTexture))
+		BOOST_DESCRIBE_STRUCT(Banish::Data, (), (name, icon, manaPerHp, visibleTime, particleTexture))
 	}
 }
 

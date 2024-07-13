@@ -43,7 +43,7 @@ namespace core {
 		/// Spell that Actor can cast
 		class FallingProjectile : public Spell {
 		public:
-			struct Stats {
+			struct Data {
 				const sf::Texture* icon;
 				std::string name;
 
@@ -56,8 +56,8 @@ namespace core {
 				const sf::Texture* projectileTexture = nullptr;
 			};
 
-			FallingProjectile(Stats stats_, const auto& env) :
-				Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{env.world},
+			FallingProjectile(Data data_, const auto& env) :
+				Spell{*data_.icon, env.id, data_.name}, data{data_}, world{env.world},
 				particles{env.particles}, raycaster{env.raycaster} {}
 
 			UsageResult cast(core::Position<int> target, bool useMana = true) final {
@@ -66,10 +66,10 @@ namespace core {
 					return UsageResult::FAILURE;
 
 				if (!raycaster->canSee(owner()->position(), static_cast<sf::Vector3i>(target))
-					|| useMana && !owner()->useMana(stats.mana))
+					|| useMana && !owner()->useMana(data.mana))
 					return UsageResult::FAILURE;
 
-				stats.impact.apply(*other);
+				data.impact.apply(*other);
 				world->makeSound({Sound::Type::ATTACK, true, owner()->position()});
 				spawnParticle(target);
 
@@ -80,7 +80,7 @@ namespace core {
 				return std::make_shared<FallingProjectile>(*this);
 			}
 		private:
-			Stats stats;
+			Data data;
 
 			std::shared_ptr<World> world;
 			std::shared_ptr<render::ParticleManager> particles;
@@ -89,13 +89,13 @@ namespace core {
 			void spawnParticle(core::Position<int> target) {
 				auto pos2 = render::toScreen(util::geometry_cast<float>(target.xy()) + sf::Vector2f{0.5f, 0.5f});
 				auto pos1 = pos2;
-				pos1.y -= stats.fallHeight;
+				pos1.y -= data.fallHeight;
 
-				particles->add(pos1, pos2, target.z, stats.fallTime, stats.projectileTexture);
+				particles->add(pos1, pos2, target.z, data.fallTime, data.projectileTexture);
 			}
 		};
 
-		BOOST_DESCRIBE_STRUCT(FallingProjectile::Stats, (), (icon, name, impact, mana, fallHeight, fallTime, projectileTexture))
+		BOOST_DESCRIBE_STRUCT(FallingProjectile::Data, (), (icon, name, impact, mana, fallHeight, fallTime, projectileTexture))
 	}
 }
 

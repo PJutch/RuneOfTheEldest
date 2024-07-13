@@ -44,7 +44,7 @@ namespace core {
 		class ConcentrationBonus :
 			public Spell, public std::enable_shared_from_this<ConcentrationBonus> {
 		public:
-			struct Stats {
+			struct Data {
 				const sf::Texture* icon;
 				std::string name;
 
@@ -54,10 +54,10 @@ namespace core {
 				const sf::Texture* particleTexture;
 			};
 
-			ConcentrationBonus(Stats stats, const auto& env) :
-				Spell{*stats.icon, env.id, stats.name},
-				bonus{std::make_shared<Bonus>(stats.boosts, *stats.icon, std::format("{}__spellBonus", env.id), stats.name)},
-				mana{stats.mana}, particleTexture{stats.particleTexture}, particles{env.particles} {}
+			ConcentrationBonus(Data data, const auto& env) :
+				Spell{*data.icon, env.id, data.name},
+				bonus{std::make_shared<Bonus>(data.boosts, *data.icon, std::format("{}__spellBonus", env.id), data.name)},
+				mana{data.mana}, particleTexture{data.particleTexture}, particles{env.particles} {}
 
 			UsageResult cast(bool useMana = true) final {
 				if (owner()->castedSpell().get() == this || useMana && !owner()->useMana(mana)) {
@@ -198,7 +198,7 @@ namespace core {
 			}
 		};
 
-		BOOST_DESCRIBE_STRUCT(ConcentrationBonus::Stats, (), (icon, name, boosts, mana, particleTexture))
+		BOOST_DESCRIBE_STRUCT(ConcentrationBonus::Data, (), (icon, name, boosts, mana, particleTexture))
 	}
 }
 

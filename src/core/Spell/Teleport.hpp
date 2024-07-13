@@ -38,18 +38,18 @@ namespace core {
 	namespace Spells {
 		class Teleport : public Spell {
 		public:
-			struct Stats {
+			struct Data {
 				const sf::Texture* icon;
 				std::string name;
 
 				double mana;
 			};
 
-			Teleport(Stats stats_, const auto& env) :
-				Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{env.world} {}
+			Teleport(Data data_, const auto& env) :
+				Spell{*data_.icon, env.id, data_.name}, data{data_}, world{env.world} {}
 
 			UsageResult cast(bool useMana = true) final {
-				if (useMana && !owner()->useMana(stats.mana))
+				if (useMana && !owner()->useMana(data.mana))
 					return UsageResult::FAILURE;
 
 				owner()->position(world->randomPositionAt(owner()->position().z, [](const core::World& world, sf::Vector3i pos) {
@@ -63,13 +63,13 @@ namespace core {
 				return std::make_shared<Teleport>(*this);
 			}
 		private:
-			Stats stats;
+			Data data;
 
 			std::shared_ptr<World> world;
 			std::shared_ptr<render::ParticleManager> particles;
 		};
 
-		BOOST_DESCRIBE_STRUCT(Teleport::Stats, (), (icon, name, mana))
+		BOOST_DESCRIBE_STRUCT(Teleport::Data, (), (icon, name, mana))
 	}
 }
 

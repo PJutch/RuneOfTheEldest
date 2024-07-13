@@ -41,7 +41,7 @@ namespace core {
 	namespace Spells {
 		class Dig : public Spell {
 		public:
-			struct Stats {
+			struct Data {
 				const sf::Texture* icon;
 				std::string name;
 
@@ -51,14 +51,14 @@ namespace core {
 				const sf::Texture* projectileTexture = nullptr;
 			};
 
-			Dig(Stats stats_, const auto& env) :
-				Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{env.world},
+			Dig(Data data_, const auto& env) :
+				Spell{*data_.icon, env.id, data_.name}, data{data_}, world{env.world},
 				particles{env.particles}, playerMap{env.playerMap}, raycaster{env.raycaster} {}
 
 			UsageResult cast(core::Position<int> target, bool useMana = true) final {
 				if (world->tiles()[static_cast<sf::Vector3i>(target)] != Tile::WALL
 					|| !raycaster->canSee(owner()->position(), static_cast<sf::Vector3i>(target))
-					|| useMana && !owner()->useMana(stats.mana))
+					|| useMana && !owner()->useMana(data.mana))
 					return UsageResult::FAILURE;
 
 				world->tiles()[static_cast<sf::Vector3i>(target)] = Tile::EMPTY;
@@ -73,7 +73,7 @@ namespace core {
 				return std::make_shared<Dig>(*this);
 			}
 		private:
-			Stats stats;
+			Data data;
 
 			std::shared_ptr<World> world;
 			std::shared_ptr<render::ParticleManager> particles;
@@ -83,11 +83,11 @@ namespace core {
 			void spawnParticle(core::Position<int> self, core::Position<int> target) {
 				auto pos1 = render::toScreen(util::geometry_cast<float>(self.xy()) + sf::Vector2f{0.5f, 0.5f});
 				auto pos2 = render::toScreen(util::geometry_cast<float>(target.xy()) + sf::Vector2f{0.5f, 0.5f});
-				particles->add(pos1, pos2, self.z, stats.flightTime, stats.projectileTexture);
+				particles->add(pos1, pos2, self.z, data.flightTime, data.projectileTexture);
 			}
 		};
 
-		BOOST_DESCRIBE_STRUCT(Dig::Stats, (), (icon, name, mana, flightTime, projectileTexture))
+		BOOST_DESCRIBE_STRUCT(Dig::Data, (), (icon, name, mana, flightTime, projectileTexture))
 	}
 }
 

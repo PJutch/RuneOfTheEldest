@@ -47,7 +47,7 @@ namespace core {
 	namespace Spells {
 		class Ring : public Spell {
 		public:
-			struct Stats {
+			struct Data {
 				const sf::Texture* icon;
 				std::string name;
 
@@ -63,20 +63,20 @@ namespace core {
 				const sf::Texture* texture = nullptr;
 			};
 
-			Ring(Stats stats_, const auto& env) :
-				Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{env.world},
+			Ring(Data data_, const auto& env) :
+				Spell{*data_.icon, env.id, data_.name}, data{data_}, world{env.world},
 				particles{env.particles}, raycaster{env.raycaster}, randomEngine{env.randomEngine} {}
 
 			UsageResult cast(bool useMana = true) final {
-				if (useMana && !owner()->useMana(stats.mana)) {
+				if (useMana && !owner()->useMana(data.mana)) {
 					return UsageResult::FAILURE;
 				}
 
 				for (const auto& actor : world->actors()) {
 					if (actor.get() != owner().get()
-						&& util::distance(util::getXY(actor->position()), util::getXY(owner()->position())) <= stats.radius
+						&& util::distance(util::getXY(actor->position()), util::getXY(owner()->position())) <= data.radius
 						&& raycaster->canSee(owner()->position(), actor->position())) {
-						stats.impact.apply(*actor);
+						data.impact.apply(*actor);
 						world->makeSound({Sound::Type::ATTACK, true, actor->position()});
 					}
 				}
@@ -133,7 +133,7 @@ namespace core {
 				}
 			};
 
-			Stats stats;
+			Data data;
 
 			std::shared_ptr<World> world;
 			std::shared_ptr<render::ParticleManager> particles;
@@ -142,12 +142,12 @@ namespace core {
 
 			void spawnRing(core::Position<int> self) {
 				auto pos = render::toScreen(util::geometry_cast<float>(self.xy()) + sf::Vector2f{0.5f, 0.5f});
-				particles->add(std::make_unique<Particle>(core::Position<float>{pos, self.z}, stats.radius,
-					stats.visibleTime, stats.texture));
+				particles->add(std::make_unique<Particle>(core::Position<float>{pos, self.z}, data.radius,
+					data.visibleTime, data.texture));
 			}
 		};
 
-		BOOST_DESCRIBE_STRUCT(Ring::Stats, (), (icon, name, impact, radius, mana, visibleTime, texture))
+		BOOST_DESCRIBE_STRUCT(Ring::Data, (), (icon, name, impact, radius, mana, visibleTime, texture))
 	}
 }
 

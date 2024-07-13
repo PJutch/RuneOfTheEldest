@@ -46,7 +46,7 @@ namespace core {
 	namespace Spells {
 		class ChargingRay : public Spell, public std::enable_shared_from_this<ChargingRay> {
 		public:
-			struct Stats {
+			struct Data {
 				const sf::Texture* icon = nullptr;
 				std::string name;
 
@@ -62,8 +62,8 @@ namespace core {
 				const sf::Texture* rayTexture = nullptr;
 			};
 
-			ChargingRay(Stats stats_, const auto& env) :
-				Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{env.world},
+			ChargingRay(Data data_, const auto& env) :
+				Spell{*data_.icon, env.id, data_.name}, data{data_}, world{env.world},
 				particles{env.particles}, raycaster{env.raycaster} {}
 
 			UsageResult cast(core::Position<int> targetPos, bool useMana_ = false) final {
@@ -118,7 +118,7 @@ namespace core {
 				return isCasted() && canAttack() ? sf::Color::Green : sf::Color{128, 128, 128};
 			}
 		private:
-			Stats stats;
+			Data data;
 
 			std::weak_ptr<Actor> target;
 			double damageMul = 1;
@@ -155,16 +155,16 @@ namespace core {
 
 					float distance = util::distance(pos1, pos2);
 
-					float segmentLen = spell->stats.rayTexture->getSize().y;
+					float segmentLen = spell->data.rayTexture->getSize().y;
 					for (float d = 0; d < distance; d += segmentLen) {
 						sf::Vector2f pos = util::lerp(pos1, pos2, d / distance);
-						particleManager.lock()->drawParticle(target, cameraPos, {pos, selfPos.z}, rotation, spell->stats.rayTexture);
+						particleManager.lock()->drawParticle(target, cameraPos, {pos, selfPos.z}, rotation, spell->data.rayTexture);
 					}
 				}
 
 				bool shouldBeDeleted() const {
 					return (!spell->isCasted() || !spell->canAttack())
-						&& lifetime >= spell->stats.minVisibleTime;
+						&& lifetime >= spell->data.minVisibleTime;
 				}
 			private:
 				std::shared_ptr<ChargingRay> spell;
@@ -184,7 +184,7 @@ namespace core {
 
 				return target_->isAlive()
 					&& raycaster->canSee(owner()->position(), target_->position())
-					&& owner()->mana() >= stats.mana;
+					&& owner()->mana() >= data.mana;
 			}
 
 			bool isCasted() const {
@@ -198,20 +198,20 @@ namespace core {
 
 				auto target_ = target.lock();
 
-				if (useMana && !owner()->useMana(stats.mana)) {
+				if (useMana && !owner()->useMana(data.mana)) {
 					return false;
 				}
 
-				target_->beAttacked(damageMul * stats.damage, stats.accuracy, stats.damageType);
+				target_->beAttacked(damageMul * data.damage, data.accuracy, data.damageType);
 				world->makeSound({Sound::Type::ATTACK, true, target_->position()});
 
-				damageMul *= stats.damageGrowthMul;
+				damageMul *= data.damageGrowthMul;
 
 				return true;
 			}
 		};
 
-		BOOST_DESCRIBE_STRUCT(ChargingRay::Stats, (), (
+		BOOST_DESCRIBE_STRUCT(ChargingRay::Data, (), (
 			icon, name, damage, damageType, damageGrowthMul, accuracy, mana, minVisibleTime, rayTexture
 		))
 	}

@@ -39,18 +39,18 @@ namespace core {
 	namespace Spells {
 		class Identify : public Spell {
 		public:
-			struct Stats {
+			struct Data {
 				const sf::Texture* icon;
 				std::string name;
 
 				double mana;
 			};
 
-			Identify(Stats stats_, const auto& env) :
-				Spell{*stats_.icon, env.id, stats_.name}, stats{stats_} {}
+			Identify(Data data_, const auto& env) :
+				Spell{*data_.icon, env.id, data_.name}, data{data_} {}
 
 			UsageResult cast(Item& target, bool useMana = true) final {
-				if (useMana && !owner()->useMana(stats.mana))
+				if (useMana && !owner()->useMana(data.mana))
 					return UsageResult::FAILURE;
 
 				target.identify();
@@ -61,12 +61,12 @@ namespace core {
 				return std::make_shared<Identify>(*this);
 			}
 		private:
-			Stats stats;
+			Data data;
 
 			std::shared_ptr<render::ParticleManager> particles;
 		};
 
-		BOOST_DESCRIBE_STRUCT(Identify::Stats, (), (icon, name, mana))
+		BOOST_DESCRIBE_STRUCT(Identify::Data, (), (icon, name, mana))
 	}
 }
 

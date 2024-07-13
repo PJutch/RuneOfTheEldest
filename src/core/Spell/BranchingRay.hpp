@@ -45,7 +45,7 @@ namespace core {
 	namespace Spells {
 		class BranchingRay : public Spell {
 		public:
-			struct Stats {
+			struct Data {
 				const sf::Texture* icon = nullptr;
 				std::string name;
 
@@ -59,8 +59,8 @@ namespace core {
 				const sf::Texture* rayTexture = nullptr;
 			};
 
-			BranchingRay(Stats stats_, const auto& env) :
-				Spell{*stats_.icon, env.id, stats_.name}, stats{stats_}, world{env.world},
+			BranchingRay(Data data_, const auto& env) :
+				Spell{*data_.icon, env.id, data_.name}, data{data_}, world{env.world},
 				particles{env.particles}, raycaster{env.raycaster}, randomEngine{env.randomEngine} {}
 
 			UsageResult cast(core::Position<int> target, bool useMana = true) final {
@@ -70,7 +70,7 @@ namespace core {
 				if (!other)
 					return UsageResult::FAILURE;
 
-				if (useMana && !owner_->useMana(stats.mana))
+				if (useMana && !owner_->useMana(data.mana))
 					return UsageResult::FAILURE;
 
 				return attack(*owner_, *other) ? UsageResult::SUCCESS : UsageResult::FAILURE;
@@ -80,7 +80,7 @@ namespace core {
 				return std::make_shared<BranchingRay>(*this);
 			}
 		private:
-			Stats stats;
+			Data data;
 
 			std::shared_ptr<World> world;
 			std::shared_ptr<render::ParticleManager> particles;
@@ -96,10 +96,10 @@ namespace core {
 
 				float distance = util::distance(pos1, pos2);
 
-				auto segmentLen = static_cast<float>(stats.rayTexture->getSize().y);
+				auto segmentLen = static_cast<float>(data.rayTexture->getSize().y);
 				for (float d = 0; d < distance; d += segmentLen) {
 					sf::Vector2f pos = util::lerp(pos1, pos2, d / distance);
-					particles->add(pos, prev.z, rotation, stats.visibleTime, stats.rayTexture);
+					particles->add(pos, prev.z, rotation, data.visibleTime, data.rayTexture);
 				}
 			}
 
@@ -108,19 +108,19 @@ namespace core {
 					return false;
 				}
 
-				stats.impact.apply(next);
+				data.impact.apply(next);
 				world->makeSound({Sound::Type::ATTACK, true, prev.position()});
 				spawnRay(core::Position<int>{prev.position()}, core::Position<int>{next.position()});
 
 				for (const auto& actor : world->actors())
 					if (actor.get() != &next && actor.get() != &prev && actor->isAlive() && actor->position().z == next.position().z
-						&& std::bernoulli_distribution{stats.chainChance}(*randomEngine))
+						&& std::bernoulli_distribution{data.chainChance}(*randomEngine))
 						attack(next, *actor);
 				return true;
 			}
 		};
 
-		BOOST_DESCRIBE_STRUCT(BranchingRay::Stats, (), (icon, name, impact, mana, chainChance, visibleTime, rayTexture))
+		BOOST_DESCRIBE_STRUCT(BranchingRay::Data, (), (icon, name, impact, mana, chainChance, visibleTime, rayTexture))
 	}
 }
 
