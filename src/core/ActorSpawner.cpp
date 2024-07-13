@@ -71,74 +71,86 @@ namespace core {
             ItemNotFound(std::string_view name, util::Stacktrace currentStacktrace = {}) noexcept :
                 LoadError{std::format("Item \"{}\" not found", name), std::move(currentStacktrace)} {}
         };
+    }
+}
 
-        Actor::Stats loadStats(std::unordered_map<std::string, std::string>& params, std::string_view id,
-                               render::AssetManager& assets) {
-            Actor::Stats result;
-            result.id = id;
-
-            result.maxHp = util::parseReal(util::getAndEraseRequired(params, "hp"));
-            result.regen = util::parseReal(util::getAndEraseRequired(params, "regen"));
-
-            if (auto v = util::getAndErase(params, "mana"))
-                result.maxMana = util::parseReal(*v);
-            if (auto v = util::getAndErase(params, "manaRegen"))
-                result.manaRegen = util::parseReal(*v);
-
-            result.damage = util::parseReal(util::getAndEraseRequired(params, "damage"));
-            result.accuracy = util::parseReal(util::getAndEraseRequired(params, "accuracy"));
-            result.evasion = util::parseReal(util::getAndEraseRequired(params, "evasion"));
-            result.turnDelay = util::parseReal(util::getAndEraseRequired(params, "turnDelay"));
-
-            result.xp = util::parseReal(util::getAndEraseRequired(params, "xp"));
-
-            if (auto v = util::getAndErase(params, "hasRangedAttack")) {
-                result.hasRangedAttack = util::parseBool(*v);
-            } else {
-                result.hasRangedAttack = false;
-            }
-
-            if (result.hasRangedAttack) {
-                result.projectileFlightTime = sf::seconds(util::parseReal(util::getAndEraseRequired(params, "projectileFlightTime")));
-                result.projectileTexture = &assets.texture(util::getAndEraseRequired(params, "projectileTexture"));
-            }
-
-            result.defences.fill(0);
-            boost::mp11::mp_for_each<boost::describe::describe_enumerators<DamageType>>([&](auto D) {
-                using namespace std::literals;
-                if (auto v = util::getAndErase(params, util::toLower(D.name) + "Defence"s))
-                    result.defences[D.value] = util::parseReal(*v);
+namespace JutchsON {
+    template <>
+    struct Parser<sf::Time> {
+        ParseResult<sf::Time> operator() (StringView s, const auto& env, Context context) {
+            return parse<float>(s, env, context).map([](float t) {
+                return sf::seconds(t);
             });
-
-            result.texture = &assets.texture(util::getAndEraseRequired(params, "texture"));
-
-            return result;
         }
+    };
 
-        ActorSpawner::ActorData loadActorData(std::unordered_map<std::string, std::string>& params, std::string_view id,
-                                              render::AssetManager& assets, EffectManager& effects) {
-            ActorSpawner::ActorData result;
-            result.stats = loadStats(params, id, assets);
+    template <>
+    struct Parser<core::DamageType> {
+        ParseResult<core::DamageType> operator() (StringView s, const auto& env, Context context) {
+            return parse<std::string>(s, env, context).then([&](std::string_view name) {
+                auto result = ParseResult<core::DamageType>::makeError(s.location(),
+                std::format("Unknown damage type {}", s.asStd()));
+            boost::mp11::mp_for_each<boost::describe::describe_enumerators<core::DamageType>>([&](const auto& d) {
+                if (d.name == name) {
+                    result = d.value;
+                }
+            });
+            return result;
+            });
+        }
+    };
 
-            if (auto v = util::getAndErase(params, "controller"))
-                result.controller = *v;
+    template <>
+    struct Parser<const core::Effect*> {
+        ParseResult<const core::Effect*> operator() (StringView s, const auto& env, Context context) {
+            return parse<std::string>(s, env, context).then([&](std::string_view name) -> ParseResult<const core::Effect*> {
+                if (auto effect = env.effects->findEffect(name)) {
+                    return effect;
+                }
+                return ParseResult<const core::Effect*>::makeError(s.location(),
+                    std::format("Unknown effect {}", s.asStd()));
+            });
+        }
+    };
 
-            result.minOnLevel = util::parseUint(util::getAndEraseRequired(params, "minOnLevel"));
-            result.maxOnLevel = util::parseUint(util::getAndEraseRequired(params, "maxOnLevel"));
+    template <>
+    struct Parser<std::shared_ptr<core::Spell>> {
+        ParseResult<std::shared_ptr<core::Spell>> operator() (StringView s, const auto& env, Context context) {
+            return parse<std::string>(s, env, context).then([&](std::string_view name) 
+                    -> ParseResult<std::shared_ptr<core::Spell>> {
+                if (auto spell = env.spells->findSpell(name)) {
+                    return spell;
+                }
+                return ParseResult<std::shared_ptr<core::Spell>>::makeError(s.location(),
+                    std::format("Unknown spell {}", s.asStd()));
+            });
+        }
+    };
+}
 
-            if (auto v = util::getAndErase(params, "minLevel"))
-                result.minLevel = util::parseUint(*v);
-            if (auto v = util::getAndErase(params, "maxLevel"))
-                result.maxLevel = util::parseUint(*v);
+namespace core {
+    namespace {
+        struct Env {
+            std::string_view id;
+            std::shared_ptr<EffectManager> effects;
+            std::shared_ptr<SpellManager> spells;
+            std::shared_ptr<render::AssetManager> assets;
+        };
 
-            if (auto v = util::getAndErase(params, "effect")) {
-                if (auto effect = effects.findEffect(*v))
-                    result.effectToAdd = effect;
-                else
-                    throw EffectNotFound{*v};
+        std::string errorString(const std::vector<JutchsON::ParseError>& errors) {
+            std::string res;
+            res.append(std::format("Parse failed with {} errors", std::ssize(errors)));
+            for (const JutchsON::ParseError& error : errors) {
+                res.append(std::format("\n{}:{} {}", error.location.line, error.location.column, error.what));
             }
-            return result;
+            return res;
         }
+
+        class ParseError : public util::RuntimeError {
+        public:
+            ParseError(const std::vector<JutchsON::ParseError>& errors, util::Stacktrace currentStacktrace = {}) noexcept :
+                RuntimeError{errorString(errors), std::move(currentStacktrace)} {}
+        };
     }
 
     ActorSpawner::ActorSpawner(std::shared_ptr<World> world_, std::shared_ptr<XpManager> xpManager_,
@@ -158,15 +170,15 @@ namespace core {
         std::filesystem::path basePath = "resources/descriptions/Actors/";
         util::forEachFile(basePath, [&, this](std::ifstream& file, const std::filesystem::path& path) {
             std::string id = util::toIdentifier(path, basePath);
-
             logger->info("Loading {} spec from {}...", id, path.generic_string());
 
-            auto params = util::parseMapping(file);
-
-            actorData.try_emplace(id, loadActorData(params, id, *renderContext.assets, *effectManager));
-
-            if (!params.empty())
-                throw UnknownParamsError{params};
+            if (auto loaded = JutchsON::parse<ActorSpawner::ActorData>(JutchsON::readWholeFile(path),
+                    Env{id, effectManager, spellManager, renderContext.assets})) {
+                loaded->stats.id = id;
+                actorData.try_emplace(id, *loaded);
+            } else {
+                throw ParseError{loaded.errors()};
+            }
         });
         logger->info("Loaded");
     }

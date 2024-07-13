@@ -1,0 +1,19 @@
+stats {
+    maxHp 3
+    regen 0.1
+
+    damage 1
+    accuracy 2
+    evasion 4
+    turnDelay 1
+
+    xp 3
+
+    texture resources/textures/Actors/goblin.png
+}
+
+minOnLevel 5
+maxOnLevel 10
+
+minLevel 2
+maxLevel 6

@@ -91,6 +91,10 @@ namespace core {
 
 		std::unique_ptr<Controller> createController(std::shared_ptr<Actor> actor, std::string_view type) const;
 	};
+
+	BOOST_DESCRIBE_STRUCT(ActorSpawner::ActorData, (), (
+		stats, controller, minOnLevel, maxOnLevel, minLevel, maxLevel, effectToAdd, spellsToAdd
+	))
 }
 
 #endif

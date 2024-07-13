@@ -1,0 +1,25 @@
+stats {
+    maxHp 3
+    regen 0.1
+
+    damage 1
+    accuracy 2
+    evasion 2
+    turnDelay 1
+
+    xp 3
+
+    texture resources/textures/Actors/spider.png
+
+    defences {
+        POISON 1
+    }
+}
+
+effectToAdd poisonAttack
+
+minOnLevel 5
+maxOnLevel 10
+
+minLevel 5
+maxLevel 7

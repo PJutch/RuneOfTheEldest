@@ -430,6 +430,11 @@ namespace core {
 		double defence(DamageType damageType);
 		double recievedDamageMul(DamageType damageType);
 	};
+
+	BOOST_DESCRIBE_STRUCT(Actor::Stats, (), (
+		id, maxHp, regen, maxMana, manaRegen, 
+		damage, accuracy, evasion, defences, turnDelay, xp, texture, hasRangedAttack, projectileTexture, projectileFlightTime
+	))
 }
 
 #endif
