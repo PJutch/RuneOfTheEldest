@@ -29,11 +29,27 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/raycast.hpp"
 #include "util/pathfinding.hpp"
 
+#include <unordered_map>
 #include <optional>
 
 namespace core {
 	class ActorSpawner {
 	public:
+		struct ActorData {
+			Actor::Stats stats{};
+
+			std::string controller = "enemy";
+
+			int minOnLevel = 0;
+			int maxOnLevel = 0;
+
+			int minLevel = 0;
+			std::optional<int> maxLevel;
+
+			const Effect* effectToAdd = nullptr;
+			std::vector<std::shared_ptr<Spell>> spellsToAdd;
+		};
+
 		ActorSpawner(std::shared_ptr<World> world, std::shared_ptr<XpManager> xpManager, 
 			         std::shared_ptr<EffectManager> effectManager, std::shared_ptr<SpellManager> spellManager,
 					 std::shared_ptr<ItemManager> itemManager_,
@@ -59,21 +75,7 @@ namespace core {
 
 		std::shared_ptr<spdlog::logger> logger;
 
-		struct ActorData {
-			Actor::Stats stats{};
-
-			std::string controller = "enemy";
-
-			int minOnLevel = 0;
-			int maxOnLevel = 0;
-
-			int minLevel = 0;
-			std::optional<int> maxLevel;
-
-			const Effect* effectToAdd = nullptr;
-			std::vector<std::shared_ptr<Spell>> spellsToAdd;
-		};
-		std::vector<ActorData> actorData;
+		std::unordered_map<std::string, ActorData> actorData;
 
 		struct SpellToAdd {
 			std::shared_ptr<Actor> actor;

@@ -114,6 +114,31 @@ namespace core {
 
             return result;
         }
+
+        ActorSpawner::ActorData loadActorData(std::unordered_map<std::string, std::string>& params, std::string_view id,
+                                              render::AssetManager& assets, EffectManager& effects) {
+            ActorSpawner::ActorData result;
+            result.stats = loadStats(params, id, assets);
+
+            if (auto v = util::getAndErase(params, "controller"))
+                result.controller = *v;
+
+            result.minOnLevel = util::parseUint(util::getAndEraseRequired(params, "minOnLevel"));
+            result.maxOnLevel = util::parseUint(util::getAndEraseRequired(params, "maxOnLevel"));
+
+            if (auto v = util::getAndErase(params, "minLevel"))
+                result.minLevel = util::parseUint(*v);
+            if (auto v = util::getAndErase(params, "maxLevel"))
+                result.maxLevel = util::parseUint(*v);
+
+            if (auto v = util::getAndErase(params, "effect")) {
+                if (auto effect = effects.findEffect(*v))
+                    result.effectToAdd = effect;
+                else
+                    throw EffectNotFound{*v};
+            }
+            return result;
+        }
     }
 
     ActorSpawner::ActorSpawner(std::shared_ptr<World> world_, std::shared_ptr<XpManager> xpManager_,
@@ -138,35 +163,7 @@ namespace core {
 
             auto params = util::parseMapping(file);
 
-            actorData.emplace_back();
-
-            actorData.back().stats = loadStats(params, id, *renderContext.assets);
-
-            if (auto v = util::getAndErase(params, "controller"))
-                actorData.back().controller = *v;
-
-            actorData.back().minOnLevel = util::parseUint(util::getAndEraseRequired(params, "minOnLevel"));
-            actorData.back().maxOnLevel = util::parseUint(util::getAndEraseRequired(params, "maxOnLevel"));
-
-            if (auto v = util::getAndErase(params, "minLevel"))
-                actorData.back().minLevel = util::parseUint(*v);
-            if (auto v = util::getAndErase(params, "maxLevel"))
-                actorData.back().maxLevel = util::parseUint(*v);
-
-            if (auto v = util::getAndErase(params, "effect")) {
-                if (auto effect = effectManager->findEffect(*v))
-                    actorData.back().effectToAdd = effect;
-                else
-                    throw EffectNotFound{*v};
-            }
-
-            if (auto v = util::getAndErase(params, "spells")) {
-                for (auto id : util::parseList(*v) | std::views::transform(util::strip))
-                    if (auto spell = spellManager->findSpell(id))
-                        actorData.back().spellsToAdd.push_back(std::move(spell));
-                    else
-                        throw SpellNotFound{id};
-            }
+            actorData.try_emplace(id, loadActorData(params, id, *renderContext.assets, *effectManager));
 
             if (!params.empty())
                 throw UnknownParamsError{params};
@@ -223,7 +220,7 @@ namespace core {
     void ActorSpawner::spawn() {
         logger->info("Spawning...");
         for (int level = 0; level < world->tiles().shape().z; ++level)
-            for (const ActorData& data : actorData)
+            for (const auto& [id, data] : actorData)
                 if (data.minLevel <= level && (!data.maxLevel || level <= data.maxLevel)) {
                     int count = std::uniform_int_distribution{data.minOnLevel, data.maxOnLevel}(*randomEngine);
                     for (int i = 0; i < count; ++i)
@@ -272,10 +269,8 @@ namespace core {
         auto result = std::make_shared<core::Actor>(world, xpManager, renderContext.particles, randomEngine);
 
         visitor.key("type").unique().required().callback([&](std::string_view type) {
-            if (auto data = std::ranges::find(actorData, type, [](const auto& data) {
-                return data.stats.id;
-            }); data != actorData.end()) {
-                result->stats(data->stats);
+            if (auto data = actorData.find(std::string{type}); data != actorData.end()) {
+                result->stats(data->second.stats);
             } else {
                 throw UnknownActorType{type};
             }
