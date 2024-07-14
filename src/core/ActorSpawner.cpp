@@ -131,7 +131,6 @@ namespace JutchsON {
 namespace core {
     namespace {
         struct Env {
-            std::string_view id;
             std::shared_ptr<EffectManager> effects;
             std::shared_ptr<SpellManager> spells;
             std::shared_ptr<render::AssetManager> assets;
@@ -173,8 +172,7 @@ namespace core {
             logger->info("Loading {} spec from {}...", id, path.generic_string());
 
             if (auto loaded = JutchsON::parse<ActorSpawner::ActorData>(JutchsON::readWholeFile(path),
-                    Env{id, effectManager, spellManager, renderContext.assets})) {
-                loaded->stats.id = id;
+                    Env{effectManager, spellManager, renderContext.assets})) {
                 actorData.try_emplace(id, *loaded);
             } else {
                 throw ParseError{loaded.errors()};
@@ -237,7 +235,7 @@ namespace core {
                     int count = std::uniform_int_distribution{data.minOnLevel, data.maxOnLevel}(*randomEngine);
                     for (int i = 0; i < count; ++i)
                         if (auto position = world->randomPositionAt(level, 1000, &World::isFree)) {
-                            auto enemy = std::make_shared<Actor>(data.stats, *position, world, xpManager,
+                            auto enemy = std::make_shared<Actor>(data.stats, id, *position, world, xpManager,
                                 renderContext.particles, randomEngine);
                             enemy->controller(createController(enemy, data.controller));
 
@@ -281,6 +279,7 @@ namespace core {
         auto result = std::make_shared<core::Actor>(world, xpManager, renderContext.particles, randomEngine);
 
         visitor.key("type").unique().required().callback([&](std::string_view type) {
+            result->id(type);
             if (auto data = actorData.find(std::string{type}); data != actorData.end()) {
                 result->stats(data->second.stats);
             } else {
@@ -368,7 +367,7 @@ namespace core {
     std::string ActorSpawner::stringifyActor(const core::Actor& actor) const {
         std::string result = std::format(
             "type {}\nposition {}\nnextTurn {}\nhp {}\nmana {}\ncontroller {}\n",
-            actor.stats().id,
+            actor.id(),
             util::stringifyVector3(actor.position()),
             actor.nextTurn(), actor.hpUnscaled(), actor.manaUnscaled(),
             actor.controller().stringify()

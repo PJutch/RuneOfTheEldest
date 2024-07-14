@@ -41,8 +41,6 @@ namespace core {
 	public:
 		/// Immutable params of the Actor
 		struct Stats {
-			std::string id;
-
 			double maxHp;
 			double regen;
 
@@ -68,11 +66,11 @@ namespace core {
 		};
 
 		Actor() = default;
-		Actor(Stats stats, sf::Vector3i position, 
+		Actor(Stats stats, std::string id, sf::Vector3i position, 
 			  std::shared_ptr<World> world, std::shared_ptr<XpManager> xpManager, 
 			  std::shared_ptr<render::ParticleManager> particles,
 			  util::RandomEngine* randomEngine);
-		Actor(Stats stats, 
+		Actor(Stats stats, std::string id,
 			  std::shared_ptr<World> world, std::shared_ptr<XpManager> xpManager, 
 			  std::shared_ptr<render::ParticleManager> particles,
 			  util::RandomEngine* randomEngine);
@@ -86,6 +84,14 @@ namespace core {
 
 		void stats(const Stats& newStats) {
 			stats_ = newStats;
+		}
+
+		std::string_view id() const {
+			return id_;
+		}
+
+		void id(std::string_view newId) {
+			id_ = newId;
 		}
 
 		Controller& controller() noexcept {
@@ -401,6 +407,8 @@ namespace core {
 		}
 	private:
 		Stats stats_;
+		std::string id_;
+
 		std::unique_ptr<Controller> controller_;
 		std::vector<std::unique_ptr<Effect>> effects_;
 		std::vector<std::shared_ptr<Spell>> spells_;
@@ -432,7 +440,7 @@ namespace core {
 	};
 
 	BOOST_DESCRIBE_STRUCT(Actor::Stats, (), (
-		id, maxHp, regen, maxMana, manaRegen, 
+		maxHp, regen, maxMana, manaRegen, 
 		damage, accuracy, evasion, defences, turnDelay, xp, texture, hasRangedAttack, projectileTexture, projectileFlightTime
 	))
 }

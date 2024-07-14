@@ -19,21 +19,21 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/reduce.hpp"
 
 namespace core {
-	Actor::Actor(Stats newStats, sf::Vector3i newPosition,
+	Actor::Actor(Stats newStats, std::string newId, sf::Vector3i newPosition,
 		         std::shared_ptr<World> newWorld, std::shared_ptr<XpManager> xpManager_,
 				 std::shared_ptr<render::ParticleManager> particles_,
 		         util::RandomEngine* newRandomEngine) :
-			stats_{newStats}, position_{newPosition}, hp_{newStats.maxHp}, mana_{newStats.maxMana},
+			stats_{newStats}, id_{newId}, position_{newPosition}, hp_{newStats.maxHp}, mana_{newStats.maxMana},
 			world_{ std::move(newWorld) }, xpManager{ std::move(xpManager_) },
 			particles{particles_}, randomEngine_ {newRandomEngine} {
 		equipment_[static_cast<int>(EquipmentSlot::RING)].resize(2);
 	}
 
-	Actor::Actor(Stats stats_, 
+	Actor::Actor(Stats stats_, std::string newId,
 		         std::shared_ptr<World> newWorld, std::shared_ptr<XpManager> xpManager, 
 				 std::shared_ptr<render::ParticleManager> particles_,
 		         util::RandomEngine* newRandomEngine) :
-		Actor{ stats_, {}, std::move(newWorld), std::move(xpManager), std::move(particles_), newRandomEngine } {}
+		Actor{ stats_, newId, {}, std::move(newWorld), std::move(xpManager), std::move(particles_), newRandomEngine } {}
 
 	Actor::Actor(std::shared_ptr<World> newWorld, std::shared_ptr<XpManager> xpManager,
 				 std::shared_ptr<render::ParticleManager> particles_,

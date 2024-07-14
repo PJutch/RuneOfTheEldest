@@ -82,21 +82,23 @@ namespace {
 	auto testXpManager = std::make_shared<core::XpManager>();
 
 	std::shared_ptr<core::Actor> makeTestActor() {
-		return std::make_shared<core::Actor>(core::Actor::Stats{ .maxHp = 1 }, nullptr, testXpManager, nullptr, nullptr);
+		return std::make_shared<core::Actor>(core::Actor::Stats{ .maxHp = 1 }, 
+			"test", nullptr, testXpManager, nullptr, nullptr);
 	}
 
 	std::shared_ptr<core::Actor> makeTestActor(sf::Vector3i position) {
-		return std::make_shared<core::Actor>(core::Actor::Stats{ .maxHp = 1 }, position, nullptr, testXpManager, nullptr, nullptr);
+		return std::make_shared<core::Actor>(core::Actor::Stats{ .maxHp = 1 }, 
+			"test", position, nullptr, testXpManager, nullptr, nullptr);
 	}
 
 	std::shared_ptr<core::Actor> makeTestActor(double turnDelay) {
 		return std::make_shared<core::Actor>(core::Actor::Stats{ .maxHp = 1, .turnDelay = turnDelay }, 
-											 nullptr, testXpManager, nullptr, nullptr);
+			"test", nullptr, testXpManager, nullptr, nullptr);
 	}
 
 	std::shared_ptr<core::Actor> makeTestActor(double turnDelay, std::shared_ptr<core::XpManager> xpManager) {
 		return std::make_shared<core::Actor>(core::Actor::Stats{.maxHp = 1, .turnDelay = turnDelay}, 
-			                                 nullptr, std::move(xpManager), nullptr, nullptr);
+			"test", nullptr, std::move(xpManager), nullptr, nullptr);
 	}
 }
 

@@ -39,7 +39,8 @@ namespace {
     auto testXpManager = std::make_shared<core::XpManager>();
 
     std::shared_ptr<core::Actor> makeTestActor(sf::Vector3i pos) {
-        auto actor = std::make_shared<core::Actor>(core::Actor::Stats{ .maxHp = 1 }, pos, nullptr, testXpManager, nullptr, nullptr);
+        auto actor = std::make_shared<core::Actor>(core::Actor::Stats{ .maxHp = 1 }, 
+            "test", pos, nullptr, testXpManager, nullptr, nullptr);
         actor->controller(std::make_unique<TestController>());
         return std::move(actor);
     }
