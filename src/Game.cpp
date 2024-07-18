@@ -67,14 +67,6 @@ Game::Game(std::shared_ptr<core::World> newWorld,
     addOnUpdateListener([particles = renderContext.particles](sf::Time elapsedTime) { particles->update(elapsedTime); });
 }
 
-namespace {
-    class UnknowSection : public util::RuntimeError {
-    public:
-        UnknowSection(std::string_view name, util::Stacktrace stacktrace = {}) : 
-            util::RuntimeError{std::format("Unknown section \"{}\"", name), std::move(stacktrace)} {}
-    };
-}
-
 void Game::run() {
     if (auto v = util::readWhole("latest.sav")) {
         loadFromString(*v);
@@ -102,6 +94,12 @@ void Game::run() {
 }
 
 namespace {
+    class UnknownSection : public util::RuntimeError {
+    public:
+        UnknownSection(std::string_view name, util::Stacktrace stacktrace = {}) :
+            util::RuntimeError{std::format("Unknown section \"{}\"", name), std::move(stacktrace)} {}
+    };
+
     class ItemNotFound : public util::RuntimeError {
     public:
         ItemNotFound(std::string_view name, util::Stacktrace currentStacktrace = {}) noexcept :
@@ -112,71 +110,62 @@ namespace {
 void Game::loadFromString(std::string_view s) {
     saveLogger->info("Loading started...");
 
-    util::KeyValueVisitor visitor;
-    visitor.key("Tiles").unique().required().callback([&](std::string_view data) {
-        saveLogger->info("Loading tiles...");
-        world->tiles() = util::parseCharMap(data).transform(&core::tileFromChar);
-    });
-    visitor.key("Stairs").callback([&](std::string_view data) {
-        auto [stairs1, stairs2] = util::parse2Vector3i(data);
-        world->addStairs(stairs1, stairs2);
-    });
-    visitor.key("Actor").callback([&](std::string_view data) {
-        auto actor = actorSpawner->parseActor(data);
-        world->addActor(std::move(actor));
-    });
-    visitor.key("KnownTiles").unique().required().callback([&](std::string_view data) {
-        saveLogger->info("Loading known tiles...");
-        renderContext.playerMap->parseTileStates(data);
-    });
-    visitor.key("KnownActor").callback([&](std::string_view data) {
-        renderContext.playerMap->parseSeenActor(data);
-    });
-    visitor.key("Sound").callback([&](std::string_view data) {
-        renderContext.playerMap->addSound(core::Sound::parse(data));
-    });
-    visitor.key("Xp").unique().required().callback([&](std::string_view data) {
-        saveLogger->info("Loading player leveling data...");
-        xpManager->parse(data);
-    });
-    visitor.key("Item").callback([&](std::string_view s) {
-        std::string_view id;
-        std::string_view data;
-        core::Position<int> position;
+    auto multimap = *JutchsON::parse<std::unordered_multimap<std::string, std::string>>(s);
+    for (const auto& [key, data] : multimap) {
+        if (key == "Tiles") {
+            saveLogger->info("Loading tiles...");
+            world->tiles() = util::parseCharMap(data).transform(&core::tileFromChar);
+        } else if (key == "Stairs") {
+            auto [stairs1, stairs2] = util::parse2Vector3i(data);
+            world->addStairs(stairs1, stairs2);
+        } else if (key == "Actor") {
+            auto actor = actorSpawner->parseActor(data);
+            world->addActor(std::move(actor));
+        } else if (key == "KnownTiles") {
+            saveLogger->info("Loading known tiles...");
+            renderContext.playerMap->parseTileStates(data);
+        } else if (key == "KnownActor") {
+            renderContext.playerMap->parseSeenActor(data);
+        } else if (key == "Sound") {
+            renderContext.playerMap->addSound(core::Sound::parse(data));
+        } else if (key == "Xp") {
+            saveLogger->info("Loading player leveling data...");
+            xpManager->parse(data);
+        } else if (key == "Item") {
+            std::string_view id;
+            std::string_view itemData;
+            core::Position<int> position;
 
-        util::KeyValueVisitor visitor;
-        visitor.key("id").unique().required().callback([&](std::string_view s) {
-            id = s;
-        });
-        visitor.key("data").unique().callback([&](std::string_view s) {
-            data = s;
-        });
-        visitor.key("position").unique().required().callback([&](std::string_view s) {
-            position = util::parsePositionInt(s);
-        });
+            util::KeyValueVisitor visitor;
+            visitor.key("id").unique().required().callback([&](std::string_view s) {
+                id = s;
+            });
+            visitor.key("data").unique().callback([&](std::string_view s) {
+                itemData = s;
+            });
+            visitor.key("position").unique().required().callback([&](std::string_view s) {
+                position = util::parsePositionInt(s);
+            });
 
-        util::forEackKeyValuePair(s, visitor);
-        visitor.validate();
+            util::forEackKeyValuePair(data, visitor);
+            visitor.validate();
 
-        if (auto item = items->newItem(id)) {
-            item->parseData(data);
-            world->addItem(position, std::move(item));
+            if (auto item = items->newItem(id)) {
+                item->parseData(itemData);
+                world->addItem(position, std::move(item));
+            } else {
+                throw ItemNotFound{id};
+            }
+        } else if (key == "KnownItem") {
+            renderContext.playerMap->parseSeenItem(data);
+        } else if (key == "IdentifiedItems") {
+            items->parseIdentifiedItems(data);
+        } else if (key == "ItemTextures") {
+            items->parseTextures(data);
         } else {
-            throw ItemNotFound{id};
+            throw UnknownSection{key};
         }
-    });
-    visitor.key("KnownItem").callback([&](std::string_view data) {
-        renderContext.playerMap->parseSeenItem(data);
-    });
-    visitor.key("IdentifiedItems").callback([&](std::string_view data) {
-        items->parseIdentifiedItems(data);
-    });
-    visitor.key("ItemTextures").callback([&](std::string_view data) {
-        items->parseTextures(data);
-    });
-
-    util::forEachSection(s, visitor);
-    visitor.validate();
+    }
 
     for (const auto& [position, item] : world->items()) {
         item->onLoad();
@@ -267,52 +256,56 @@ void Game::draw_() {
 
 void Game::save() const {
     saveLogger->info("Saving started...");
-    std::ofstream file{"latest.sav"};
+
+    std::unordered_multimap<std::string, std::string> multimap;
 
     saveLogger->info("Saving tiles...");
-    file << "[Tiles]\n" << util::stringifyCharMap(world->tiles().transform(&core::charFromTile));
+    multimap.emplace("Tiles", util::stringifyCharMap(world->tiles().transform(&core::charFromTile)));
 
     saveLogger->info("Saving stairs...");
     for (auto [upStairs, downStairs] : world->upStairs()) {
-        file << "[Stairs]\n" << util::stringifyVector3(upStairs) << ' ' << util::stringifyVector3(downStairs) << '\n';
+        multimap.emplace("Stairs", std::format("{} {}", util::stringifyVector3(upStairs), util::stringifyVector3(downStairs)));
     }
 
     saveLogger->info("Saving actors...");
     for (const auto& actor : world->actors()) {
-        file << "[Actor]\n" << actorSpawner->stringifyActor(*actor);
+        multimap.emplace("Actor", actorSpawner->stringifyActor(*actor));
     }
 
     saveLogger->info("Saving item textures...");
-    file << "[ItemTextures]\n" << items->stringifyTextures() << '\n';
+    multimap.emplace("ItemTextures", items->stringifyTextures());
 
     saveLogger->info("Saving items...");
     for (const auto& [position, item] : world->items()) {
-        file << std::format("[Item]\nid {}\ndata {}\nposition {}\n", item->id(), item->stringifyData(), util::stringifyPosition(position));
+        multimap.emplace("Item", 
+            std::format("id {}\ndata {}\nposition {}", item->id(), item->stringifyData(), util::stringifyPosition(position)));
     }
 
     saveLogger->info("Saving known tiles...");
-    file << "[KnownTiles]\n" << renderContext.playerMap->stringifyTileStates();
+    multimap.emplace("KnownTiles", renderContext.playerMap->stringifyTileStates());
 
     saveLogger->info("Saving known actors...");
     for (const auto& actor : renderContext.playerMap->seenActors()) {
-        file << "[KnownActor]\n" << renderContext.playerMap->stringifySeenActor(actor);
+        multimap.emplace("KnownActor", renderContext.playerMap->stringifySeenActor(actor));
     }
 
     saveLogger->info("Saving known items...");
     for (auto item : renderContext.playerMap->seenItems()) {
-        file << "[KnownItem]\n" << renderContext.playerMap->stringifySeenItem(item);
+        multimap.emplace("KnownItem", renderContext.playerMap->stringifySeenItem(item));
     }
 
     saveLogger->info("Saving sounds...");
     for (const auto& sound : renderContext.playerMap->recentSounds()) {
-        file << "[Sound]\n" << sound.stringify();
+        multimap.emplace("Sound", sound.stringify());
     }
 
     saveLogger->info("Saving identified items...");
-    file << "[IdentifiedItems]\n" << items->stringifyIdentifiedItems() << '\n';
+    multimap.emplace("IdentifiedItems", items->stringifyIdentifiedItems());
 
     saveLogger->info("Saving player leveling data...");
-    file << "[Xp]\n" << xpManager->stringify();
+    multimap.emplace("Xp", xpManager->stringify());
+
+    JutchsON::writeFile("latest.sav", multimap);
 
     saveLogger->info("Saving finished");
 }
