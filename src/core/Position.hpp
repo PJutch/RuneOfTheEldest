@@ -55,9 +55,9 @@ namespace core {
         if constexpr (index == 0) {
             return pos.x;
         } else if constexpr (index == 1) {
-            return pos.x;
+            return pos.y;
         } else if constexpr (index == 2) {
-            return pos.x;
+            return pos.z;
         }
     }
 
@@ -67,9 +67,9 @@ namespace core {
         if constexpr (index == 0) {
             return pos.x;
         } else if constexpr (index == 1) {
-            return pos.x;
+            return pos.y;
         } else if constexpr (index == 2) {
-            return pos.x;
+            return pos.z;
         }
     }
 
@@ -79,9 +79,9 @@ namespace core {
         if constexpr (index == 0) {
             return pos.x;
         } else if constexpr (index == 1) {
-            return pos.x;
+            return pos.y;
         } else if constexpr (index == 2) {
-            return pos.x;
+            return pos.z;
         }
     }
 }
