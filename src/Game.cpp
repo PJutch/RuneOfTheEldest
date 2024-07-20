@@ -105,6 +105,14 @@ namespace {
         ItemNotFound(std::string_view name, util::Stacktrace currentStacktrace = {}) noexcept :
             util::RuntimeError{std::format("Item \"{}\" not found", name), std::move(currentStacktrace)} {}
     };
+
+    struct ItemData {
+        std::string id;
+        std::string data;
+        core::Position<int> position;
+    };
+
+    BOOST_DESCRIBE_STRUCT(ItemData, (), (id, data, position))
 }
 
 void Game::loadFromString(std::string_view s) {
@@ -116,7 +124,7 @@ void Game::loadFromString(std::string_view s) {
             saveLogger->info("Loading tiles...");
             world->tiles() = util::parseCharMap(data).transform(&core::tileFromChar);
         } else if (key == "Stairs") {
-            auto [stairs1, stairs2] = util::parse2Vector3i(data);
+            auto [stairs1, stairs2] = *JutchsON::parse<std::pair<sf::Vector3i, sf::Vector3i>>(data);
             world->addStairs(stairs1, stairs2);
         } else if (key == "Actor") {
             auto actor = actorSpawner->parseActor(data);
@@ -132,29 +140,13 @@ void Game::loadFromString(std::string_view s) {
             saveLogger->info("Loading player leveling data...");
             xpManager->parse(data);
         } else if (key == "Item") {
-            std::string_view id;
-            std::string_view itemData;
-            core::Position<int> position;
+            auto itemData = JutchsON::parse<ItemData>(data);
 
-            util::KeyValueVisitor visitor;
-            visitor.key("id").unique().required().callback([&](std::string_view s) {
-                id = s;
-            });
-            visitor.key("data").unique().callback([&](std::string_view s) {
-                itemData = s;
-            });
-            visitor.key("position").unique().required().callback([&](std::string_view s) {
-                position = util::parsePositionInt(s);
-            });
-
-            util::forEackKeyValuePair(data, visitor);
-            visitor.validate();
-
-            if (auto item = items->newItem(id)) {
-                item->parseData(itemData);
-                world->addItem(position, std::move(item));
+            if (auto item = items->newItem(itemData->id)) {
+                item->parseData(itemData->data);
+                world->addItem(itemData->position, std::move(item));
             } else {
-                throw ItemNotFound{id};
+                throw ItemNotFound{itemData->id};
             }
         } else if (key == "KnownItem") {
             renderContext.playerMap->parseSeenItem(data);
@@ -263,8 +255,8 @@ void Game::save() const {
     multimap.emplace("Tiles", util::stringifyCharMap(world->tiles().transform(&core::charFromTile)));
 
     saveLogger->info("Saving stairs...");
-    for (auto [upStairs, downStairs] : world->upStairs()) {
-        multimap.emplace("Stairs", std::format("{} {}", util::stringifyVector3(upStairs), util::stringifyVector3(downStairs)));
+    for (const auto& pair : world->upStairs()) {
+        multimap.emplace("Stairs", JutchsON::write(pair));
     }
 
     saveLogger->info("Saving actors...");
@@ -277,8 +269,7 @@ void Game::save() const {
 
     saveLogger->info("Saving items...");
     for (const auto& [position, item] : world->items()) {
-        multimap.emplace("Item", 
-            std::format("id {}\ndata {}\nposition {}", item->id(), item->stringifyData(), util::stringifyPosition(position)));
+        multimap.emplace("Item", JutchsON::write(ItemData{item->id(), item->stringifyData(), position}));
     }
 
     saveLogger->info("Saving known tiles...");
