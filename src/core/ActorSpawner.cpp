@@ -274,40 +274,43 @@ namespace core {
         }
     }
 
+    namespace {
+        struct SavedActor {
+            std::string type;
+            sf::Vector3i position;
+            std::string controller;
+            double nextTurn;
+            double hp;
+            double mana;
+            std::vector<std::string> effects;
+            std::vector<std::string> spells;
+            std::vector<std::string> items;
+            std::string casted;
+            std::vector<std::string> equiped;
+        };
+
+        BOOST_DESCRIBE_STRUCT(SavedActor, (), (type, position, controller, nextTurn, hp, mana, effects, spells, items, casted, equiped))
+    }
+
     std::shared_ptr<core::Actor> ActorSpawner::parseActor(std::string_view s) {
-        util::KeyValueVisitor visitor;
+        auto parsed = *JutchsON::parse<SavedActor>(s);
         auto result = std::make_shared<core::Actor>(world, xpManager, renderContext.particles, randomEngine);
 
-        visitor.key("type").unique().required().callback([&](std::string_view type) {
-            result->id(type);
-            if (auto data = actorData.find(std::string{type}); data != actorData.end()) {
-                result->stats(data->second.stats);
-            } else {
-                throw UnknownActorType{type};
-            }
-        });
+       
+        result->id(parsed.type);
+        if (auto data = actorData.find(std::string{parsed.type}); data != actorData.end()) {
+            result->stats(data->second.stats);
+        } else {
+            throw UnknownActorType{parsed.type};
+        }
 
-        visitor.key("position").unique().required().callback([&](std::string_view data) {
-            result->position(util::parseVector3i(data));
-        });
+        result->position(parsed.position);
+        result->controller(createController(result, parsed.controller));
+        result->nextTurn(parsed.nextTurn);
+        result->hpUnscaled(parsed.hp);
+        result->manaUnscaled(parsed.mana);
 
-        visitor.key("controller").unique().required().callback([&](std::string_view data) {
-            result->controller(createController(result, data));
-        });
-
-        visitor.key("nextTurn").unique().required().callback([&](std::string_view data) {
-            result->nextTurn(util::parseReal(data));
-        });
-
-        visitor.key("hp").unique().required().callback([&](std::string_view data) {
-            result->hpUnscaled(util::parseReal(data));
-        });
-
-        visitor.key("mana").unique().required().callback([&](std::string_view data) {
-            result->manaUnscaled(util::parseReal(data));
-        });
-
-        visitor.key("effect").callback([&](std::string_view s) {
+        for (std::string_view s : parsed.effects) {
             auto [id, data] = util::parseKeyValuePair(s);
 
             if (auto effect = effectManager->findEffect(id)) {
@@ -317,13 +320,13 @@ namespace core {
             } else {
                 throw EffectNotFound{id};
             }
-        });
+        };
 
-        visitor.key("spell").callback([&](std::string_view s) {
+        for (std::string_view s : parsed.spells) {
             spellsToAdd.emplace_back(result, std::string{s});
-        });
+        };
 
-        visitor.key("item").callback([&](std::string_view s) {
+        for (std::string_view s : parsed.items) {
             auto [id, data] = util::parseKeyValuePair(s);
 
             if (auto item = itemManager->newItem(id)) {
@@ -332,17 +335,15 @@ namespace core {
             } else {
                 throw ItemNotFound{id};
             }
-        });
+        };
 
-        visitor.key("casted").callback([&](std::string_view s) {
-            if (auto stripped = util::strip(s); !stripped.empty() && util::isDigit(stripped[0])) {
-                spellsToCast.emplace_back(result, util::parseInt(stripped));
-            } else {
-                spellsToCast.emplace_back(result, std::string{stripped});
-            }
-        });
+        if (auto stripped = util::strip(parsed.casted); !stripped.empty() && util::isDigit(stripped[0])) {
+            spellsToCast.emplace_back(result, util::parseInt(stripped));
+        } else if (!stripped.empty()) {
+            spellsToCast.emplace_back(result, std::string{stripped});
+        }
 
-        visitor.key("equiped").callback([&](std::string_view s) {
+        for (std::string_view s : parsed.equiped) {
             auto [slotTypeStr, rest1] = util::parseKeyValuePair(s);
             auto [slotIndexStr, rest2] = util::parseKeyValuePair(rest1);
             auto [id, data] = util::parseKeyValuePair(rest2);
@@ -356,53 +357,50 @@ namespace core {
             } else {
                 throw ItemNotFound{id};
             }
-        });
-
-        util::forEackKeyValuePair(s, visitor);
-        visitor.validate();
+        };
 
         return result;
     }
 
     std::string ActorSpawner::stringifyActor(const core::Actor& actor) const {
-        std::string result = std::format(
-            "type {}\nposition {}\nnextTurn {}\nhp {}\nmana {}\ncontroller {}\n",
-            actor.id(),
-            util::stringifyVector3(actor.position()),
-            actor.nextTurn(), actor.hpUnscaled(), actor.manaUnscaled(),
-            actor.controller().stringify()
-        );
+        SavedActor saved;
+        saved.type = actor.id();
+        saved.position = actor.position();
+        saved.nextTurn = actor.nextTurn();
+        saved.hp = actor.hpUnscaled();
+        saved.mana = actor.manaUnscaled();
+        saved.controller = actor.controller().stringify();
 
         for (const auto& effect : actor.effects()) {
             if (auto data = effect->stringify()) {
-                result.append(std::format("effect {}\n", *data));
+                saved.effects.push_back(*data);
             }
         }
 
         for (const auto& spell : actor.spells()) {
-            result.append(std::format("spell {}\n", spell->stringify()));
+            saved.spells.push_back(spell->stringify());
         }
 
         if (auto iter = std::ranges::find(actor.spells(), actor.castedSpell()); iter != actor.spells().end()) {
-            result.append(std::format("casted {}\n", iter - actor.spells().begin()));
+            saved.casted = JutchsON::write(iter - actor.spells().begin());
         } else if (actor.castedSpell()) {
-            result.append(std::format("casted {}\n", actor.castedSpell()->stringify()));
+            saved.casted = actor.castedSpell()->stringify();
         }
 
         for (const auto& item : actor.items()) {
-            result.append(std::format("item {} {}\n", item->id(), item->stringifyData()));
+            saved.items.push_back(std::format("{} {}\n", item->id(), item->stringifyData()));
         }
 
         boost::mp11::mp_for_each<boost::describe::describe_enumerators<EquipmentSlot>>([&](auto D) {
             const auto& slots = actor.equipment()[static_cast<int>(D.value)];
             for (int i = 0; i < std::ssize(slots); ++i) {
                 if (slots[i]) {
-                    result.append(std::format("equiped {} {} {} {}\n", util::toLower(D.name), i, slots[i]->id(), slots[i]->stringifyData()));
+                    saved.equiped.push_back(std::format("{} {} {} {}\n", util::toLower(D.name), i, slots[i]->id(), slots[i]->stringifyData()));
                 }
             }
         });
 
-        return result;
+        return JutchsON::write(saved);
     }
 
     void ActorSpawner::onSaveLoaded() {
