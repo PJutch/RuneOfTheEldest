@@ -207,22 +207,14 @@ namespace core {
 	}
 
 	void ItemManager::parseIdentifiedItems(std::string_view data) {
-		for (std::string_view id : util::parseList(data)) {
+		for (std::string_view id : *JutchsON::parse<std::vector<std::string>>(data)) {
 			identify(util::strip(id));
 		}
 	}
 
 	std::string ItemManager::stringifyIdentifiedItems() const {
-		std::string result;
-		for (std::string_view id : identifiedItems) {
-			if (result.empty()) {
-				result = id;
-			} else {
-				result += ", ";
-				result += id;
-			}
-		}
-		return result;
+		std::vector<std::string> vec{identifiedItems.begin(), identifiedItems.end()};
+		return JutchsON::write(vec);
 	}
 
 	namespace {
@@ -231,14 +223,19 @@ namespace core {
 			UnknownItem(std::string_view item, util::Stacktrace stacktrace = {}) :
 				util::RuntimeError{std::format("Can't find \"{}\" item", item), std::move(stacktrace)} {}
 		};
+
+		struct TextureEnv {
+			std::shared_ptr<render::AssetManager> assets;
+		};
 	}
 
 	void ItemManager::parseTextures(std::string_view s) {
-		util::forEackKeyValuePair(s, [&](std::string_view id, std::string_view data) {
+		auto map = JutchsON::parse<std::unordered_map<std::string, const sf::Texture*>>(s, TextureEnv{assets});
+		for (const auto& [id, texture] : *map) {
 			if (auto iter = std::ranges::find(potions, id, [](const auto& item) {
 				return item.id;
 			}); iter != potions.end()) {
-				potionTextures[iter - potions.begin()] = &assets->parse(data);
+				potionTextures[iter - potions.begin()] = texture;
 			} else {
 				bool found = false;
 				boost::mp11::mp_for_each<boost::describe::describe_enumerators<EquipmentSlot>>([&](auto D) {
@@ -246,7 +243,7 @@ namespace core {
 					if (auto iter = std::ranges::find(slotEquipment, id, [](const auto& item) {
 						return item.id;
 					}); iter != slotEquipment.end()) {
-						equipmentTextures[iter->slot][iter - slotEquipment.begin()] = &assets->parse(data);
+						equipmentTextures[iter->slot][iter - slotEquipment.begin()] = texture;
 						found = true;
 					}
 				});
@@ -255,24 +252,24 @@ namespace core {
 					throw UnknownItem{id};
 				}
 			}	
-		});
+		};
 	}
 
 	std::string ItemManager::stringifyTextures() const {
-		std::string result;
+		std::unordered_map<std::string, const sf::Texture*> map;
 
 		for (int i = 0; i < std::ssize(potions); ++i) {
-			result += std::format("{} {}\n", potions[i].id, assets->stringify(*potionTextures[i]));
+			map.try_emplace(potions[i].id, potionTextures[i]);
 		}
 
 		boost::mp11::mp_for_each<boost::describe::describe_enumerators<EquipmentSlot>>([&](auto D) {
 			int slotIndex = static_cast<int>(D.value);
 			for (int i = 0; i < nEquipment(D.value); ++i) {
-				result += std::format("{} {}\n", equipment[slotIndex][i].id, assets->stringify(*equipmentTextures[slotIndex][i]));
+				map.try_emplace(equipment[slotIndex][i].id, equipmentTextures[slotIndex][i]);
 			}
 		});
 
-		return result;
+		return JutchsON::write(map, TextureEnv{assets});
 	}
 
 	void ItemManager::randomizeTextures() {

@@ -97,6 +97,8 @@ namespace render {
 			return tileSize_;
 		}
 
+		[[nodiscard]] std::filesystem::path texturePath(const sf::Texture& texture) const;
+
 		[[nodiscard]] const sf::Texture& parse(std::string_view data) const;
 		[[nodiscard]] std::string stringify(const sf::Texture& texture) const;
 	private:
@@ -151,6 +153,14 @@ namespace JutchsON {
 			return parse<std::string>(s, env, context).map([&](std::string_view s) {
 				return &env.assets->texture(s);
 			});
+		}
+	};
+
+	template <>
+	struct Writer<const sf::Texture*> {
+		template <typename Env>
+		std::string operator() (const sf::Texture* t, Env&& env, Context context) {
+			return write(env.assets->texturePath(*t).generic_string(), std::forward<Env>(env), context);
 		}
 	};
 }

@@ -149,6 +149,15 @@ namespace render {
         };
     }
 
+    [[nodiscard]] std::filesystem::path AssetManager::texturePath(const sf::Texture& t) const {
+        if (auto iter = std::ranges::find(textureCache, &t, [](const auto& p) { return &p.second; });
+            iter != textureCache.end()) {
+            return iter->first;
+        } else {
+            throw UnknownTexture{};
+        }
+    }
+
     [[nodiscard]] std::string AssetManager::stringify(const sf::Texture& t) const {
         if (auto iter = std::ranges::find(textureCache, &t, [](const auto& p) { return &p.second; }); 
                 iter != textureCache.end()) {
