@@ -22,7 +22,11 @@ If not, see < https://www.gnu.org/licenses/>. */
 #include "util/Array3D.hpp"
 #include "util/raycast.hpp"
 
+#include <JutchsON.hpp>
+
 #include <SFML/System/Vector3.hpp>
+
+#include <boost/describe.hpp>
 
 #include <vector>
 #include <span>
@@ -95,19 +99,29 @@ namespace render {
 		void clearSounds() {
 			recentSounds_.clear();
 		}
-
-		std::span<const core::Sound> recentSounds() const noexcept {
+		 
+		std::span<const core::Sound> recentSounds() const noexcept {                                                                                                                                                                                                       
 			return recentSounds_;
 		}
 
 		void parseTileStates(std::string_view data);
 		[[nodiscard]] std::string stringifyTileStates() const;
 
-		void parseSeenActor(std::string_view data);
-		[[nodiscard]] std::string stringifySeenActor(SeenActor seenActor) const;
+		void parseSeenActor(JutchsON::StringView s) {
+			seenActors_.push_back(*JutchsON::parse<PlayerMap::SeenActor>(s, Env{assets}));
+		}
 
-		void parseSeenItem(std::string_view data);
-		[[nodiscard]] std::string stringifySeenItem(SeenItem item) const;
+		[[nodiscard]] std::string stringifySeenActor(SeenActor actor) const {
+			return JutchsON::write(actor, Env{assets});
+		}
+
+		void parseSeenItem(JutchsON::StringView s) {
+			seenItems_.push_back(*JutchsON::parse<PlayerMap::SeenItem>(s, Env{assets}));
+		}
+
+		[[nodiscard]] std::string stringifySeenItem(SeenItem item) const {
+			return JutchsON::write(item, Env{assets});
+		}
 	private:
 		util::Array3D<TileState> tileStates;
 		std::vector<SeenActor> seenActors_;
@@ -121,7 +135,14 @@ namespace render {
 
 		void updateActors();
 		void updateItems();
+
+		struct Env {
+			std::shared_ptr<AssetManager> assets;
+		};
 	};
+
+	BOOST_DESCRIBE_STRUCT(PlayerMap::SeenActor, (), (position, hp, maxHp, mana, maxMana, aiState, texture))
+	BOOST_DESCRIBE_STRUCT(PlayerMap::SeenItem, (), (position, texture))
 }
 
 #endif

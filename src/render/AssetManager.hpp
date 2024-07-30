@@ -24,6 +24,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 #include "util/Exception.hpp"
 #include "util/random.hpp"
 #include "util/Map.hpp"
+#include "util/parseKeyValue.hpp"
 
 #include <JutchsON.hpp>
 
@@ -150,9 +151,40 @@ namespace JutchsON {
 	template <>
 	struct Parser<const sf::Texture*> {
 		ParseResult<const sf::Texture*> operator() (StringView s, const auto& env, Context context) {
-			return parse<std::string>(s, env, context).map([&](std::string_view s) {
-				return &env.assets->texture(s);
-			});
+			auto stripped = strip(s);
+			if (!stripped.empty() && stripped.front() == '<') {
+				return parseVariant(s).then([&](auto pair) -> ParseResult<const sf::Texture*> {
+					auto [type, data] = pair;
+					if (type == "scroll") {
+						return parse<const sf::Texture*>(data, env, context).map([&](auto texture) {
+							return &env.assets->scrollTexture(*texture);
+						});
+					} else if (type == "potion") {
+						util::KeyValueVisitor visitor;
+
+						const sf::Texture* base;
+						visitor.key("base").unique().required().callback([&](std::string_view data) {
+							base = *parse<const sf::Texture*>(data, env, context);
+						});
+
+						const sf::Texture* label;
+						visitor.key("label").unique().required().callback([&](std::string_view data) {
+							label = *parse<const sf::Texture*>(data, env, context);
+						});
+
+						util::forEackInlineKeyValuePair(data.asStd(), visitor);
+						visitor.validate();
+
+						return &env.assets->potionTexture(*base, *label);
+					} else {
+						return ParseResult<const sf::Texture*>::makeError(s.location(), std::format("Unknown texture type {}", type.asStd()));
+					}
+				});
+			} else {
+				return parse<std::string>(s, env, context).map([&](std::string_view s) {
+					return &env.assets->texture(s);
+				});
+			}
 		}
 	};
 
@@ -160,7 +192,7 @@ namespace JutchsON {
 	struct Writer<const sf::Texture*> {
 		template <typename Env>
 		std::string operator() (const sf::Texture* t, Env&& env, Context context) {
-			return write(env.assets->texturePath(*t).generic_string(), std::forward<Env>(env), context);
+			return write(env.assets->stringify(*t), std::forward<Env>(env), context);
 		}
 	};
 }

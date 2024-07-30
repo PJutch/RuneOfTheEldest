@@ -161,13 +161,13 @@ namespace render {
     [[nodiscard]] std::string AssetManager::stringify(const sf::Texture& t) const {
         if (auto iter = std::ranges::find(textureCache, &t, [](const auto& p) { return &p.second; }); 
                 iter != textureCache.end()) {
-            return std::format("file {}", iter->first.generic_string());
+            return std::format("{}", iter->first.generic_string());
         } else if (auto iter = std::ranges::find(scrollTextureCache, &t, [](const auto& p) { return &p.second.getTexture(); }); 
                 iter != scrollTextureCache.end()) {
-            return std::format("scroll {}", stringify(*iter->first));
+            return std::format("<scroll {}>", stringify(*iter->first));
         } else if (auto iter = std::ranges::find(potionTextureCache, &t, [](const auto& p) { return &p.second.getTexture(); });
                 iter != potionTextureCache.end()) {
-            return std::format("potion base {}, label {}", stringify(*iter->first.first), stringify(*iter->first.second));
+            return std::format("<potion base {}, label {}>", stringify(*iter->first.first), stringify(*iter->first.second));
         } else {
             throw UnknownTexture{};
         }

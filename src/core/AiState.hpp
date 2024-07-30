@@ -18,15 +18,19 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "util/assert.hpp"
 
+#include <JutchsON.hpp>
+
+#include <boost/describe.hpp>
+
 /// State of Enemy AI
-enum class AiState {
+BOOST_DEFINE_ENUM(AiState,
 	NONE,       ///< Has no AI (may be Player controlled)
 	INACTIVE,   ///< Hasn't seen player before
 	CHECKING,   ///< Checking suspisious location
 	WANDERING,  ///< Wanders randomly
 	ATTACKING,  ///< Can see player
 	TOTAL_      ///< Technical enumerator. Should always be last
-};
+)
 
 const int totalAiStates = static_cast<int>(AiState::TOTAL_);
 
@@ -67,6 +71,34 @@ inline std::string stringifyAiState(AiState aiState) {
     default:
         TROTE_ASSERT(false, "unreachable");
     }
+}
+
+namespace JutchsON {
+    template <>
+    struct Parser<AiState> {
+        JutchsON::ParseResult<AiState> operator() (JutchsON::StringView s, const auto&, Context) {
+            if (s == "none") {
+                return AiState::NONE;
+            } else if (s == "inactive") {
+                return AiState::INACTIVE;
+            } else if (s == "checking") {
+                return AiState::CHECKING;
+            } else if (s == "wandering") {
+                return AiState::WANDERING;
+            } else if (s == "attacking") {
+                return AiState::ATTACKING;
+            } else {
+                return JutchsON::ParseResult<AiState>::makeError(s.location(), std::format("Unknow ai state \"{}\"", s.asStd()));
+            }
+        }
+    };
+
+    template <>
+    struct Writer<AiState> {
+        std::string operator() (AiState state, const auto&, Context) {
+            return stringifyAiState(state);
+        }
+    };
 }
 
 #endif
